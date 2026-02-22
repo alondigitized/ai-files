@@ -191,6 +191,40 @@
     .card-tag { background: var(--surface2); border: 1px solid var(--border); border-radius: 0.3rem; padding: 0.15rem 0.5rem; color: var(--muted); }
     .card-footer .read-link { margin-left: auto; color: var(--muted); letter-spacing: 0.05em; }
 
+    /* ── Subscribe ── */
+    .subscribe-section {
+      border-top: 1px solid var(--border);
+      padding: 5rem 0;
+    }
+    .subscribe-inner {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4rem; align-items: center;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 3rem;
+    }
+    .subscribe-eyebrow {
+      font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.75rem; font-weight: 700;
+    }
+    .subscribe-title {
+      font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+      font-weight: 800; letter-spacing: -0.02em; line-height: 1.2;
+      margin-bottom: 0.75rem;
+    }
+    .subscribe-deck {
+      font-size: 0.9rem; color: var(--muted); line-height: 1.6;
+    }
+    .subscribe-form iframe {
+      width: 100%; border-radius: 0.5rem;
+      border: 1px solid var(--border) !important;
+    }
+
+    @media (max-width: 700px) {
+      .subscribe-inner { grid-template-columns: 1fr; gap: 2rem; padding: 2rem; }
+    }
+
     /* ── About / Footer ── */
     .about {
       border-top: 1px solid var(--border);
@@ -655,6 +689,22 @@
     </div>
   </div>
 
+  <!-- ── Subscribe ── -->
+  <div class="subscribe-section">
+    <div class="subscribe-inner">
+      <div class="subscribe-text">
+        <div class="subscribe-eyebrow">New chapters · No spam</div>
+        <h2 class="subscribe-title">Get the next story in your inbox</h2>
+        <p class="subscribe-deck">New chapters drop when they're ready. Be the first to read them.</p>
+      </div>
+      <div class="subscribe-form">
+        <!-- BEEHIIV_EMBED_PLACEHOLDER -->
+        <p style="color:var(--muted);font-size:0.85rem;font-style:italic;">Subscribe form coming soon.</p>
+        <!-- /BEEHIIV_EMBED_PLACEHOLDER -->
+      </div>
+    </div>
+  </div>
+
   <!-- ── About & Coming Soon ── -->
   <div class="about">
     <div>
@@ -689,5 +739,6 @@
   <p style="margin-top:0.5rem; color:#444;">All stories are based on documented public events, court records, and published research.</p>
 </footer>
 
+  <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
