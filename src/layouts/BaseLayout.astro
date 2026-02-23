@@ -3,10 +3,32 @@ import '../styles/global.css';
 
 interface Props {
   title: string;
+  description?: string;
+  canonicalPath?: string;
+  ogType?: 'website' | 'article';
+  ogImage?: string;
+  publishedISO?: string;  // ISO 8601 date for article pages
+  tags?: string[];
   story?: string;
   storyDark?: string;
 }
-const { title, story, storyDark } = Astro.props;
+
+const {
+  title,
+  description,
+  canonicalPath,
+  ogType = 'website',
+  ogImage,
+  publishedISO,
+  tags,
+  story,
+  storyDark,
+} = Astro.props;
+
+const siteURL = Astro.site ?? new URL('https://theaifiles.com');
+const canonical = canonicalPath
+  ? new URL(canonicalPath, siteURL).href
+  : new URL(Astro.url.pathname, siteURL).href;
 
 const storyVars = story && storyDark
   ? `--story: ${story}; --story-dark: ${storyDark};`
@@ -19,7 +41,39 @@ const storyVars = story && storyDark
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
+
+  <!-- Primary meta -->
+  {description && <meta name="description" content={description} />}
+  <meta name="author" content="The AI Files" />
+  <link rel="canonical" href={canonical} />
+  <link rel="alternate" type="application/rss+xml" title="The AI Files" href="/feed.xml" />
+
+  <!-- Open Graph -->
+  <meta property="og:site_name" content="The AI Files" />
+  <meta property="og:title" content={title} />
+  <meta property="og:type" content={ogType} />
+  <meta property="og:url" content={canonical} />
+  {description && <meta property="og:description" content={description} />}
+  {ogImage && <meta property="og:image" content={ogImage} />}
+  {ogImage && <meta property="og:image:width" content="1200" />}
+  {ogImage && <meta property="og:image:height" content="630" />}
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+  <meta name="twitter:title" content={title} />
+  {description && <meta name="twitter:description" content={description} />}
+  {ogImage && <meta name="twitter:image" content={ogImage} />}
+
+  <!-- Article metadata (story pages) -->
+  {publishedISO && <meta property="article:published_time" content={publishedISO} />}
+  {publishedISO && <meta property="article:section" content="Technology" />}
+  {tags && tags.map(t => <meta property="article:tag" content={t} />)}
+
+  <!-- Per-story CSS vars -->
   {storyVars && <style set:html={`:root { ${storyVars} }`} />}
+
+  <!-- JSON-LD slot — injected by child layouts -->
+  <slot name="jsonld" />
 </head>
 <body>
   <slot />

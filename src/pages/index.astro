@@ -1,5 +1,31 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import stories from '../data/stories.json';
+
+const SITE = 'https://theaifiles.com';
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'The AI Files',
+  url: SITE,
+  description: 'True stories from the age of artificial intelligence — documented incidents, landmark moments, and cautionary tales.',
+};
+
+const itemListSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'The AI Files — Story Archive',
+  url: SITE,
+  numberOfItems: stories.length,
+  itemListElement: stories.map(s => ({
+    '@type': 'ListItem',
+    position: s.chapter,
+    name: s.title,
+    url: `${SITE}/stories/${s.slug}`,
+    description: s.deck,
+  })),
+};
 ---
 
 <style is:global>
@@ -201,7 +227,12 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   }
 </style>
 
-<BaseLayout title="The AI Files — True Stories from the Age of Artificial Intelligence">
+<BaseLayout
+  title="The AI Files — True Stories from the Age of Artificial Intelligence"
+  description="True stories from the age of artificial intelligence — documented incidents, landmark moments, and cautionary tales. 22 chapters across 3 volumes."
+>
+  <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+  <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(itemListSchema)} />
   <script async src="https://subscribe-forms.beehiiv.com/embed.js"></script>
 
   <nav class="site-nav">
