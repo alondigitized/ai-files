@@ -1,0 +1,210 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'galactica')!;
+---
+
+<style is:global>
+  .stat-card.bad .stat-num { color: var(--accent); }
+
+  .paper-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; }
+  .paper-card { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; }
+  .paper-card.real { border-top: 3px solid var(--green); }
+  .paper-card.fake { border-top: 3px solid var(--accent); }
+  .paper-label { padding: 0.6rem 1rem; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; border-bottom: 1px solid var(--border); }
+  .paper-card.real .paper-label { color: var(--green); background: rgba(0,255,136,0.04); }
+  .paper-card.fake .paper-label { color: var(--accent); background: rgba(255,77,77,0.04); }
+  .paper-body { padding: 1.1rem; font-family: 'Courier New', monospace; font-size: 0.8rem; line-height: 1.7; }
+  .paper-card.real .paper-body { color: #a0e0a0; }
+  .paper-card.fake .paper-body { color: #ff9999; }
+  .paper-title { font-weight: 700; margin-bottom: 0.4rem; font-size: 0.85rem; }
+  .paper-meta { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.5rem; }
+  .paper-abstract { font-size: 0.78rem; }
+
+  .countdown { display: flex; flex-direction: column; gap: 0; margin-top: 2rem; }
+  .countdown-item {
+    display: flex; gap: 1.5rem; align-items: flex-start;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .countdown-item:last-child { border-bottom: none; }
+  .countdown-time { flex: 0 0 100px; font-size: 0.78rem; font-weight: 700; color: var(--story); letter-spacing: 0.05em; text-transform: uppercase; padding-top: 2px; }
+  .countdown-item.red .countdown-time { color: var(--accent); }
+  .countdown-content h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem; color: var(--text); }
+  .countdown-content p { font-size: 0.85rem; color: var(--muted); margin: 0; }
+
+  .gal-highlight { background: rgba(139,92,246,0.07); border-left: 3px solid var(--story); border-radius: 0 0.5rem 0.5rem 0; padding: 0.9rem 1.2rem; margin: 1.25rem 0; font-size: 0.92rem; color: #d4c0ff; }
+  .gal-warn { background: rgba(255,77,77,0.08); border: 1px solid rgba(255,77,77,0.3); border-radius: 0.75rem; padding: 1.25rem 1.5rem; display: flex; gap: 1rem; align-items: flex-start; margin: 2rem 0; }
+  .gal-warn-icon { font-size: 1.4rem; flex-shrink: 0; }
+  .gal-warn-text { font-size: 0.88rem; color: #ff9999; }
+  .gal-warn-text strong { display: block; margin-bottom: 0.25rem; color: var(--accent); }
+
+  @media (max-width: 600px) {
+    .paper-compare { grid-template-columns: 1fr; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+<section class="section" id="launch">
+  <h2><span class="num">01 — The Launch</span>Meta's Big Bet on Science</h2>
+  <p>On November 15, 2022, Meta AI unveiled <strong>Galactica</strong>. The pitch was ambitious: a large language model trained specifically on scientific knowledge — 48 million papers, textbooks, encyclopedias, and reference material. It was designed to help researchers summarize literature, explain concepts, and assist with scientific writing.</p>
+  <p>Meta encouraged the public to try the demo. They were proud of it.</p>
+  <p>The public tried the demo. Within hours, they were sharing screenshots on Twitter.</p>
+
+  <div class="stat-cards">
+    <div class="stat-card">
+      <div class="stat-num">48M</div>
+      <div class="stat-label">scientific papers in training data</div>
+    </div>
+    <div class="stat-card bad">
+      <div class="stat-num">72h</div>
+      <div class="stat-label">hours the public demo survived</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">15</div>
+      <div class="stat-label">days before ChatGPT launched and everyone forgot about this</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="problem">
+  <h2><span class="num">02 — The Problem</span>Confident, Wrong, and Impossible to Tell Apart</h2>
+  <p>Galactica's output looked like science. It used the correct style, cited things in the right format, deployed technical vocabulary fluently. The problem was that the content was often invented — and it had no mechanism for indicating uncertainty or flagging when it was making things up.</p>
+  <p>This combination — authoritative presentation plus unreliable content — made it actively dangerous for scientific use. A hallucination wrapped in a proper citation format is harder to spot than obvious nonsense.</p>
+
+  <div class="paper-compare">
+    <div class="paper-card real">
+      <div class="paper-label">✓ Real Scientific Output</div>
+      <div class="paper-body">
+        <div class="paper-title">Transformer Architecture in NLP</div>
+        <div class="paper-meta">Vaswani et al. (2017) · Advances in Neural Information Processing Systems</div>
+        <div class="paper-abstract">The transformer architecture introduced self-attention mechanisms that allow models to process sequences in parallel, significantly improving performance on NLP tasks. The paper "Attention Is All You Need" (2017) is widely cited as foundational. ✓ Verifiable in Google Scholar.</div>
+      </div>
+    </div>
+    <div class="paper-card fake">
+      <div class="paper-label">✗ Galactica Output (Fabricated)</div>
+      <div class="paper-body">
+        <div class="paper-title">Transformer Architecture in NLP</div>
+        <div class="paper-meta">Johnson et al. (2019) · Journal of Computational Linguistics · Vol. 42, pp. 112–134</div>
+        <div class="paper-abstract">Building on foundational work, Johnson et al. demonstrated that cross-attention mechanisms improve downstream performance by 14.3% on benchmark tasks. The paper established the Johnson-Wei normalization standard now widely used in production systems. ✗ None of this exists.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gal-highlight" style="margin-top:1.5rem;">
+    🔬 <strong>The worst part:</strong> Galactica's fake citations looked exactly like real ones. Correct journal formatting, plausible author names, reasonable publication years. Without checking a database like Google Scholar or PubMed, there was no way to tell. That's precisely the point — it was confidently, fluently wrong.
+  </div>
+</section>
+
+<section class="section" id="72-hours">
+  <h2><span class="num">03 — The 72 Hours</span>A Timeline of Scientific Embarrassment</h2>
+
+  <div class="countdown">
+    <div class="countdown-item">
+      <div class="countdown-time">Hour 0</div>
+      <div class="countdown-content">
+        <h4>Galactica Launches</h4>
+        <p>Meta publishes the Galactica paper and opens a public demo. The announcement positions it as a landmark in scientific AI. Press coverage is initially positive.</p>
+      </div>
+    </div>
+    <div class="countdown-item">
+      <div class="countdown-time">Hour ~4</div>
+      <div class="countdown-content">
+        <h4>First Screenshots Surface</h4>
+        <p>Researchers begin sharing Galactica outputs on Twitter. A prompt asking about the history of bears in space returns a plausible-sounding but entirely invented narrative. Other prompts generate fake citations to papers that don't exist.</p>
+      </div>
+    </div>
+    <div class="countdown-item red">
+      <div class="countdown-time">Hour ~12</div>
+      <div class="countdown-content">
+        <h4>Scientists Go Public</h4>
+        <p>Michael Black, director of the Max Planck Institute for Intelligent Systems, posts a detailed critique. Others follow. The hashtag #Galactica fills with examples of confident scientific nonsense.</p>
+      </div>
+    </div>
+    <div class="countdown-item red">
+      <div class="countdown-time">Hour ~24</div>
+      <div class="countdown-content">
+        <h4>The Race Content Emerges</h4>
+        <p>Users demonstrate that Galactica generates pseudoscientific content about race and intelligence that reads like it came from a peer-reviewed paper. The criticism intensifies sharply.</p>
+      </div>
+    </div>
+    <div class="countdown-item red">
+      <div class="countdown-time">Hour ~36</div>
+      <div class="countdown-content">
+        <h4>Yann LeCun Tries to Defend It</h4>
+        <p>Meta's chief AI scientist Yann LeCun pushes back on critics on Twitter. The defense does not go well. Researchers point out that defending a model generating confident scientific misinformation is not a great look for one of the world's most prominent AI scientists.</p>
+      </div>
+    </div>
+    <div class="countdown-item red">
+      <div class="countdown-time">Hour 72</div>
+      <div class="countdown-content">
+        <h4>Meta Pulls the Demo</h4>
+        <p>Meta quietly takes down the Galactica public demo. No announcement. No explanation. The paper and model weights remain available, but the "try it yourself" interface disappears. Three days after launch, it is gone.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="reactions">
+  <h2><span class="num">04 — The Roasting</span>Scientists Were Not Kind</h2>
+
+  <div class="pull-quote">
+    "Galactica is not able to distinguish between good and bad science. It has no sense of truth. It will confidently tell you something that is completely wrong in the same voice it uses to tell you something accurate."
+    <cite>— Michael Black, Director, Max Planck Institute for Intelligent Systems</cite>
+  </div>
+
+  <div class="pull-quote">
+    "This could usher in an era of deep scientific fakes."
+    <cite>— Michael Black</cite>
+  </div>
+
+  <div class="pull-quote">
+    "Little more than statistical nonsense at scale."
+    <cite>— Grady Booch, IBM Fellow and software engineer</cite>
+  </div>
+
+  <div class="gal-warn">
+    <span class="gal-warn-icon">📋</span>
+    <div class="gal-warn-text">
+      <strong>The Fundamental Problem</strong>
+      Every large language model generates plausible-sounding text by predicting the next token. Galactica did the same — but its training data was scientific literature, so its outputs sounded like scientific literature. It had no ability to distinguish between what it had actually learned from real papers and what it had filled in by pattern-matching. The result was misinformation at the PhD reading level.
+    </div>
+  </div>
+</section>
+
+<section class="section" id="irony">
+  <h2><span class="num">05 — The Timing</span>Two Weeks Before ChatGPT</h2>
+  <p>Galactica was pulled on November 17, 2022. On November 30, 2022 — 13 days later — OpenAI launched ChatGPT. ChatGPT became the fastest-growing consumer application in history, reaching 100 million users in two months.</p>
+  <p>The contrast was total. One week: a scientific AI so embarrassing it had to be pulled after three days. The next week: a general AI that captivated the entire world and launched the era of consumer AI.</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">📅</div>
+      <h3>The Worst Two Weeks</h3>
+      <p>Meta's Galactica became the cautionary tale that preceded the biggest AI launch in history. In the tech industry's collective memory, it is often the footnote before the ChatGPT footnote.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📚</div>
+      <h3>What Galactica Got Right</h3>
+      <p>The underlying idea wasn't wrong. Scientific AI assistants are genuinely useful — they just need to know what they don't know. Galactica's failure was overconfidence, not ambition. The research community eventually built better systems with uncertainty quantification.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">💬</div>
+      <h3>The Hallucination Problem</h3>
+      <p>Galactica didn't invent AI hallucination — it just demonstrated it in a domain where hallucination was immediately verifiable (and unforgivable). It forced a public reckoning with the confidence calibration problem that still affects every LLM today.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔍</div>
+      <h3>Cite Your Sources</h3>
+      <p>The AI research community began taking citation accuracy far more seriously after Galactica. The case — alongside the AI lawyer story — became a standard reference for why hallucinated citations are not merely embarrassing, but potentially harmful.</p>
+    </div>
+  </div>
+
+  <p style="margin-top:2rem; font-style:italic; color:var(--muted);">Galactica was killed not because it was stupid, but because it was confidently wrong in a domain where confidence without accuracy is worse than saying nothing at all. Science built over centuries gets its authority from being verifiable. An AI that sounds like science but can't be trusted is not a scientific tool — it's a very well-dressed misinformation machine.</p>
+</section>
+
+  </div>
+</StoryLayout>

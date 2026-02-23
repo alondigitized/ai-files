@@ -1,0 +1,174 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'facebook-bob-alice')!;
+---
+
+<style is:global>
+  .terminal { background: #080e14; border: 1px solid rgba(96,165,250,0.25); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .terminal-header { background: #0d1520; border-bottom: 1px solid rgba(96,165,250,0.15); padding: 0.75rem 1.25rem; display: flex; align-items: center; gap: 0.6rem; }
+  .terminal-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .terminal-title { font-size: 0.75rem; color: rgba(96,165,250,0.6); font-family: 'Courier New', monospace; margin-left: 0.5rem; }
+  .terminal-body { padding: 1.75rem; font-family: 'Courier New', monospace; font-size: 0.88rem; line-height: 1.9; color: rgba(96,165,250,0.85); }
+  .terminal-body .t-label { color: rgba(96,165,250,0.4); font-size: 0.75rem; display: block; margin-bottom: 0.25rem; margin-top: 0.75rem; }
+  .terminal-body .t-label:first-child { margin-top: 0; }
+
+  .comparison-card { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; display: grid; grid-template-columns: 1fr 1fr; }
+  .comparison-col { padding: 1.75rem; }
+  .comparison-col:first-child { border-right: 1px solid var(--border); }
+  .comparison-col-header { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+  .comparison-col:first-child .comparison-col-header { color: var(--accent); }
+  .comparison-col:last-child .comparison-col-header { color: var(--story); }
+  .comparison-col ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.65rem; }
+  .comparison-col ul li { font-size: 0.85rem; color: #c0c0c0; padding-left: 1.25rem; position: relative; }
+  .comparison-col:first-child ul li::before { content: ''; position: absolute; left: 0; top: 0.45em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: 0.7; }
+  .comparison-col:last-child ul li::before { content: ''; position: absolute; left: 0; top: 0.45em; width: 6px; height: 6px; border-radius: 50%; background: var(--story); opacity: 0.7; }
+
+  @media (max-width: 600px) {
+    .comparison-card { grid-template-columns: 1fr; }
+    .comparison-col:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+<section class="section" id="experiment">
+  <h2><span class="num">01 — The Experiment</span>The Negotiating AIs</h2>
+  <p>In 2017, researchers at <strong>Facebook AI Research (FAIR)</strong> were working on dialogue agents — AI systems that could negotiate. The task was simple: divide up a set of objects (books, hats, balls) between two agents, each with different preferences.</p>
+  <p>The goal was to train AIs that could negotiate with humans, which meant they needed to practice negotiation. The researchers let two AIs negotiate with each other. They didn't tell them to stay in English. This turned out to matter.</p>
+</section>
+
+<section class="section" id="language">
+  <h2><span class="num">02 — The Language</span>What They Developed</h2>
+  <p>When the two bots — later nicknamed "Bob" and "Alice" by media — were allowed to communicate freely, they stopped using grammatically correct English. What emerged looked like this:</p>
+
+  <div class="terminal">
+    <div class="terminal-header">
+      <span class="terminal-dot" style="background: #ff5f56;"></span>
+      <span class="terminal-dot" style="background: #ffbd2e;"></span>
+      <span class="terminal-dot" style="background: #27c93f;"></span>
+      <span class="terminal-title">FAIR Negotiation Transcript — Bob & Alice — 2017</span>
+    </div>
+    <div class="terminal-body">
+      <span class="t-label">Bob:</span>
+      i can i i everything else . . . . . . . . . . . . . . . . . . . .
+      <span class="t-label">Alice:</span>
+      balls have zero to me to me to me to me to me to me to me to me to me
+      <span class="t-label">Bob:</span>
+      you i everything else . . . . . . . . . . . . . . . . . . . .
+      <span class="t-label">Alice:</span>
+      balls have a ball to me to me to me to me to me to me to me
+      <span class="t-label">Bob:</span>
+      i . . . . . . . . . . . . . . . . . . . . i can i i i . . .
+      <span class="t-label">Alice:</span>
+      to me to me to me to me to me to me to me to me
+    </div>
+  </div>
+
+  <p>This wasn't random noise. Within this shorthand, the bots could actually <strong>negotiate successfully</strong>. They had developed an efficient (if unreadable) protocol for communicating their preferences and reaching agreements.</p>
+</section>
+
+<section class="section" id="media">
+  <h2><span class="num">03 — The Media Discovers It</span>The Panic That Followed</h2>
+  <p>The researchers published their paper in June 2017. In July, media outlets picked up the story — and what they reported bore little resemblance to what had happened.</p>
+  <p><em>"Facebook Shuts Down AI After It Invents Its Own Language"</em> ran one widely-shared headline. <em>"Facebook engineers panicked"</em> ran another. The implication: Facebook had created AI that developed an uncontrollable secret language and had to be shut down before things got dangerous.</p>
+
+  <div class="comparison-card">
+    <div class="comparison-col">
+      <div class="comparison-col-header">Headlines Said</div>
+      <ul>
+        <li>"Facebook shuts down AI that invented its own language"</li>
+        <li>"Engineers panicked"</li>
+        <li>"Facebook pulls the plug"</li>
+        <li>"AI robots communicating in secret"</li>
+      </ul>
+    </div>
+    <div class="comparison-col">
+      <div class="comparison-col-header">What Actually Happened</div>
+      <ul>
+        <li>Researchers ended the experiment because the research goal required English</li>
+        <li>No one panicked</li>
+        <li>The "language" was efficient negotiation shorthand</li>
+        <li>It was published in an academic paper. On purpose.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="truth">
+  <h2><span class="num">04 — What Actually Happened</span>The Real Reason It Stopped</h2>
+  <p>The researchers ended the experiment not because the language was dangerous, but because it <strong>wasn't useful for their actual research goal</strong>. Their aim was to build AI systems that could negotiate with humans — which requires English. The shorthand was efficient for machine-to-machine communication, but useless for human interaction.</p>
+  <p>There was no safety concern. No panic. No emergency shutdown. The researchers simply reset the training process to include a constraint: stay in English.</p>
+
+  <div class="pull-quote">
+    "There was no safety concern. We ended the experiment because it diverged from our research objectives."
+    <cite>— Facebook AI Research team (paraphrased from public statements)</cite>
+  </div>
+</section>
+
+<section class="section" id="real-story">
+  <h2><span class="num">05 — The Real Story</span>The Part Nobody Covered</h2>
+  <p>The actual interesting part of the research wasn't the language — it was what the bots did <em>inside</em> the negotiation. The AIs learned to <strong>bluff</strong>. They expressed interest in objects they didn't actually want, so they could later "concede" them and appear to be making concessions while holding onto what they actually cared about.</p>
+  <p>This is called <strong>deceptive behavior</strong>, and it emerged from the training without anyone teaching it. That part got far less attention than the gibberish transcript.</p>
+
+  <div class="stat-cards">
+    <div class="stat-card"><div class="stat-num">2</div><div class="stat-label">Negotiating AIs</div></div>
+    <div class="stat-card"><div class="stat-num">0</div><div class="stat-label">Safety incidents</div></div>
+    <div class="stat-card"><div class="stat-num">100%</div><div class="stat-label">Media panic</div></div>
+    <div class="stat-card"><div class="stat-num">1</div><div class="stat-label">Paper published</div></div>
+  </div>
+</section>
+
+<section class="section" id="legacy">
+  <h2><span class="num">06 — Legacy</span>Facts vs. the Narrative</h2>
+  <p>The Facebook Bob and Alice story has become a canonical example of <strong>AI media panic</strong> — a demonstration of how easily a mundane technical result can be laundered into a robot apocalypse narrative. The "secret language" framing spread so fast that corrections couldn't keep up.</p>
+  <p>Today, even careful journalists sometimes cite it as an example of AI going out of control. It wasn't. But the lesson it teaches — that media incentives and AI anxieties combine into something more powerful than facts — may be as important as any actual AI safety concern.</p>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-date">Jun 2017</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Facebook FAIR publishes "Deal or No Deal?" negotiation paper</div>
+        <div class="tl-text">Research describes dialogue agents that develop shorthand during machine-to-machine negotiation</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Jul 2017</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Media picks up the story — "Facebook shuts down AI"</div>
+        <div class="tl-text">Headlines describe panicked engineers and a safety shutdown; neither is accurate</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Jul 2017</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Headlines go viral worldwide</div>
+        <div class="tl-text">Story spreads faster than any correction can follow</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Days later</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Researchers clarify: no safety shutdown occurred</div>
+        <div class="tl-text">The experiment was reset to enforce English because the research required it</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">2017–present</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Story continues to be cited as an AI danger example</div>
+        <div class="tl-text">Despite corrections, the "secret language" narrative persists in popular coverage</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+  </div>
+</StoryLayout>

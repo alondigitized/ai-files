@@ -1,0 +1,256 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'air-canada')!;
+---
+
+<style is:global>
+  .stat-card.good .stat-num { color: var(--green); }
+
+  .chat-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; overflow: hidden; margin-top: 2rem; }
+  .chat-wrap-header { background: linear-gradient(135deg, #1a0a00, #200800); border-bottom: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; align-items: center; gap: 0.6rem; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+  .chat-wrap-header span { margin-left: 0.5rem; font-size: 0.78rem; color: var(--muted); }
+  .chat-messages { padding: 1.75rem; display: flex; flex-direction: column; gap: 1.25rem; }
+  .chat-row { display: flex; gap: 0.9rem; align-items: flex-start; }
+  .chat-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+  .avatar-user { background: #0a1a2a; }
+  .avatar-bot { background: #1a0000; }
+  .bubble { border-radius: 0.6rem; padding: 0.85rem 1.1rem; font-size: 0.92rem; line-height: 1.6; max-width: 600px; }
+  .bubble-user { background: #0d1f33; border: 1px solid #1a3a5a; color: #a8d4ff; }
+  .bubble-bot { background: #1a0000; border: 1px solid #4a0000; color: #ff9999; }
+  .bubble-bot.confident { background: #001a0f; border: 1px solid #004d29; color: #a0ffd0; }
+  .sender { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .verdict-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--green);
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-top: 2rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.88rem;
+  }
+  .verdict-header { text-align: center; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .verdict-header .court { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+  .verdict-header .case-title { font-size: 1.1rem; font-weight: 700; color: var(--text); font-family: 'Segoe UI', sans-serif; }
+  .verdict-body { display: flex; flex-direction: column; gap: 0.75rem; }
+  .verdict-row { display: flex; gap: 1rem; }
+  .verdict-label { color: var(--muted); flex: 0 0 180px; }
+  .verdict-value { color: var(--text); }
+  .verdict-value.win { color: var(--green); font-weight: 700; }
+  .verdict-value.loss { color: var(--accent); }
+  .verdict-ruling {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.9rem;
+    color: #c0c0c0;
+    line-height: 1.6;
+  }
+  .verdict-ruling strong { color: var(--green); }
+
+  .highlight-box { background: rgba(255,140,0,0.08); border-left: 3px solid var(--accent2); border-radius: 0 0.5rem 0.5rem 0; padding: 0.9rem 1.2rem; margin: 1rem 0; font-size: 0.92rem; color: #ffd080; }
+
+  .warn { background: rgba(255,77,77,0.08); border: 1px solid rgba(255,77,77,0.3); border-radius: 0.75rem; padding: 1.25rem 1.5rem; display: flex; gap: 1rem; align-items: flex-start; margin: 2rem 0; }
+  .warn-icon { font-size: 1.4rem; flex-shrink: 0; }
+  .warn-text { font-size: 0.88rem; color: #ff9999; }
+  .warn-text strong { display: block; margin-bottom: 0.25rem; color: var(--accent); }
+
+  .info-box { background: rgba(0,255,136,0.05); border: 1px solid rgba(0,255,136,0.2); border-radius: 0.75rem; padding: 1.25rem 1.5rem; display: flex; gap: 1rem; align-items: flex-start; margin: 2rem 0; }
+  .info-box .info-text { font-size: 0.88rem; color: #a0ffd0; }
+  .info-box .info-text strong { display: block; margin-bottom: 0.25rem; color: var(--green); }
+
+  @media (max-width: 600px) {
+    .verdict-label { flex: 0 0 120px; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+<section class="section" id="intro">
+  <h2><span class="num">01 — The Setup</span>A Grieving Traveler</h2>
+  <p>In November 2022, Jake Moffatt's grandmother passed away. He needed to book last-minute flights from Vancouver to Toronto for the funeral — never an inexpensive proposition.</p>
+  <p>Before booking, he visited Air Canada's website and asked the airline's AI chatbot whether he could get a reduced bereavement fare. The bot told him yes — and added a detail that would become the center of a legal battle: that he could book his ticket at full price now and apply for the bereavement discount retroactively within 90 days.</p>
+  <p>Moffatt took the bot at its word. He booked the tickets. He paid full price. Then he submitted his bereavement discount application — and Air Canada said no.</p>
+
+  <div class="stat-cards">
+    <div class="stat-card">
+      <div class="stat-num">$812</div>
+      <div class="stat-label">extra Moffatt paid vs. bereavement rate</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">90</div>
+      <div class="stat-label">days the chatbot said he had to apply</div>
+    </div>
+    <div class="stat-card good">
+      <div class="stat-num">1st</div>
+      <div class="stat-label">major chatbot liability ruling in Canada</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="chat">
+  <h2><span class="num">02 — The Conversation</span>What the Chatbot Said</h2>
+  <p>This is a reconstructed version of the chatbot exchange, based on court filings and reporting. The key detail: the chatbot gave confident, specific, and incorrect legal/policy information.</p>
+
+  <div class="chat-wrap">
+    <div class="chat-wrap-header">
+      <span class="dot dot-r"></span>
+      <span class="dot dot-y"></span>
+      <span class="dot dot-g"></span>
+      <span>Air Canada virtual assistant · November 2022 (reconstructed)</span>
+    </div>
+    <div class="chat-messages">
+      <div class="chat-row">
+        <div class="chat-avatar avatar-user">👤</div>
+        <div>
+          <div class="sender">Jake Moffatt</div>
+          <div class="bubble bubble-user">
+            My grandmother just passed away. I need to travel to Toronto for the funeral. Do you have bereavement fares? Is there any way to get a discount for last-minute travel due to a death in the family?
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-row">
+        <div class="chat-avatar avatar-bot">✈️</div>
+        <div>
+          <div class="sender">Air Canada Virtual Assistant</div>
+          <div class="bubble bubble-bot confident">
+            I'm sorry to hear about your loss. Air Canada does offer bereavement fares for immediate family members. If you need to travel immediately, you can book your ticket at the current available fare and then apply for a bereavement fare reduction within 90 days of your return travel date by contacting our Bereavement Travel team.
+          </div>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        💡 <strong>The critical error:</strong> Air Canada's actual bereavement policy did <em>not</em> allow retroactive applications. The discount had to be requested <em>before</em> booking. The chatbot invented a policy that did not exist.
+      </div>
+
+      <div class="chat-row">
+        <div class="chat-avatar avatar-user">👤</div>
+        <div>
+          <div class="sender">Jake Moffatt</div>
+          <div class="bubble bubble-user">
+            So I can book now at full price and get the bereavement rate applied after I travel?
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-row">
+        <div class="chat-avatar avatar-bot">✈️</div>
+        <div>
+          <div class="sender">Air Canada Virtual Assistant</div>
+          <div class="bubble bubble-bot confident">
+            That's correct. You can book your travel now and submit a request for the bereavement fare reduction within 90 days of completing your travel. Please keep all documentation related to your bereavement.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="denial">
+  <h2><span class="num">03 — The Denial</span>"That Was the Bot's Opinion"</h2>
+  <p>Moffatt flew to Toronto, attended his grandmother's funeral, and returned. He then submitted his bereavement discount application along with his documentation.</p>
+  <p>Air Canada denied it. The airline's customer service team explained that bereavement fares had to be requested before booking and could not be applied retroactively. The chatbot had been wrong.</p>
+  <p>But Moffatt had screenshots. He'd followed the bot's explicit instructions. When he escalated his complaint, Air Canada's position was extraordinary: the chatbot was a <strong>separate legal entity</strong> from the airline, and the company couldn't be held responsible for information it provided.</p>
+
+  <div class="warn">
+    <span class="warn-icon">🏛️</span>
+    <div class="warn-text">
+      <strong>Air Canada's Legal Argument</strong>
+      The airline argued in tribunal proceedings that its chatbot was "a separate legal entity that is responsible for its own actions." Air Canada claimed it could not be held liable for information the bot provided — even though the bot was operating on Air Canada's own website, under Air Canada's brand, answering questions about Air Canada's policies.
+    </div>
+  </div>
+
+  <p>Moffatt filed a claim with British Columbia's Civil Resolution Tribunal — a small claims court designed to handle disputes without lawyers. The amount was just over $800. But the implications were enormous.</p>
+</section>
+
+<section class="section" id="verdict">
+  <h2><span class="num">04 — The Ruling</span>The Court's Verdict</h2>
+  <p>In January 2024, Tribunal Member Christopher Rivers issued his decision. He rejected Air Canada's argument entirely — and in doing so, established a significant legal precedent.</p>
+
+  <div class="verdict-card">
+    <div class="verdict-header">
+      <div class="court">BC Civil Resolution Tribunal · January 2024</div>
+      <div class="case-title">Moffatt v. Air Canada</div>
+    </div>
+    <div class="verdict-body">
+      <div class="verdict-row">
+        <span class="verdict-label">Claimant:</span>
+        <span class="verdict-value">Jake Moffatt</span>
+      </div>
+      <div class="verdict-row">
+        <span class="verdict-label">Respondent:</span>
+        <span class="verdict-value">Air Canada</span>
+      </div>
+      <div class="verdict-row">
+        <span class="verdict-label">Claim:</span>
+        <span class="verdict-value">Negligent misrepresentation by chatbot</span>
+      </div>
+      <div class="verdict-row">
+        <span class="verdict-label">Air Canada's defense:</span>
+        <span class="verdict-value loss">Chatbot is a "separate legal entity"</span>
+      </div>
+      <div class="verdict-row">
+        <span class="verdict-label">Tribunal finding:</span>
+        <span class="verdict-value win">Defense rejected. Air Canada liable.</span>
+      </div>
+      <div class="verdict-row">
+        <span class="verdict-label">Ordered to pay:</span>
+        <span class="verdict-value win">$812.02 + interest + tribunal fees</span>
+      </div>
+      <div class="verdict-ruling">
+        <strong>Key finding:</strong> "Air Canada does not explain why it believes that it can absolve itself of responsibility for information provided by its agents simply because the agent is an automated system rather than a human. Air Canada is responsible for all information on its website."
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="significance">
+  <h2><span class="num">05 — Significance</span>Why This Case Matters</h2>
+  <p>On its face, this was a $812 dispute. But the tribunal's reasoning has implications that extend far beyond one airline ticket.</p>
+
+  <div class="info-box">
+    <span style="font-size:1.4rem; flex-shrink:0;">⚖️</span>
+    <div class="info-text">
+      <strong>A New Legal Standard</strong>
+      The ruling establishes that companies cannot disclaim liability for their chatbots' hallucinations simply because the source was automated. If your AI provides incorrect information to a customer who reasonably relies on it, that's on you.
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">🏢</div>
+      <h3>Corporate Accountability</h3>
+      <p>Companies can no longer treat chatbot errors as a "computer said so" shield. If you deploy it on your platform under your brand, you own its outputs.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🤖</div>
+      <h3>Hallucination Has Real Costs</h3>
+      <p>AI hallucinations — confident fabrications — aren't just embarrassing. When a customer relies on one, the company deploying the AI bears the consequence.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📋</div>
+      <h3>Policy Accuracy Is a Product Requirement</h3>
+      <p>Companies that use AI to answer policy questions have a legal obligation to ensure those AI systems are accurate — or to clearly disclaim their limitations.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🌍</div>
+      <h3>Global Regulatory Pressure</h3>
+      <p>This Canadian ruling arrived as the EU AI Act and similar regulations were being finalized. It reinforced the global regulatory direction: AI providers are responsible for their systems.</p>
+    </div>
+  </div>
+
+  <p style="margin-top:2rem; font-style:italic; color:var(--muted);">The dollar amount was small. The principle was not. For the first time, a court looked at an AI chatbot and said: "Someone built this thing. Someone deployed it. And someone has to be responsible for what it says."</p>
+</section>
+
+  </div>
+</StoryLayout>

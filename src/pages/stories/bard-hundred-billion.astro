@@ -1,0 +1,229 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'bard-hundred-billion')!;
+---
+
+<style is:global>
+  .fact-check-card { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .fact-check-header { background: rgba(66,133,244,0.1); border-bottom: 1px solid var(--border); padding: 0.85rem 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
+  .fact-check-badge { background: var(--story); color: #fff; font-size: 0.68rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.25rem 0.65rem; border-radius: 0.3rem; }
+  .fact-check-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
+  .fc-row { display: flex; flex-direction: column; gap: 0.35rem; }
+  .fc-label { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+  .fc-claim { font-size: 0.95rem; color: var(--text); font-style: italic; }
+  .fc-result { font-size: 0.95rem; color: #c0c0c0; }
+  .fc-divider { height: 1px; background: var(--border); }
+
+  .ticker-card { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .ticker-header { background: rgba(255,77,77,0.08); border-bottom: 1px solid var(--border); padding: 0.85rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+  .ticker-symbol { font-size: 1.1rem; font-weight: 900; color: var(--text); letter-spacing: 0.05em; }
+  .ticker-exchange { font-size: 0.72rem; color: var(--muted); }
+  .ticker-body { padding: 1.5rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.25rem; }
+  .ticker-row { display: flex; flex-direction: column; gap: 0.25rem; }
+  .ticker-label { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+  .ticker-val { font-size: 1.05rem; font-weight: 700; color: var(--text); }
+  .ticker-val.down { color: var(--accent); }
+  .ticker-val.loss { color: var(--accent); }
+  .ticker-cause { border-top: 1px solid var(--border); padding: 1rem 1.5rem; font-size: 0.82rem; color: var(--muted); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+<section class="section" id="pressure">
+  <h2><span class="num">01 — The Pressure</span>The Pressure</h2>
+  <p>By February 2023, Google was terrified. ChatGPT had launched in November 2022 and hit 100 million users in two months — the fastest-growing consumer product in history. Microsoft had invested $10 billion in OpenAI and was about to announce an AI-powered Bing. Google, the company that had essentially invented the transformer architecture underlying all of this, was watching from the sidelines.</p>
+  <p>It needed to move. It needed to move now.</p>
+  <p>The internal pressure was real and documented. Google had issued what insiders described as a "code red" — an all-hands mobilization of AI talent across the company. The company had shelved products, reshuffled teams, and called in its founders. Sergey Brin reportedly helped with Bard prompts in the weeks before launch. The urgency was palpable at every level of the organization.</p>
+  <p>What happens when a company of 180,000 people moves in a panic is often the same thing that happens when an individual does: corners get cut in places nobody notices until later. In Google's case, they would be noticed almost immediately.</p>
+
+  <div class="stat-cards">
+    <div class="stat-card">
+      <div class="stat-num">100M</div>
+      <div class="stat-label">ChatGPT users in 60 days</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">$10B</div>
+      <div class="stat-label">Microsoft investment in OpenAI</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">2</div>
+      <div class="stat-label">Months ChatGPT had been live</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">2012</div>
+      <div class="stat-label">Year Google hired the transformer authors</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="announcement">
+  <h2><span class="num">02 — The Announcement</span>The Announcement</h2>
+  <p>On February 6, 2023, Google CEO Sundar Pichai published a blog post announcing "Bard" — Google's experimental AI chat service, powered by LaMDA. The post was accompanied by an animated GIF demonstrating Bard in action. It was the kind of polished, confident reveal that Google had spent decades perfecting.</p>
+  <p>The question in the demo: <strong>"What new discoveries from the James Webb Space Telescope can I tell my 9-year old about?"</strong></p>
+  <p>Bard gave a three-bullet answer. The bullets were clean, readable, friendly. One of them said the James Webb Space Telescope "took the very first pictures of a planet outside of our own solar system."</p>
+  <p>This was factually incorrect.</p>
+
+  <div class="fact-check-card">
+    <div class="fact-check-header">
+      <span class="fact-check-badge">Fact Check</span>
+      <span style="font-size: 0.82rem; color: var(--muted);">Bard Demo — February 6, 2023</span>
+    </div>
+    <div class="fact-check-body">
+      <div class="fc-row">
+        <span class="fc-label">Bard's Claim</span>
+        <span class="fc-claim">"The James Webb Space Telescope took the very first pictures of a planet outside of our own solar system."</span>
+      </div>
+      <div class="fc-divider"></div>
+      <div class="fc-row">
+        <span class="fc-label">The Fact</span>
+        <span class="fc-result">The first direct image of an exoplanet was captured in 2004 by the European Southern Observatory's Very Large Telescope (VLT). NASA's Hubble Space Telescope confirmed it in 2008. JWST is groundbreaking — but it was not first.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="catch">
+  <h2><span class="num">03 — The Catch</span>The Catch</h2>
+  <p>On February 8, 2023, Reuters published a fact-check: <em>"Google AI chatbot Bard gives wrong answer in advertisement."</em> The wire service had done what anyone with a passing interest in astronomy could have done: checked the claim against basic, public scientific record.</p>
+  <p>The error was not subtle. Astronomers had been photographing exoplanets for nearly two decades. The question was about space — precisely the kind of domain where factual precision matters and where experts would immediately notice a false statement. It wasn't a nuanced scientific debate. It was simply wrong.</p>
+  <p>The timing couldn't have been worse. Google was hosting a live event in Paris the same day to show off Bard to the world. The company's European press push — designed to demonstrate confidence and capability — was now happening under the headline that its flagship AI product had gotten a basic space fact wrong in its own promotional video.</p>
+
+  <div class="ticker-card">
+    <div class="ticker-header">
+      <div>
+        <div class="ticker-symbol">GOOGL</div>
+        <div class="ticker-exchange">Alphabet Inc. — NASDAQ</div>
+      </div>
+      <span class="tag" style="border-color: rgba(255,77,77,0.3); color: var(--accent);">TRADING SESSION</span>
+    </div>
+    <div class="ticker-body">
+      <div class="ticker-row">
+        <span class="ticker-label">Date</span>
+        <span class="ticker-val">Feb 8, 2023</span>
+      </div>
+      <div class="ticker-row">
+        <span class="ticker-label">Close</span>
+        <span class="ticker-val down">$108.67 ▼</span>
+      </div>
+      <div class="ticker-row">
+        <span class="ticker-label">Change</span>
+        <span class="ticker-val loss">-$8.99 (-7.68%)</span>
+      </div>
+      <div class="ticker-row">
+        <span class="ticker-label">Market Cap Lost</span>
+        <span class="ticker-val loss">~$100,000,000,000</span>
+      </div>
+    </div>
+    <div class="ticker-cause">Cause: Demo factual error spotted by Reuters — Bard claimed to have taken the first exoplanet image</div>
+  </div>
+</section>
+
+<section class="section" id="numbers">
+  <h2><span class="num">04 — The Numbers</span>The Numbers</h2>
+  <p>Alphabet's stock fell 7.68% on February 8, erasing approximately $100 billion in market capitalization in a single trading session. The number was almost too large to process intuitively. One hundred billion dollars. Gone in one day. Because of one wrong sentence in one promotional GIF.</p>
+  <p>To put it in context: $100 billion is more than the total market capitalization of companies like Ford, Delta Air Lines, or Marriott International. It evaporated in the time between market open and market close. The S&amp;P 500 barely moved that day. This was not a market-wide event. It was specifically about Google, specifically about Bard, and specifically about whether the company was capable of executing on AI.</p>
+  <p>Investors were not selling because of one wrong fact. They were selling because the wrong fact implied something larger: that Google had announced a product it hadn't verified, at an event it hadn't prepared for, to counter a competitor it hadn't adequately assessed. The stock price was a verdict on the company's readiness, not just the demo.</p>
+
+  <div class="pull-quote">
+    "I'm deeply disappointed in this mistake. It's important that we get this right."
+    <cite>— Prabhakar Raghavan, Google SVP, at the Paris event, upon being asked about the error</cite>
+  </div>
+
+  <div class="stat-cards">
+    <div class="stat-card">
+      <div class="stat-num">1</div>
+      <div class="stat-label">Wrong sentence in the demo</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">$100B</div>
+      <div class="stat-label">Market cap erased</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">7.68%</div>
+      <div class="stat-label">Single-day stock drop</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">1</div>
+      <div class="stat-label">Day for it all to happen</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="revealed">
+  <h2><span class="num">05 — What It Revealed</span>What It Revealed</h2>
+  <p>The error revealed something that made the damage worse than a simple factual mistake. Google had not just built an AI and made a demo. It had <strong>rushed an announcement</strong> to match Microsoft's AI news cycle, published a promotional video that hadn't been rigorously fact-checked, and hosted a global press event to celebrate a product that hadn't been ready for public release.</p>
+  <p>The haste was palpable — and the stock market priced it in. The fact-check failure was a synecdoche for a broader operational failure: the normal safeguards that would catch this kind of error hadn't been applied. No astronomer had reviewed the demo. No subject matter expert had signed off on the science claim. The GIF had been published because time was short and the calendar was unforgiving.</p>
+  <p>There was also a deeper irony. Google had invented many of the AI technologies that had made ChatGPT possible. The "Attention Is All You Need" paper, which introduced the transformer architecture, came from Google Brain researchers in 2017. Google had been doing AI research at scale for longer than almost any other company. And yet it had been caught flat-footed, and its response to being caught flat-footed had produced one of the most expensive demo failures in corporate history.</p>
+</section>
+
+<section class="section" id="legacy">
+  <h2><span class="num">06 — Legacy</span>Legacy</h2>
+  <p>Bard was eventually released in limited form in March 2023, and later evolved into Gemini. The rebranding was partly an attempt to put distance between the product and its troubled debut. Google improved its fact-checking processes, added disclaimers to AI outputs, and launched a slower, more deliberate public rollout than the February announcement had implied.</p>
+  <p>But the shadow of the launch mistake followed Bard for over a year. In internal discussions, the episode became a case study in what happens when competitive pressure overrides quality control. The Paris event, where an SVP had to apologize on stage for a product error that had already made international headlines, became a reference point for how not to handle an AI launch.</p>
+  <p>For the broader industry, it became a reminder that AI systems fail on exactly the questions where they sound most confident — and that a promotional video is a fact-check waiting to happen. Every AI company that published a demo after February 2023 understood, at least briefly, that Reuters was watching.</p>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-date">Nov '22</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">ChatGPT launches</div>
+        <div class="tl-text">100 million users in 60 days — fastest-growing consumer product in history</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Jan '23</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Microsoft announces $10B OpenAI investment</div>
+        <div class="tl-text">Confirms AI-powered Bing is in development, increasing pressure on Google</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Feb 6</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Google announces Bard</div>
+        <div class="tl-text">Blog post with animated GIF demo contains incorrect claim about JWST exoplanet imaging</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Feb 7</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Microsoft announces AI-powered Bing</div>
+        <div class="tl-text">Live event with ChatGPT integration — the event Google had been racing to preempt</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Feb 8</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Reuters publishes fact-check</div>
+        <div class="tl-text">Alphabet stock falls 7.68% — $100 billion in market cap erased in one session</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Feb 8</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Paris event proceeds under fire</div>
+        <div class="tl-text">SVP Prabhakar Raghavan acknowledges the error live on stage</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Mar '23</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Bard opens to limited public testing</div>
+        <div class="tl-text">Slower rollout than initially implied; later rebranded as Gemini</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+  </div>
+</StoryLayout>

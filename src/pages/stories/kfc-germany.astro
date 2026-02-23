@@ -1,0 +1,186 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'kfc-germany')!;
+---
+
+<style is:global>
+  .phone-notif {
+    max-width: 360px;
+    margin: 2rem auto;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .phone-status { background: #111; padding: 0.5rem 1.25rem; display: flex; justify-content: space-between; font-size: 0.7rem; color: #666; }
+  .phone-notif-body { padding: 1.25rem; display: flex; gap: 0.75rem; align-items: flex-start; background: #1e1e1e; }
+  .notif-icon { width: 40px; height: 40px; background: #cc0000; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
+  .notif-app { font-size: 0.68rem; color: #888; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 0.2rem; }
+  .notif-title { font-size: 0.85rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; }
+  .notif-body { font-size: 0.8rem; color: #aaa; line-height: 1.45; }
+  .notif-time { font-size: 0.68rem; color: #555; margin-top: 0.5rem; }
+  .phone-footer { background: #111; padding: 0.75rem 1.25rem; display: flex; justify-content: center; }
+  .phone-home { width: 32px; height: 4px; background: #333; border-radius: 2px; }
+
+  .algo-compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    margin: 2rem 0;
+  }
+  .algo-col { background: var(--surface); padding: 2rem; }
+  .algo-col.machine { background: #0a0000; }
+  .algo-label { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+  .algo-label.red { color: var(--story); }
+  .algo-items { list-style: none; }
+  .algo-items li { padding: 0.5rem 0; font-size: 0.88rem; color: #c0c0c0; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 0.5rem; }
+  .algo-items li:last-child { border-bottom: none; }
+
+  @media (max-width: 600px) {
+    .algo-compare { grid-template-columns: 1fr; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+<section class="section" id="context">
+  <h2><span class="num">01 — Context</span>November 9</h2>
+  <p>In Germany, <strong>November 9</strong> is a date that carries immense historical weight. It marks the fall of the Berlin Wall in 1989 — a moment of national joy and reunification. It also marks <strong>Kristallnacht</strong> in 1938 — the "Night of Broken Glass," when Nazi paramilitaries and civilians attacked Jewish homes, businesses, hospitals, and synagogues across Germany and Austria, killing at least 91 people and arresting approximately 30,000 more.</p>
+  <p>In Germany, the date is formally observed as a day of national remembrance. It is taught in every school. It is commemorated at memorials across the country. The German word for the pogrom, <em>Reichspogromnacht</em>, reflects the gravity with which the date is treated. It is not a date anyone would associate with a fast food promotion.</p>
+  <p>Unless you are an algorithm.</p>
+</section>
+
+<section class="section" id="system">
+  <h2><span class="num">02 — The System</span>Automated Promotions</h2>
+  <p>KFC Germany used an automated content management system to schedule promotional push notifications through their app. The system was designed to make promotions feel timely and culturally relevant — it pulled from a German calendar of upcoming dates and generated promotional copy connected to them.</p>
+  <p>The idea was sensible in principle: tie promotions to German cultural moments, holidays, and events. The app would automatically draft and send messages around these dates to keep customers engaged. On November 9, 2022, the system worked exactly as programmed.</p>
+
+  <div class="stat-cards">
+    <div class="stat-card"><div class="stat-num">1938</div><div class="stat-label">Year of Kristallnacht</div></div>
+    <div class="stat-card"><div class="stat-num">84</div><div class="stat-label">Years since the pogrom</div></div>
+    <div class="stat-card"><div class="stat-num">0</div><div class="stat-label">Human review before send</div></div>
+    <div class="stat-card"><div class="stat-num">1</div><div class="stat-label">Night before the apology</div></div>
+  </div>
+</section>
+
+<section class="section" id="notification">
+  <h2><span class="num">03 — The Notification</span>What Was Sent</h2>
+  <p>On the evening of November 9, 2022, KFC Germany's automated system pushed a notification to customers who had the KFC app installed. Translated from German, the notification read approximately:</p>
+
+  <div class="phone-notif">
+    <div class="phone-status"><span>9:41</span><span>▮▮▮ WiFi</span></div>
+    <div class="phone-notif-body">
+      <div class="notif-icon">🍗</div>
+      <div class="notif-content">
+        <div class="notif-app">KFC Germany</div>
+        <div class="notif-title">Commemorate Kristallnacht!</div>
+        <div class="notif-body">Treat yourself to tender cheese chicken. It's crunchy, cheesy and pleasantly plentiful. Enjoy with crispy chicken and dips.</div>
+        <div class="notif-time">November 9, 2022 · 7:42 PM</div>
+      </div>
+    </div>
+    <div class="phone-footer"><div class="phone-home"></div></div>
+  </div>
+
+  <p>The notification had gone out to potentially millions of German KFC app users on the anniversary of one of the worst nights in German history. Screenshots spread immediately across German social media, then internationally.</p>
+</section>
+
+<section class="section" id="logic">
+  <h2><span class="num">04 — Logic</span>What the Algorithm Saw</h2>
+  <p>The content management system was doing exactly what it had been programmed to do. It had access to a German calendar database. It could identify upcoming notable dates. It generated promotional copy around those dates. What it did not have was any concept of historical context, moral significance, or the difference between a commemoration and a celebration.</p>
+
+  <div class="algo-compare">
+    <div class="algo-col">
+      <div class="algo-label">What Humans Understand</div>
+      <ul class="algo-items">
+        <li>🗓️ Nov 9 = Day of national mourning</li>
+        <li>🕍 Kristallnacht = One of history's darkest nights</li>
+        <li>🚫 "Commemorate with chicken" = Unthinkable</li>
+        <li>❤️ Requires human judgment</li>
+        <li>📚 Taught in every German school</li>
+      </ul>
+    </div>
+    <div class="algo-col machine">
+      <div class="algo-label red">What the Algorithm Processed</div>
+      <ul class="algo-items">
+        <li>✓ Nov 9 = Date found in calendar</li>
+        <li>✓ Kristallnacht = German date, cultural significance</li>
+        <li>✓ "Commemorate" = Promotional hook</li>
+        <li>✓ Chicken promotion ready</li>
+        <li>✓ Send notification</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pull-quote">
+    "We are appalled and deeply sorry. This was an automated system that connected a date to a promotion without any understanding of what that date means to Germany and to the world."
+    <cite>— KFC Germany spokesperson, November 9, 2022</cite>
+  </div>
+</section>
+
+<section class="section" id="aftermath">
+  <h2><span class="num">05 — Aftermath</span>The Apology</h2>
+  <p>KFC Germany took the notification down and issued a public apology the same night. Their statement expressed genuine remorse and explained the automated nature of the system. The automated content system was disabled pending a full review.</p>
+  <p>German media covered it extensively. Jewish organizations and German civil society groups condemned the incident. International outlets picked it up within hours. The apology was widely acknowledged as sincere, but the damage — to the brand, and to a national moment of remembrance — had been done in the minutes before anyone could stop it.</p>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-date">1938</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Kristallnacht</div>
+        <div class="tl-text">The Night of Broken Glass. Nationwide pogrom across Germany and Austria. 91 killed, 30,000 arrested.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">1989</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Fall of the Berlin Wall</div>
+        <div class="tl-text">Also November 9. Germany's most significant date now carries two radically different historical meanings.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Nov 9 2022</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">KFC Germany sends the notification</div>
+        <div class="tl-text">Automated system pushes "Commemorate Kristallnacht with crispy chicken" to app users nationwide.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Same night</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Screenshots spread; KFC apologizes</div>
+        <div class="tl-text">KFC Germany issues immediate public apology; automated content system taken offline.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Nov 10</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Global coverage</div>
+        <div class="tl-text">Story covered by international media as case study in automated content failure without cultural awareness.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="legacy">
+  <h2><span class="num">06 — Legacy</span>Automated Blindness</h2>
+  <p>The KFC Germany incident became a canonical example of what researchers call <strong>"automated content blindness"</strong> — the failure of algorithmic systems to understand the human significance of the events they reference.</p>
+  <p>This is different from an AI hallucination. The system didn't make something up. It correctly identified a real date and generated content around it. The failure was that it had no model of why that date mattered — no concept of atrocity, grief, memorialization, or historical trauma. From inside the algorithm, it had performed perfectly.</p>
+  <p>The lesson isn't simply "add a list of sensitive dates." It's that automating cultural sensitivity requires actually encoding cultural understanding — which is vastly more complex than encoding a calendar. Any system that generates content around the full richness of human experience needs to understand something about that experience. Otherwise, every solemn date becomes a promotional opportunity waiting to happen.</p>
+  <p>KFC Germany has since revised its automated content processes. How many other automated systems are silently waiting to make the same mistake on different dates remains unknown.</p>
+</section>
+
+  </div>
+</StoryLayout>

@@ -1,0 +1,230 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'ai-lawyer')!;
+---
+
+<style is:global>
+  .legal-doc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--story);
+    border-radius: 0 0 1rem 1rem;
+    padding: 2rem;
+    margin-top: 2rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+  }
+  .legal-doc-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px dashed var(--border);
+  }
+  .legal-doc-header .court-name { font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--story); margin-bottom: 0.5rem; }
+  .legal-doc-header .doc-title { font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+  .legal-doc-header .doc-sub { font-size: 0.8rem; color: var(--muted); }
+  .legal-body { line-height: 1.9; color: #c0c0c0; }
+  .legal-body .cite { color: var(--story); text-decoration: underline; cursor: default; }
+  .legal-stamp {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed var(--border);
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  .exhibit-grid { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
+  .exhibit-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 0.75rem 0.75rem 0;
+    padding: 1.25rem 1.5rem;
+  }
+  .exhibit-card.real { border-left-color: var(--green); }
+  .exhibit-label { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.4rem; font-weight: 700; }
+  .exhibit-card.real .exhibit-label { color: var(--green); }
+  .exhibit-case { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; font-family: 'Courier New', monospace; }
+  .exhibit-details { font-size: 0.82rem; color: var(--muted); }
+  .exhibit-note { font-size: 0.78rem; color: var(--accent); margin-top: 0.4rem; font-style: italic; }
+  .exhibit-note.ok { color: var(--green); }
+
+  .steps { display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; }
+  .step { display: flex; gap: 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1.25rem 1.5rem; align-items: flex-start; }
+  .step-num { font-size: 1.5rem; font-weight: 900; color: var(--story); opacity: 0.5; flex-shrink: 0; line-height: 1; padding-top: 3px; }
+  .step h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem; color: var(--text); }
+  .step p { font-size: 0.88rem; margin: 0; color: var(--muted); }
+
+  .warn { background: rgba(255,77,77,0.08); border: 1px solid rgba(255,77,77,0.3); border-radius: 0.75rem; padding: 1.25rem 1.5rem; display: flex; gap: 1rem; align-items: flex-start; margin: 2rem 0; }
+  .warn-icon { font-size: 1.4rem; flex-shrink: 0; }
+  .warn-text { font-size: 0.88rem; color: #ff9999; }
+  .warn-text strong { display: block; margin-bottom: 0.25rem; color: var(--accent); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+<section class="section" id="intro">
+  <h2><span class="num">01 — The Case</span>Mata v. Avianca</h2>
+  <p>Roberto Mata was suing Avianca airline after claiming he was injured by a metal serving cart during a flight. His attorney at the New York firm Levidow, Levidow &amp; Oberman, <strong>Steven Schwartz</strong>, had practiced law for three decades. He was not a tech skeptic — but he was trying something new.</p>
+  <p>To research the case, Schwartz turned to ChatGPT. He asked the AI to help him find prior court cases relevant to Mata's claims. ChatGPT obliged — returning a list of precedents complete with case names, docket numbers, courts, dates, and summaries. They looked exactly like real court citations.</p>
+  <p>They were not. All six cases were fabricated.</p>
+
+  <div class="stat-cards">
+    <div class="stat-card">
+      <div class="stat-num">6</div>
+      <div class="stat-label">completely fake court cases cited</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">$5k</div>
+      <div class="stat-label">sanctions imposed on attorneys</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">30+</div>
+      <div class="stat-label">years of Schwartz's legal career</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="document">
+  <h2><span class="num">02 — The Brief</span>Filed with the Court</h2>
+  <p>In May 2023, Schwartz submitted his legal brief in the U.S. District Court for the Southern District of New York. Inside, he cited multiple cases to support his client's claims. Among them were entries like these:</p>
+
+  <div class="legal-doc">
+    <div class="legal-doc-header">
+      <div class="court-name">U.S. District Court · S.D.N.Y.</div>
+      <div class="doc-title">Mata v. Avianca, Inc.</div>
+      <div class="doc-sub">Plaintiff's Memorandum of Law · May 2023 · (Excerpt — Illustrative)</div>
+    </div>
+    <div class="legal-body">
+      <p style="margin-bottom:1rem;">In support of Plaintiff's position, we respectfully cite the following precedents establishing the applicable standard of care:</p>
+      <p>See <span class="cite">Varghese v. China Southern Airlines Co. Ltd., 925 F.3d 1339</span> (11th Cir. 2019) (holding that airline liable for passenger injury under Montreal Convention where crew negligence was established…)</p>
+      <p>See also <span class="cite">Shaboon v. EgyptAir</span>, No. 11 C 3944 (N.D. Ill. Sept. 28, 2012) (awarding damages where plaintiff demonstrated crew failed to follow established safety protocols…)</p>
+      <p>See <span class="cite">Petersen v. Iran Air</span>, 905 F.Supp.2d 121 (D.D.C. 2012) (finding airline duty of care extended to…)</p>
+    </div>
+    <div class="legal-stamp">Filed: May 2023 · Case No. 1:22-cv-01461 · [Document later subject to sanctions proceeding]</div>
+  </div>
+</section>
+
+<section class="section" id="exhibits">
+  <h2><span class="num">03 — Exhibit A</span>The Cases That Never Were</h2>
+  <p>When Avianca's counsel tried to locate the cited precedents, they found nothing. No records. No docket entries. Nothing in any legal database. They notified the court. Judge P. Kevin Castel ordered Schwartz to produce the actual case decisions.</p>
+  <p>Schwartz asked ChatGPT to provide them. ChatGPT generated what appeared to be full case decisions — complete, detailed, and entirely invented.</p>
+
+  <div class="exhibit-grid">
+    <div class="exhibit-card">
+      <div class="exhibit-label">Exhibit A — Fabricated</div>
+      <div class="exhibit-case">Varghese v. China Southern Airlines Co. Ltd.</div>
+      <div class="exhibit-details">Cited as: 925 F.3d 1339 (11th Cir. 2019)</div>
+      <div class="exhibit-note">Does not exist. No such case appears in 11th Circuit records or any legal database.</div>
+    </div>
+    <div class="exhibit-card">
+      <div class="exhibit-label">Exhibit B — Fabricated</div>
+      <div class="exhibit-case">Martinez v. Delta Air Lines, Inc.</div>
+      <div class="exhibit-details">Cited as: 2019 WL 4565137 (S.D.N.Y. 2019)</div>
+      <div class="exhibit-note">Does not exist. The Westlaw citation corresponds to no case in the Southern District of New York.</div>
+    </div>
+    <div class="exhibit-card">
+      <div class="exhibit-label">Exhibit C — Fabricated</div>
+      <div class="exhibit-case">Shaboon v. EgyptAir</div>
+      <div class="exhibit-details">Cited as: No. 11 C 3944 (N.D. Ill. Sept. 28, 2012)</div>
+      <div class="exhibit-note">Does not exist. No case with this docket number in the Northern District of Illinois.</div>
+    </div>
+    <div class="exhibit-card">
+      <div class="exhibit-label">Exhibit D — Fabricated</div>
+      <div class="exhibit-case">Petersen v. Iran Air</div>
+      <div class="exhibit-details">Cited as: 905 F.Supp.2d 121 (D.D.C. 2012)</div>
+      <div class="exhibit-note">Does not exist. No such case in D.C. District Court records at this citation.</div>
+    </div>
+    <div class="exhibit-card">
+      <div class="exhibit-label">Exhibit E — Fabricated</div>
+      <div class="exhibit-case">Miller v. United Airlines, Inc.</div>
+      <div class="exhibit-details">Cited as: 2012 WL 5193 (N.D. Ill. Oct. 19, 2012)</div>
+      <div class="exhibit-note">Does not exist. The citation resolves to no recoverable case.</div>
+    </div>
+    <div class="exhibit-card">
+      <div class="exhibit-label">Exhibit F — Fabricated</div>
+      <div class="exhibit-case">Estate of Durden v. KLM Royal Dutch Airlines</div>
+      <div class="exhibit-details">Cited as: 1996 WL 684209 (E.D. Pa. Nov. 22, 1996)</div>
+      <div class="exhibit-note">Does not exist. No such case appears in the Eastern District of Pennsylvania.</div>
+    </div>
+    <div class="exhibit-card real">
+      <div class="exhibit-label exhibit-note ok">For comparison — Real Case</div>
+      <div class="exhibit-case">Mata v. Avianca, Inc.</div>
+      <div class="exhibit-details">Case No. 1:22-cv-01461 (S.D.N.Y.) — The actual case that began this whole ordeal.</div>
+      <div class="exhibit-note ok">Verifiable. Exists in court records. Used as exhibit in sanctions proceedings.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="sanctions">
+  <h2><span class="num">04 — The Reckoning</span>Judge Castel's Response</h2>
+  <p>Judge P. Kevin Castel did not take the filing lightly. He held a hearing. He demanded explanations. Schwartz submitted an affidavit explaining that he had used ChatGPT without understanding that it could fabricate citations, and that he had verified the cases — by asking ChatGPT to confirm they were real. ChatGPT had assured him they were.</p>
+
+  <div class="warn">
+    <span class="warn-icon">⚖️</span>
+    <div class="warn-text">
+      <strong>From Schwartz's Affidavit</strong>
+      "I did not understand that ChatGPT could fabricate cases. I asked the program whether the cases were real. ChatGPT told me that the cases were real." When the judge asked Schwartz whether he had done any independent verification in a legal database, the answer was no.
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div>
+        <h4>Sanctions: $5,000</h4>
+        <p>Judge Castel sanctioned Schwartz and his firm Levidow, Levidow &amp; Oberman $5,000 — noting that the conduct "reflects a failure to research the caselaw" and exhibited "bad faith" through the submission of fabricated citations.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div>
+        <h4>Mandatory Notices</h4>
+        <p>The attorneys were ordered to serve copies of the court's sanctions opinion on each judge before whom they had cases pending in the district — a public, professional humiliation.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div>
+        <h4>Legal Education</h4>
+        <p>Schwartz was required to complete additional legal education on the ethics of AI-assisted legal research. The case became mandatory reading in bar association guidance documents across multiple jurisdictions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="fallout">
+  <h2><span class="num">05 — The Fallout</span>How Law Changed After Mata v. Avianca</h2>
+  <p>The Schwartz case arrived at a pivotal moment — when AI tools were first becoming easily accessible to legal professionals, but before any clear ethical guidance existed. It forced the profession to confront AI directly.</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-icon">📜</div>
+      <h3>Court AI Disclosure Rules</h3>
+      <p>Multiple federal courts issued new local rules requiring lawyers to certify that any AI-generated content has been independently verified, or to disclose AI's use in drafting filings.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🏛️</div>
+      <h3>Bar Association Guidance</h3>
+      <p>State bar associations across the US issued ethics opinions warning that the duty of competence includes understanding the limitations of AI tools — including their tendency to hallucinate.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔍</div>
+      <h3>Verification Obligation</h3>
+      <p>The case established a clear professional standard: using AI for legal research is not inherently unethical, but failing to independently verify citations in a legal database is.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🎓</div>
+      <h3>Law School Curriculum</h3>
+      <p>Mata v. Avianca became case study material in law schools teaching AI literacy — the canonical example of what happens when lawyers trust AI outputs without verification.</p>
+    </div>
+  </div>
+
+  <p style="margin-top:2rem; font-style:italic; color:var(--muted);">ChatGPT didn't set out to deceive Schwartz. It was doing exactly what it was designed to do: generating fluent, plausible-sounding text. It just had no mechanism to distinguish a real case from a convincing invention. That distinction was supposed to be the lawyer's job.</p>
+</section>
+
+  </div>
+</StoryLayout>

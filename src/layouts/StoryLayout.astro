@@ -1,0 +1,95 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import stories from '../data/stories.json';
+
+interface Source {
+  label: string;
+  url: string;
+}
+
+interface Story {
+  slug: string;
+  chapter: number;
+  volume: number;
+  title: string;
+  deck: string;
+  date: string;
+  readTime: string;
+  emoji: string;
+  tags: string[];
+  story: string;
+  storyDark: string;
+  verifyText: string;
+  sources: Source[];
+}
+
+interface Props {
+  story: Story;
+}
+
+const { story } = Astro.props;
+
+// Pick up to 4 related stories: same volume first, exclude current
+const others = stories.filter(s => s.slug !== story.slug);
+const sameVol = others.filter(s => s.volume === story.volume);
+const diffVol = others.filter(s => s.volume !== story.volume);
+const related = [...sameVol, ...diffVol].slice(0, 4);
+---
+<BaseLayout title={`${story.title} — The AI Files`} story={story.story} storyDark={story.storyDark}>
+  <nav class="site-nav">
+    <a href="/" class="nav-logo">The <span>AI</span> Files</a>
+    <a href="/" class="nav-link">← Archive</a>
+  </nav>
+
+  <header class="story-hero">
+    <div class="story-hero-inner">
+      <div class="story-chapter">Chapter {String(story.chapter).padStart(2, '0')}</div>
+      <h1 class="story-title">{story.title}</h1>
+      <p class="story-deck">{story.deck}</p>
+      <div class="story-byline">
+        <span>{story.date}</span>
+        <span class="byline-divider">·</span>
+        <span>{story.readTime} read</span>
+        <span class="byline-divider">·</span>
+        {story.tags.map(tag => <span class="tag">{tag}</span>)}
+      </div>
+      <div class="story-verify">
+        <span class="verify-badge">✓ Verified</span>
+        <span>{story.verifyText}</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <slot />
+
+    <div class="sources-block">
+      <h3>Sources</h3>
+      <ul class="sources-list">
+        {story.sources.map(src => (
+          <li><a href={src.url} target="_blank" rel="noopener">{src.label}</a></li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="container">
+      <div class="more-stories">
+        <h3>More Stories</h3>
+        <div class="more-grid">
+          {related.map(s => (
+            <a href={`/stories/${s.slug}`} class="more-card">
+              <div class="mc-ch">Ch{String(s.chapter).padStart(2, '0')}</div>
+              <div class="mc-title">{s.title}</div>
+              <div class="mc-deck">{s.deck.slice(0, 100)}{s.deck.length > 100 ? '…' : ''}</div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div>The AI Files &middot; True stories from the age of artificial intelligence</div>
+    <div class="footer-sub">All stories are based on documented public events, published research, and verified reporting.</div>
+  </footer>
+</BaseLayout>

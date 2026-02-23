@@ -1,0 +1,158 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'robot-lawyer')!;
+---
+
+<style is:global>
+  .legal-notice {
+    background: #0a0015;
+    border: 1px solid rgba(167,139,250,0.25);
+    border-top: 3px solid var(--story);
+    border-radius: 0.5rem;
+    padding: 2rem;
+    margin: 2rem 0;
+    font-family: 'Courier New', monospace;
+  }
+  .ln-header { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--story); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
+  .ln-row { display: grid; grid-template-columns: 180px 1fr; gap: 0.75rem; margin-bottom: 0.85rem; font-size: 0.85rem; }
+  .ln-label { color: var(--muted); }
+  .ln-value { color: var(--text); }
+  .ln-value.danger { color: #ef4444; }
+
+  .million-card {
+    background: radial-gradient(ellipse at center, #1a0d30 0%, #0d0015 100%);
+    border: 1px solid rgba(167,139,250,0.3);
+    border-radius: 1rem;
+    padding: 3rem 2rem;
+    text-align: center;
+    margin: 2rem 0;
+  }
+  .million-amount { font-size: 4rem; font-weight: 900; color: var(--story); line-height: 1; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
+  .million-title { font-size: 0.8rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.5rem; }
+  .million-terms { font-size: 0.88rem; color: #c0c0c0; max-width: 480px; margin: 0 auto 1.5rem; line-height: 1.55; font-style: italic; }
+  .million-status { display: inline-block; background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 2rem; padding: 0.35rem 1rem; font-size: 0.75rem; color: #ef4444; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  @media (max-width: 600px) {
+    .ln-row { grid-template-columns: 1fr; gap: 0.25rem; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+<section class="section" id="setup">
+  <h2><span class="num">01 — The Setup</span>The World's First Robot Lawyer</h2>
+  <p>Joshua Browder was 22 when he built the first version of DoNotPay — a simple website that could automatically generate letters to contest parking tickets. By the time he was 26, DoNotPay had expanded into subscription cancellations, small claims court filings, and consumer rights disputes. Its marketing tagline was bold: <strong>"The World's First Robot Lawyer."</strong></p>
+  <p>Browder was magnetic and combative — he positioned DoNotPay as a weapon for ordinary people against the institutions that exploited them. The company had helped users file over 160,000 successful parking ticket appeals, claim airline compensation, and navigate bureaucratic processes that typically required expensive professional help. Now he was ready for a bigger stage.</p>
+
+  <div class="stat-cards">
+    <div class="stat-card"><div class="stat-num">$0</div><div class="stat-label">Legal fees if the plan worked</div></div>
+    <div class="stat-card"><div class="stat-num">$1M</div><div class="stat-label">Prize offered (no takers)</div></div>
+    <div class="stat-card"><div class="stat-num">0</div><div class="stat-label">Cases argued in court</div></div>
+    <div class="stat-card"><div class="stat-num">Feb 2023</div><div class="stat-label">When it didn't happen</div></div>
+  </div>
+</section>
+
+<section class="section" id="plan">
+  <h2><span class="num">02 — The Plan</span>An AI Whispering in Your Ear</h2>
+  <p>In January 2023, Browder announced DoNotPay's most audacious experiment: a volunteer defendant with a real speeding ticket case would wear wireless earbuds in court. An AI would listen to the hearing through the phone's microphone, process the judge's questions and the prosecution's arguments in real time, and feed legal arguments into the defendant's ear. The defendant would repeat these arguments to the judge.</p>
+  <p>The case was scheduled in California in February 2023. Browder said he had a willing participant. He announced it publicly. Legal Twitter noticed immediately.</p>
+
+  <div class="legal-notice">
+    <div class="ln-header">⚠ Notice — State Bar Warning</div>
+    <div class="ln-row"><span class="ln-label">Jurisdiction:</span><span class="ln-value">California / New York</span></div>
+    <div class="ln-row"><span class="ln-label">Subject:</span><span class="ln-value">AI-assisted court argument via earpiece</span></div>
+    <div class="ln-row"><span class="ln-label">Legal classification:</span><span class="ln-value danger">Unauthorized Practice of Law</span></div>
+    <div class="ln-row"><span class="ln-label">Potential charge:</span><span class="ln-value danger">Criminal prosecution; felony in some states</span></div>
+    <div class="ln-row"><span class="ln-label">Recipients:</span><span class="ln-value">Joshua Browder; defendant participant</span></div>
+    <div class="ln-row"><span class="ln-label">Bar position:</span><span class="ln-value">This constitutes practicing law without a license</span></div>
+  </div>
+</section>
+
+<section class="section" id="threat">
+  <h2><span class="num">03 — The Threat</span>The Bar Responds</h2>
+  <p>Within days of Browder's announcement, state bars in California and New York had taken notice. Legal scholars, practicing attorneys, and bar association officials began pointing out the problem: what Browder was describing — an AI system providing real-time legal strategy and argument to a person in active court proceedings — was, by any reasonable definition, the practice of law.</p>
+  <p>In most US states, practicing law without a license is a criminal offense. In California and other states, it can constitute a felony. The bar associations communicated to Browder that both he and the defendant volunteer could face criminal prosecution if the earpiece experiment went forward.</p>
+
+  <div class="pull-quote">
+    "Too many people were warning me about the risks. After talking to multiple lawyers, I've decided it's not worth it."
+    <cite>— Joshua Browder, canceling the experiment, January 2023</cite>
+  </div>
+
+  <p>The speeding ticket case was scheduled. The volunteer was ready. The AI was ready. The earbuds were probably charged. And then Browder pulled the plug.</p>
+</section>
+
+<section class="section" id="pivot">
+  <h2><span class="num">04 — The Pivot</span>$1,000,000 and No Takers</h2>
+  <p>Rather than go quietly, Browder made one more move. He announced a challenge: DoNotPay would pay <strong>$1,000,000</strong> to any licensed attorney willing to argue a case before the United States Supreme Court using DoNotPay's AI system through an earpiece.</p>
+
+  <div class="million-card">
+    <div class="million-amount">$1,000,000</div>
+    <div class="million-title">The DoNotPay Supreme Court Challenge</div>
+    <div class="million-terms">"We will pay one million dollars to any lawyer willing to argue a case before the US Supreme Court using our AI through an earpiece in real time."</div>
+    <div class="million-status">No takers</div>
+  </div>
+
+  <p>No lawyer took him up on it. The reasons are obvious: arguing before the Supreme Court using untested AI fed through an earpiece, potentially in violation of court rules and professional conduct obligations, is not a risk most attorneys would take for any amount of money. The challenge was more performance than offer.</p>
+</section>
+
+<section class="section" id="question">
+  <h2><span class="num">05 — The Bigger Question</span>What Is Practicing Law?</h2>
+  <p>The episode raised a question the legal profession had been quietly dreading: <strong>what is the practice of law in the age of AI?</strong> Legal research, brief writing, document drafting — AI was already doing these things at scale. DoNotPay and its competitors were helping millions of people with legal tasks that had previously required attorneys.</p>
+  <p>The line between "legal information" and "legal advice" had always been blurry. A website telling you "here's how to contest a parking ticket" is providing legal information. An AI listening to your court case and telling you what to say is providing legal advice — and arguably doing so in a way that looks, sounds, and functions exactly like having a lawyer.</p>
+  <p>Browder's earpiece had tried to cross that line in the most visible, provable, and public way possible. The bar associations weren't going to let that happen in open court. The question of where the line actually sits remains deeply unresolved.</p>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-date">Jan 2023</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Browder announces the earpiece experiment</div>
+        <div class="tl-text">Real defendant, real speeding ticket, real California court. AI to feed arguments via wireless earbuds in real time.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Jan–Feb 2023</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">State bars threaten prosecution</div>
+        <div class="tl-text">California and New York bar associations warn Browder the experiment constitutes unauthorized practice of law — potentially felony charges.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Feb 2023</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Browder cancels</div>
+        <div class="tl-text">"It's not worth the risk." The speeding ticket case goes unargued. The earbuds go back in the drawer.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Feb 2023</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">$1M Supreme Court challenge announced</div>
+        <div class="tl-text">No lawyers respond. The challenge expires quietly.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">2023</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">DoNotPay walks back "robot lawyer" claims</div>
+        <div class="tl-text">Following scrutiny about its track record and capabilities, DoNotPay quietly pivots away from the "robot lawyer" branding.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="legacy">
+  <h2><span class="num">06 — Legacy</span>The Question It Left Behind</h2>
+  <p>The robot lawyer never argued its case. The traffic ticket got paid the normal way. But the question Browder's stunt forced into the open — who gets to provide legal help, and at what cost, and on whose terms — is still being argued today in courts, bar associations, law school journals, and legislative hearings.</p>
+  <p>If an AI can write a better legal brief than most attorneys, at a fraction of the cost, who benefits? The 80% of Americans who can't afford a lawyer, or the legal profession that's structured around making legal help expensive? The robot lawyer blinked. The question didn't.</p>
+</section>
+
+  </div>
+</StoryLayout>
