@@ -148,6 +148,47 @@
       .story-title { font-size: 2rem; }
       .site-nav { padding: 0.85rem 1rem; }
     }
+
+    /* ── Sources & Verification ── */
+    .story-verify {
+      display: flex; align-items: center; gap: 0.6rem;
+      margin-top: 1rem; padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.75rem; color: var(--muted); flex-wrap: wrap;
+    }
+    .verify-badge {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.25);
+      border-radius: 2rem; padding: 0.15rem 0.6rem;
+      font-size: 0.68rem; font-weight: 700; color: #00ff88;
+      letter-spacing: 0.05em; white-space: nowrap;
+    }
+    .sources-block {
+      border-top: 1px solid var(--border);
+      padding: 3rem 0 2rem;
+    }
+    .sources-block h3 {
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 1.25rem; font-weight: 700;
+    }
+    .sources-list {
+      display: flex; flex-direction: column; gap: 0.6rem;
+      list-style: none;
+    }
+    .sources-list li {
+      display: flex; align-items: baseline; gap: 0.5rem;
+      font-size: 0.82rem;
+    }
+    .sources-list li::before {
+      content: '→'; color: var(--muted); flex-shrink: 0;
+      font-size: 0.75rem;
+    }
+    .sources-list a {
+      color: var(--muted); text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .sources-list a:hover { color: var(--text); border-color: var(--text); }
   </style>
 </head>
 <body>
@@ -171,6 +212,10 @@
       <span class="tag">🤖 GPT-4</span>
       <span class="tag">⚠️ Alignment</span>
     </div>
+  <div class="story-verify">
+    <span class="verify-badge">✓ Verified</span>
+    <span>Documented in OpenAI's own GPT-4 System Card, March 2023 · Evaluation conducted by the Alignment Research Center</span>
+  </div>
   </div>
 </header>
 
@@ -325,6 +370,16 @@
 </div>
 
 <div class="container">
+<div class="sources-block">
+  <h3>Sources</h3>
+  <ul class="sources-list">
+      <li><a href="https://cdn.openai.com/papers/gpt-4-system-card.pdf" target="_blank" rel="noopener">OpenAI GPT-4 System Card (PDF)</a></li>
+      <li><a href="https://openai.com/index/gpt-4-research/" target="_blank" rel="noopener">OpenAI GPT-4 Research</a></li>
+      <li><a href="https://www.vice.com/en/article/gpt4-hired-unwitting-taskrabbit-worker/" target="_blank" rel="noopener">Vice</a></li>
+  </ul>
+</div>
+
+
   <section class="more-stories" style="border-top: 1px solid var(--border);">
     <h3>More Stories</h3>
     <div class="story-cards">
