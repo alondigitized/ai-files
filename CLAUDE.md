@@ -6,17 +6,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **The AI Files** is a static site built with **Astro v5** documenting true stories from the age of AI — incidents, blunders, and landmark moments.
 
-The site was migrated from plain HTML to Astro. The original HTML source files are preserved in `stories/` and `index.html` for reference but the Astro source in `src/` is the canonical version.
-
 ## Structure
 
 ```
 src/
   layouts/
-    BaseLayout.astro      ← Sets <head>, CSS custom properties (--story, --story-dark) per story
+    BaseLayout.astro      ← Sets <head>, meta tags, JSON-LD slot, CSS custom properties
     StoryLayout.astro     ← Renders nav, hero, sources, more-stories, footer from story metadata
   pages/
     index.astro           ← Archive landing page (featured story + card grid)
+    feed.xml.ts           ← RSS 2.0 feed (sorted by isoDate, newest first)
     stories/
       *.astro             ← One file per story (22 total)
   styles/
@@ -24,8 +23,10 @@ src/
   data/
     stories.json          ← Metadata for all 22 stories
 
-stories/                  ← Original HTML source files (reference only)
-index.html                ← Original HTML landing page (reference only)
+public/
+  favicon.svg
+  robots.txt              ← Explicit AI crawler permissions
+  llms.txt                ← GEO manifest for AI citation systems
 ```
 
 ## Astro Story Page Pattern
@@ -55,7 +56,7 @@ const story = stories.find(s => s.slug === 'my-story-slug')!;
 </StoryLayout>
 ```
 
-**StoryLayout** auto-generates: nav, hero (chapter, title, deck, byline, verify badge), sources block, more-stories grid, and footer — all from `story` metadata.
+**StoryLayout** auto-generates: nav, hero (chapter, title, deck, byline, verify badge), sources block, more-stories grid, and footer — all from `story` metadata. Related stories are picked automatically: same-volume stories first, then others, capped at 4.
 
 ## stories.json Schema
 
@@ -64,12 +65,13 @@ Each entry in `src/data/stories.json`:
 ```json
 {
   "slug": "my-story",           // matches filename and URL
-  "chapter": 1,
-  "volume": "I",
+  "chapter": 1,                 // integer, used for ordering and display
+  "volume": 1,                  // integer (1, 2, or 3)
   "title": "Story Title",
   "deck": "One-sentence summary shown in hero and cards",
-  "date": "2023",
-  "readTime": "5 min read",
+  "date": "January 2024",       // human-readable display date
+  "isoDate": "2024-01-19",      // ISO 8601 — used for Article schema datePublished and RSS
+  "readTime": "5 min",
   "emoji": "🤖",
   "tags": ["Tag One", "Tag Two"],
   "story": "#hex",              // per-story accent color (--story)
@@ -77,14 +79,23 @@ Each entry in `src/data/stories.json`:
   "verifyText": "Source note shown in hero verify badge",
   "sources": [
     { "label": "Link Label", "url": "https://..." }
-  ],
-  "moreStories": ["slug-1", "slug-2", "slug-3", "slug-4"]
+  ]
 }
 ```
 
+## SEO / GEO Infrastructure
+
+- **BaseLayout.astro** — renders full `<head>`: description, canonical, Open Graph, Twitter Card, `article:*` metadata, RSS `<link rel="alternate">`, and a named `jsonld` slot for structured data injection
+- **StoryLayout.astro** — injects `Article` + `BreadcrumbList` JSON-LD via `<script slot="jsonld">` into BaseLayout's `<head>`
+- **index.astro** — injects `WebSite` + `ItemList` JSON-LD covering all 22 stories
+- **sitemap** — auto-generated at build time by `@astrojs/sitemap` (`sitemap-index.xml` + `sitemap-0.xml`); story pages get priority 0.9, index gets 1.0
+- **robots.txt** — `Allow: /` for all bots; explicit named permissions for 15 AI crawlers (GPTBot, ClaudeBot, PerplexityBot, etc.)
+- **llms.txt** — plain-text GEO manifest listing all 22 stories with titles, summaries, and links for AI citation systems
+- **feed.xml** — RSS 2.0 feed generated from `stories.json`, sorted newest-first
+
 ## Design System (CSS Custom Properties)
 
-Defined in `BaseLayout.astro` `:root`:
+Defined in `global.css` `:root`:
 
 | Variable | Value | Use |
 |----------|-------|-----|
@@ -151,10 +162,10 @@ These classes appear per-story in `<style is:global>` blocks (not in global.css)
 
 ## Adding a New Story
 
-1. Add entry to `src/data/stories.json` with all required fields
+1. Add entry to `src/data/stories.json` with all required fields including `isoDate`
 2. Create `src/pages/stories/[slug].astro` using the pattern above
-3. Add the slug to `moreStories` arrays of related stories in stories.json
-4. Update `src/pages/index.astro` to include the new story card
+3. Add the story card to `src/pages/index.astro`
+4. Run `python3 qa.py` before deploying
 
 ## Development
 
@@ -162,8 +173,9 @@ These classes appear per-story in `<style is:global>` blocks (not in global.css)
 npm run dev      # Start dev server at localhost:4321
 npm run build    # Build to dist/
 npm run preview  # Preview production build
+python3 qa.py    # Run QA checks before deploying
 ```
 
 ## Deployment
 
-The site deploys from the `dist/` output of `astro build`. The original HTML files in `stories/` and `index.html` are no longer the deployed artifacts.
+Deployed to **Vercel** via git push. `astro build` generates `dist/` including the sitemap, RSS feed, robots.txt, and llms.txt. No manual build step needed — Vercel runs the build automatically.
