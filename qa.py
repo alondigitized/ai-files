@@ -16,7 +16,7 @@ LAYOUT_BASE  = os.path.join(ROOT, 'src', 'layouts', 'BaseLayout.astro')
 REQUIRED_STORY_FIELDS = [
     'slug', 'chapter', 'volume', 'title', 'deck',
     'date', 'readTime', 'emoji', 'tags',
-    'story', 'storyDark', 'verifyText', 'sources',
+    'story', 'storyDark', 'verifyText', 'sources', 'whatIf',
 ]
 
 REQUIRED_IN_INDEX = [
