@@ -1,0 +1,274 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'waymo-blackout')!;
+---
+
+<style is:global>
+  .blackout-timeline {
+    margin: 2rem 0;
+    position: relative;
+    padding-left: 1.5rem;
+    border-left: 2px solid rgba(250,204,21,0.25);
+  }
+  .bt-item {
+    position: relative;
+    margin-bottom: 2rem;
+    padding-left: 1.25rem;
+  }
+  .bt-item::before {
+    content: '';
+    position: absolute;
+    left: -1.875rem;
+    top: 0.45rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--story);
+    box-shadow: 0 0 8px rgba(250,204,21,0.5);
+  }
+  .bt-time {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--story);
+    margin-bottom: 0.3rem;
+    font-weight: 700;
+  }
+  .bt-event { font-size: 0.92rem; color: var(--text); line-height: 1.5; }
+  .bt-detail { font-size: 0.82rem; color: var(--muted); margin-top: 0.25rem; }
+
+  .confirmation-box {
+    background: #0d0d00;
+    border: 1px solid rgba(250,204,21,0.2);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    margin: 2rem 0;
+    font-family: 'Courier New', monospace;
+  }
+  .cb-header {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--story);
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(250,204,21,0.15);
+    padding-bottom: 0.75rem;
+  }
+  .cb-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.85rem;
+  }
+  .cb-label { color: var(--muted); }
+  .cb-value { color: var(--text); font-weight: 600; }
+  .cb-value.warning { color: var(--story); }
+  .cb-value.critical { color: var(--accent); }
+  .cb-value.ok { color: var(--green); }
+
+  .expert-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--story);
+    border-radius: 0 0.5rem 0.5rem 0;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+  .expert-quote { font-size: 0.95rem; line-height: 1.65; color: var(--text); font-style: italic; }
+  .expert-source { font-size: 0.75rem; color: var(--muted); margin-top: 0.75rem; }
+
+  .pattern-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  .pattern-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+  }
+  .pattern-date {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+  .pattern-title { font-size: 0.9rem; font-weight: 600; color: var(--text); margin-bottom: 0.4rem; }
+  .pattern-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+
+  @media (max-width: 600px) {
+    .pattern-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+<section class="section" id="blackout">
+  <h2><span class="num">01 — The Blackout</span>Saturday, 2:30 PM</h2>
+  <p>It started with a fire. At 2:30 p.m. on Saturday, December 20, 2025, a blaze broke out at a PG&E electrical substation in San Francisco. Within minutes, signal lights began going dark across the city. By the time the outage peaked, nearly <strong>130,000 homes and businesses</strong> had lost power — one of the largest blackouts in the city's recent history.</p>
+  <p>For most of San Francisco, this was an inconvenience. For Waymo's fleet of robotaxis, it was the scenario their software had been explicitly designed to handle. Autonomous vehicles are supposed to treat a non-functioning traffic signal as a four-way stop: proceed carefully, yield appropriately, keep moving. Waymo had trained for this. Their engineers had written code for this.</p>
+  <p>Then the lights went out, and the cars stopped.</p>
+
+  <div class="blackout-timeline">
+    <div class="bt-item">
+      <div class="bt-time">2:30 PM</div>
+      <div class="bt-event">PG&E substation fire knocks out power across San Francisco</div>
+      <div class="bt-detail">130,000 customers affected at peak. Signal lights go dark citywide.</div>
+    </div>
+    <div class="bt-item">
+      <div class="bt-time">~2:35 PM</div>
+      <div class="bt-event">First 311 complaint: immobile Waymo at Divisadero St & Geary Blvd</div>
+      <div class="bt-detail">Traffic light at the intersection has gone dark. The robotaxi won't move.</div>
+    </div>
+    <div class="bt-item">
+      <div class="bt-time">4:30 – 10:00 PM</div>
+      <div class="bt-event">20 separate 311 complaints about Waymos blocking traffic</div>
+      <div class="bt-detail">Locations match PG&E's outage map. Hazard lights blinking across the city.</div>
+    </div>
+    <div class="bt-item">
+      <div class="bt-time">7:21 PM</div>
+      <div class="bt-event">Waymo suspends all service in San Francisco</div>
+      <div class="bt-detail">Fleet pulled from operation as congestion continues.</div>
+    </div>
+    <div class="bt-item">
+      <div class="bt-time">Sunday afternoon</div>
+      <div class="bt-event">Service resumes once power is largely restored</div>
+      <div class="bt-detail">No injuries reported. Waymo begins internal review.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="freeze">
+  <h2><span class="num">02 — The Freeze</span>Hazard Lights in the Dark</h2>
+  <p>Videos circulated on social media within the hour. In North Beach, at least four Waymo vehicles sat in the middle of an intersection, hazard lights blinking in the dark, completely stationary. A queue of human-driven cars waited behind them. Nobody could get through. Nobody came to move the Waymos. They just sat there, amber lights pulsing, waiting.</p>
+  <p>At Divisadero and Geary — the location of the first 311 call — the situation was the same. The light overhead was dark. The car below it wasn't moving. The signal map of 311 complaints that evening mirrored PG&E's outage map almost exactly: wherever the power went out, the Waymos stopped.</p>
+
+  <div class="stat-cards">
+    <div class="stat-card">
+      <div class="stat-num">130,000</div>
+      <div class="stat-label">Customers affected by the blackout</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">20</div>
+      <div class="stat-label">311 complaints about blocked Waymos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">7,000+</div>
+      <div class="stat-label">Dark signals the fleet successfully navigated</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">~5 hrs</div>
+      <div class="stat-label">From first freeze to service suspension</div>
+    </div>
+  </div>
+
+  <p>That last number is important. Waymo's cars handled more than 7,000 darkened signals that day without incident. The vast majority of the fleet did exactly what it was designed to do. The problem wasn't that the cars couldn't handle dark signals. The problem was what happened when too many of them were uncertain at the same time.</p>
+</section>
+
+<section class="section" id="queue">
+  <h2><span class="num">03 — The Confirmation Check</span>A Queue That Couldn't Keep Up</h2>
+  <p>Waymo's vehicles don't operate entirely alone. When a robotaxi encounters a situation it's uncertain about — an unusual obstruction, an ambiguous signal, an edge case the software hasn't confidently resolved — it can ping Waymo's remote fleet response team and request a <strong>confirmation check</strong>: a human operator who reviews what the car is seeing and approves the next action.</p>
+  <p>In normal operation, this is a safety feature. It's the human-in-the-loop that autonomous vehicle companies use to handle edge cases at scale. One or two cars requesting confirmation at any given moment is manageable. What happened on December 20 was not one or two cars.</p>
+
+  <div class="confirmation-box">
+    <div class="cb-header">Fleet Response System — December 20, 2025</div>
+    <div class="cb-row">
+      <span class="cb-label">Normal daily confirmation requests</span>
+      <span class="cb-value ok">Manageable</span>
+    </div>
+    <div class="cb-row">
+      <span class="cb-label">Dark signals encountered by fleet</span>
+      <span class="cb-value">7,000+</span>
+    </div>
+    <div class="cb-row">
+      <span class="cb-label">Simultaneous confirmation requests</span>
+      <span class="cb-value warning">Unprecedented spike</span>
+    </div>
+    <div class="cb-row">
+      <span class="cb-label">Human operator capacity</span>
+      <span class="cb-value critical">Overwhelmed</span>
+    </div>
+    <div class="cb-row">
+      <span class="cb-label">Vehicles waiting for approval</span>
+      <span class="cb-value critical">Blocking intersections</span>
+    </div>
+    <div class="cb-row">
+      <span class="cb-label">Result</span>
+      <span class="cb-value critical">Cars waited. Traffic backed up. Service suspended.</span>
+    </div>
+  </div>
+
+  <p>Waymo later explained it this way: the scale of the outage created a "concentrated spike" in confirmation requests that the assistance pipeline couldn't absorb. Thousands of vehicles, each uncertain about a darkened intersection at the same moment, each individually doing the right thing by asking for help — collectively overwhelmed the system that was supposed to help them.</p>
+  <p>The cars weren't broken. The code wasn't wrong. The architecture had a ceiling, and the blackout hit it all at once.</p>
+</section>
+
+<section class="section" id="experts">
+  <h2><span class="num">04 — The Diagnosis</span>Not a Bug. A System.</h2>
+  <p>By the following morning, industry experts were weighing in. The verdict was pointed.</p>
+
+  <div class="expert-card">
+    <div class="expert-quote">"This looks less like a software flaw and more like an operational management failure. The vehicles did what they were designed to do. The operations center behind them couldn't handle the load."</div>
+    <div class="expert-source">— Industry expert analysis, reported by Fortune, December 22, 2025</div>
+  </div>
+
+  <p>The distinction matters. A software bug can be patched. An operational management failure is a systems design problem — a gap between what the technology can do autonomously and what it needs humans to backstop. Waymo had built a fleet that worked, mostly, on its own. When it didn't, it leaned on a human infrastructure that was sized for normal conditions, not citywide emergencies.</p>
+  <p>A power outage isn't a fringe scenario for a city like San Francisco. Earthquakes, fires, floods, storms — infrastructure failures are part of the operating environment. The SFMTA and city officials had been raising concerns about exactly this kind of resilience for years.</p>
+  <p>The Mercury News posed the question directly: <em>What happens in the next emergency — an earthquake?</em></p>
+</section>
+
+<section class="section" id="pattern">
+  <h2><span class="num">05 — The Pattern</span>This Wasn't the First Time</h2>
+  <p>The blackout incident didn't arrive in a vacuum. Waymo's San Francisco rollout had been generating friction with city officials and emergency services since it began commercial operations in 2023.</p>
+
+  <div class="pattern-grid">
+    <div class="pattern-item">
+      <div class="pattern-date">Early 2023</div>
+      <div class="pattern-title">92 robotaxi obstruction incidents</div>
+      <div class="pattern-desc">SF transit officials documented 92 cases of Waymo and Cruise vehicles blocking travelers and emergency responders before regulators approved commercial expansion.</div>
+    </div>
+    <div class="pattern-item">
+      <div class="pattern-date">2023–2024</div>
+      <div class="pattern-title">Fire trucks and police blocked</div>
+      <div class="pattern-desc">Multiple incidents of Waymo vehicles freezing in traffic and blocking fire trucks and police responding to emergency scenes.</div>
+    </div>
+    <div class="pattern-item">
+      <div class="pattern-date">May 2024</div>
+      <div class="pattern-title">NHTSA opens federal investigation</div>
+      <div class="pattern-desc">The National Highway Traffic Safety Administration opened a probe into 22 incidents involving 17 collisions across an estimated 444 Waymo vehicles. Vehicles had driven in opposing lanes, entered construction zones, and struck parked cars and gates.</div>
+    </div>
+    <div class="pattern-item">
+      <div class="pattern-date">May 2024</div>
+      <div class="pattern-title">Recall of 1,212 vehicles</div>
+      <div class="pattern-desc">Waymo recalled over 1,200 robotaxis with a software update to improve detection and avoidance of roadway barriers. The NHTSA investigation was subsequently closed.</div>
+    </div>
+  </div>
+
+  <p>Each incident, taken alone, was explainable. Software edge cases, unexpected environments, the inevitable friction of deploying new technology at scale. Together, they described a technology that was genuinely impressive — and genuinely not finished.</p>
+</section>
+
+<section class="section" id="reckoning">
+  <h2><span class="num">06 — The Reckoning</span>Fleet Updates and Unanswered Questions</h2>
+  <p>Four days after the blackout, Waymo published a blog post. They announced fleet-wide updates: vehicles would receive "more context about regional outages," emergency response protocols would be improved, and the company would coordinate more closely with Mayor Lurie's office on emergency preparedness. They acknowledged that 7,000-plus dark signals had been handled successfully, and they acknowledged that some had not.</p>
+  <p>They did not say how many cars had frozen in place. When a California Public Utilities Commission judge asked that question directly at a January 2026 hearing, Waymo's representative said the number was a <strong>trade secret</strong>.</p>
+
+  <div class="pull-quote">
+    "Providing the number of stalled vehicles, when combined with publicly available information, would reveal trade secrets about the fleet and its deployment."
+    <cite>— Waymo representative Jack Stoddard, CPUC hearing, January 2026</cite>
+  </div>
+
+  <p>The CPUC indicated it would rule on whether the figure constituted a trade secret. The ruling hadn't come by the time this story was published.</p>
+  <p>What the blackout revealed wasn't that Waymo's cars had failed. Most of them hadn't. It revealed something more structural: that a fully autonomous fleet, operating at scale in a city with real infrastructure fragility, depends on a human support system that can be overwhelmed. The autonomy isn't complete. It's a dial, not a switch. And when the city went dark, the dial got turned past what the support system could handle.</p>
+  <p>The cars kept their hazard lights on. They were doing exactly what they were supposed to do when stopped unexpectedly. They were asking for help.</p>
+  <p>There just weren't enough people to answer.</p>
+</section>
+
+  </div>
+</StoryLayout>
