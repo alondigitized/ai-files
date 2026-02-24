@@ -2,7 +2,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
 // Update this to your production domain
-const SITE = 'https://theaifiles.com';
+const SITE = 'https://theaifiles.app';
 
 export default defineConfig({
   site: SITE,
