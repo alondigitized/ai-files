@@ -17,11 +17,11 @@ src/
     index.astro           ← Archive landing page (featured story + card grid)
     feed.xml.ts           ← RSS 2.0 feed (sorted by isoDate, newest first)
     stories/
-      *.astro             ← One file per story (22 total)
+      *.astro             ← One file per story (23 total)
   styles/
     global.css            ← Shared component styles
   data/
-    stories.json          ← Metadata for all 22 stories
+    stories.json          ← Metadata for all 23 stories
 
 public/
   favicon.svg
@@ -87,11 +87,12 @@ Each entry in `src/data/stories.json`:
 
 - **BaseLayout.astro** — renders full `<head>`: description, canonical, Open Graph, Twitter Card, `article:*` metadata, RSS `<link rel="alternate">`, and a named `jsonld` slot for structured data injection
 - **StoryLayout.astro** — injects `Article` + `BreadcrumbList` JSON-LD via `<script slot="jsonld">` into BaseLayout's `<head>`
-- **index.astro** — injects `WebSite` + `ItemList` JSON-LD covering all 22 stories
+- **index.astro** — injects `WebSite` + `ItemList` JSON-LD covering all 23 stories
 - **sitemap** — auto-generated at build time by `@astrojs/sitemap` (`sitemap-index.xml` + `sitemap-0.xml`); story pages get priority 0.9, index gets 1.0
 - **robots.txt** — `Allow: /` for all bots; explicit named permissions for 15 AI crawlers (GPTBot, ClaudeBot, PerplexityBot, etc.)
-- **llms.txt** — plain-text GEO manifest listing all 22 stories with titles, summaries, and links for AI citation systems
+- **llms.txt** — plain-text GEO manifest listing all 23 stories with titles, summaries, and links for AI citation systems
 - **feed.xml** — RSS 2.0 feed generated from `stories.json`, sorted newest-first
+- **Production domain**: `https://theaifiles.app` — set in `astro.config.mjs` as `SITE`; all canonical URLs, sitemap, RSS, and fallback URLs use this
 
 ## Design System (CSS Custom Properties)
 
@@ -159,13 +160,19 @@ These classes appear per-story in `<style is:global>` blocks (not in global.css)
 | sydney | `#e879f9` |
 | ai-self-preservation | `#00ff88` |
 | grandma-exploit | `#ff4d4d` |
+| waymo-blackout | `#facc15` |
 
 ## Adding a New Story
 
 1. Add entry to `src/data/stories.json` with all required fields including `isoDate`
 2. Create `src/pages/stories/[slug].astro` using the pattern above
-3. Add the story card to `src/pages/index.astro`
-4. Run `python3 qa.py` before deploying
+3. In `src/pages/index.astro`:
+   - Add the story card to the correct volume section
+   - Update chapter range in the vol-section header (e.g. `Chapters 17 – 23`)
+   - Update the story count in the masthead pill, nav issue label, about paragraph, and footer
+   - Remove the story from "Coming Next" if it was teased there
+4. Update `public/llms.txt` to add the new story to the manifest
+5. Run `python3 qa.py` before deploying
 
 ## Development
 
