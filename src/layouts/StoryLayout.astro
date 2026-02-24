@@ -7,11 +7,6 @@ interface Source {
   url: string;
 }
 
-interface WhatIf {
-  scale: string;
-  stakes: string;
-}
-
 interface Story {
   slug: string;
   chapter: number;
@@ -27,7 +22,7 @@ interface Story {
   storyDark: string;
   verifyText: string;
   sources: Source[];
-  whatIf?: WhatIf;
+  whatIf?: string;
 }
 
 interface Props {
@@ -130,23 +125,8 @@ const related = [...sameVol, ...diffVol].slice(0, 4);
     {story.whatIf && (
       <div class="what-if-block">
         <div class="wi-inner">
-          <div class="wi-header">
-            <span class="wi-symbol">∞</span>
-            <div class="wi-heading">
-              <div class="wi-title">What If?</div>
-              <div class="wi-subtitle">A thought experiment</div>
-            </div>
-          </div>
-          <div class="wi-scenarios">
-            <div class="wi-scenario">
-              <div class="wi-scenario-label">Taken to Infinity</div>
-              <p class="wi-scenario-text">{story.whatIf.scale}</p>
-            </div>
-            <div class="wi-scenario">
-              <div class="wi-scenario-label">Lessons Unlearned</div>
-              <p class="wi-scenario-text">{story.whatIf.stakes}</p>
-            </div>
-          </div>
+          <div class="wi-label">∞ &nbsp; What If?</div>
+          <p class="wi-text">{story.whatIf}</p>
         </div>
       </div>
     )}
