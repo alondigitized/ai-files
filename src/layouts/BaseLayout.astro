@@ -74,6 +74,9 @@ const storyVars = story && storyDark
 
   <!-- JSON-LD slot — injected by child layouts -->
   <slot name="jsonld" />
+
+  <!-- Editor annotation mode (Hypothesis) — only loads when ?editor param present -->
+  <script>if(new URLSearchParams(window.location.search).has('editor')){var s=document.createElement('script');s.src='https://hypothes.is/embed.js';s.async=true;document.head.appendChild(s);}</script>
 </head>
 <body>
   <slot />

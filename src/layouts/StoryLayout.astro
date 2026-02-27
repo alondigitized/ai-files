@@ -131,6 +131,81 @@ const related = [...sameVol, ...diffVol].slice(0, 4);
       </div>
     )}
 
+    <div class="reactions-block" data-slug={story.slug}>
+      <div class="reactions-label">How did this land?</div>
+      <div class="reactions-row">
+        <button class="reaction-btn" data-reaction="thumbsUp" aria-label="Loved it">
+          <span class="reaction-emoji">👍</span>
+          <span class="reaction-count" data-field="thumbsUp">—</span>
+          <span class="reaction-name">Loved it</span>
+        </button>
+        <button class="reaction-btn" data-reaction="interesting" aria-label="Interesting">
+          <span class="reaction-emoji">🤔</span>
+          <span class="reaction-count" data-field="interesting">—</span>
+          <span class="reaction-name">Interesting</span>
+        </button>
+        <button class="reaction-btn" data-reaction="mindBlown" aria-label="Mind blown">
+          <span class="reaction-emoji">🤯</span>
+          <span class="reaction-count" data-field="mindBlown">—</span>
+          <span class="reaction-name">Mind blown</span>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const block = document.querySelector('.reactions-block');
+        if (!block) return;
+        const slug = block.dataset.slug;
+        const API = '/api/reactions';
+        const LS_KEY = `voted:${slug}`;
+
+        function updateCounts(counts) {
+          ['thumbsUp', 'interesting', 'mindBlown'].forEach(field => {
+            const el = block.querySelector(`.reaction-count[data-field="${field}"]`);
+            if (el) el.textContent = counts[field] ?? 0;
+          });
+        }
+        function lockVoted(reaction) {
+          block.querySelectorAll('.reaction-btn').forEach(btn => {
+            btn.disabled = true;
+            if (btn.dataset.reaction === reaction) btn.classList.add('voted');
+          });
+        }
+
+        // Load counts
+        fetch(`${API}?slug=${encodeURIComponent(slug)}`)
+          .then(r => r.ok ? r.json() : null)
+          .then(c => { if (c) updateCounts(c); })
+          .catch(() => {});
+
+        // Restore prior vote
+        const prior = localStorage.getItem(LS_KEY);
+        if (prior) lockVoted(prior);
+
+        // Vote handler
+        block.querySelectorAll('.reaction-btn').forEach(btn => {
+          btn.addEventListener('click', async function () {
+            if (localStorage.getItem(LS_KEY)) return;
+            const reaction = this.dataset.reaction;
+            const countEl = this.querySelector('.reaction-count');
+            const n = parseInt(countEl.textContent, 10);
+            if (!isNaN(n)) countEl.textContent = n + 1;
+            lockVoted(reaction);
+            localStorage.setItem(LS_KEY, reaction);
+            try {
+              const r = await fetch(API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ slug, reaction }),
+              });
+              if (r.ok) { const d = await r.json(); if (d.counts) updateCounts(d.counts); }
+            } catch (_) {}
+          });
+        });
+      })();
+    </script>
+
     <div class="sources-block">
       <h3>Sources</h3>
       <ul class="sources-list">
