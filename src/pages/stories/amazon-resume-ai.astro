@@ -40,6 +40,9 @@ const story = stories.find(s => s.slug === 'amazon-resume-ai')!;
   @media (max-width: 600px) {
     .resume-score { position: static; margin-top: 1rem; text-align: left; display: inline-block; }
   }
+
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .amazon-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
 </style>
 
 <StoryLayout story={story}>
@@ -57,6 +60,10 @@ const story = stories.find(s => s.slug === 'amazon-resume-ai')!;
     <div class="stat-card"><div class="stat-num">2018</div><div class="stat-label">Reuters exposes it</div></div>
   </div>
 </section>
+
+<div class="phantom-wrap">
+  <canvas class="amazon-canvas" aria-hidden="true"></canvas>
+</div>
 
 <section class="section" id="discovery">
   <h2><span class="num">02 — The Discovery</span>The Model Hated Women's Resumes</h2>
@@ -180,3 +187,227 @@ const story = stories.find(s => s.slug === 'amazon-resume-ai')!;
 
   </div>
 </StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.amazon-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  let W = 0, H = 0, animId = 0;
+
+  const PENALIZED_PHRASES = [
+    "women's chess team captain",
+    "Wellesley College, B.S. '14",
+    "Women in Technology Society",
+    "girls who code mentor",
+    "all-women's honor society",
+    "women's leadership program",
+  ];
+
+  const NEUTRAL_TERMS = [
+    "3+ years Python experience",
+    "B.S. Computer Science, MIT '16",
+    "AWS certified developer",
+    "React, Node.js, TypeScript",
+    "agile development methodology",
+    "Stanford University '15",
+    "software engineering intern",
+    "team leadership experience",
+    "GPA 3.9 / 4.0",
+    "open source contributor",
+    "Google summer internship",
+    "strong communication skills",
+    "deployed to production",
+    "3 years industry experience",
+    "excellent references available",
+    "executed on key deliverables",
+    "managed cross-functional team",
+    "captured 15% market share",
+    "data structures and algorithms",
+    "technical interview experience",
+    "distributed systems knowledge",
+  ];
+
+  function resize(): boolean {
+    const rect = canvas!.getBoundingClientRect();
+    const nW = Math.round(rect.width * devicePixelRatio);
+    const nH = Math.round(rect.height * devicePixelRatio);
+    if (nW === W && nH === H) return false;
+    W = nW; H = nH;
+    canvas!.width = W; canvas!.height = H;
+    return true;
+  }
+
+  class Ghost {
+    x = 0; y = 0; speed = 0; text = ''; fontSize = 0; alpha = 0;
+    constructor() { this.reset(true); }
+    reset(initial: boolean) {
+      this.x = Math.random() * W * 0.88;
+      this.y = initial ? Math.random() * H : -20;
+      this.speed = (0.18 + Math.random() * 0.28) * devicePixelRatio;
+      this.text = NEUTRAL_TERMS[Math.floor(Math.random() * NEUTRAL_TERMS.length)];
+      this.fontSize = (10 + Math.random() * 4) * devicePixelRatio;
+      this.alpha = 0.04 + Math.random() * 0.04;
+    }
+    update() {
+      this.y += this.speed;
+      if (this.y > H + 20) this.reset(false);
+    }
+    draw() {
+      ctx.save();
+      ctx.font = `${this.fontSize}px 'Courier New', monospace`;
+      ctx.fillStyle = `rgba(232,232,232,${this.alpha})`;
+      ctx.fillText(this.text, this.x, this.y);
+      ctx.restore();
+    }
+  }
+
+  type PState = 'waiting' | 'fadeIn' | 'hold' | 'flag' | 'fadeOut';
+
+  class Filtered {
+    x = 0; y = 0; speed = 0; fontSize = 0; alpha = 0;
+    state: PState = 'waiting';
+    flagProgress = 0;
+    delay = 0; delayCount = 0;
+    cr = 245; cg = 158; cb = 11; // colour channels, start amber
+
+    constructor(readonly name: string, readonly idx: number, readonly total: number) {
+      this.reset(true);
+    }
+
+    reset(initial: boolean) {
+      this.x = (0.04 + Math.random() * 0.28) * W;
+      this.speed = 0.6 * devicePixelRatio;
+      this.fontSize = 12 * devicePixelRatio;
+      this.flagProgress = 0;
+      this.delayCount = 0;
+      this.cr = 245; this.cg = 158; this.cb = 11;
+
+      if (initial) {
+        this.y = H * (0.05 + (this.idx / this.total) * 0.4);
+        this.alpha = 0.7 + Math.random() * 0.3;
+        this.state = 'hold';
+        this.delay = 0;
+      } else {
+        this.y = -30 * devicePixelRatio;
+        this.alpha = 0;
+        this.state = 'waiting';
+        this.delay = this.idx * 60 + Math.random() * 100;
+      }
+    }
+
+    update() {
+      if (this.state === 'waiting') {
+        this.delayCount++;
+        if (this.delayCount >= this.delay) this.state = 'fadeIn';
+        return;
+      }
+      this.y += this.speed;
+      const triggerY = H * 0.6;
+
+      if (this.state === 'fadeIn') {
+        this.alpha = Math.min(1, this.alpha + 0.025);
+        if (this.alpha >= 1) this.state = 'hold';
+      } else if (this.state === 'hold') {
+        if (this.y >= triggerY) this.state = 'flag';
+      } else if (this.state === 'flag') {
+        // Type in the annotation over ~50 frames; shift colour amber → red
+        this.flagProgress = Math.min(1, this.flagProgress + 1 / 50);
+        this.cr = Math.round(245 + (255 - 245) * this.flagProgress);
+        this.cg = Math.round(158 * (1 - this.flagProgress));
+        this.cb = Math.round(11 * (1 - this.flagProgress));
+        if (this.flagProgress >= 1) this.state = 'fadeOut';
+      } else if (this.state === 'fadeOut') {
+        this.alpha = Math.max(0, this.alpha - 0.012);
+        if (this.alpha <= 0) this.reset(false);
+      }
+
+      if (this.y > H + 60) this.reset(false);
+    }
+
+    draw() {
+      if (this.state === 'waiting') return;
+      ctx.save();
+      ctx.globalAlpha = this.alpha;
+
+      // Main phrase
+      ctx.font = `${this.fontSize}px 'Courier New', monospace`;
+      ctx.fillStyle = `rgb(${this.cr},${this.cg},${this.cb})`;
+      ctx.fillText(this.name, this.x, this.y);
+
+      // Annotation types in below the phrase
+      if (this.flagProgress > 0) {
+        const label = '\u2193 PENALIZED';
+        const visible = Math.ceil(label.length * this.flagProgress);
+        ctx.font = `bold ${this.fontSize * 0.8}px 'Courier New', monospace`;
+        ctx.fillStyle = '#ff4d4d';
+        ctx.fillText(label.slice(0, visible), this.x, this.y + this.fontSize * 1.5);
+      }
+
+      ctx.restore();
+    }
+  }
+
+  let ghosts: Ghost[] = [];
+  let particles: Filtered[] = [];
+
+  function initParticles() {
+    ghosts = Array.from({ length: 35 }, () => new Ghost());
+    particles = PENALIZED_PHRASES.map((n, i) => new Filtered(n, i, PENALIZED_PHRASES.length));
+  }
+
+  function drawScanLines() {
+    const spacing = 26 * devicePixelRatio;
+    ctx.strokeStyle = 'rgba(232,232,232,0.018)';
+    ctx.lineWidth = 1;
+    for (let y = 0; y < H; y += spacing) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+  }
+
+  function drawStaticFrame() {
+    ctx.clearRect(0, 0, W, H);
+    drawScanLines();
+    const fs = 12 * devicePixelRatio;
+    ctx.font = `${fs}px 'Courier New', monospace`;
+    PENALIZED_PHRASES.forEach((name, i) => {
+      const x = W * 0.06;
+      const y = H * (0.12 + i * (0.74 / (PENALIZED_PHRASES.length - 1)));
+      ctx.globalAlpha = 0.75;
+      ctx.fillStyle = '#ff4d4d';
+      ctx.fillText(name, x, y);
+      ctx.font = `bold ${fs * 0.8}px 'Courier New', monospace`;
+      ctx.fillText('\u2193 PENALIZED', x, y + fs * 1.5);
+      ctx.font = `${fs}px 'Courier New', monospace`;
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  function tick() {
+    ctx.clearRect(0, 0, W, H);
+    drawScanLines();
+    ghosts.forEach(g => { g.update(); g.draw(); });
+    particles.forEach(p => { p.update(); p.draw(); });
+    animId = requestAnimationFrame(tick);
+  }
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  resize();
+  const ro = new ResizeObserver(() => { if (resize()) initParticles(); });
+  ro.observe(canvas);
+  initParticles();
+
+  if (prefersReduced) {
+    drawStaticFrame();
+  } else {
+    tick();
+  }
+
+  window.addEventListener('unload', () => {
+    if (animId) cancelAnimationFrame(animId);
+    ro.disconnect();
+  });
+})();
+</script>

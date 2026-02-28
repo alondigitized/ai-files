@@ -197,6 +197,7 @@ Every story includes a **full-width canvas animation** placed at a dramatically 
 | Story | File | Concept |
 |-------|------|---------|
 | ai-lawyer | `ai-lawyer.astro` | **Phantom Dossier** — 6 gold fake case names drift up, get red-struck-through, dissolve |
+| amazon-resume-ai | `amazon-resume-ai.astro` | **The Filter** — neutral resume terms rain down; 6 amber penalized phrases shift red with `↓ PENALIZED` typing in beneath them |
 
 ### Adding a New Story
 
