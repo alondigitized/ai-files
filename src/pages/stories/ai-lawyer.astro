@@ -61,6 +61,9 @@ const story = stories.find(s => s.slug === 'ai-lawyer')!;
   .warn-icon { font-size: 1.4rem; flex-shrink: 0; }
   .warn-text { font-size: 0.88rem; color: #ff9999; }
   .warn-text strong { display: block; margin-bottom: 0.25rem; color: var(--accent); }
+
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .phantom-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
 </style>
 
 <StoryLayout story={story}>
@@ -87,6 +90,10 @@ const story = stories.find(s => s.slug === 'ai-lawyer')!;
     </div>
   </div>
 </section>
+
+<div class="phantom-wrap">
+  <canvas class="phantom-canvas" aria-hidden="true"></canvas>
+</div>
 
 <section class="section" id="document">
   <h2><span class="num">02 — The Brief</span>Filed with the Court</h2>
@@ -228,3 +235,206 @@ const story = stories.find(s => s.slug === 'ai-lawyer')!;
 
   </div>
 </StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.phantom-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  let W = 0, H = 0, animId = 0;
+
+  const PHANTOM_NAMES = [
+    'Varghese v. China Southern Airlines',
+    'Shaboon v. EgyptAir',
+    'Petersen v. Iran Air',
+    'Martinez v. Delta Air Lines, Inc.',
+    'Estate of Durden v. KLM Royal Dutch Airlines',
+    'Zicherman v. Korean Air Lines',
+  ];
+
+  const GHOST_FRAGS = [
+    '28 U.S.C. § 1332(a)', 'Fed. R. Civ. P. 12(b)(6)', 'Montreal Convention Art. 17',
+    '49 U.S.C. § 40101', 'Warsaw Convention § 22', 'Fed. R. Evid. 702',
+    '28 U.S.C. § 1291', 'F.R.C.P. 56(a)', 'Daubert v. Merrell Dow',
+    'Twombly, 550 U.S. 544', 'Iqbal, 556 U.S. 662', '49 U.S.C. § 46301',
+    'IATA Resolution 724', '2d Cir. 2018', 'S.D.N.Y. 2020',
+    '(E.D. Pa. 1994)', 'WL 1234567', 'F.3d 221 (9th Cir.)',
+    'F.Supp.2d 445', 'No. 19 Civ. 4421', "aff'd, 876 F.3d",
+    'rev\'d on other grounds', 'cert. denied, 540 U.S.',
+  ];
+
+  function resize(): boolean {
+    const rect = canvas!.getBoundingClientRect();
+    const nW = Math.round(rect.width * devicePixelRatio);
+    const nH = Math.round(rect.height * devicePixelRatio);
+    if (nW === W && nH === H) return false;
+    W = nW; H = nH;
+    canvas!.width = W; canvas!.height = H;
+    return true;
+  }
+
+  class Ghost {
+    x = 0; y = 0; speed = 0; text = ''; fontSize = 0; alpha = 0;
+    constructor() { this.reset(true); }
+    reset(initial: boolean) {
+      this.x = Math.random() * W;
+      this.y = initial ? Math.random() * H : H + 20;
+      this.speed = (0.15 + Math.random() * 0.25) * devicePixelRatio;
+      this.text = GHOST_FRAGS[Math.floor(Math.random() * GHOST_FRAGS.length)];
+      this.fontSize = (11 + Math.random() * 4) * devicePixelRatio;
+      this.alpha = 0.04 + Math.random() * 0.04;
+    }
+    update() {
+      this.y -= this.speed;
+      if (this.y < -20) this.reset(false);
+    }
+    draw() {
+      ctx.save();
+      ctx.font = `${this.fontSize}px 'Courier New', monospace`;
+      ctx.fillStyle = `rgba(232,232,232,${this.alpha})`;
+      ctx.fillText(this.text, this.x, this.y);
+      ctx.restore();
+    }
+  }
+
+  type PState = 'waiting' | 'fadeIn' | 'hold' | 'strikethrough' | 'fadeOut';
+
+  class Phantom {
+    x = 0; y = 0; speed = 0; fontSize = 0; alpha = 0;
+    state: PState = 'waiting';
+    strikeProgress = 0; textWidth = 0;
+    delay = 0; delayCount = 0;
+    constructor(readonly name: string, readonly idx: number, readonly total: number) {
+      this.reset(true);
+    }
+    reset(initial: boolean) {
+      this.x = (0.1 + Math.random() * 0.6) * W;
+      this.speed = 0.25 * devicePixelRatio;
+      this.fontSize = 13 * devicePixelRatio;
+      this.strikeProgress = 0; this.textWidth = 0;
+      this.delayCount = 0;
+      if (initial) {
+        // Distribute from bottom (90%) to mid (32%) so none start above trigger
+        this.y = H * (0.9 - (this.idx / this.total) * 0.58);
+        this.alpha = 0.7 + Math.random() * 0.3;
+        this.state = 'hold';
+        this.delay = 0;
+      } else {
+        this.y = H + 30 * devicePixelRatio;
+        this.alpha = 0;
+        this.state = 'waiting';
+        this.delay = this.idx * 55 + Math.random() * 90;
+      }
+    }
+    update() {
+      if (this.state === 'waiting') {
+        this.delayCount++;
+        if (this.delayCount >= this.delay) this.state = 'fadeIn';
+        return;
+      }
+      this.y -= this.speed;
+      const triggerY = H * 0.3;
+      if (this.state === 'fadeIn') {
+        this.alpha = Math.min(1, this.alpha + 0.02);
+        if (this.alpha >= 1) this.state = 'hold';
+      } else if (this.state === 'hold') {
+        if (this.y <= triggerY) this.state = 'strikethrough';
+      } else if (this.state === 'strikethrough') {
+        this.strikeProgress = Math.min(1, this.strikeProgress + 1 / 60);
+        if (this.strikeProgress >= 1) this.state = 'fadeOut';
+      } else if (this.state === 'fadeOut') {
+        this.alpha = Math.max(0, this.alpha - 0.015);
+        if (this.alpha <= 0) this.reset(false);
+      }
+    }
+    draw() {
+      if (this.state === 'waiting') return;
+      ctx.save();
+      ctx.font = `${this.fontSize}px 'Courier New', monospace`;
+      if (!this.textWidth) this.textWidth = ctx.measureText(this.name).width;
+      ctx.globalAlpha = this.alpha;
+      ctx.fillStyle = '#c8a84b';
+      ctx.fillText(this.name, this.x, this.y);
+      if (this.strikeProgress > 0) {
+        const strikeY = this.y - this.fontSize * 0.35;
+        ctx.strokeStyle = '#ff4d4d';
+        ctx.lineWidth = 1.5 * devicePixelRatio;
+        ctx.beginPath();
+        ctx.moveTo(this.x, strikeY);
+        ctx.lineTo(this.x + this.textWidth * this.strikeProgress, strikeY);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+  }
+
+  let ghosts: Ghost[] = [];
+  let phantoms: Phantom[] = [];
+
+  function initParticles() {
+    ghosts = Array.from({ length: 40 }, () => new Ghost());
+    phantoms = PHANTOM_NAMES.map((n, i) => new Phantom(n, i, PHANTOM_NAMES.length));
+  }
+
+  function drawRuledLines() {
+    const spacing = 24 * devicePixelRatio;
+    ctx.strokeStyle = 'rgba(232,232,232,0.025)';
+    ctx.lineWidth = 1;
+    for (let y = spacing; y < H; y += spacing) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+  }
+
+  function drawStaticFrame() {
+    ctx.clearRect(0, 0, W, H);
+    drawRuledLines();
+    const fs = 13 * devicePixelRatio;
+    ctx.font = `${fs}px 'Courier New', monospace`;
+    PHANTOM_NAMES.forEach((name, i) => {
+      const x = W * 0.08;
+      const y = H * (0.18 + i * (0.66 / (PHANTOM_NAMES.length - 1)));
+      ctx.globalAlpha = 0.8;
+      ctx.fillStyle = '#c8a84b';
+      ctx.fillText(name, x, y);
+      const tw = ctx.measureText(name).width;
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = '#ff4d4d';
+      ctx.lineWidth = 1.5 * devicePixelRatio;
+      ctx.beginPath();
+      ctx.moveTo(x, y - fs * 0.35);
+      ctx.lineTo(x + tw, y - fs * 0.35);
+      ctx.stroke();
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  function tick() {
+    ctx.clearRect(0, 0, W, H);
+    drawRuledLines();
+    ghosts.forEach(g => { g.update(); g.draw(); });
+    phantoms.forEach(p => { p.update(); p.draw(); });
+    animId = requestAnimationFrame(tick);
+  }
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  resize();
+  const ro = new ResizeObserver(() => {
+    if (resize()) initParticles();
+  });
+  ro.observe(canvas);
+  initParticles();
+
+  if (prefersReduced) {
+    drawStaticFrame();
+  } else {
+    tick();
+  }
+
+  window.addEventListener('unload', () => {
+    if (animId) cancelAnimationFrame(animId);
+    ro.disconnect();
+  });
+})();
+</script>
