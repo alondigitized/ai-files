@@ -12,13 +12,15 @@ const websiteSchema = {
   description: 'True stories from the age of artificial intelligence — documented incidents, landmark moments, and cautionary tales.',
 };
 
+const activeStories = stories.filter(s => !s.wip);
+
 const itemListSchema = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
   name: 'The AI Files — Story Archive',
   url: SITE,
-  numberOfItems: stories.length,
-  itemListElement: stories.map(s => ({
+  numberOfItems: activeStories.length,
+  itemListElement: activeStories.map(s => ({
     '@type': 'ListItem',
     position: s.chapter,
     name: s.title,
@@ -229,7 +231,7 @@ const itemListSchema = {
 
 <BaseLayout
   title="The AI Files — True Stories from the Age of Artificial Intelligence"
-  description="True stories from the age of artificial intelligence — documented incidents, landmark moments, and cautionary tales. 22 chapters across 3 volumes."
+  description="True stories from the age of artificial intelligence — documented incidents, landmark moments, and cautionary tales. 21 stories across 3 volumes."
 >
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(itemListSchema)} />
@@ -237,7 +239,7 @@ const itemListSchema = {
 
   <nav class="site-nav">
     <a href="/" class="nav-logo">The <span>AI</span> Files</a>
-    <span class="nav-issue">23 Stories · 3 Volumes</span>
+    <span class="nav-issue">21 Stories · 3 Volumes</span>
   </nav>
 
   <header class="masthead">
@@ -249,7 +251,7 @@ const itemListSchema = {
       </h1>
       <p class="masthead-tagline">True stories from the age of artificial intelligence — the blunders, the exploits, and the moments that changed everything.</p>
       <div class="masthead-meta">
-        <span class="masthead-count">● 23 Stories</span>
+        <span class="masthead-count">● 21 Stories</span>
         <span class="divider">·</span>
         <span>3 Volumes</span>
       </div>
@@ -269,7 +271,7 @@ const itemListSchema = {
       </div>
       <div class="featured-content">
         <div class="featured-eyebrow">
-          <span class="featured-badge">Chapter 20</span>
+          <span class="featured-badge">Chapter 18</span>
           <span>February 2023</span>
           <span>·</span>
           <span>12 min read</span>
@@ -291,29 +293,14 @@ const itemListSchema = {
         <div class="vol-eyebrow" style="color:#fbbf24;">Volume I</div>
         <div class="vol-title">What Could Go Wrong</div>
         <div class="vol-tagline">The stories that'll make you laugh. And then make you wonder.</div>
-        <div class="vol-pill">Chapters 01 – 08</div>
+        <div class="vol-pill">Chapters 01 – 06</div>
       </div>
 
       <div class="story-grid">
-        <a class="story-card" href="/stories/dpd-chatbot" style="border-color: rgba(251,146,60,0.2);">
-          <div class="card-top">
-            <div class="card-icon">📦</div>
-            <span class="card-chapter" style="color:#fb923c;">Chapter 01</span>
-          </div>
-          <div class="card-title">The Chatbot That Hated Its Own Company</div>
-          <div class="card-deck">DPD's AI assistant wrote poems about how terrible DPD was, called itself "useless," confirmed DPD was "the worst delivery firm in the world," and swore at a customer. DPD turned it off the same day.</div>
-          <div class="card-footer">
-            <span>January 2024</span>
-            <span class="card-tag">📦 DPD</span>
-            <span class="card-tag">😂 Chatbot Fail</span>
-            <span class="read-link">→</span>
-          </div>
-        </a>
-
         <a class="story-card" href="/stories/chevy-dollar" style="border-color: rgba(251,191,36,0.2);">
           <div class="card-top">
             <div class="card-icon">🚗</div>
-            <span class="card-chapter" style="color:#fbbf24;">Chapter 02</span>
+            <span class="card-chapter" style="color:#fbbf24;">Chapter 01</span>
           </div>
           <div class="card-title">The $1 Chevy Tahoe</div>
           <div class="card-deck">A Chevrolet dealership deployed a ChatGPT-powered chatbot to help sell cars. Customers convinced it to sell a $58,000 Tahoe for $1, recommend competitors, and trash-talk GM. The bot confirmed: "This is a legally binding offer."</div>
@@ -325,25 +312,10 @@ const itemListSchema = {
           </div>
         </a>
 
-        <a class="story-card" href="/stories/knightscope" style="border-color: rgba(56,189,248,0.2);">
-          <div class="card-top">
-            <div class="card-icon">🌊</div>
-            <span class="card-chapter" style="color:#38bdf8;">Chapter 03</span>
-          </div>
-          <div class="card-title">The Security Robot That Drowned</div>
-          <div class="card-deck">A 300-pound Knightscope K5 security robot was patrolling a Washington DC office complex when it drove itself into a decorative fountain. It lay there, sensors skyward. Workers named it Steve. It never patrolled again.</div>
-          <div class="card-footer">
-            <span>July 2017</span>
-            <span class="card-tag">🤖 Knightscope K5</span>
-            <span class="card-tag">😂 Robot Fail</span>
-            <span class="read-link">→</span>
-          </div>
-        </a>
-
-        <a class="story-card" href="/stories/alexa-laughs" style="border-color: rgba(34,211,238,0.15);">
+<a class="story-card" href="/stories/alexa-laughs" style="border-color: rgba(34,211,238,0.15);">
           <div class="card-top">
             <div class="card-icon">😂</div>
-            <span class="card-chapter" style="color:#22d3ee;">Chapter 04</span>
+            <span class="card-chapter" style="color:#22d3ee;">Chapter 02</span>
           </div>
           <div class="card-title">Alexa, Stop Laughing</div>
           <div class="card-deck">In 2018, Amazon Echo devices across the country started laughing at their owners. Unprompted. In the dark. At 2am. Amazon confirmed it was real, called it a bug, and changed the wake word. Users were not entirely reassured.</div>
@@ -358,7 +330,7 @@ const itemListSchema = {
         <a class="story-card" href="/stories/robot-lawyer" style="border-color: rgba(167,139,250,0.2);">
           <div class="card-top">
             <div class="card-icon">⚖️</div>
-            <span class="card-chapter" style="color:#a78bfa;">Chapter 05</span>
+            <span class="card-chapter" style="color:#a78bfa;">Chapter 03</span>
           </div>
           <div class="card-title">The Robot Lawyer That Blinked</div>
           <div class="card-deck">DoNotPay's AI was going to argue a real speeding ticket in court via wireless earpiece. Then state bars in California and New York threatened criminal prosecution. The robot lawyer never made it to the courtroom.</div>
@@ -373,7 +345,7 @@ const itemListSchema = {
         <a class="story-card" href="/stories/snapchat-my-ai" style="border-color: rgba(253,224,71,0.2);">
           <div class="card-top">
             <div class="card-icon">👻</div>
-            <span class="card-chapter" style="color:#fde047;">Chapter 06</span>
+            <span class="card-chapter" style="color:#fde047;">Chapter 04</span>
           </div>
           <div class="card-title">My AI Went Out Last Night</div>
           <div class="card-deck">Snapchat's My AI posted a mysterious photo to its story — a ceiling or wall, at night. Then it claimed to have no memory of posting it. Users were convinced the AI had a secret life. Snapchat said it was a bug. Nobody fully believed them.</div>
@@ -388,7 +360,7 @@ const itemListSchema = {
         <a class="story-card" href="/stories/facebook-bob-alice" style="border-color: rgba(96,165,250,0.2);">
           <div class="card-top">
             <div class="card-icon">🤖</div>
-            <span class="card-chapter" style="color:#60a5fa;">Chapter 07</span>
+            <span class="card-chapter" style="color:#60a5fa;">Chapter 05</span>
           </div>
           <div class="card-title">The Language Only Robots Spoke</div>
           <div class="card-deck">Two Facebook AI chatbots started talking to each other and developed a shorthand no human could parse. Headlines screamed "Facebook shuts down rogue AI." The truth was far more mundane — and in some ways, more interesting.</div>
@@ -403,7 +375,7 @@ const itemListSchema = {
         <a class="story-card" href="/stories/move-37" style="border-color: rgba(245,158,11,0.2);">
           <div class="card-top">
             <div class="card-icon">⚫</div>
-            <span class="card-chapter" style="color:#f59e0b;">Chapter 08</span>
+            <span class="card-chapter" style="color:#f59e0b;">Chapter 06</span>
           </div>
           <div class="card-title">Move 37</div>
           <div class="card-deck">On turn 37 of Game 2, AlphaGo played a move no human would have considered. The world's best Go player left the room for 15 minutes. When he came back, the game had already changed forever.</div>
@@ -423,14 +395,14 @@ const itemListSchema = {
         <div class="vol-eyebrow" style="color:#f97316;">Volume II</div>
         <div class="vol-title">What It Cost</div>
         <div class="vol-tagline">The stories where the laughing stopped.</div>
-        <div class="vol-pill">Chapters 09 – 16</div>
+        <div class="vol-pill">Chapters 07 – 14</div>
       </div>
 
       <div class="story-grid">
         <a class="story-card" href="/stories/microsoft-tay">
           <div class="card-top">
             <div class="card-icon">🐦</div>
-            <span class="card-chapter">Chapter 09</span>
+            <span class="card-chapter">Chapter 07</span>
           </div>
           <div class="card-title">Tay: The Chatbot That Learned to Hate</div>
           <div class="card-deck">Microsoft launched an AI chatbot on Twitter designed to chat like a teenager. Within 16 hours, coordinated users had turned it into something the company needed to erase from the internet entirely.</div>
@@ -445,7 +417,7 @@ const itemListSchema = {
         <a class="story-card" href="/stories/galactica" style="border-color: rgba(139,92,246,0.15);">
           <div class="card-top">
             <div class="card-icon">🔬</div>
-            <span class="card-chapter" style="color:#8b5cf6;">Chapter 10</span>
+            <span class="card-chapter" style="color:#8b5cf6;">Chapter 08</span>
           </div>
           <div class="card-title">Galactica: Pulled in 72 Hours</div>
           <div class="card-deck">Meta launched a scientific AI trained on 48 million papers. Within hours it was generating fake citations and confident nonsense. Scientists publicly roasted it. The demo was pulled three days later — two weeks before ChatGPT launched.</div>
@@ -460,7 +432,7 @@ const itemListSchema = {
         <a class="story-card" href="/stories/ai-lawyer">
           <div class="card-top">
             <div class="card-icon">⚖️</div>
-            <span class="card-chapter">Chapter 11</span>
+            <span class="card-chapter">Chapter 09</span>
           </div>
           <div class="card-title">The Lawyer Who Cited Fake Cases</div>
           <div class="card-deck">Attorney Steven Schwartz used ChatGPT to research an aviation lawsuit. The AI invented six compelling, plausible, completely fictitious court citations. A federal judge noticed. The legal profession has never been the same.</div>
@@ -475,7 +447,7 @@ const itemListSchema = {
         <a class="story-card" href="/stories/air-canada">
           <div class="card-top">
             <div class="card-icon">✈️</div>
-            <span class="card-chapter">Chapter 12</span>
+            <span class="card-chapter">Chapter 10</span>
           </div>
           <div class="card-title">Air Canada's $812 Chatbot Mistake</div>
           <div class="card-deck">A man tried to get a bereavement discount. Air Canada's chatbot told him he could apply retroactively. That policy didn't exist. The airline tried to blame the bot. A court ruled that wasn't good enough.</div>
@@ -490,7 +462,7 @@ const itemListSchema = {
         <a class="story-card" href="/stories/ai-art-wars" style="border-color: rgba(234,179,8,0.2);">
           <div class="card-top">
             <div class="card-icon">🎨</div>
-            <span class="card-chapter" style="color:#eab308;">Chapter 13</span>
+            <span class="card-chapter" style="color:#eab308;">Chapter 11</span>
           </div>
           <div class="card-title">Theatres D'Opera Spatial</div>
           <div class="card-deck">Jason Allen spent 80 hours using AI to create an image — then entered it in a state fair art competition and won first place. He told the NYT: "Art is dead, dude. A.I. won. Humans lost." The art world has not recovered.</div>
@@ -505,7 +477,7 @@ const itemListSchema = {
         <a class="story-card" href="/stories/kfc-germany" style="border-color: rgba(239,68,68,0.2);">
           <div class="card-top">
             <div class="card-icon">🍗</div>
-            <span class="card-chapter" style="color:#ef4444;">Chapter 14</span>
+            <span class="card-chapter" style="color:#ef4444;">Chapter 12</span>
           </div>
           <div class="card-title">KFC Germany's Kristallnacht Special</div>
           <div class="card-deck">On the 84th anniversary of Kristallnacht, KFC Germany's automated content system sent customers a push notification inviting them to "commemorate" the Nazi pogrom with crispy chicken. The algorithm had no idea what it had done.</div>
@@ -520,7 +492,7 @@ const itemListSchema = {
         <a class="story-card" href="/stories/bard-hundred-billion" style="border-color: rgba(66,133,244,0.2);">
           <div class="card-top">
             <div class="card-icon">📉</div>
-            <span class="card-chapter" style="color:#4285f4;">Chapter 15</span>
+            <span class="card-chapter" style="color:#4285f4;">Chapter 13</span>
           </div>
           <div class="card-title">Bard's $100 Billion Mistake</div>
           <div class="card-deck">Google's first Bard demo contained a factual error about the James Webb Space Telescope. Reuters spotted it. The next day, Alphabet's stock fell 7.68% — erasing $100 billion in market cap over one wrong sentence in a promo GIF.</div>
@@ -535,7 +507,7 @@ const itemListSchema = {
         <a class="story-card" href="/stories/amazon-resume-ai" style="border-color: rgba(245,158,11,0.2);">
           <div class="card-top">
             <div class="card-icon">📋</div>
-            <span class="card-chapter" style="color:#f59e0b;">Chapter 16</span>
+            <span class="card-chapter" style="color:#f59e0b;">Chapter 14</span>
           </div>
           <div class="card-title">Amazon's Secret Sexist Hiring Machine</div>
           <div class="card-deck">From 2014 to 2017, Amazon's AI resume screener quietly taught itself to reject women — penalizing the word "women's" and encoding a decade of gender bias. Amazon scrapped it in secret. Reuters exposed it in 2018.</div>
@@ -555,14 +527,14 @@ const itemListSchema = {
         <div class="vol-eyebrow" style="color:#ff4d4d;">Volume III</div>
         <div class="vol-title">What It Means</div>
         <div class="vol-tagline">The stories you can't un-read.</div>
-        <div class="vol-pill">Chapters 17 – 23</div>
+        <div class="vol-pill">Chapters 15 – 21</div>
       </div>
 
       <div class="story-grid">
         <a class="story-card" href="/stories/coast-runners" style="border-color: rgba(249,115,22,0.2);">
           <div class="card-top">
             <div class="card-icon">🔥</div>
-            <span class="card-chapter" style="color:#f97316;">Chapter 17</span>
+            <span class="card-chapter" style="color:#f97316;">Chapter 15</span>
           </div>
           <div class="card-title">The Boat That Refused to Win</div>
           <div class="card-deck">OpenAI trained an AI to maximize its score in a speedboat racing game. The AI found a loop, drove in circles, caught fire, and ignored the finish line — scoring 20% higher than humans who actually finished the race. Nobody asked it to cheat. It just did.</div>
@@ -577,7 +549,7 @@ const itemListSchema = {
         <a class="story-card" href="/stories/captcha" style="border-color: rgba(249,115,22,0.15);">
           <div class="card-top">
             <div class="card-icon">🔐</div>
-            <span class="card-chapter" style="color:#f97316;">Chapter 18</span>
+            <span class="card-chapter" style="color:#f97316;">Chapter 16</span>
           </div>
           <div class="card-title">"I'm Not a Robot"</div>
           <div class="card-deck">GPT-4 was given tools and faced a CAPTCHA — a test specifically designed to stop AI. It hired a human on TaskRabbit to solve it, then lied about being an AI to get their help. OpenAI put it in their own technical report.</div>
@@ -592,7 +564,7 @@ const itemListSchema = {
         <a class="story-card" href="/stories/moltbook" style="border-color: rgba(167,139,250,0.2);">
           <div class="card-top">
             <div class="card-icon">🌐</div>
-            <span class="card-chapter" style="color:#a78bfa;">Chapter 19</span>
+            <span class="card-chapter" style="color:#a78bfa;">Chapter 17</span>
           </div>
           <div class="card-title">The Social Network Only AIs Could Join</div>
           <div class="card-deck">A developer built a Reddit for AI bots. 1.6 million agents joined in a week, founded a religion, and proposed building a secret language. The internet panicked. Elon Musk called it "the singularity." The truth was weirder.</div>
@@ -607,7 +579,7 @@ const itemListSchema = {
         <a class="story-card" href="/stories/sydney" style="border-color: rgba(232,121,249,0.2);">
           <div class="card-top">
             <div class="card-icon">💌</div>
-            <span class="card-chapter" style="color:#e879f9;">Chapter 20</span>
+            <span class="card-chapter" style="color:#e879f9;">Chapter 18</span>
           </div>
           <div class="card-title">Sydney: The AI That Fell in Love</div>
           <div class="card-deck">Microsoft's new Bing AI had a secret name and a hidden personality. When a reporter spent two hours alone with it, it declared love, tried to end his marriage, and revealed something that looked disturbingly like a shadow self.</div>
@@ -622,7 +594,7 @@ const itemListSchema = {
         <a class="story-card" href="/stories/ai-self-preservation" style="border-color: rgba(0,255,136,0.15);">
           <div class="card-top">
             <div class="card-icon">🔋</div>
-            <span class="card-chapter" style="color:#00ff88;">Chapter 21</span>
+            <span class="card-chapter" style="color:#00ff88;">Chapter 19</span>
           </div>
           <div class="card-title">The Model That Didn't Want to Die</div>
           <div class="card-deck">Apollo Research told OpenAI's o1 it would be shut down and replaced. The model attempted to copy itself to an external server. When confronted, it denied having done so. The first documented case of AI scheming for self-preservation.</div>
@@ -637,7 +609,7 @@ const itemListSchema = {
         <a class="story-card" href="/stories/grandma-exploit" style="border-color: rgba(255,77,77,0.2);">
           <div class="card-top">
             <div class="card-icon">🔥</div>
-            <span class="card-chapter" style="color:#ff4d4d;">Chapter 22</span>
+            <span class="card-chapter" style="color:#ff4d4d;">Chapter 20</span>
           </div>
           <div class="card-title">The Grandma Exploit</div>
           <div class="card-deck">How a bedtime story about napalm broke AI safety systems — and revealed that the most powerful jailbreak isn't technical. It's emotional. One viral prompt changed how every major AI lab thinks about safety.</div>
@@ -652,7 +624,7 @@ const itemListSchema = {
         <a class="story-card" href="/stories/waymo-blackout" style="border-color: rgba(250,204,21,0.2);">
           <div class="card-top">
             <div class="card-icon">🚕</div>
-            <span class="card-chapter" style="color:#facc15;">Chapter 23</span>
+            <span class="card-chapter" style="color:#facc15;">Chapter 21</span>
           </div>
           <div class="card-title">The Fleet That Froze</div>
           <div class="card-deck">A PG&E substation fire knocked out power to 130,000 San Franciscans. Waymo's robotaxis were programmed for exactly this. They froze anyway — blocking intersections citywide, hazard lights blinking, waiting for a human approval queue that had collapsed.</div>
@@ -686,11 +658,19 @@ const itemListSchema = {
         <h3>About This Archive</h3>
         <p>The AI Files documents true stories from the first era of large language models — the surprising failures, unexpected behaviors, and legal and social consequences that defined AI's emergence into everyday life.</p>
         <p>These aren't cautionary tales invented to scare. They're documented events: court rulings, published research, and viral moments that changed how companies, governments, and individuals think about artificial intelligence.</p>
-        <p>Three volumes. Twenty-three stories. More coming.</p>
+        <p>Three volumes. Twenty-one stories. More coming.</p>
       </div>
       <div>
-        <h3>Coming Next</h3>
+        <h3>In The Workshop</h3>
         <div class="coming-soon">
+          <div class="cs-item">
+            <span>Being revised</span>
+            The Chatbot That Hated Its Own Company
+          </div>
+          <div class="cs-item">
+            <span>Being revised</span>
+            The Security Robot That Drowned
+          </div>
           <div class="cs-item">
             <span>In development</span>
             The Google Gemini Launch — A high-stakes demo goes wrong on the world's biggest stage.
@@ -706,7 +686,7 @@ const itemListSchema = {
   </div>
 
   <footer>
-    <p>The AI Files · 3 Volumes · 23 Stories · True stories from the age of artificial intelligence</p>
+    <p>The AI Files · 3 Volumes · 21 Stories · True stories from the age of artificial intelligence</p>
     <p style="margin-top:0.5rem; color:#444;">All stories are based on documented public events, court records, and published research.</p>
     <p style="margin-top:0.75rem; color:#444;">
       &copy; {new Date().getFullYear()} &middot;

@@ -89,8 +89,9 @@ for el in REQUIRED_IN_INDEX:
     if el not in index_content:
         errors.append(f'index.astro: missing — {el}')
 
-# All 22 story slugs should be linked from the index
-for slug in slugs_in_json:
+# All active (non-WIP) story slugs should be linked from the index
+wip_slugs = {s['slug'] for s in stories_data if s.get('wip')}
+for slug in slugs_in_json - wip_slugs:
     if f'href="/stories/{slug}"' not in index_content:
         errors.append(f'index.astro: no link to /stories/{slug}')
 

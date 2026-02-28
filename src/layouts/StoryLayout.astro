@@ -23,6 +23,7 @@ interface Story {
   verifyText: string;
   sources: Source[];
   whatIf?: string;
+  wip?: boolean;
 }
 
 interface Props {
@@ -76,8 +77,8 @@ const breadcrumbSchema = {
   ],
 };
 
-// Related stories: same volume first, then others, exclude self
-const others = stories.filter(s => s.slug !== story.slug);
+// Related stories: same volume first, then others, exclude self and WIP
+const others = stories.filter(s => s.slug !== story.slug && !s.wip);
 const sameVol = others.filter(s => s.volume === story.volume);
 const diffVol = others.filter(s => s.volume !== story.volume);
 const related = [...sameVol, ...diffVol].slice(0, 4);
@@ -102,7 +103,7 @@ const related = [...sameVol, ...diffVol].slice(0, 4);
 
   <header class="story-hero">
     <div class="story-hero-inner">
-      <div class="story-chapter">Chapter {String(story.chapter).padStart(2, '0')}</div>
+      <div class="story-chapter">{story.wip ? 'Draft' : `Chapter ${String(story.chapter).padStart(2, '0')}`}</div>
       <h1 class="story-title">{story.title}</h1>
       <p class="story-deck">{story.deck}</p>
       <div class="story-byline">
@@ -261,7 +262,7 @@ const related = [...sameVol, ...diffVol].slice(0, 4);
         <div class="more-grid">
           {related.map(s => (
             <a href={`/stories/${s.slug}`} class="more-card">
-              <div class="mc-ch">Ch{String(s.chapter).padStart(2, '0')}</div>
+              <div class="mc-ch">{s.wip ? 'Draft' : `Ch${String(s.chapter).padStart(2, '0')}`}</div>
               <div class="mc-title">{s.title}</div>
               <div class="mc-deck">{s.deck.slice(0, 100)}{s.deck.length > 100 ? '…' : ''}</div>
             </a>
