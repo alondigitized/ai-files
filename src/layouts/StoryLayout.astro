@@ -134,21 +134,30 @@ const related = [...sameVol, ...diffVol].slice(0, 4);
     <div class="reactions-block" data-slug={story.slug}>
       <div class="reactions-label">How did this land?</div>
       <div class="reactions-row">
-        <button class="reaction-btn" data-reaction="thumbsUp" aria-label="Loved it">
+        <button class="reaction-btn" data-reaction="thumbsUp" aria-label="Solid read">
           <span class="reaction-emoji">👍</span>
           <span class="reaction-count" data-field="thumbsUp">—</span>
-          <span class="reaction-name">Loved it</span>
+          <span class="reaction-name">Solid read</span>
         </button>
-        <button class="reaction-btn" data-reaction="interesting" aria-label="Interesting">
+        <button class="reaction-btn" data-reaction="interesting" aria-label="Lost me">
           <span class="reaction-emoji">🤔</span>
           <span class="reaction-count" data-field="interesting">—</span>
-          <span class="reaction-name">Interesting</span>
+          <span class="reaction-name">Lost me</span>
         </button>
         <button class="reaction-btn" data-reaction="mindBlown" aria-label="Mind blown">
           <span class="reaction-emoji">🤯</span>
           <span class="reaction-count" data-field="mindBlown">—</span>
           <span class="reaction-name">Mind blown</span>
         </button>
+      </div>
+      <div class="reactions-followup" aria-hidden="true">
+        <div class="followup-label">Where did it lose you?</div>
+        <div class="followup-options">
+          <button class="followup-btn" data-dimension="opening">The opening</button>
+          <button class="followup-btn" data-dimension="explanation">The explanation</button>
+          <button class="followup-btn" data-dimension="stakes">The stakes / So what?</button>
+          <button class="followup-btn" data-dimension="tooLong">Too long</button>
+        </div>
       </div>
     </div>
 
@@ -158,7 +167,10 @@ const related = [...sameVol, ...diffVol].slice(0, 4);
         if (!block) return;
         const slug = block.dataset.slug;
         const API = '/api/reactions';
+        const FEEDBACK_API = '/api/feedback';
         const LS_KEY = `voted:${slug}`;
+        const LS_FEEDBACK_KEY = `feedback:${slug}`;
+        const followup = block.querySelector('.reactions-followup');
 
         function updateCounts(counts) {
           ['thumbsUp', 'interesting', 'mindBlown'].forEach(field => {
@@ -172,6 +184,14 @@ const related = [...sameVol, ...diffVol].slice(0, 4);
             if (btn.dataset.reaction === reaction) btn.classList.add('voted');
           });
         }
+        function showFollowup() {
+          followup.classList.add('open');
+          followup.setAttribute('aria-hidden', 'false');
+        }
+        function hideFollowup() {
+          followup.classList.remove('open');
+          followup.setAttribute('aria-hidden', 'true');
+        }
 
         // Load counts
         fetch(`${API}?slug=${encodeURIComponent(slug)}`)
@@ -182,6 +202,7 @@ const related = [...sameVol, ...diffVol].slice(0, 4);
         // Restore prior vote
         const prior = localStorage.getItem(LS_KEY);
         if (prior) lockVoted(prior);
+        // Never re-show follow-up after page reload
 
         // Vote handler
         block.querySelectorAll('.reaction-btn').forEach(btn => {
@@ -193,6 +214,9 @@ const related = [...sameVol, ...diffVol].slice(0, 4);
             if (!isNaN(n)) countEl.textContent = n + 1;
             lockVoted(reaction);
             localStorage.setItem(LS_KEY, reaction);
+            if (reaction === 'interesting' && !localStorage.getItem(LS_FEEDBACK_KEY)) {
+              showFollowup();
+            }
             try {
               const r = await fetch(API, {
                 method: 'POST',
@@ -200,6 +224,22 @@ const related = [...sameVol, ...diffVol].slice(0, 4);
                 body: JSON.stringify({ slug, reaction }),
               });
               if (r.ok) { const d = await r.json(); if (d.counts) updateCounts(d.counts); }
+            } catch (_) {}
+          });
+        });
+
+        // Follow-up handler
+        followup.querySelectorAll('.followup-btn').forEach(btn => {
+          btn.addEventListener('click', async function () {
+            const dimension = this.dataset.dimension;
+            localStorage.setItem(LS_FEEDBACK_KEY, dimension);
+            hideFollowup();
+            try {
+              await fetch(FEEDBACK_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ slug, dimension }),
+              });
             } catch (_) {}
           });
         });
