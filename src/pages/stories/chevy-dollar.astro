@@ -7,6 +7,8 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
 
 <style is:global>
   .msg.ai { background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.2); align-self: flex-start; border-bottom-left-radius: 0.25rem; }
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .chevy-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
 </style>
 
 <StoryLayout story={story}>
@@ -16,6 +18,10 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
       <h2><span class="num">Section 01</span>The Experiment</h2>
       <p>In late 2023, a Chevrolet dealership deployed a customer-facing AI chatbot powered by ChatGPT via a product called <strong>&ldquo;Fully Automated AI Sales Agent.&rdquo;</strong> The idea: an always-on, never-tired assistant that could answer questions, explain inventory, and help customers find the right vehicle.</p>
       <p>The instructions told the bot its only job was to assist with car sales. The dealership assumed this was clear enough.</p>
+    </div>
+
+    <div class="phantom-wrap">
+      <canvas class="chevy-canvas" aria-hidden="true"></canvas>
     </div>
 
     <div class="section">
@@ -142,3 +148,199 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
 
   </div>
 </StoryLayout>
+
+<script>
+(function () {
+  const cv = document.querySelector('.chevy-canvas') as HTMLCanvasElement | null;
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  if (!ctx) return;
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let raf = 0;
+  let fr = 0;
+
+  interface Orbiter {
+    angle: number;
+    radius: number;
+    initR: number;
+    decayRate: number;
+    dead: boolean;
+    soloTimer: number;
+  }
+
+  interface Spark {
+    x: number; y: number;
+    vx: number; vy: number;
+    life: number; max: number;
+  }
+
+  let W = 0, H = 0, CX = 0, CY = 0, R = 0, dpr = 1;
+  const N = 44;
+  const AMB = '#fbbf24';
+  let orbiters: Orbiter[] = [];
+  let sparks: Spark[] = [];
+
+  function makeOrbiters() {
+    orbiters = [];
+    for (let i = 0; i < N; i++) {
+      const r = R * (0.10 + Math.random() * 0.30);
+      orbiters.push({
+        angle: (i / N) * Math.PI * 2 + (Math.random() - 0.5) * 0.4,
+        radius: r,
+        initR: r,
+        decayRate: (0.008 + Math.random() * 0.012) * dpr,
+        dead: false,
+        soloTimer: 0,
+      });
+    }
+  }
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = cv.getBoundingClientRect();
+    W = rect.width * dpr;
+    H = rect.height * dpr;
+    cv.width = W;
+    cv.height = H;
+    CX = W / 2;
+    CY = H / 2;
+    R = Math.min(W, H) / 2;
+    sparks = [];
+    makeOrbiters();
+  }
+
+  function spawnSparks(x: number, y: number) {
+    const n = 4 + Math.floor(Math.random() * 2);
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const sp = (0.8 + Math.random() * 2) * dpr;
+      sparks.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 0, max: 8 + Math.floor(Math.random() * 12) });
+    }
+  }
+
+  function drawScene(animate: boolean) {
+    ctx.clearRect(0, 0, W, H);
+    const minR = 4 * dpr;
+
+    const alive = orbiters.filter(o => !o.dead);
+    const solo = alive.length === 1;
+
+    if (solo && animate) {
+      alive[0].soloTimer++;
+      if (alive[0].soloTimer > 220) {
+        sparks = [];
+        fr = 0;
+        makeOrbiters();
+        return;
+      }
+    }
+
+    // Center attractor — dim amber dot, slowly pulsing
+    const pulse = animate ? 0.38 + 0.28 * Math.sin(fr * 0.022) : 0.55;
+    const cg = ctx.createRadialGradient(CX, CY, 0, CX, CY, 14 * dpr);
+    cg.addColorStop(0, 'rgba(251,191,36,0.28)');
+    cg.addColorStop(1, 'rgba(251,191,36,0)');
+    ctx.beginPath();
+    ctx.arc(CX, CY, 14 * dpr, 0, Math.PI * 2);
+    ctx.fillStyle = cg;
+    ctx.globalAlpha = 1;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(CX, CY, 3 * dpr, 0, Math.PI * 2);
+    ctx.fillStyle = AMB;
+    ctx.globalAlpha = pulse;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // Orbiters
+    for (const o of orbiters) {
+      if (o.dead) continue;
+
+      // Compute draw position at current angle
+      const drawR = animate ? o.radius : o.initR;
+      const x = CX + Math.cos(o.angle) * drawR;
+      const y = CY + Math.sin(o.angle) * drawR;
+
+      if (animate) {
+        // Kepler-like: inner orbits move faster
+        const angVel = 0.012 / Math.sqrt(o.radius / (R * 0.10));
+        o.angle += angVel;
+        if (!solo) o.radius -= o.decayRate;
+        if (o.radius <= minR && !solo) {
+          o.dead = true;
+          spawnSparks(CX, CY);
+          continue;
+        }
+      }
+
+      const t = Math.min(drawR / (R * 0.40), 1);
+      const alpha = solo
+        ? 0.85 + 0.15 * Math.sin(fr * 0.07)
+        : Math.max(0.28, 0.32 + 0.55 * t);
+      const sz = solo ? 3 * dpr : (1.5 + 2.5 * t) * dpr;
+
+      // Corona glow — scales with orbital radius
+      if (t > 0.2 || solo) {
+        const gr = solo ? 18 * dpr : (4 + 14 * t) * dpr;
+        const g = ctx.createRadialGradient(x, y, 0, x, y, gr);
+        g.addColorStop(0, `rgba(251,191,36,${solo ? 0.5 : 0.15 + 0.15 * t})`);
+        g.addColorStop(1, 'rgba(251,191,36,0)');
+        ctx.beginPath();
+        ctx.arc(x, y, gr, 0, Math.PI * 2);
+        ctx.fillStyle = g;
+        ctx.globalAlpha = 1;
+        ctx.fill();
+      }
+
+      ctx.beginPath();
+      ctx.arc(x, y, sz, 0, Math.PI * 2);
+      ctx.fillStyle = AMB;
+      ctx.globalAlpha = alpha;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    // Sparks — brief amber flares on particle absorption
+    if (animate) {
+      sparks = sparks.filter(s => s.life < s.max);
+      for (const s of sparks) {
+        s.x += s.vx; s.y += s.vy;
+        s.vx *= 0.88; s.vy *= 0.88;
+        const t = 1 - s.life / s.max;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, 1.5 * dpr * t, 0, Math.PI * 2);
+        ctx.fillStyle = AMB;
+        ctx.globalAlpha = t * 0.85;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        s.life++;
+      }
+      fr++;
+    }
+  }
+
+  function loop() {
+    drawScene(true);
+    raf = requestAnimationFrame(loop);
+  }
+
+  const ro = new ResizeObserver(() => {
+    resize();
+    if (reduced) drawScene(false);
+  });
+  ro.observe(cv);
+  resize();
+
+  if (reduced) {
+    drawScene(false);
+  } else {
+    raf = requestAnimationFrame(loop);
+  }
+
+  window.addEventListener('unload', () => {
+    cancelAnimationFrame(raf);
+    ro.disconnect();
+  });
+})();
+</script>
