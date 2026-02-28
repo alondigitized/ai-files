@@ -162,17 +162,55 @@ These classes appear per-story in `<style is:global>` blocks (not in global.css)
 | grandma-exploit | `#ff4d4d` |
 | waymo-blackout | `#facc15` |
 
-## Adding a New Story
+## Canvas Animations
+
+Every story includes a **full-width canvas animation** placed at a dramatically appropriate break between sections (typically between Section 01 and Section 02, but wherever it lands best narratively).
+
+### Design principles
+- **Monochromatic base** — background is `var(--bg)` (`#0d0d0d`); ambient elements in near-invisible off-white (`rgba(232,232,232,0.04–0.08)`)
+- **Accent pop** — the story's `--story` color is the only vivid element; `--accent` (`#ff4d4d`) used sparingly for destructive/error moments
+- **Atmospheric, not illustrative** — the animation evokes the story's feeling; no labels or UI chrome
+- **Slow and quiet** — drift speeds ~0.2–0.4px/frame; nothing jarring
+- **Purely decorative** — `aria-hidden="true"` on the canvas
+
+### Technical pattern
+```html
+<!-- HTML (inside .container, between sections) -->
+<div class="phantom-wrap">
+  <canvas class="[slug]-canvas" aria-hidden="true"></canvas>
+</div>
+```
+```css
+/* CSS (in <style is:global>) */
+.phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+.[slug]-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+```
+```js
+// Script (inline <script> after </StoryLayout>, IIFE pattern)
+// - ResizeObserver keeps canvas pixel dimensions in sync with CSS
+// - requestAnimationFrame loop; store ID, cancel on unload
+// - Respect prefers-reduced-motion: draw single static frame instead of animating
+// - TypeScript-safe (cast canvas as HTMLCanvasElement)
+```
+
+### Existing canvas animations
+| Story | File | Concept |
+|-------|------|---------|
+| ai-lawyer | `ai-lawyer.astro` | **Phantom Dossier** — 6 gold fake case names drift up, get red-struck-through, dissolve |
+
+### Adding a New Story
 
 1. Add entry to `src/data/stories.json` with all required fields including `isoDate`
 2. Create `src/pages/stories/[slug].astro` using the pattern above
-3. In `src/pages/index.astro`:
+3. Design a canvas animation concept thematically matched to the story (see principles above)
+4. In `src/pages/index.astro`:
    - Add the story card to the correct volume section
    - Update chapter range in the vol-section header (e.g. `Chapters 17 – 23`)
    - Update the story count in the masthead pill, nav issue label, about paragraph, and footer
    - Remove the story from "Coming Next" if it was teased there
-4. Update `public/llms.txt` to add the new story to the manifest
-5. Run `python3 qa.py` before deploying
+5. Update `public/llms.txt` to add the new story to the manifest
+6. Add the animation to the canvas table above
+7. Run `python3 qa.py` before deploying
 
 ## Development
 
