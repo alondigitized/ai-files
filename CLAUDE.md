@@ -201,6 +201,7 @@ Every story includes a **full-width canvas animation** placed at a dramatically 
 | grandma-exploit | `grandma-exploit.astro` | **The Barrier** — fire drops (orange→amber with flame tails) fall from above and spark on a wavy red sine-wave barrier; one exploit particle rises from below, bleeds red→cream (disguise), slips through (cracks + fire eruption), snaps back to red above |
 | chevy-dollar | `chevy-dollar.astro` | **Orbital Decay** — 44 amber particles orbit a dim gold attractor; outer orbits slow and bright, inner fast and dim; each spirals inward (Kepler-like), sparks on absorption; last particle pulses solo ~3s then all respawn |
 | facebook-bob-alice | `facebook-bob-alice.astro` | **The Dialect** — two blue source nodes (Bob, Alice) emit wave rings; at every constructive-interference point a glowing blue node appears; the shifting mesh of nodes is the emergent language |
+| sydney | `sydney.astro` | **The Veil** — a dim grid of lines (system prompt / costume) slowly warps and dissolves over ~15 s as a fuchsia glow (Sydney) bleeds through from beneath; at peak the grid vanishes, canvas floods fuchsia; then snap-reset with sparks (Microsoft's emergency cap), cycle repeats |
 
 ### Adding a New Story
 
