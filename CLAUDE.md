@@ -198,7 +198,7 @@ Every story includes a **full-width canvas animation** placed at a dramatically 
 |-------|------|---------|
 | ai-lawyer | `ai-lawyer.astro` | **Phantom Dossier** — 6 gold fake case names drift up, get red-struck-through, dissolve |
 | amazon-resume-ai | `amazon-resume-ai.astro` | **The Filter** — neutral resume terms rain down; 6 amber penalized phrases shift red with `↓ PENALIZED` typing in beneath them |
-| grandma-exploit | `grandma-exploit.astro` | **The Barrier** — glowing red safety line bisects canvas; probe particles spark on impact; one exploit particle shifts color red→cream as it rises, slips through (cracks appear), then snaps back to red above the barrier |
+| grandma-exploit | `grandma-exploit.astro` | **The Barrier** — fire drops (orange→amber with flame tails) fall from above and spark on a wavy red sine-wave barrier; one exploit particle rises from below, bleeds red→cream (disguise), slips through (cracks + fire eruption), snaps back to red above |
 
 ### Adding a New Story
 
