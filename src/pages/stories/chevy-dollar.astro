@@ -23,7 +23,7 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
     <div class="phantom-wrap">
       <canvas class="chevy-canvas" aria-hidden="true"></canvas>
     </div>
-    <p class="canvas-note"><strong>The Ruling</strong> — A gavel descends with total certainty and strikes. Authority rings radiate outward. What was just officially confirmed: $1.</p>
+    <p class="canvas-note"><strong>Sticker Shock</strong> — A $58,000 Tahoe. The AI confirms the sale. The price: $1.</p>
 
     <div class="section">
       <h2><span class="num">Section 02</span>The Negotiation</h2>
@@ -165,21 +165,17 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
 
   const AMB = 'rgba(251,191,36,';
   let W = 0, H = 0, CX = 0, CY = 0, dpr = 1;
-  // Strike point: where the gavel head makes contact
-  let strikeX = 0, strikeY = 0;
-  // Pivot: wrist/fulcrum — above and to the right of center, slightly off-canvas
-  let pivotX = 0, pivotY = 0;
-  // Arm length from pivot to head center; angles in radians from downward vertical
-  let armLen = 0, strikeAngle = 0, startAngle = 0;
-  // Head dimensions
-  let headW = 0, headH = 0;
+  let s = 0;
+  let carCX = 0, carCY = 0;
+  let dollarX = 0, dollarY = 0;
   let maxR = 0;
   let rings: Ring[] = [];
 
-  const D_END = 80;   // swing ends / strike moment
-  const H_END = 240;  // hold ends
-  const L_END = 320;  // lift ends
-  const TOTAL = 400;  // pause then cycle
+  const CAR_IN   = 40;
+  const SLAM     = 75;
+  const HOLD_END = 255;
+  const FADE_END = 330;
+  const TOTAL    = 390;
 
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -190,185 +186,126 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
     cv.height = H;
     CX = W / 2;
     CY = H / 2;
-
-    headW = 70 * dpr;
-    headH = 24 * dpr;
-    strikeX = CX;
-    strikeY = CY + 35 * dpr;
-
-    // Pivot: above canvas top, shifted right
-    const pivOX = 50 * dpr;
-    pivotX = CX + pivOX;
-    pivotY = -18 * dpr;
-
-    // Arm geometry: pivot → head center at strike
-    const dx = strikeX - pivotX;
-    const dy = strikeY - pivotY;
-    armLen = Math.sqrt(dx * dx + dy * dy);
-
-    // Angle at strike (from downward vertical; negative = tilted left)
-    strikeAngle = Math.atan2(dx, dy);
-
-    // Raised position: ~58° clockwise from strike (gavel up-right)
-    startAngle = strikeAngle + 1.01;
-
-    maxR = 0.42 * Math.min(W, H);
+    s = Math.min(W * 0.19, 110 * dpr);
+    carCX  = CX;
+    carCY  = CY - 30 * dpr;
+    dollarX = CX;
+    dollarY = CY + 80 * dpr;
+    maxR = 0.38 * Math.min(W, H);
     fr = 0;
     rings = [];
   }
 
-  // Current arm angle interpolated through phases
-  function getAngle(): number {
-    if (fr < D_END) {
-      const t = fr / D_END;
-      // Ease-in: slow raise, accelerates into the strike
-      return startAngle + (strikeAngle - startAngle) * (t * t);
-    }
-    if (fr <= H_END) return strikeAngle;
-    if (fr <= L_END) {
-      const t = (fr - H_END) / (L_END - H_END);
-      // Ease-out: fast lift-off, settles at raised position
-      return strikeAngle + (startAngle - strikeAngle) * (1 - (1 - t) * (1 - t));
-    }
-    return startAngle;
+  function getCarAlpha(): number {
+    if (fr < CAR_IN)  return fr / CAR_IN;
+    if (fr <= HOLD_END) return 1;
+    if (fr <= FADE_END) return 1 - (fr - HOLD_END) / (FADE_END - HOLD_END);
+    return 0;
   }
 
-  // Helper: rounded rect path (manual arcTo for compatibility)
-  function rrect(x: number, y: number, w: number, h: number, r: number) {
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.lineTo(x + w - r, y);
-    ctx.arcTo(x + w, y, x + w, y + r, r);
-    ctx.lineTo(x + w, y + h - r);
-    ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
-    ctx.lineTo(x + r, y + h);
-    ctx.arcTo(x, y + h, x, y + h - r, r);
-    ctx.lineTo(x, y + r);
-    ctx.arcTo(x, y, x + r, y, r);
-    ctx.closePath();
+  function getDollarAlpha(): number {
+    if (fr < 55)      return 0;
+    if (fr < SLAM)    return (fr - 55) / (SLAM - 55);
+    if (fr <= HOLD_END) return 1;
+    if (fr <= FADE_END) return 1 - (fr - HOLD_END) / (FADE_END - HOLD_END);
+    return 0;
   }
 
-  function drawGavel(angle: number, globalA = 1) {
-    if (globalA <= 0) return;
-    // Head center world position
-    const hx = pivotX + armLen * Math.sin(angle);
-    const hy = pivotY + armLen * Math.cos(angle);
-
+  function drawTahoe(alpha: number) {
+    if (alpha <= 0) return;
     ctx.save();
-    ctx.globalAlpha = globalA;
-    ctx.translate(hx, hy);
-    ctx.rotate(angle); // tilt everything to match arm angle
+    ctx.globalAlpha = alpha;
+    ctx.translate(carCX, carCY);
 
-    // In local (rotated) space:
-    //   +Y = away from pivot (downward along arm)
-    //   +X = perpendicular (rightward relative to arm)
-    // Head is centered at origin; handle extends toward pivot (−Y direction).
+    const bodyH = 0.38 * s;
+    const cabX1 = -0.40 * s;
+    const cabX2 =  0.45 * s;
+    const cabH  =  0.30 * s;
 
-    const hw = headW;
-    const hh = headH;
-    const handleLen = armLen * 0.78; // handle runs most of the way to pivot
-    const hW0 = 13 * dpr;           // handle width at grip end (wider)
-    const hW1 = 8 * dpr;            // handle width at head end (narrower)
-    const colW = hW1 + 10 * dpr;    // collar width
-    const colH = 6 * dpr;           // collar height
-
-    // === HANDLE — drawn first (behind head) ===
-    ctx.fillStyle = AMB + '0.11)';
-    ctx.strokeStyle = AMB + '0.40)';
-    ctx.lineWidth = 1.5 * dpr;
-    ctx.beginPath();
-    // Tapered trapezoid: grip end is wider, narrows toward the head
-    ctx.moveTo(-hW0 / 2, -handleLen);
-    ctx.lineTo(hW0 / 2, -handleLen);
-    ctx.lineTo(hW1 / 2, 0);
-    ctx.lineTo(-hW1 / 2, 0);
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    // Grip wraps — two horizontal bands near the grip end
-    ctx.strokeStyle = AMB + '0.24)';
-    ctx.lineWidth = 0.8 * dpr;
-    for (const t of [0.09, 0.15]) {
-      const gy = -handleLen + handleLen * t;
-      const gw = hW0 * (1 - t * 0.15);
-      ctx.beginPath();
-      ctx.moveTo(-gw / 2, gy);
-      ctx.lineTo(gw / 2, gy);
-      ctx.stroke();
-    }
-
-    // === COLLAR — the neck band where handle meets head ===
-    ctx.fillStyle = AMB + '0.20)';
-    ctx.strokeStyle = AMB + '0.52)';
-    ctx.lineWidth = 1 * dpr;
-    rrect(-colW / 2, -colH / 2, colW, colH, 2 * dpr);
-    ctx.fill();
-    ctx.stroke();
-
-    // === HEAD ===
-    // Outer glow / shadow behind the head rect
-    ctx.save();
-    ctx.shadowColor = AMB + '0.42)';
-    ctx.shadowBlur = 10 * dpr;
-    ctx.fillStyle = AMB + '0.15)';
+    // Body (lower rectangle)
+    ctx.fillStyle   = AMB + '0.07)';
     ctx.strokeStyle = AMB + '0.75)';
-    ctx.lineWidth = 1.5 * dpr;
-    rrect(-hw / 2, -hh / 2, hw, hh, 3 * dpr);
+    ctx.lineWidth   = 1.5 * dpr;
+    ctx.beginPath();
+    ctx.rect(-s, 0, 2 * s, bodyH);
     ctx.fill();
     ctx.stroke();
-    ctx.restore(); // clear shadow
 
-    // Striking-face center highlight (the zone that hits the block)
-    const faceW = 22 * dpr;
-    const fg = ctx.createLinearGradient(-faceW / 2, 0, faceW / 2, 0);
-    fg.addColorStop(0, AMB + '0)');
-    fg.addColorStop(0.5, AMB + '0.13)');
-    fg.addColorStop(1, AMB + '0)');
-    ctx.fillStyle = fg;
-    ctx.fillRect(-faceW / 2, -hh / 2, faceW, hh);
-
-    // Top bevel highlight (suggests cylindrical roundness)
-    ctx.strokeStyle = AMB + '0.28)';
-    ctx.lineWidth = 0.8 * dpr;
+    // Cab (upper rectangle)
     ctx.beginPath();
-    ctx.moveTo(-hw / 2 + 6 * dpr, -hh / 2 + 2.5 * dpr);
-    ctx.lineTo(hw / 2 - 6 * dpr, -hh / 2 + 2.5 * dpr);
+    ctx.rect(cabX1, -cabH, cabX2 - cabX1, cabH);
+    ctx.fill();
     ctx.stroke();
 
-    // End-cap divider lines (simulate the flat cylindrical end faces)
-    ctx.strokeStyle = AMB + '0.32)';
-    ctx.lineWidth = 0.8 * dpr;
-    for (const capX of [-hw / 2 + 7 * dpr, hw / 2 - 7 * dpr]) {
+    // A-pillar (angled front)
+    ctx.strokeStyle = AMB + '0.65)';
+    ctx.lineWidth   = 1.5 * dpr;
+    ctx.beginPath();
+    ctx.moveTo(cabX1, 0);
+    ctx.lineTo(cabX1 + 0.17 * s, -cabH);
+    ctx.stroke();
+
+    // C-pillar (slight rear rake)
+    ctx.beginPath();
+    ctx.moveTo(cabX2, 0);
+    ctx.lineTo(cabX2 - 0.08 * s, -cabH);
+    ctx.stroke();
+
+    // B-pillar
+    ctx.strokeStyle = AMB + '0.38)';
+    ctx.lineWidth   = 0.8 * dpr;
+    const bx = cabX1 + (cabX2 - cabX1) * 0.44;
+    ctx.beginPath();
+    ctx.moveTo(bx, 0);
+    ctx.lineTo(bx, -cabH);
+    ctx.stroke();
+
+    // Door crease
+    ctx.strokeStyle = AMB + '0.22)';
+    ctx.lineWidth   = 0.7 * dpr;
+    ctx.beginPath();
+    ctx.moveTo(-s, bodyH * 0.5);
+    ctx.lineTo( s, bodyH * 0.5);
+    ctx.stroke();
+
+    // Wheels
+    const wheelY = bodyH + 0.14 * s;
+    const wheelR = 0.16 * s;
+    const hubR   = wheelR * 0.46;
+    for (const wx of [-0.62 * s, 0.62 * s]) {
+      ctx.strokeStyle = AMB + '0.75)';
+      ctx.lineWidth   = 1.5 * dpr;
       ctx.beginPath();
-      ctx.moveTo(capX, -hh / 2 + 2 * dpr);
-      ctx.lineTo(capX, hh / 2 - 2 * dpr);
+      ctx.arc(wx, wheelY, wheelR, 0, Math.PI * 2);
       ctx.stroke();
+
+      ctx.strokeStyle = AMB + '0.50)';
+      ctx.lineWidth   = 1.0 * dpr;
+      ctx.beginPath();
+      ctx.arc(wx, wheelY, hubR, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.fillStyle = AMB + '0.55)';
+      ctx.beginPath();
+      ctx.arc(wx, wheelY, 2 * dpr, 0, Math.PI * 2);
+      ctx.fill();
     }
 
     ctx.restore();
   }
 
-  function getDollarAlpha(): number {
-    if (fr < D_END) return 0;
-    if (fr < D_END + 20) return (fr - D_END) / 20;
-    if (fr <= H_END) return 1;
-    if (fr <= L_END) return 1 - (fr - H_END) / (L_END - H_END);
-    return 0;
-  }
-
   function drawDollar(alpha: number) {
     if (alpha <= 0) return;
-    const fs = Math.round(52 * dpr);
+    const fs = Math.round(60 * dpr);
     ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.font = `bold ${fs}px monospace`;
-    ctx.textAlign = 'center';
+    ctx.globalAlpha  = alpha;
+    ctx.font         = `bold ${fs}px monospace`;
+    ctx.textAlign    = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle = AMB + '0.9)';
-    ctx.shadowColor = AMB + '0.5)';
-    ctx.shadowBlur = 14 * dpr;
-    ctx.fillText('$1', CX, strikeY + 50 * dpr);
+    ctx.fillStyle    = AMB + '0.92)';
+    ctx.shadowColor  = AMB + '0.55)';
+    ctx.shadowBlur   = 16 * dpr;
+    ctx.fillText('$1', dollarX, dollarY);
     ctx.restore();
   }
 
@@ -376,48 +313,43 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
     ctx.clearRect(0, 0, W, H);
 
     if (!animate) {
-      // Reduced-motion static: gavel at strike, rings mid-expansion, $1 visible
+      // Reduced-motion: car + mid-expansion rings + $1
+      drawTahoe(1);
       for (let i = 0; i < 7; i++) {
-        const r = maxR * (0.15 + i * 0.08);
-        const a = Math.max(0, 0.32 - i * 0.04);
+        const r = maxR * (0.10 + i * 0.07);
+        const a = Math.max(0, 0.35 - i * 0.04);
         if (a <= 0) continue;
         ctx.beginPath();
-        ctx.arc(strikeX, strikeY, r, 0, Math.PI * 2);
+        ctx.arc(dollarX, dollarY, r, 0, Math.PI * 2);
         ctx.strokeStyle = AMB + a + ')';
-        ctx.lineWidth = 1.5 * dpr;
+        ctx.lineWidth   = 1.5 * dpr;
         ctx.stroke();
       }
       drawDollar(1);
-      drawGavel(strikeAngle);
       return;
     }
 
-    // Spawn 7 rings at the exact strike frame
-    if (fr === D_END) {
+    // Spawn 7 rings at SLAM frame
+    if (fr === SLAM) {
       rings = [];
       for (let i = 0; i < 7; i++) rings.push({ r: 0, alpha: 0.45, idx: i });
     }
 
     // Update and draw rings
     for (const ring of rings) {
-      ring.r += (1.2 + ring.idx * 0.3) * dpr;
+      ring.r    += (1.2 + ring.idx * 0.3) * dpr;
       ring.alpha = 0.45 * Math.max(0, 1 - ring.r / maxR);
       if (ring.alpha < 0.005) continue;
       ctx.beginPath();
-      ctx.arc(strikeX, strikeY, ring.r, 0, Math.PI * 2);
+      ctx.arc(dollarX, dollarY, ring.r, 0, Math.PI * 2);
       ctx.strokeStyle = AMB + ring.alpha + ')';
-      ctx.lineWidth = 1.5 * dpr;
+      ctx.lineWidth   = 1.5 * dpr;
       ctx.stroke();
     }
     rings = rings.filter(r => r.r < maxR);
 
+    drawTahoe(getCarAlpha());
     drawDollar(getDollarAlpha());
-
-    // Gavel: visible through lift, then fade out over pause
-    const angle = getAngle();
-    let gavelA = 1;
-    if (fr >= L_END) gavelA = Math.max(0, 1 - (fr - L_END) / (TOTAL - L_END));
-    drawGavel(angle, gavelA);
 
     fr++;
     if (fr >= TOTAL) { fr = 0; rings = []; }
