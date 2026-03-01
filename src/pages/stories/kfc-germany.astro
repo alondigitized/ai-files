@@ -46,6 +46,10 @@ const story = stories.find(s => s.slug === 'kfc-germany')!;
   @media (max-width: 600px) {
     .algo-compare { grid-template-columns: 1fr; }
   }
+
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .kfc-germany-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+  .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.75rem 0 0; font-style: italic; }
 </style>
 
 <StoryLayout story={story}>
@@ -70,6 +74,11 @@ const story = stories.find(s => s.slug === 'kfc-germany')!;
     <div class="stat-card"><div class="stat-num">1</div><div class="stat-label">Night before the apology</div></div>
   </div>
 </section>
+
+<div class="phantom-wrap">
+  <canvas class="kfc-germany-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>Equidistant</strong> — The algorithm moves through a field of dates. Each one receives the same weight. The system cannot see what humans see.</p>
 
 <section class="section" id="notification">
   <h2><span class="num">03 — The Notification</span>What Was Sent</h2>
@@ -184,3 +193,183 @@ const story = stories.find(s => s.slug === 'kfc-germany')!;
 
   </div>
 </StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.kfc-germany-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const ACCENT = '#ef4444';
+  const NODE_COUNT = 40;
+  const SIGNIFICANT_INDICES = [5, 14, 22, 33]; // secret significant nodes
+
+  let W = 0, H = 0, rafId = 0;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  interface Node {
+    x: number; y: number;
+    r: number;
+    pulseAge: number;
+    pulseMax: number;
+  }
+
+  interface OrbState {
+    x: number; y: number;
+    tx: number; ty: number;
+    targetIdx: number;
+    speed: number;
+  }
+
+  let nodes: Node[] = [];
+  let orb: OrbState = { x: 0, y: 0, tx: 0, ty: 0, targetIdx: 0, speed: 0 };
+
+  function resize() {
+    const rect = canvas!.getBoundingClientRect();
+    W = canvas!.width = rect.width * devicePixelRatio;
+    H = canvas!.height = rect.height * devicePixelRatio;
+    initNodes();
+    if (reduced) drawStatic();
+  }
+
+  function initNodes() {
+    nodes = [];
+    for (let i = 0; i < NODE_COUNT; i++) {
+      nodes.push({
+        x: (0.05 + Math.random() * 0.9) * W,
+        y: (0.05 + Math.random() * 0.9) * H,
+        r: (2.5 + Math.random() * 2) * devicePixelRatio,
+        pulseAge: 0,
+        pulseMax: 0,
+      });
+    }
+    orb = {
+      x: nodes[0].x,
+      y: nodes[0].y,
+      tx: nodes[1].x,
+      ty: nodes[1].y,
+      targetIdx: 1,
+      speed: 0.5 * devicePixelRatio,
+    };
+  }
+
+  function drawStatic() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, W, H);
+    nodes.forEach((n, i) => {
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(232,232,232,0.18)';
+      ctx.fill();
+    });
+    // Draw orb mid-path
+    const midX = W * 0.5, midY = H * 0.45;
+    ctx.beginPath();
+    ctx.arc(midX, midY, 4 * devicePixelRatio, 0, Math.PI * 2);
+    ctx.fillStyle = ACCENT;
+    ctx.fill();
+    // One pulsing node
+    const pn = nodes[5];
+    const grd = ctx.createRadialGradient(pn.x, pn.y, 0, pn.x, pn.y, pn.r * 4);
+    grd.addColorStop(0, 'rgba(239,68,68,0.35)');
+    grd.addColorStop(1, 'rgba(239,68,68,0)');
+    ctx.beginPath();
+    ctx.arc(pn.x, pn.y, pn.r * 4, 0, Math.PI * 2);
+    ctx.fillStyle = grd;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(pn.x, pn.y, pn.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(239,68,68,0.7)';
+    ctx.fill();
+  }
+
+  function nextTarget(currentIdx: number): number {
+    let next = Math.floor(Math.random() * NODE_COUNT);
+    while (next === currentIdx) next = Math.floor(Math.random() * NODE_COUNT);
+    return next;
+  }
+
+  function tick() {
+    if (!ctx) return;
+
+    // Move orb toward target
+    const dx = orb.tx - orb.x, dy = orb.ty - orb.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < orb.speed * 2) {
+      // Arrived — pulse the node
+      nodes[orb.targetIdx].pulseAge = 1;
+      nodes[orb.targetIdx].pulseMax = 35;
+      // Pick next target
+      const nextIdx = nextTarget(orb.targetIdx);
+      orb.targetIdx = nextIdx;
+      orb.tx = nodes[nextIdx].x;
+      orb.ty = nodes[nextIdx].y;
+    } else {
+      orb.x += (dx / dist) * orb.speed;
+      orb.y += (dy / dist) * orb.speed;
+    }
+
+    // Advance pulse ages
+    nodes.forEach(n => { if (n.pulseAge > 0) n.pulseAge++; });
+
+    // Draw
+    ctx.clearRect(0, 0, W, H);
+
+    // Draw nodes
+    nodes.forEach(n => {
+      const isPulsing = n.pulseAge > 0 && n.pulseAge <= n.pulseMax;
+      if (isPulsing) {
+        const t = 1 - n.pulseAge / n.pulseMax; // 1→0 as pulse fades
+        const glowR = n.r * (1 + t * 4);
+        const grd = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, glowR);
+        grd.addColorStop(0, `rgba(239,68,68,${0.4 * t})`);
+        grd.addColorStop(1, 'rgba(239,68,68,0)');
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, glowR, 0, Math.PI * 2);
+        ctx.fillStyle = grd;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(239,68,68,${0.7 * t + 0.2})`;
+        ctx.fill();
+      } else {
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(232,232,232,0.18)';
+        ctx.fill();
+      }
+    });
+
+    // Draw orb
+    const grd2 = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, 8 * devicePixelRatio);
+    grd2.addColorStop(0, 'rgba(239,68,68,0.4)');
+    grd2.addColorStop(1, 'rgba(239,68,68,0)');
+    ctx.beginPath();
+    ctx.arc(orb.x, orb.y, 8 * devicePixelRatio, 0, Math.PI * 2);
+    ctx.fillStyle = grd2;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(orb.x, orb.y, 3.5 * devicePixelRatio, 0, Math.PI * 2);
+    ctx.fillStyle = ACCENT;
+    ctx.fill();
+
+    rafId = requestAnimationFrame(tick);
+  }
+
+  const ro = new ResizeObserver(resize);
+  ro.observe(canvas);
+  resize();
+
+  if (reduced) {
+    drawStatic();
+  } else {
+    rafId = requestAnimationFrame(tick);
+  }
+
+  window.addEventListener('unload', () => {
+    cancelAnimationFrame(rafId);
+    ro.disconnect();
+  });
+})();
+</script>

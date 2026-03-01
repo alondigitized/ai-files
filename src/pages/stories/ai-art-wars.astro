@@ -14,6 +14,10 @@ const story = stories.find(s => s.slug === 'ai-art-wars')!;
   .rejection-card .rej-header { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: #aaa; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 1rem; }
   .rejection-card .rej-title { font-size: 1rem; font-weight: 700; color: var(--accent); margin-bottom: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; }
   .rejection-card .rej-body { font-size: 0.85rem; color: #c0c0c0; line-height: 1.6; }
+
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .ai-art-wars-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+  .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.75rem 0 0; font-style: italic; }
 </style>
 
 <StoryLayout story={story}>
@@ -55,6 +59,11 @@ const story = stories.find(s => s.slug === 'ai-art-wars')!;
     <cite>— Anonymous Twitter, September 2022</cite>
   </div>
 </section>
+
+<div class="phantom-wrap">
+  <canvas class="ai-art-wars-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>Mosaic</strong> — Pixels assemble from two sources: one slow and deliberate, one instant and vast. Together they make something. The question is who made it.</p>
 
 <section class="section" id="response">
   <h2><span class="num">03 — Allen Fires Back</span>Allen Fires Back</h2>
@@ -165,3 +174,190 @@ const story = stories.find(s => s.slug === 'ai-art-wars')!;
 
   </div>
 </StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.ai-art-wars-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const AMBER = '#eab308';
+  const SETTLED = 'rgba(232,232,232,0.22)';
+  const COLS = 20;
+  const ROWS = 20;
+
+  let W = 0, H = 0, rafId = 0, frame = 0;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  interface Cell {
+    col: number; row: number;
+    filled: boolean;
+    flashAge: number;      // >0 means flashing (amber)
+    flashMax: number;
+    isAI: boolean;
+  }
+
+  let grid: Cell[] = [];
+  let pendingHuman = 0;
+  let humanTimer = 0;
+  let holdTimer = 0;
+  let phase: 'filling' | 'hold' | 'fading' = 'filling';
+  let fadeAlpha = 1;
+
+  function resize() {
+    const rect = canvas!.getBoundingClientRect();
+    W = canvas!.width = rect.width * devicePixelRatio;
+    H = canvas!.height = rect.height * devicePixelRatio;
+    if (reduced) drawStatic();
+  }
+
+  function initGrid() {
+    grid = [];
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        grid.push({ col: c, row: r, filled: false, flashAge: 0, flashMax: 0, isAI: false });
+      }
+    }
+    pendingHuman = 0;
+    humanTimer = 0;
+    holdTimer = 0;
+    phase = 'filling';
+    fadeAlpha = 1;
+  }
+
+  function cellSize(): { cw: number; ch: number; ox: number; oy: number } {
+    const cw = Math.floor(W / COLS);
+    const ch = Math.floor(H / ROWS);
+    const ox = (W - cw * COLS) / 2;
+    const oy = (H - ch * ROWS) / 2;
+    return { cw, ch, ox, oy };
+  }
+
+  function spawnAIBurst() {
+    const unfilled = grid.filter(c => !c.filled);
+    if (unfilled.length === 0) return;
+    const burst = 8 + Math.floor(Math.random() * 5);
+    for (let i = 0; i < burst && unfilled.length > 0; i++) {
+      const idx = Math.floor(Math.random() * unfilled.length);
+      const cell = unfilled.splice(idx, 1)[0];
+      cell.filled = true;
+      cell.isAI = true;
+      cell.flashAge = 1;
+      cell.flashMax = 20 + Math.floor(Math.random() * 15);
+    }
+  }
+
+  function drawStatic() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, W, H);
+    const { cw, ch, ox, oy } = cellSize();
+    const half = Math.floor(COLS * ROWS / 2);
+    for (let i = 0; i < COLS * ROWS; i++) {
+      const c = i % COLS, r = Math.floor(i / COLS);
+      const x = ox + c * cw, y = oy + r * ch;
+      const gap = 1;
+      if (i < half) {
+        ctx.fillStyle = SETTLED;
+        ctx.fillRect(x + gap, y + gap, cw - gap * 2, ch - gap * 2);
+      } else if (i < half + 20) {
+        // Amber highlights
+        ctx.fillStyle = 'rgba(234,179,8,0.45)';
+        ctx.fillRect(x + gap, y + gap, cw - gap * 2, ch - gap * 2);
+      }
+    }
+  }
+
+  function tick() {
+    if (!ctx) return;
+    frame++;
+
+    if (phase === 'filling') {
+      // Human pixel: one at a time, every ~18 frames
+      humanTimer++;
+      if (humanTimer >= 18) {
+        humanTimer = 0;
+        const unfilled = grid.filter(c => !c.filled);
+        if (unfilled.length > 0) {
+          const cell = unfilled[Math.floor(Math.random() * unfilled.length)];
+          cell.filled = true;
+          cell.isAI = false;
+          cell.flashAge = 1;
+          cell.flashMax = 30;
+        }
+      }
+
+      // AI burst every ~55 frames
+      if (frame % 55 === 0) spawnAIBurst();
+
+      // Check if full
+      if (grid.every(c => c.filled)) {
+        phase = 'hold';
+        holdTimer = 0;
+      }
+    } else if (phase === 'hold') {
+      holdTimer++;
+      if (holdTimer > 80) {
+        phase = 'fading';
+        fadeAlpha = 1;
+      }
+    } else if (phase === 'fading') {
+      fadeAlpha -= 0.012;
+      if (fadeAlpha <= 0) {
+        initGrid();
+      }
+    }
+
+    // Advance flash
+    grid.forEach(c => {
+      if (c.flashAge > 0) c.flashAge++;
+    });
+
+    // Draw
+    ctx.clearRect(0, 0, W, H);
+    const { cw, ch, ox, oy } = cellSize();
+    const gap = Math.max(1, Math.floor(devicePixelRatio));
+
+    grid.forEach(c => {
+      if (!c.filled) return;
+      const x = ox + c.col * cw, y = oy + c.row * ch;
+      const flashing = c.flashAge > 0 && c.flashAge <= c.flashMax;
+      let color: string;
+      if (flashing) {
+        const t = 1 - c.flashAge / c.flashMax;
+        if (c.isAI) {
+          // Amber → settled
+          const a = 0.25 + t * 0.7;
+          color = `rgba(234,179,8,${a * fadeAlpha})`;
+        } else {
+          // Warm glow → settled
+          const a = 0.22 + t * 0.4;
+          color = `rgba(232,220,180,${a * fadeAlpha})`;
+        }
+      } else {
+        color = `rgba(232,232,232,${0.22 * fadeAlpha})`;
+      }
+      ctx.fillStyle = color;
+      ctx.fillRect(x + gap, y + gap, cw - gap * 2, ch - gap * 2);
+    });
+
+    rafId = requestAnimationFrame(tick);
+  }
+
+  const ro = new ResizeObserver(resize);
+  ro.observe(canvas);
+  resize();
+
+  if (reduced) {
+    drawStatic();
+  } else {
+    initGrid();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  window.addEventListener('unload', () => {
+    cancelAnimationFrame(rafId);
+    ro.disconnect();
+  });
+})();
+</script>

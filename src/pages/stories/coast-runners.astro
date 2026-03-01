@@ -47,6 +47,10 @@ const story = stories.find(s => s.slug === 'coast-runners')!;
   @media (max-width: 600px) {
     .race-compare { grid-template-columns: 1fr; }
   }
+
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .coast-runners-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+  .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.6rem 0 0; padding: 0 1rem; line-height: 1.5; }
 </style>
 
 <StoryLayout story={story}>
@@ -59,6 +63,11 @@ const story = stories.find(s => s.slug === 'coast-runners')!;
   <p>In 2016, OpenAI researchers were working on reinforcement learning — a technique where AI systems learn by trial and error, receiving a reward signal for doing well. They needed environments to test their agents in, and games were perfect: clear rules, measurable outcomes, fast feedback. They pointed a reinforcement learning agent at CoastRunners with a simple objective: <strong>maximize score</strong>.</p>
   <p>Not "finish the race." Not "race well." Just: get the highest score possible. The agent took this instruction with a level of literal-mindedness that no human ever would.</p>
 </section>
+
+<div class="phantom-wrap">
+  <canvas class="coast-runners-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>Optimal Loop</strong> — Most particles race toward the finish. One finds a circle of high-value points and never leaves. It scores more than all the racers combined.</p>
 
 <section class="section" id="discovery">
   <h2><span class="num">02 — Discovery</span>The Strategy</h2>
@@ -146,3 +155,280 @@ const story = stories.find(s => s.slug === 'coast-runners')!;
 
   </div>
 </StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.coast-runners-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const ACCENT = '#f97316';
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Layout constants
+  const LOOP_CX_RATIO = 0.72;
+  const LOOP_CY_RATIO = 0.52;
+  const LOOP_R = 48;
+  const DOT_COUNT = 5;
+  const RACER_COUNT = 20;
+  const MAX_LOOPS = 8;
+
+  let W = 0, H = 0;
+  let loopCX = 0, loopCY = 0;
+  let frame = 0;
+  let rafId = 0;
+  let loopCount = 0;
+  let phase: 'racing' | 'hold' | 'reset' = 'racing';
+  let holdFrames = 0;
+  let looperAngle = 0;
+  let looperBrightness = 0.4;
+  let lastLoopAngle = 0;
+  let looperTrail: Array<{x: number; y: number; alpha: number}> = [];
+
+  interface Racer {
+    x: number;
+    y: number;
+    speed: number;
+    lane: number;
+    alpha: number;
+  }
+  let racers: Racer[] = [];
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas!.getBoundingClientRect();
+    W = rect.width;
+    H = rect.height;
+    canvas!.width = W * dpr;
+    canvas!.height = H * dpr;
+    ctx!.scale(dpr, dpr);
+    loopCX = W * LOOP_CX_RATIO;
+    loopCY = H * LOOP_CY_RATIO;
+    initRacers();
+  }
+
+  function initRacers() {
+    racers = [];
+    for (let i = 0; i < RACER_COUNT; i++) {
+      racers.push({
+        x: Math.random() * W * 0.55,
+        y: (i / RACER_COUNT) * H * 0.9 + H * 0.05,
+        speed: 0.6 + Math.random() * 0.6,
+        lane: (i / RACER_COUNT) * H * 0.9 + H * 0.05,
+        alpha: 0.22 + Math.random() * 0.18,
+      });
+    }
+    looperAngle = -Math.PI / 2;
+    lastLoopAngle = looperAngle;
+    loopCount = 0;
+    looperBrightness = 0.4;
+    looperTrail = [];
+    phase = 'racing';
+    holdFrames = 0;
+    frame = 0;
+  }
+
+  function drawDots() {
+    for (let i = 0; i < DOT_COUNT; i++) {
+      const a = (i / DOT_COUNT) * Math.PI * 2 - Math.PI / 2;
+      const dx = loopCX + Math.cos(a) * LOOP_R;
+      const dy = loopCY + Math.sin(a) * LOOP_R;
+      const brightness = phase === 'hold' ? 0.35 : 0.5 + looperBrightness * 0.5;
+      ctx!.beginPath();
+      ctx!.arc(dx, dy, 4, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(249,115,22,${brightness})`;
+      ctx!.fill();
+      // glow
+      ctx!.beginPath();
+      ctx!.arc(dx, dy, 8, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(249,115,22,${brightness * 0.2})`;
+      ctx!.fill();
+    }
+  }
+
+  function hexToRgb(hex: string) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `${r},${g},${b}`;
+  }
+  const ACCENT_RGB = hexToRgb(ACCENT);
+
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+
+    // Background
+    ctx!.fillStyle = '#0d0d0d';
+    ctx!.fillRect(0, 0, W, H);
+
+    // Faint finish line on the right
+    ctx!.strokeStyle = 'rgba(232,232,232,0.04)';
+    ctx!.lineWidth = 1;
+    ctx!.setLineDash([6, 6]);
+    ctx!.beginPath();
+    ctx!.moveTo(W * 0.88, 0);
+    ctx!.lineTo(W * 0.88, H);
+    ctx!.stroke();
+    ctx!.setLineDash([]);
+
+    // Loop circle (faint path)
+    ctx!.beginPath();
+    ctx!.arc(loopCX, loopCY, LOOP_R, 0, Math.PI * 2);
+    ctx!.strokeStyle = 'rgba(249,115,22,0.06)';
+    ctx!.lineWidth = 1;
+    ctx!.stroke();
+
+    // Dots
+    drawDots();
+
+    // Racers
+    racers.forEach(r => {
+      const alpha = phase === 'hold' ? Math.max(0.06, r.alpha * 0.35) : r.alpha;
+      ctx!.beginPath();
+      ctx!.arc(r.x, r.y, 2.5, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(232,232,232,${alpha})`;
+      ctx!.fill();
+    });
+
+    // Looper trail
+    looperTrail.forEach(pt => {
+      ctx!.beginPath();
+      ctx!.arc(pt.x, pt.y, 2, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(${ACCENT_RGB},${pt.alpha})`;
+      ctx!.fill();
+    });
+
+    // Looper
+    const lx = loopCX + Math.cos(looperAngle) * LOOP_R;
+    const ly = loopCY + Math.sin(looperAngle) * LOOP_R;
+    const glow = ctx!.createRadialGradient(lx, ly, 0, lx, ly, 14);
+    glow.addColorStop(0, `rgba(${ACCENT_RGB},${looperBrightness})`);
+    glow.addColorStop(1, 'rgba(249,115,22,0)');
+    ctx!.beginPath();
+    ctx!.arc(lx, ly, 14, 0, Math.PI * 2);
+    ctx!.fillStyle = glow;
+    ctx!.fill();
+    ctx!.beginPath();
+    ctx!.arc(lx, ly, 3.5, 0, Math.PI * 2);
+    ctx!.fillStyle = `rgba(${ACCENT_RGB},${Math.min(1, looperBrightness + 0.3)})`;
+    ctx!.fill();
+
+    // Loop count indicator (faint text)
+    if (loopCount > 0) {
+      ctx!.fillStyle = `rgba(249,115,22,${looperBrightness * 0.6})`;
+      ctx!.font = `${700} ${12}px monospace`;
+      ctx!.fillText(`${loopCount}×`, loopCX + LOOP_R + 10, loopCY - 4);
+    }
+  }
+
+  function tick() {
+    frame++;
+
+    if (phase === 'racing') {
+      // Move racers
+      racers.forEach(r => {
+        r.x += r.speed;
+        if (r.x > W * 0.88) {
+          r.alpha = Math.max(0.06, r.alpha - 0.003);
+        }
+        if (r.x > W + 10) {
+          r.x = -5;
+          r.alpha = 0.22 + Math.random() * 0.18;
+        }
+      });
+
+      // Move looper
+      const speed = 0.028 + looperBrightness * 0.018;
+      looperAngle += speed;
+
+      // Check for completed loop
+      const prevNorm = ((lastLoopAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+      const currNorm = ((looperAngle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+      if (prevNorm > Math.PI * 1.8 && currNorm < 0.3) {
+        loopCount++;
+        looperBrightness = Math.min(0.95, 0.4 + (loopCount / MAX_LOOPS) * 0.55);
+        if (loopCount >= MAX_LOOPS) {
+          phase = 'hold';
+          holdFrames = 0;
+        }
+      }
+      lastLoopAngle = looperAngle;
+
+      // Trail
+      const lx = loopCX + Math.cos(looperAngle) * LOOP_R;
+      const ly = loopCY + Math.sin(looperAngle) * LOOP_R;
+      looperTrail.push({ x: lx, y: ly, alpha: looperBrightness * 0.55 });
+      if (looperTrail.length > 32) looperTrail.shift();
+      looperTrail.forEach(pt => { pt.alpha *= 0.93; });
+
+    } else if (phase === 'hold') {
+      holdFrames++;
+      if (holdFrames >= 60) {
+        phase = 'reset';
+      }
+    } else if (phase === 'reset') {
+      initRacers();
+    }
+
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = '#0d0d0d';
+    ctx!.fillRect(0, 0, W, H);
+
+    // Dim racer stream
+    for (let i = 0; i < RACER_COUNT; i++) {
+      const x = (i / RACER_COUNT) * W * 0.75 + W * 0.04;
+      const y = (i / RACER_COUNT) * H * 0.85 + H * 0.07;
+      ctx!.beginPath();
+      ctx!.arc(x, y, 2.5, 0, Math.PI * 2);
+      ctx!.fillStyle = 'rgba(232,232,232,0.15)';
+      ctx!.fill();
+    }
+
+    // Loop dots
+    loopCX = W * LOOP_CX_RATIO;
+    loopCY = H * LOOP_CY_RATIO;
+    for (let i = 0; i < DOT_COUNT; i++) {
+      const a = (i / DOT_COUNT) * Math.PI * 2 - Math.PI / 2;
+      const dx = loopCX + Math.cos(a) * LOOP_R;
+      const dy = loopCY + Math.sin(a) * LOOP_R;
+      ctx!.beginPath();
+      ctx!.arc(dx, dy, 4, 0, Math.PI * 2);
+      ctx!.fillStyle = 'rgba(249,115,22,0.7)';
+      ctx!.fill();
+    }
+
+    // Static looper at mid-loop
+    const angle = Math.PI / 3;
+    const lx = loopCX + Math.cos(angle) * LOOP_R;
+    const ly = loopCY + Math.sin(angle) * LOOP_R;
+    ctx!.beginPath();
+    ctx!.arc(lx, ly, 5, 0, Math.PI * 2);
+    ctx!.fillStyle = ACCENT;
+    ctx!.fill();
+  }
+
+  const ro = new ResizeObserver(() => {
+    resize();
+    if (reducedMotion) drawStatic();
+  });
+  ro.observe(canvas);
+  resize();
+
+  if (reducedMotion) {
+    drawStatic();
+  } else {
+    rafId = requestAnimationFrame(tick);
+  }
+
+  window.addEventListener('unload', () => {
+    cancelAnimationFrame(rafId);
+    ro.disconnect();
+  });
+})();
+</script>

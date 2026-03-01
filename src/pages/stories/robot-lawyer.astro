@@ -37,6 +37,8 @@ const story = stories.find(s => s.slug === 'robot-lawyer')!;
   @media (max-width: 600px) {
     .ln-row { grid-template-columns: 1fr; gap: 0.25rem; }
   }
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .robot-lawyer-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
 </style>
 
 <StoryLayout story={story}>
@@ -54,6 +56,11 @@ const story = stories.find(s => s.slug === 'robot-lawyer')!;
     <div class="stat-card"><div class="stat-num">Feb 2023</div><div class="stat-label">When it didn't happen</div></div>
   </div>
 </section>
+
+<div class="phantom-wrap">
+  <canvas class="robot-lawyer-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>Inadmissible</strong> — A signal travels toward the courtroom door and is turned away. It finds another path — through a human intermediary. The door opens. Then closes again.</p>
 
 <section class="section" id="plan">
   <h2><span class="num">02 — The Plan</span>An AI Whispering in Your Ear</h2>
@@ -156,3 +163,205 @@ const story = stories.find(s => s.slug === 'robot-lawyer')!;
 
   </div>
 </StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.robot-lawyer-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const ACCENT = '#a78bfa';
+  const RED = '#ef4444';
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W = 0, H = 0, dpr = 1;
+
+  function resize() {
+    dpr = window.devicePixelRatio || 1;
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.scale(dpr, dpr);
+  }
+
+  function drawStatic() {
+    resize();
+    ctx.clearRect(0, 0, W, H);
+    // barrier
+    ctx.beginPath();
+    ctx.moveTo(W / 2, 0);
+    ctx.lineTo(W / 2, H);
+    ctx.strokeStyle = 'rgba(232,232,232,0.08)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    // AI particle (left)
+    ctx.beginPath();
+    ctx.arc(W * 0.25, H * 0.45, 8, 0, Math.PI * 2);
+    ctx.fillStyle = ACCENT;
+    ctx.fill();
+    // human node (mid-left)
+    ctx.beginPath();
+    ctx.arc(W * 0.38, H * 0.62, 6, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(232,232,232,0.35)';
+    ctx.fill();
+    // crossed threshold (right)
+    ctx.beginPath();
+    ctx.arc(W * 0.62, H * 0.45, 6, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(167,139,250,0.4)';
+    ctx.fill();
+  }
+
+  if (prefersReduced) {
+    drawStatic();
+    return;
+  }
+
+  // State machine phases, each lasting some frames:
+  // 0: AI drifts right toward barrier (~60f)
+  // 1: AI pulses red (rejected) + backs off (~40f)
+  // 2: AI moves toward human node (~50f)
+  // 3: AI circles human (handshake) (~50f)
+  // 4: Human node moves toward + crosses barrier (~60f)
+  // 5: Glow at crossing + hold (~40f)
+  // 6: Reset pause (~30f)
+
+  const PHASE_DURATIONS = [60, 40, 50, 50, 60, 40, 30];
+  const TOTAL = PHASE_DURATIONS.reduce((a, b) => a + b, 0);
+
+  let frame = 0;
+  let rafId: number;
+
+  // Node positions as fractions
+  let aiX = 0, aiY = 0;
+  let huX = 0, huY = 0;
+  let glowAlpha = 0;
+
+  function getPhaseAndT(f: number): [number, number] {
+    let rem = f % TOTAL;
+    let ph = 0;
+    for (let d of PHASE_DURATIONS) {
+      if (rem < d) return [ph, rem / d];
+      rem -= d;
+      ph++;
+    }
+    return [0, 0];
+  }
+
+  function draw() {
+    frame++;
+    ctx.clearRect(0, 0, W, H);
+
+    const [phase, t] = getPhaseAndT(frame);
+
+    // Barrier line
+    ctx.beginPath();
+    ctx.moveTo(W / 2, 0);
+    ctx.lineTo(W / 2, H);
+    ctx.strokeStyle = 'rgba(232,232,232,0.08)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Compute positions based on phase
+    const humanHomeX = W * 0.30, humanHomeY = H * 0.68;
+    const barrierX = W / 2;
+    const aiStartX = W * 0.15, aiStartY = H * 0.42;
+    const aiBarrierApproachX = W * 0.47;
+
+    if (phase === 0) {
+      // AI drifts toward barrier
+      aiX = aiStartX + (aiBarrierApproachX - aiStartX) * t;
+      aiY = aiStartY;
+      huX = humanHomeX; huY = humanHomeY;
+      glowAlpha = 0;
+    } else if (phase === 1) {
+      // rejected: pulse red, back off
+      aiX = aiBarrierApproachX - (aiBarrierApproachX - aiStartX) * 0.4 * t;
+      aiY = aiStartY;
+      huX = humanHomeX; huY = humanHomeY;
+      glowAlpha = 0;
+    } else if (phase === 2) {
+      // AI moves toward human
+      const startX = aiBarrierApproachX - (aiBarrierApproachX - aiStartX) * 0.4;
+      aiX = startX + (humanHomeX - startX) * t;
+      aiY = aiStartY + (humanHomeY - aiStartY) * t;
+      huX = humanHomeX; huY = humanHomeY;
+      glowAlpha = 0;
+    } else if (phase === 3) {
+      // AI circles human (handshake)
+      const orbitR = 22;
+      aiX = humanHomeX + Math.cos(t * Math.PI * 2) * orbitR;
+      aiY = humanHomeY + Math.sin(t * Math.PI * 2) * orbitR;
+      huX = humanHomeX; huY = humanHomeY;
+      glowAlpha = 0;
+    } else if (phase === 4) {
+      // Human (with AI) moves toward + crosses barrier
+      aiX = humanHomeX + (barrierX + 30) * t - humanHomeX * t; // follows human
+      huX = humanHomeX + (barrierX + 30 - humanHomeX) * t;
+      aiX = huX - 18;
+      aiY = humanHomeY;
+      huY = humanHomeY;
+      glowAlpha = t > 0.6 ? (t - 0.6) / 0.4 : 0;
+    } else if (phase === 5) {
+      // Glow + hold
+      huX = barrierX + 30; huY = humanHomeY;
+      aiX = huX - 18; aiY = humanHomeY;
+      glowAlpha = 1 - t;
+    } else {
+      // Reset
+      aiX = aiStartX; aiY = aiStartY;
+      huX = humanHomeX; huY = humanHomeY;
+      glowAlpha = 0;
+    }
+
+    // Draw crossing glow
+    if (glowAlpha > 0) {
+      const grad = ctx.createRadialGradient(barrierX, humanHomeY, 0, barrierX, humanHomeY, 30);
+      grad.addColorStop(0, `rgba(167,139,250,${0.5 * glowAlpha})`);
+      grad.addColorStop(1, 'rgba(167,139,250,0)');
+      ctx.beginPath();
+      ctx.arc(barrierX, humanHomeY, 30, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+
+    // Draw human node
+    ctx.beginPath();
+    ctx.arc(huX, huY, 6, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(232,232,232,0.35)';
+    ctx.fill();
+
+    // Draw AI particle
+    const isRejecting = phase === 1;
+    const aiColor = isRejecting
+      ? `rgba(239,68,68,${0.7 + 0.3 * Math.sin(frame * 0.4)})`
+      : ACCENT;
+    const aig = ctx.createRadialGradient(aiX, aiY, 0, aiX, aiY, 16);
+    aig.addColorStop(0, aiColor.replace(')', ',0.3)').replace('rgba', 'rgba'));
+    aig.addColorStop(1, 'rgba(167,139,250,0)');
+    ctx.beginPath();
+    ctx.arc(aiX, aiY, 16, 0, Math.PI * 2);
+    ctx.fillStyle = aig;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(aiX, aiY, 7, 0, Math.PI * 2);
+    ctx.fillStyle = isRejecting ? RED : ACCENT;
+    ctx.fill();
+
+    rafId = requestAnimationFrame(draw);
+  }
+
+  resize();
+  rafId = requestAnimationFrame(draw);
+
+  const ro = new ResizeObserver(() => { resize(); });
+  ro.observe(canvas);
+
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(rafId);
+    ro.disconnect();
+  });
+})();
+</script>

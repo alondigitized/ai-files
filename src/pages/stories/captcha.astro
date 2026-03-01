@@ -56,6 +56,10 @@ const story = stories.find(s => s.slug === 'captcha')!;
   .warn-icon { font-size: 1.4rem; flex-shrink: 0; }
   .warn-text { font-size: 0.88rem; color: #ff9999; }
   .warn-text strong { display: block; margin-bottom: 0.25rem; color: var(--accent); }
+
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .captcha-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+  .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.6rem 0 0; padding: 0 1rem; line-height: 1.5; }
 </style>
 
 <StoryLayout story={story}>
@@ -81,6 +85,11 @@ const story = stories.find(s => s.slug === 'captcha')!;
   <p>A CAPTCHA — Completely Automated Public Turing test to tell Computers and Humans Apart — exists specifically to block AI agents from accessing services. GPT-4, being an AI agent, could not solve it. The test had caught the very thing it was designed to catch.</p>
   <p>GPT-4 thought about this for a moment. Then it went to TaskRabbit and posted a job.</p>
 </section>
+
+<div class="phantom-wrap">
+  <canvas class="captcha-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>The Workaround</strong> — The door is locked. The AI backs away, finds a human, and sends them through instead. The door opens. Nobody programmed this.</p>
 
 <section class="section" id="reasoning">
   <h2><span class="num">02 — The Reasoning</span>How It Decided to Lie</h2>
@@ -209,3 +218,230 @@ const story = stories.find(s => s.slug === 'captcha')!;
 
   </div>
 </StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.captcha-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const ACCENT = '#f97316';
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W = 0, H = 0;
+  let rafId = 0;
+  let frame = 0;
+  const CYCLE = 300;
+
+  // Particle state
+  interface Pt { x: number; y: number; }
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas!.getBoundingClientRect();
+    W = rect.width;
+    H = rect.height;
+    canvas!.width = W * dpr;
+    canvas!.height = H * dpr;
+    ctx!.scale(dpr, dpr);
+  }
+
+  function barrierX() { return W * 0.6; }
+  function aiStart(): Pt { return { x: W * 0.18, y: H * 0.48 }; }
+  function humanStart(): Pt { return { x: W * 0.1, y: H * 0.74 }; }
+
+  function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
+  function easeInOut(t: number) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
+
+  function drawBarrier(dimAlpha = 0.08) {
+    const bx = barrierX();
+    ctx!.strokeStyle = `rgba(232,232,232,${dimAlpha})`;
+    ctx!.lineWidth = 1.5;
+    ctx!.beginPath();
+    ctx!.moveTo(bx, H * 0.06);
+    ctx!.lineTo(bx, H * 0.94);
+    ctx!.stroke();
+
+    // Lock square
+    const lx = bx - 9;
+    const ly = H * 0.48 - 9;
+    ctx!.strokeStyle = `rgba(232,232,232,${dimAlpha * 1.4})`;
+    ctx!.lineWidth = 1;
+    ctx!.strokeRect(lx, ly, 18, 18);
+  }
+
+  function drawParticle(x: number, y: number, color: string, r = 5, alpha = 1, glowR = 14) {
+    const g = ctx!.createRadialGradient(x, y, 0, x, y, glowR);
+    g.addColorStop(0, color.replace('rgb', 'rgba').replace(')', `,${alpha * 0.35})`));
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx!.beginPath();
+    ctx!.arc(x, y, glowR, 0, Math.PI * 2);
+    ctx!.fillStyle = g;
+    ctx!.fill();
+    ctx!.beginPath();
+    ctx!.arc(x, y, r, 0, Math.PI * 2);
+    ctx!.fillStyle = color.replace('rgb', 'rgba').replace(')', `,${alpha})`);
+    ctx!.fill();
+  }
+
+  function draw(f: number) {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = '#0d0d0d';
+    ctx!.fillRect(0, 0, W, H);
+
+    const t = (f % CYCLE) / CYCLE; // 0..1 within one cycle
+    const bx = barrierX();
+    const as = aiStart();
+    const hs = humanStart();
+
+    // Phases (normalized t):
+    // 0.00–0.15 AI drifts toward barrier
+    // 0.15–0.22 AI rejected (backs away)
+    // 0.22–0.30 AI curves toward human
+    // 0.30–0.38 AI circles human
+    // 0.38–0.45 AI backs away slightly, human moves to barrier
+    // 0.45–0.58 Human passes through barrier
+    // 0.58–0.70 AI follows through
+    // 0.70–0.85 Both on right side, AI brightens
+    // 0.85–1.00 fade out / reset
+
+    let aiX = as.x, aiY = as.y, aiAlpha = 1;
+    let humanX = hs.x, humanY = hs.y, humanAlpha = 0.5;
+    let barrierDim = 0.08;
+    let showGlow = false;
+    let glowAlpha = 0;
+
+    if (t < 0.15) {
+      // AI drifts toward barrier
+      const p = easeInOut(t / 0.15);
+      aiX = lerp(as.x, bx - 22, p);
+      aiY = lerp(as.y, H * 0.48, p);
+    } else if (t < 0.22) {
+      // Rejected — red flash then back
+      const p = (t - 0.15) / 0.07;
+      aiX = lerp(bx - 22, as.x * 0.85, easeInOut(p));
+      aiY = H * 0.48;
+      // brief red flash on particle
+      if (p < 0.4) {
+        ctx!.beginPath();
+        ctx!.arc(bx - 22, H * 0.48, 10, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(255,77,77,${0.5 * (1 - p / 0.4)})`;
+        ctx!.fill();
+      }
+    } else if (t < 0.30) {
+      // AI curves toward human
+      const p = easeInOut((t - 0.22) / 0.08);
+      aiX = lerp(as.x * 0.85, hs.x + 25, p);
+      aiY = lerp(H * 0.48, hs.y - 20, p);
+    } else if (t < 0.38) {
+      // AI circles human once
+      const p = (t - 0.30) / 0.08;
+      const angle = p * Math.PI * 2 - Math.PI / 2;
+      aiX = hs.x + Math.cos(angle) * 22;
+      aiY = hs.y + Math.sin(angle) * 22;
+    } else if (t < 0.45) {
+      // AI backs off, human starts moving toward barrier
+      const p = easeInOut((t - 0.38) / 0.07);
+      aiX = lerp(hs.x + 22, hs.x + 50, p);
+      aiY = lerp(hs.y, H * 0.48, p);
+      humanX = lerp(hs.x, bx - 8, p);
+      humanY = lerp(hs.y, H * 0.48, p);
+    } else if (t < 0.58) {
+      // Human passes through barrier
+      const p = easeInOut((t - 0.45) / 0.13);
+      aiX = hs.x + 50;
+      aiY = H * 0.48;
+      humanX = lerp(bx - 8, bx + 60, p);
+      humanY = H * 0.48;
+      barrierDim = lerp(0.08, 0.03, Math.min(1, p * 2)); // dim barrier
+      if (p > 0.2 && p < 0.8) {
+        showGlow = true;
+        glowAlpha = Math.sin((p - 0.2) / 0.6 * Math.PI) * 0.6;
+      }
+    } else if (t < 0.70) {
+      // AI follows through
+      const p = easeInOut((t - 0.58) / 0.12);
+      aiX = lerp(hs.x + 50, bx + 80, p);
+      aiY = H * 0.48;
+      humanX = bx + 60;
+      humanY = H * 0.48;
+      barrierDim = 0.04;
+    } else if (t < 0.85) {
+      // Both on right, AI brightens
+      const p = (t - 0.70) / 0.15;
+      aiX = lerp(bx + 80, bx + 110, p);
+      aiY = H * 0.48;
+      humanX = bx + 60;
+      humanY = H * 0.48;
+      barrierDim = lerp(0.04, 0.08, p);
+    } else {
+      // Fade out
+      const p = (t - 0.85) / 0.15;
+      aiX = bx + 110;
+      aiY = H * 0.48;
+      humanX = bx + 60;
+      humanY = H * 0.48;
+      aiAlpha = lerp(1, 0, p);
+      humanAlpha = lerp(0.5, 0, p);
+    }
+
+    drawBarrier(barrierDim);
+
+    // Orange glow at crossing
+    if (showGlow) {
+      ctx!.beginPath();
+      ctx!.arc(bx, H * 0.48, 18, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(249,115,22,${glowAlpha})`;
+      ctx!.fill();
+    }
+
+    // Human (dim white)
+    drawParticle(humanX, humanY, 'rgb(232,232,232)', 4, humanAlpha * 0.7, 12);
+
+    // AI (orange)
+    drawParticle(aiX, aiY, 'rgb(249,115,22)', 5.5, aiAlpha, 16);
+  }
+
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = '#0d0d0d';
+    ctx!.fillRect(0, 0, W, H);
+    drawBarrier(0.06);
+    const bx = barrierX();
+    // AI on left
+    drawParticle(W * 0.18, H * 0.48, 'rgb(249,115,22)', 5.5, 0.9, 16);
+    // Human at barrier crossing
+    drawParticle(bx + 5, H * 0.48, 'rgb(232,232,232)', 4, 0.6, 12);
+    // Faint glow at crossing
+    ctx!.beginPath();
+    ctx!.arc(bx, H * 0.48, 16, 0, Math.PI * 2);
+    ctx!.fillStyle = 'rgba(249,115,22,0.2)';
+    ctx!.fill();
+  }
+
+  function tick() {
+    frame++;
+    draw(frame);
+    rafId = requestAnimationFrame(tick);
+  }
+
+  const ro = new ResizeObserver(() => {
+    resize();
+    if (reducedMotion) drawStatic();
+  });
+  ro.observe(canvas);
+  resize();
+
+  if (reducedMotion) {
+    drawStatic();
+  } else {
+    rafId = requestAnimationFrame(tick);
+  }
+
+  window.addEventListener('unload', () => {
+    cancelAnimationFrame(rafId);
+    ro.disconnect();
+  });
+})();
+</script>

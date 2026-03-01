@@ -73,6 +73,8 @@ const story = stories.find(s => s.slug === 'move-37')!;
   @media (max-width: 600px) {
     .game-record { grid-template-columns: repeat(3, 1fr); }
   }
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .move-37-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
 </style>
 
 <StoryLayout story={story}>
@@ -150,6 +152,11 @@ const story = stories.find(s => s.slug === 'move-37')!;
     </div>
   </div>
 </section>
+
+<div class="phantom-wrap">
+  <canvas class="move-37-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>Fifth Line</strong> — Human moves cluster predictably. Then one stone lands where no one has played before. For fifteen minutes, the room goes quiet.</p>
 
 <section class="section" id="the-move">
   <h2><span class="num">04 — The Move</span>What Happened on Turn 37</h2>
@@ -284,3 +291,272 @@ const story = stories.find(s => s.slug === 'move-37')!;
 
   </div>
 </StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.move-37-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const ACCENT = '#f59e0b';
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W = 0, H = 0, dpr = 1;
+
+  function resize() {
+    dpr = window.devicePixelRatio || 1;
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.scale(dpr, dpr);
+  }
+
+  // 9x9 grid layout
+  const GRID = 9;
+
+  function gridPoints(w: number, h: number): { x: number; y: number }[] {
+    const padX = w * 0.12, padY = h * 0.12;
+    const cellW = (w - padX * 2) / (GRID - 1);
+    const cellH = (h - padY * 2) / (GRID - 1);
+    const pts: { x: number; y: number }[] = [];
+    for (let r = 0; r < GRID; r++) {
+      for (let c = 0; c < GRID; c++) {
+        pts.push({ x: padX + c * cellW, y: padY + r * cellH });
+      }
+    }
+    return pts;
+  }
+
+  interface Stone { idx: number; color: 'black' | 'white' | 'amber'; alpha: number; placed: boolean; }
+
+  // Pre-determined stone placements (clustered, plausible Go pattern)
+  // Indices into 9x9 grid (row*9+col)
+  const HUMAN_MOVES: number[] = [
+    40, 38, 42, 31, 49, 30, 22, 48, 32, 50,
+    23, 39, 41, 21, 29, 37, 57, 13, 60, 28,
+    36, 44, 24, 14, 52, 20, 56, 64, 16, 8,
+    34, 46, 25, 43, 35, 27, 53, 45, 55, 47,
+    33, 26, 54, 19,
+  ]; // 44 stones
+
+  // Move 37 position: 5th line, column 7 (isolated from cluster)
+  const MOVE_37_IDX = 6; // row 0, col 6 — upper right area, 5th-line feel (row index in the full board would be 4 but we use top-right to suggest 5th line)
+  // Actually let's use row=4 (0-indexed), col=7 → idx = 4*9+7 = 43, but 43 is already used.
+  // Use row=1, col=7 → idx=16 — also used. Let's use row=3, col=8 → idx=35 — used.
+  // Use row=2, col=8 → idx=26 — used.
+  // Final: row=0, col=7 → idx=7 (top-right area, clearly isolated)
+  const M37 = 7;
+
+  function drawStatic() {
+    resize();
+    ctx.clearRect(0, 0, W, H);
+    const pts = gridPoints(W, H);
+
+    // grid lines
+    for (let r = 0; r < GRID; r++) {
+      for (let c = 0; c < GRID; c++) {
+        const i = r * GRID + c;
+        ctx.beginPath();
+        ctx.arc(pts[i].x, pts[i].y, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(232,232,232,0.06)';
+        ctx.fill();
+      }
+    }
+
+    // ~20 dim stones
+    for (let i = 0; i < 20; i++) {
+      const idx = HUMAN_MOVES[i];
+      const p = pts[idx];
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+      ctx.fillStyle = i % 2 === 0 ? 'rgba(232,232,232,0.22)' : 'rgba(40,40,40,0.9)';
+      ctx.fill();
+    }
+
+    // amber stone
+    const m = pts[M37];
+    const grad = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, 14);
+    grad.addColorStop(0, 'rgba(245,158,11,0.5)');
+    grad.addColorStop(1, 'rgba(245,158,11,0)');
+    ctx.beginPath();
+    ctx.arc(m.x, m.y, 14, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(m.x, m.y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = ACCENT;
+    ctx.fill();
+  }
+
+  if (prefersReduced) {
+    drawStatic();
+    return;
+  }
+
+  // Animation phases:
+  // Each stone appears every 8 frames → 44*8 = 352f
+  // Then Move 37 moment: arc in from off-screen + pulse (80f)
+  // Hold (80f), then all fade (60f), restart
+
+  const STONE_INTERVAL = 8;
+  const STONES_TOTAL = 44;
+  const STONES_PHASE = STONES_TOTAL * STONE_INTERVAL; // 352f
+  const ARC_IN_FRAMES = 60;
+  const HOLD_FRAMES = 80;
+  const PULSE_FRAMES = 60;
+  const FADE_FRAMES = 60;
+  const TOTAL = STONES_PHASE + ARC_IN_FRAMES + HOLD_FRAMES + PULSE_FRAMES + FADE_FRAMES + 40;
+
+  let frame = 0;
+  let rafId: number;
+  let stones: Stone[] = [];
+  let m37placed = false;
+  let pulseFrame = 0;
+
+  function initStones() {
+    stones = HUMAN_MOVES.map((idx, i) => ({
+      idx,
+      color: i % 2 === 0 ? 'white' : 'black',
+      alpha: 0,
+      placed: false,
+    }));
+    m37placed = false;
+    pulseFrame = 0;
+  }
+
+  function ease(t: number) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+
+  function draw() {
+    frame++;
+    ctx.clearRect(0, 0, W, H);
+
+    const pts = gridPoints(W, H);
+
+    // Draw grid dots
+    for (let r = 0; r < GRID; r++) {
+      for (let c = 0; c < GRID; c++) {
+        const i = r * GRID + c;
+        ctx.beginPath();
+        ctx.arc(pts[i].x, pts[i].y, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(232,232,232,0.06)';
+        ctx.fill();
+      }
+    }
+
+    const cycleFrame = frame % TOTAL;
+
+    if (cycleFrame === 0) initStones();
+
+    // Phase 1: place stones
+    if (cycleFrame < STONES_PHASE) {
+      const stonesVisible = Math.floor(cycleFrame / STONE_INTERVAL);
+      for (let i = 0; i < stones.length; i++) {
+        if (i < stonesVisible) {
+          stones[i].alpha = Math.min(1, stones[i].alpha + 0.08);
+          stones[i].placed = true;
+        }
+      }
+    }
+
+    // Phase 2: arc Move 37 in
+    const arcStart = STONES_PHASE;
+    if (cycleFrame >= arcStart && cycleFrame < arcStart + ARC_IN_FRAMES) {
+      // ensure all 44 stones are visible
+      for (const s of stones) { s.alpha = 1; s.placed = true; }
+      const t = (cycleFrame - arcStart) / ARC_IN_FRAMES;
+      const m = pts[M37];
+      const startX = W + 30, startY = -30;
+      const ex = ease(t);
+      const mX = startX + (m.x - startX) * ex;
+      const mY = startY + (m.y - startY) * ex;
+      // draw arc particle
+      ctx.beginPath();
+      ctx.arc(mX, mY, 8 * ex, 0, Math.PI * 2);
+      ctx.fillStyle = ACCENT;
+      ctx.globalAlpha = ex;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    // Phase 3: hold + pulse
+    const holdStart = arcStart + ARC_IN_FRAMES;
+    if (cycleFrame >= holdStart) {
+      for (const s of stones) { s.alpha = 1; s.placed = true; }
+      m37placed = true;
+    }
+
+    const pulseStart = holdStart + HOLD_FRAMES;
+    const fadeStart = pulseStart + PULSE_FRAMES;
+
+    // Draw all human stones
+    for (const s of stones) {
+      if (!s.placed || s.alpha <= 0) continue;
+      const p = pts[s.idx];
+      let alpha = s.alpha;
+
+      // pulse flash
+      if (cycleFrame >= holdStart && cycleFrame < holdStart + HOLD_FRAMES + PULSE_FRAMES) {
+        const pf = cycleFrame - holdStart;
+        const pulseAmt = Math.sin(pf * 0.2) * 0.15;
+        alpha = Math.min(1, alpha + pulseAmt);
+      }
+
+      // fade out
+      if (cycleFrame >= fadeStart) {
+        const fadeT = (cycleFrame - fadeStart) / FADE_FRAMES;
+        alpha *= 1 - fadeT;
+      }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+      ctx.fillStyle = s.color === 'white' ? 'rgba(232,232,232,0.22)' : 'rgba(30,30,30,0.9)';
+      ctx.globalAlpha = alpha;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    // Draw Move 37 amber stone
+    if (m37placed || (cycleFrame >= arcStart + ARC_IN_FRAMES)) {
+      const m = pts[M37];
+      let m37alpha = 1;
+
+      if (cycleFrame >= fadeStart) {
+        m37alpha = 1 - (cycleFrame - fadeStart) / FADE_FRAMES;
+      }
+
+      const coronaR = 18 + 4 * Math.sin(cycleFrame * 0.05);
+      const grad = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, coronaR);
+      grad.addColorStop(0, 'rgba(245,158,11,0.45)');
+      grad.addColorStop(1, 'rgba(245,158,11,0)');
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, coronaR, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.globalAlpha = m37alpha;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, 6, 0, Math.PI * 2);
+      ctx.fillStyle = ACCENT;
+      ctx.globalAlpha = m37alpha;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    rafId = requestAnimationFrame(draw);
+  }
+
+  resize();
+  initStones();
+  rafId = requestAnimationFrame(draw);
+
+  const ro = new ResizeObserver(() => { resize(); });
+  ro.observe(canvas);
+
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(rafId);
+    ro.disconnect();
+  });
+})();
+</script>

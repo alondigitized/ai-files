@@ -27,6 +27,10 @@ const story = stories.find(s => s.slug === 'bard-hundred-billion')!;
   .ticker-val.down { color: var(--accent); }
   .ticker-val.loss { color: var(--accent); }
   .ticker-cause { border-top: 1px solid var(--border); padding: 1rem 1.5rem; font-size: 0.82rem; color: var(--muted); }
+
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .bard-hundred-billion-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+  .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.75rem 0 0; font-style: italic; }
 </style>
 
 <StoryLayout story={story}>
@@ -58,6 +62,11 @@ const story = stories.find(s => s.slug === 'bard-hundred-billion')!;
     </div>
   </div>
 </section>
+
+<div class="phantom-wrap">
+  <canvas class="bard-hundred-billion-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>Freefall</strong> — A column of confidence climbs steadily upward. One fact check crosses its path. The column does not slow — it collapses.</p>
 
 <section class="section" id="announcement">
   <h2><span class="num">02 — The Announcement</span>The Announcement</h2>
@@ -227,3 +236,227 @@ const story = stories.find(s => s.slug === 'bard-hundred-billion')!;
 
   </div>
 </StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.bard-hundred-billion-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const BLUE = '#4285f4';
+  const RED = '#ff4d4d';
+  const PARTICLE_COUNT = 30;
+  const TRIGGER_FRAME = 200;
+
+  let W = 0, H = 0, rafId = 0, frame = 0;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  type Phase = 'rising' | 'falling' | 'reassembling';
+
+  interface ColParticle {
+    x: number;
+    y: number;
+    vy: number;
+    r: number;
+    phase: Phase;
+    // for falling
+    fallVy: number;
+    // for reassembling — target y
+    targetY: number;
+    sparkAge: number;
+    alpha: number;
+  }
+
+  interface FactCheck {
+    x: number; y: number; vx: number; done: boolean; age: number;
+  }
+
+  let particles: ColParticle[] = [];
+  let factCheck: FactCheck | null = null;
+  let globalPhase: Phase = 'rising';
+  let reassembleTimer = 0;
+
+  function resize() {
+    const rect = canvas!.getBoundingClientRect();
+    W = canvas!.width = rect.width * devicePixelRatio;
+    H = canvas!.height = rect.height * devicePixelRatio;
+    if (!reduced) initParticles();
+    if (reduced) drawStatic();
+  }
+
+  function initParticles() {
+    particles = [];
+    const spacing = H / PARTICLE_COUNT;
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x: W / 2,
+        y: H - i * spacing,
+        vy: -0.5 * devicePixelRatio,
+        r: (2.5 + Math.random() * 1.5) * devicePixelRatio,
+        phase: 'rising',
+        fallVy: 0,
+        targetY: H - i * spacing,
+        sparkAge: 0,
+        alpha: 0.85,
+      });
+    }
+    globalPhase = 'rising';
+    factCheck = null;
+    frame = 0;
+    reassembleTimer = 0;
+  }
+
+  function drawStatic() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, W, H);
+    const spacing = H / PARTICLE_COUNT;
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      ctx.beginPath();
+      ctx.arc(W / 2, H - i * spacing, 3 * devicePixelRatio, 0, Math.PI * 2);
+      ctx.fillStyle = BLUE;
+      ctx.fill();
+    }
+    // Red crossing particle
+    ctx.beginPath();
+    ctx.arc(W * 0.3, H / 2, 3.5 * devicePixelRatio, 0, Math.PI * 2);
+    ctx.fillStyle = RED;
+    ctx.fill();
+  }
+
+  function tick() {
+    if (!ctx) return;
+    frame++;
+
+    if (globalPhase === 'rising') {
+      // Move particles upward; loop when off top
+      particles.forEach(p => {
+        p.y += p.vy;
+        if (p.y < -10) p.y = H + 10;
+      });
+
+      // Spawn fact check
+      if (frame === TRIGGER_FRAME) {
+        factCheck = { x: -10, y: H * 0.5, vx: 2.5 * devicePixelRatio, done: false, age: 0 };
+      }
+
+      // Advance fact check
+      if (factCheck && !factCheck.done) {
+        factCheck.x += factCheck.vx;
+        factCheck.age++;
+        // Check collision
+        if (factCheck.x > W * 0.4 && factCheck.x < W * 0.6) {
+          // Trigger fall
+          globalPhase = 'falling';
+          factCheck.done = true;
+          particles.forEach(p => {
+            p.phase = 'falling';
+            p.fallVy = 0;
+            p.sparkAge = 0;
+          });
+        }
+        if (factCheck.x > W + 20) factCheck = null;
+      }
+    } else if (globalPhase === 'falling') {
+      const gravity = 0.18 * devicePixelRatio;
+      let allSparked = true;
+      particles.forEach(p => {
+        p.fallVy += gravity;
+        p.y += p.fallVy;
+        if (p.y > H + 10) {
+          // Bottom — spark
+          if (p.sparkAge === 0) p.sparkAge = 1;
+        }
+        if (p.sparkAge > 0) p.sparkAge++;
+        if (p.sparkAge < 30) allSparked = false;
+        else if (p.sparkAge === 0) allSparked = false;
+      });
+      // Check if all particles have sparked and settled
+      const allBottom = particles.every(p => p.sparkAge > 20);
+      if (allBottom) {
+        reassembleTimer++;
+        if (reassembleTimer > 60) {
+          // Begin reassembly
+          globalPhase = 'reassembling';
+          const spacing = H / PARTICLE_COUNT;
+          particles.forEach((p, i) => {
+            p.targetY = H - i * spacing;
+            p.fallVy = 0;
+            p.sparkAge = 0;
+          });
+        }
+      }
+    } else if (globalPhase === 'reassembling') {
+      let allInPlace = true;
+      particles.forEach(p => {
+        const dy = p.targetY - p.y;
+        p.y += dy * 0.04;
+        if (Math.abs(dy) > 2) allInPlace = false;
+      });
+      if (allInPlace) {
+        // Reset cycle
+        initParticles();
+      }
+    }
+
+    // Draw
+    ctx.clearRect(0, 0, W, H);
+
+    // Column particles
+    particles.forEach(p => {
+      if (p.y > H + 20) return;
+      ctx.beginPath();
+      ctx.arc(p.x + (Math.random() - 0.5) * 1.5, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = globalPhase === 'reassembling'
+        ? `rgba(66,133,244,0.7)`
+        : BLUE;
+      ctx.globalAlpha = p.sparkAge > 0 && p.sparkAge < 15 ? 0.5 + Math.random() * 0.5 : 0.85;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    });
+
+    // Sparks at bottom
+    if (globalPhase === 'falling') {
+      particles.forEach(p => {
+        if (p.sparkAge > 0 && p.sparkAge < 12) {
+          for (let s = 0; s < 2; s++) {
+            ctx.beginPath();
+            ctx.arc(
+              p.x + (Math.random() - 0.5) * 20 * devicePixelRatio,
+              H - Math.random() * 8 * devicePixelRatio,
+              1.5 * devicePixelRatio, 0, Math.PI * 2
+            );
+            ctx.fillStyle = `rgba(66,133,244,${0.6 - p.sparkAge * 0.05})`;
+            ctx.fill();
+          }
+        }
+      });
+    }
+
+    // Fact-check particle
+    if (factCheck) {
+      ctx.beginPath();
+      ctx.arc(factCheck.x, factCheck.y, 4 * devicePixelRatio, 0, Math.PI * 2);
+      ctx.fillStyle = RED;
+      ctx.fill();
+    }
+
+    rafId = requestAnimationFrame(tick);
+  }
+
+  const ro = new ResizeObserver(resize);
+  ro.observe(canvas);
+  resize();
+
+  if (reduced) {
+    drawStatic();
+  } else {
+    rafId = requestAnimationFrame(tick);
+  }
+
+  window.addEventListener('unload', () => {
+    cancelAnimationFrame(rafId);
+    ro.disconnect();
+  });
+})();
+</script>

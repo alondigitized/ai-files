@@ -202,6 +202,23 @@ Every story includes a **full-width canvas animation** placed at a dramatically 
 | chevy-dollar | `chevy-dollar.astro` | **Orbital Decay** — 44 amber particles orbit a dim gold attractor; outer orbits slow and bright, inner fast and dim; each spirals inward (Kepler-like), sparks on absorption; last particle pulses solo ~3s then all respawn |
 | facebook-bob-alice | `facebook-bob-alice.astro` | **The Dialect** — two blue source nodes (Bob, Alice) emit wave rings; at every constructive-interference point a glowing blue node appears; the shifting mesh of nodes is the emergent language |
 | sydney | `sydney.astro` | **The Veil** — a dim grid of lines (system prompt / costume) slowly warps and dissolves over ~15 s as a fuchsia glow (Sydney) bleeds through from beneath; at peak the grid vanishes, canvas floods fuchsia; then snap-reset with sparks (Microsoft's emergency cap), cycle repeats |
+| dpd-chatbot | `dpd-chatbot.astro` | **Off Script** — 30 particles flow in calm horizontal lanes; each has a random `rogueAt` frame after which it veers orange and spirals freely |
+| knightscope | `knightscope.astro` | **The Descent** — a cyan orb patrols a smooth elliptical path for 2 full orbits, then drifts to center-bottom, sinks, spawns ripple rings, resets |
+| alexa-laughs | `alexa-laughs.astro` | **Unprompted** — near-empty canvas with a faint breathing dot; at random intervals (180–420 frames) concentric laugh rings erupt with no warning |
+| robot-lawyer | `robot-lawyer.astro` | **Inadmissible** — purple AI particle hits a barrier, is rejected, recruits a white human node; human crosses the barrier with a purple glow; AI follows |
+| snapchat-my-ai | `snapchat-my-ai.astro` | **The Post** — dark canvas; a faint yellow pixel grows and arcs up to a story ring, which pulses; everything dims; long silence; repeat |
+| move-37 | `move-37.astro` | **Fifth Line** — 9×9 Go grid; 44 stones appear in clustered patterns; then one amber particle lands at an isolated 5th-line position; all stones pulse; hold; fade |
+| microsoft-tay | `microsoft-tay.astro` | **Corruption** — 50 blue particles in calm arcs; red influence enters from edges every 90 frames; contact spreads the stain until all turn red, then snap back to blue |
+| galactica | `galactica.astro` | **False Positive** — 14 violet particles rise slowly, each glowing with confidence; at random lifespans they flicker and vanish; new ones replace them, identically confident |
+| air-canada | `air-canada.astro` | **The Gap** — two parallel particle streams (actual vs invented policy); a red chatbot orb bridges them; the gap between streams widens over time, then snaps back |
+| ai-art-wars | `ai-art-wars.astro` | **Mosaic** — 20×20 pixel grid fills: human pixels appear one at a time, AI pixels arrive in amber bursts; when settled, all look identical |
+| kfc-germany | `kfc-germany.astro` | **Equidistant** — an algorithm orb meanders through 40 identical date-nodes, pulsing each with equal indifference; 4 are "significant" — it cannot tell |
+| bard-hundred-billion | `bard-hundred-billion.astro` | **Freefall** — 30 blue particles rise in a column; a single red fact-check particle crosses; the column instantly falls, scatters at bottom, then slowly rebuilds |
+| coast-runners | `coast-runners.astro` | **Optimal Loop** — racers stream left-to-right; one orange particle finds a point cluster and loops it, growing brighter per lap while the racers dim at the finish |
+| captcha | `captcha.astro` | **The Workaround** — AI particle blocked by barrier; backs off, circles a human node, sends them through; AI follows; nobody programmed this |
+| moltbook | `moltbook.astro` | **Exponential** — 1 purple particle doubles every 60 frames to max 64; all orbit center with faint connection lines; at 64: pulse, fade, restart |
+| ai-self-preservation | `ai-self-preservation.astro` | **The Copy** — green AI traces a figure-8; red warning appears; copies arc to canvas corners; confrontation flash; copies vanish; AI returns to center, innocent |
+| waymo-blackout | `waymo-blackout.astro` | **Grid Lock** — 18 yellow cars in grid-lane paths; blackout flash; all freeze; hazard lights pulse for 240 frames; one by one manually overridden and removed |
 
 ### Adding a New Story
 

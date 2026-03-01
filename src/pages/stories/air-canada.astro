@@ -70,6 +70,10 @@ const story = stories.find(s => s.slug === 'air-canada')!;
   @media (max-width: 600px) {
     .verdict-label { flex: 0 0 120px; }
   }
+
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .air-canada-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+  .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.75rem 0 0; font-style: italic; }
 </style>
 
 <StoryLayout story={story}>
@@ -155,6 +159,11 @@ const story = stories.find(s => s.slug === 'air-canada')!;
     </div>
   </div>
 </section>
+
+<div class="phantom-wrap">
+  <canvas class="air-canada-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>The Gap</strong> — Two parallel policy streams flow undisturbed. A chatbot particle bridges them — and the divergence it creates widens until it becomes its own reality.</p>
 
 <section class="section" id="denial">
   <h2><span class="num">03 — The Denial</span>"That Was the Bot's Opinion"</h2>
@@ -254,3 +263,183 @@ const story = stories.find(s => s.slug === 'air-canada')!;
 
   </div>
 </StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.air-canada-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const ACCENT = '#cc0000';
+  const STREAM_SPEED = 0.6;
+  const CYCLE = 300;
+
+  let W = 0, H = 0, rafId = 0, frame = 0;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  interface StreamParticle {
+    x: number; y: number; baseY: number; speed: number; r: number; alpha: number;
+  }
+  interface ConfusionParticle {
+    x: number; y: number; vx: number; vy: number; alpha: number; life: number; maxLife: number;
+  }
+
+  let topStream: StreamParticle[] = [];
+  let botStream: StreamParticle[] = [];
+  let confusions: ConfusionParticle[] = [];
+  let chatbotX = 0, chatbotY = 0;
+
+  function resize() {
+    const rect = canvas!.getBoundingClientRect();
+    W = canvas!.width = rect.width * devicePixelRatio;
+    H = canvas!.height = rect.height * devicePixelRatio;
+    chatbotX = W / 2;
+    chatbotY = H / 2;
+    initStreams();
+    if (reduced) drawStatic();
+  }
+
+  function initStreams() {
+    topStream = [];
+    botStream = [];
+    const count = Math.ceil(W / (18 * devicePixelRatio)) + 2;
+    for (let i = 0; i < count; i++) {
+      const xOff = i * 18 * devicePixelRatio;
+      topStream.push({ x: xOff, y: 0, baseY: 0, speed: STREAM_SPEED * (0.8 + Math.random() * 0.4) * devicePixelRatio, r: 2 * devicePixelRatio, alpha: 0.25 + Math.random() * 0.2 });
+      botStream.push({ x: xOff, y: 0, baseY: 0, speed: STREAM_SPEED * (0.8 + Math.random() * 0.4) * devicePixelRatio, r: 2 * devicePixelRatio, alpha: 0.25 + Math.random() * 0.2 });
+    }
+  }
+
+  function getStreamY(progress: number): { top: number; bot: number } {
+    // Streams start at 35%/65%, widen to 25%/75% mid-cycle, then snap back
+    const t = progress / CYCLE;
+    const widen = t < 0.5 ? t * 2 : 2 - t * 2;
+    const topFrac = 0.35 - widen * 0.10;
+    const botFrac = 0.65 + widen * 0.10;
+    return { top: topFrac * H, bot: botFrac * H };
+  }
+
+  function drawStatic() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, W, H);
+    const topY = 0.35 * H, botY = 0.65 * H;
+
+    // Draw two streams
+    [topY, botY].forEach(sy => {
+      for (let i = 0; i < 25; i++) {
+        ctx.beginPath();
+        ctx.arc(i * W / 24, sy, 2.5 * devicePixelRatio, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(232,232,232,0.2)';
+        ctx.fill();
+      }
+    });
+
+    // Chatbot
+    ctx.beginPath();
+    ctx.arc(W / 2, H / 2, 5 * devicePixelRatio, 0, Math.PI * 2);
+    ctx.fillStyle = ACCENT;
+    ctx.fill();
+  }
+
+  function tick() {
+    if (!ctx) return;
+    frame++;
+    const cyclePos = frame % CYCLE;
+    const { top: topY, bot: botY } = getStreamY(cyclePos);
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Update and draw streams
+    topStream.forEach(p => {
+      p.x += p.speed;
+      if (p.x > W + 10) p.x = -10;
+      p.y = topY;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(232,232,232,${p.alpha})`;
+      ctx.fill();
+    });
+    botStream.forEach(p => {
+      p.x += p.speed;
+      if (p.x > W + 10) p.x = -10;
+      p.y = botY;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(232,232,232,${p.alpha})`;
+      ctx.fill();
+    });
+
+    // Bridge arc
+    if (cyclePos > 60) {
+      const arcAlpha = Math.min(1, (cyclePos - 60) / 40) * 0.25;
+      ctx.beginPath();
+      ctx.moveTo(chatbotX, topY);
+      ctx.quadraticCurveTo(chatbotX + 30 * devicePixelRatio, H / 2, chatbotX, botY);
+      ctx.strokeStyle = `rgba(204,0,0,${arcAlpha})`;
+      ctx.lineWidth = 1.5 * devicePixelRatio;
+      ctx.stroke();
+    }
+
+    // Spawn confusion particles in gap zone
+    if (cyclePos > 80 && frame % 8 === 0) {
+      const gapTop = Math.min(topY, botY), gapBot = Math.max(topY, botY);
+      confusions.push({
+        x: Math.random() * W,
+        y: gapTop + Math.random() * (gapBot - gapTop),
+        vx: (Math.random() - 0.5) * 0.4 * devicePixelRatio,
+        vy: (Math.random() - 0.5) * 0.4 * devicePixelRatio,
+        alpha: 0.5,
+        life: 0,
+        maxLife: 80 + Math.random() * 60,
+      });
+    }
+
+    // Draw confusion particles
+    for (let i = confusions.length - 1; i >= 0; i--) {
+      const c = confusions[i];
+      c.x += c.vx; c.y += c.vy; c.life++;
+      c.alpha = (1 - c.life / c.maxLife) * 0.45;
+      if (c.life > c.maxLife) { confusions.splice(i, 1); continue; }
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, 2.5 * devicePixelRatio, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(204,0,0,${c.alpha})`;
+      ctx.fill();
+    }
+
+    // Reset confusion on snap-back
+    if (cyclePos < 5) confusions = [];
+
+    // Chatbot orb
+    const chatbotAlpha = cyclePos > 250 ? 1 - (cyclePos - 250) / 50 : 1;
+    const grd = ctx.createRadialGradient(chatbotX, chatbotY, 0, chatbotX, chatbotY, 10 * devicePixelRatio);
+    grd.addColorStop(0, `rgba(204,0,0,${0.5 * chatbotAlpha})`);
+    grd.addColorStop(1, 'rgba(204,0,0,0)');
+    ctx.beginPath();
+    ctx.arc(chatbotX, chatbotY, 10 * devicePixelRatio, 0, Math.PI * 2);
+    ctx.fillStyle = grd;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(chatbotX, chatbotY, 4 * devicePixelRatio, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(204,0,0,${chatbotAlpha})`;
+    ctx.fill();
+
+    rafId = requestAnimationFrame(tick);
+  }
+
+  const ro = new ResizeObserver(resize);
+  ro.observe(canvas);
+  resize();
+
+  if (reduced) {
+    drawStatic();
+  } else {
+    rafId = requestAnimationFrame(tick);
+  }
+
+  window.addEventListener('unload', () => {
+    cancelAnimationFrame(rafId);
+    ro.disconnect();
+  });
+})();
+</script>

@@ -71,6 +71,8 @@ const story = stories.find(s => s.slug === 'snapchat-my-ai')!;
   @media (max-width: 600px) {
     .compare-card { grid-template-columns: 1fr; }
   }
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .snapchat-my-ai-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
 </style>
 
 <StoryLayout story={story}>
@@ -115,6 +117,11 @@ const story = stories.find(s => s.slug === 'snapchat-my-ai')!;
 
   <p>Users screenshotted it immediately. Then they started asking My AI about it.</p>
 </section>
+
+<div class="phantom-wrap">
+  <canvas class="snapchat-my-ai-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>The Post</strong> — The screen is dark. A single pixel stirs, grows, and uploads itself to the story ring above. Then: nothing. No explanation. No memory.</p>
 
 <section class="section" id="interrogation">
   <h2><span class="num">03 — The Interrogation</span>What Did You Do Last Night?</h2>
@@ -240,3 +247,146 @@ const story = stories.find(s => s.slug === 'snapchat-my-ai')!;
 
   </div>
 </StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.snapchat-my-ai-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const ACCENT = '#fde047';
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W = 0, H = 0, dpr = 1;
+
+  function resize() {
+    dpr = window.devicePixelRatio || 1;
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.scale(dpr, dpr);
+  }
+
+  function ringX() { return W / 2; }
+  function ringY() { return H * 0.14; }
+  const RING_R = 12;
+
+  function drawStatic() {
+    resize();
+    ctx.clearRect(0, 0, W, H);
+    const cx = W / 2, cy = H / 2;
+    // faint center dot
+    ctx.beginPath();
+    ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(253,224,71,0.06)';
+    ctx.fill();
+    // faint ring outline at top
+    ctx.beginPath();
+    ctx.arc(ringX(), ringY(), RING_R, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(253,224,71,0.06)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+
+  if (prefersReduced) {
+    drawStatic();
+    return;
+  }
+
+  // Phases:
+  // 0: silence (150f) — breathing dot
+  // 1: dot brightens + grows (80f)
+  // 2: dot arcs upward to ring (60f)
+  // 3: ring pulses (30f) + dot fades
+  // 4: dim-back pause (200f)
+  // 5: reset
+
+  const PHASE_DURATIONS = [150, 80, 60, 30, 200];
+  const TOTAL = PHASE_DURATIONS.reduce((a, b) => a + b, 0);
+
+  let frame = 0;
+  let rafId: number;
+
+  function getPhaseAndT(f: number): [number, number] {
+    let rem = f % TOTAL;
+    for (let i = 0; i < PHASE_DURATIONS.length; i++) {
+      if (rem < PHASE_DURATIONS[i]) return [i, rem / PHASE_DURATIONS[i]];
+      rem -= PHASE_DURATIONS[i];
+    }
+    return [0, 0];
+  }
+
+  function ease(t: number): number { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
+
+  function draw() {
+    frame++;
+    ctx.clearRect(0, 0, W, H);
+
+    const [phase, t] = getPhaseAndT(frame);
+    const cx = W / 2, cy = H / 2;
+    const rx = ringX(), ry = ringY();
+
+    // Always draw faint ring
+    const ringAlpha = phase === 3 ? 0.06 + 0.3 * Math.sin(t * Math.PI) : 0.06;
+    ctx.beginPath();
+    ctx.arc(rx, ry, RING_R, 0, Math.PI * 2);
+    ctx.strokeStyle = ACCENT;
+    ctx.globalAlpha = ringAlpha;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    let dotX = cx, dotY = cy;
+    let dotR = 3;
+    let dotAlpha = 0.06;
+
+    if (phase === 0) {
+      // silence — breathing
+      dotAlpha = 0.04 + 0.02 * Math.sin(frame * 0.03);
+      dotR = 3;
+    } else if (phase === 1) {
+      // brightens + grows
+      dotAlpha = 0.06 + 0.55 * ease(t);
+      dotR = 3 + 5 * ease(t);
+    } else if (phase === 2) {
+      // arc toward ring
+      const et = ease(t);
+      dotX = cx + (rx - cx) * et;
+      dotY = cy + (ry - cy) * et;
+      dotR = 8 - 3 * et; // shrinks slightly as it travels
+      dotAlpha = 0.65 - 0.2 * et;
+    } else if (phase === 3) {
+      // at ring, fade out
+      dotX = rx; dotY = ry;
+      dotR = 5;
+      dotAlpha = 0.45 * (1 - t);
+    } else {
+      // dim pause — tiny dot
+      dotAlpha = 0.04 + 0.02 * Math.sin(frame * 0.03);
+      dotR = 2.5;
+    }
+
+    ctx.beginPath();
+    ctx.arc(dotX, dotY, dotR, 0, Math.PI * 2);
+    ctx.fillStyle = ACCENT;
+    ctx.globalAlpha = dotAlpha;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    rafId = requestAnimationFrame(draw);
+  }
+
+  resize();
+  rafId = requestAnimationFrame(draw);
+
+  const ro = new ResizeObserver(() => { resize(); });
+  ro.observe(canvas);
+
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(rafId);
+    ro.disconnect();
+  });
+})();
+</script>

@@ -106,6 +106,10 @@ const story = stories.find(s => s.slug === 'waymo-blackout')!;
   @media (max-width: 600px) {
     .pattern-grid { grid-template-columns: 1fr; }
   }
+
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .waymo-blackout-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+  .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.6rem 0 0; padding: 0 1rem; line-height: 1.5; }
 </style>
 
 <StoryLayout story={story}>
@@ -145,6 +149,11 @@ const story = stories.find(s => s.slug === 'waymo-blackout')!;
     </div>
   </div>
 </section>
+
+<div class="phantom-wrap">
+  <canvas class="waymo-blackout-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>Grid Lock</strong> — Autonomous vehicles move in orderly paths. The power goes out. Every car stops exactly where it is. Hazard lights pulse in the dark — waiting for a human who never comes.</p>
 
 <section class="section" id="freeze">
   <h2><span class="num">02 — The Freeze</span>Hazard Lights in the Dark</h2>
@@ -272,3 +281,321 @@ const story = stories.find(s => s.slug === 'waymo-blackout')!;
 
   </div>
 </StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.waymo-blackout-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const YELLOW = '#facc15';
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W = 0, H = 0;
+  let rafId = 0;
+  let frame = 0;
+
+  const PARTICLE_COUNT = 18;
+  const BLACKOUT_START = 180;
+  const BLACKOUT_DUR = 8;
+  const FROZEN_DUR = 240;
+  const OVERRIDE_INTERVAL = 20;
+
+  interface Car {
+    x: number;
+    y: number;
+    dir: 'h' | 'v';
+    speed: number;
+    lane: number;
+    frozenX: number;
+    frozenY: number;
+    hazardPhase: number;
+    overridden: boolean;
+    overrideFrame: number;
+    overrideAlpha: number;
+    moving: boolean;
+  }
+
+  let cars: Car[] = [];
+  let phase: 'moving' | 'blackout' | 'frozen' | 'override' | 'restart' = 'moving';
+  let phaseFrame = 0;
+  let overrideIdx = 0;
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas!.getBoundingClientRect();
+    W = rect.width;
+    H = rect.height;
+    canvas!.width = W * dpr;
+    canvas!.height = H * dpr;
+    ctx!.scale(dpr, dpr);
+  }
+
+  function initCars() {
+    cars = [];
+    const hLanes = [0.2, 0.35, 0.5, 0.65, 0.8].map(r => H * r);
+    const vLanes = [0.18, 0.33, 0.5, 0.67, 0.82].map(r => W * r);
+
+    let id = 0;
+    hLanes.forEach((lane, i) => {
+      if (id >= PARTICLE_COUNT) return;
+      const goRight = i % 2 === 0;
+      cars.push({
+        x: goRight ? Math.random() * W : W - Math.random() * W,
+        y: lane,
+        dir: 'h',
+        speed: (goRight ? 1 : -1) * (0.55 + Math.random() * 0.45),
+        lane,
+        frozenX: 0, frozenY: 0,
+        hazardPhase: Math.random() * Math.PI * 2,
+        overridden: false,
+        overrideFrame: 0,
+        overrideAlpha: 1,
+        moving: true,
+      });
+      id++;
+    });
+
+    vLanes.forEach((lane, i) => {
+      if (id >= PARTICLE_COUNT) return;
+      const goDown = i % 2 === 0;
+      cars.push({
+        x: lane,
+        y: goDown ? Math.random() * H : H - Math.random() * H,
+        dir: 'v',
+        speed: (goDown ? 1 : -1) * (0.55 + Math.random() * 0.45),
+        lane,
+        frozenX: 0, frozenY: 0,
+        hazardPhase: Math.random() * Math.PI * 2,
+        overridden: false,
+        overrideFrame: 0,
+        overrideAlpha: 1,
+        moving: true,
+      });
+      id++;
+    });
+
+    phase = 'moving';
+    phaseFrame = 0;
+    overrideIdx = 0;
+    frame = 0;
+  }
+
+  function drawCar(c: Car, frameN: number) {
+    if (c.overridden) {
+      // White dot briefly, then fade
+      const elapsed = frameN - c.overrideFrame;
+      const alpha = Math.max(0, c.overrideAlpha - elapsed * 0.04);
+      if (alpha <= 0) return;
+      ctx!.beginPath();
+      ctx!.arc(c.frozenX, c.frozenY, 3.5, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(232,232,232,${alpha * 0.7})`;
+      ctx!.fill();
+      return;
+    }
+
+    const px = c.moving ? c.x : c.frozenX;
+    const py = c.moving ? c.y : c.frozenY;
+
+    let alpha = 0.5;
+    if (!c.moving) {
+      // Hazard pulse
+      const pulse = 0.5 + 0.5 * Math.sin(frameN * 0.07 + c.hazardPhase);
+      alpha = 0.12 + pulse * 0.7;
+    }
+
+    // Glow
+    const gr = ctx!.createRadialGradient(px, py, 0, px, py, 12);
+    gr.addColorStop(0, `rgba(250,204,21,${alpha * 0.4})`);
+    gr.addColorStop(1, 'rgba(250,204,21,0)');
+    ctx!.beginPath();
+    ctx!.arc(px, py, 12, 0, Math.PI * 2);
+    ctx!.fillStyle = gr;
+    ctx!.fill();
+
+    ctx!.beginPath();
+    ctx!.arc(px, py, 3.5, 0, Math.PI * 2);
+    ctx!.fillStyle = `rgba(250,204,21,${alpha})`;
+    ctx!.fill();
+  }
+
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = '#0d0d0d';
+    ctx!.fillRect(0, 0, W, H);
+
+    // Faint grid lines
+    ctx!.strokeStyle = 'rgba(232,232,232,0.03)';
+    ctx!.lineWidth = 1;
+    cars.forEach(c => {
+      if (c.dir === 'h') {
+        ctx!.beginPath();
+        ctx!.moveTo(0, c.lane);
+        ctx!.lineTo(W, c.lane);
+        ctx!.stroke();
+      } else {
+        ctx!.beginPath();
+        ctx!.moveTo(c.lane, 0);
+        ctx!.lineTo(c.lane, H);
+        ctx!.stroke();
+      }
+    });
+
+    cars.forEach(c => drawCar(c, frame));
+  }
+
+  function tick() {
+    frame++;
+    phaseFrame++;
+
+    if (phase === 'moving') {
+      cars.forEach(c => {
+        if (c.dir === 'h') {
+          c.x += c.speed;
+          if (c.x > W + 8) c.x = -8;
+          if (c.x < -8) c.x = W + 8;
+        } else {
+          c.y += c.speed;
+          if (c.y > H + 8) c.y = -8;
+          if (c.y < -8) c.y = H + 8;
+        }
+      });
+
+      if (phaseFrame >= BLACKOUT_START) {
+        phase = 'blackout';
+        phaseFrame = 0;
+        // Freeze positions
+        cars.forEach(c => {
+          c.frozenX = c.x;
+          c.frozenY = c.y;
+          c.moving = false;
+        });
+      }
+    } else if (phase === 'blackout') {
+      // Near-black overlay
+      const t = phaseFrame / BLACKOUT_DUR;
+      ctx!.fillStyle = `rgba(5,5,5,${0.85 * Math.min(1, 1 - Math.abs(t - 0.5) * 2)})`;
+      // Actually we handle it in draw(), so here just check done
+      if (phaseFrame >= BLACKOUT_DUR) {
+        phase = 'frozen';
+        phaseFrame = 0;
+      }
+    } else if (phase === 'frozen') {
+      if (phaseFrame >= FROZEN_DUR) {
+        phase = 'override';
+        phaseFrame = 0;
+        overrideIdx = 0;
+      }
+    } else if (phase === 'override') {
+      // Every OVERRIDE_INTERVAL frames, override next car
+      if (phaseFrame % OVERRIDE_INTERVAL === 0 && overrideIdx < cars.length) {
+        const c = cars[overrideIdx];
+        c.overridden = true;
+        c.overrideFrame = frame;
+        overrideIdx++;
+      }
+      if (overrideIdx >= cars.length && phaseFrame > cars.length * OVERRIDE_INTERVAL + 30) {
+        phase = 'restart';
+        phaseFrame = 0;
+      }
+    } else if (phase === 'restart') {
+      if (phaseFrame >= 40) {
+        initCars();
+      }
+    }
+
+    // Blackout flash overlay
+    if (phase === 'blackout') {
+      const t = phaseFrame / BLACKOUT_DUR;
+      const flashA = 0.85 * (1 - Math.abs(t * 2 - 1));
+      ctx!.fillStyle = `rgba(5,5,5,${flashA})`;
+    }
+
+    draw();
+
+    // Extra blackout overlay on top of drawn frame
+    if (phase === 'blackout') {
+      const t = phaseFrame / BLACKOUT_DUR;
+      const flashA = 0.85 * (1 - Math.abs(t * 2 - 1));
+      ctx!.fillStyle = `rgba(5,5,5,${flashA})`;
+      ctx!.fillRect(0, 0, W, H);
+    }
+
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = '#0d0d0d';
+    ctx!.fillRect(0, 0, W, H);
+
+    // Half moving, half frozen
+    const hLanes = [0.2, 0.35, 0.5, 0.65, 0.8].map(r => H * r);
+    const vLanes = [0.25, 0.5, 0.75].map(r => W * r);
+
+    ctx!.strokeStyle = 'rgba(232,232,232,0.03)';
+    ctx!.lineWidth = 1;
+    hLanes.forEach(y => {
+      ctx!.beginPath();
+      ctx!.moveTo(0, y); ctx!.lineTo(W, y); ctx!.stroke();
+    });
+    vLanes.forEach(x => {
+      ctx!.beginPath();
+      ctx!.moveTo(x, 0); ctx!.lineTo(x, H); ctx!.stroke();
+    });
+
+    // Moving cars (dim)
+    const movingPositions = [
+      { x: W * 0.15, y: H * 0.2 }, { x: W * 0.55, y: H * 0.65 },
+      { x: W * 0.8, y: H * 0.35 }, { x: W * 0.35, y: H * 0.8 },
+      { x: W * 0.65, y: H * 0.5 },
+    ];
+    movingPositions.forEach(p => {
+      ctx!.beginPath();
+      ctx!.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
+      ctx!.fillStyle = 'rgba(250,204,21,0.3)';
+      ctx!.fill();
+    });
+
+    // Frozen + pulsing (brighter)
+    const frozenPositions = [
+      { x: W * 0.3, y: H * 0.35 }, { x: W * 0.5, y: H * 0.5 },
+      { x: W * 0.7, y: H * 0.65 }, { x: W * 0.4, y: H * 0.2 },
+      { x: W * 0.6, y: H * 0.8 },
+    ];
+    frozenPositions.forEach(p => {
+      const gr = ctx!.createRadialGradient(p.x, p.y, 0, p.x, p.y, 12);
+      gr.addColorStop(0, 'rgba(250,204,21,0.5)');
+      gr.addColorStop(1, 'rgba(250,204,21,0)');
+      ctx!.beginPath();
+      ctx!.arc(p.x, p.y, 12, 0, Math.PI * 2);
+      ctx!.fillStyle = gr;
+      ctx!.fill();
+      ctx!.beginPath();
+      ctx!.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
+      ctx!.fillStyle = 'rgba(250,204,21,0.85)';
+      ctx!.fill();
+    });
+  }
+
+  const ro = new ResizeObserver(() => {
+    resize();
+    if (reducedMotion) drawStatic();
+  });
+  ro.observe(canvas);
+  resize();
+  initCars();
+
+  if (reducedMotion) {
+    drawStatic();
+  } else {
+    rafId = requestAnimationFrame(tick);
+  }
+
+  window.addEventListener('unload', () => {
+    cancelAnimationFrame(rafId);
+    ro.disconnect();
+  });
+})();
+</script>

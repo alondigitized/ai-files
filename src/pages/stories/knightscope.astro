@@ -50,6 +50,8 @@ const story = stories.find(s => s.slug === 'knightscope')!;
     background: linear-gradient(to top, rgba(56,189,248,0.08), transparent);
     border-top: 1px solid rgba(56,189,248,0.15);
   }
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .knightscope-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
 </style>
 
 <StoryLayout story={story}>
@@ -90,6 +92,11 @@ const story = stories.find(s => s.slug === 'knightscope')!;
     <div class="ir-row"><span class="ir-label">Fountains prevented:</span><span class="ir-value">0</span></div>
   </div>
 </section>
+
+<div class="phantom-wrap">
+  <canvas class="knightscope-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>The Descent</strong> — A security robot patrols its assigned perimeter. Then, on one quiet pass, it drifts inward and does not stop. The fountain was not on the map.</p>
 
 <section class="section" id="response">
   <h2><span class="num">03 — Response</span>The Internet Reacts</h2>
@@ -175,3 +182,187 @@ const story = stories.find(s => s.slug === 'knightscope')!;
 
   </div>
 </StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.knightscope-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const ACCENT = '#38bdf8';
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W = 0, H = 0, dpr = 1;
+
+  function resize() {
+    dpr = window.devicePixelRatio || 1;
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.scale(dpr, dpr);
+  }
+
+  // Ellipse parameters (fraction of canvas)
+  function cx() { return W * 0.5; }
+  function cy() { return H * 0.5; }
+  function rx() { return W * 0.35; }
+  function ry() { return H * 0.30; }
+
+  const ORBIT_SPEED = 0.008; // rad/frame
+  const FULL_ORBIT = Math.PI * 2;
+  const ORBITS_BEFORE_DESCENT = 2;
+  const DESCENT_TARGET_X_FRAC = 0.5;
+  const DESCENT_TARGET_Y_FRAC = 0.82;
+  const SINK_FRAMES = 60;
+  const RIPPLE_COUNT = 6;
+
+  interface Ripple { x: number; y: number; r: number; alpha: number; }
+
+  let angle = -Math.PI / 2;
+  let totalAngle = 0;
+  let phase: 'orbit' | 'descend' | 'sink' | 'reset' = 'orbit';
+  let sinkFrame = 0;
+  let orbX = 0, orbY = 0;
+  let destX = 0, destY = 0;
+  let ripples: Ripple[] = [];
+
+  function resetCycle() {
+    angle = -Math.PI / 2;
+    totalAngle = 0;
+    phase = 'orbit';
+    sinkFrame = 0;
+    ripples = [];
+  }
+
+  function drawStatic() {
+    resize();
+    ctx.clearRect(0, 0, W, H);
+    // draw faint ellipse
+    ctx.beginPath();
+    ctx.ellipse(cx(), cy(), rx(), ry(), 0, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(56,189,248,0.08)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    // orb at top
+    const ox = cx();
+    const oy = cy() - ry();
+    ctx.beginPath();
+    ctx.arc(ox, oy, 8, 0, Math.PI * 2);
+    ctx.fillStyle = ACCENT;
+    ctx.fill();
+  }
+
+  if (prefersReduced) {
+    drawStatic();
+    return;
+  }
+
+  let rafId: number;
+  let frame = 0;
+
+  function draw() {
+    frame++;
+    ctx.clearRect(0, 0, W, H);
+
+    // faint ellipse guide
+    ctx.beginPath();
+    ctx.ellipse(cx(), cy(), rx(), ry(), 0, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(232,232,232,0.05)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    if (phase === 'orbit') {
+      angle += ORBIT_SPEED;
+      totalAngle += ORBIT_SPEED;
+      orbX = cx() + Math.cos(angle) * rx();
+      orbY = cy() + Math.sin(angle) * ry();
+
+      if (totalAngle >= FULL_ORBIT * ORBITS_BEFORE_DESCENT) {
+        phase = 'descend';
+        destX = W * DESCENT_TARGET_X_FRAC;
+        destY = H * DESCENT_TARGET_Y_FRAC;
+      }
+    } else if (phase === 'descend') {
+      const wobble = Math.sin(frame * 0.08) * 3;
+      orbX += (destX - orbX) * 0.012 + wobble;
+      orbY += (destY - orbY) * 0.012;
+
+      if (Math.abs(orbX - destX) < 4 && Math.abs(orbY - destY) < 4) {
+        phase = 'sink';
+        sinkFrame = 0;
+        // spawn ripples
+        for (let i = 0; i < RIPPLE_COUNT; i++) {
+          ripples.push({ x: orbX, y: orbY, r: 4 + i * 8, alpha: 0.6 - i * 0.08 });
+        }
+      }
+    } else if (phase === 'sink') {
+      sinkFrame++;
+      const progress = sinkFrame / SINK_FRAMES;
+
+      // draw shrinking orb
+      const r = 8 * (1 - progress);
+      if (r > 0) {
+        ctx.beginPath();
+        ctx.arc(orbX, orbY, r, 0, Math.PI * 2);
+        ctx.fillStyle = ACCENT;
+        ctx.globalAlpha = 1 - progress;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+
+      // update + draw ripples
+      for (const rip of ripples) {
+        rip.r += 1.8;
+        rip.alpha *= 0.96;
+        if (rip.alpha > 0.01) {
+          ctx.beginPath();
+          ctx.arc(rip.x, rip.y, rip.r, 0, Math.PI * 2);
+          ctx.strokeStyle = ACCENT;
+          ctx.globalAlpha = rip.alpha;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          ctx.globalAlpha = 1;
+        }
+      }
+
+      if (sinkFrame > SINK_FRAMES + 60) {
+        resetCycle();
+        return;
+      }
+      rafId = requestAnimationFrame(draw);
+      return;
+    }
+
+    // draw orb glow
+    const grad = ctx.createRadialGradient(orbX, orbY, 0, orbX, orbY, 18);
+    grad.addColorStop(0, 'rgba(56,189,248,0.4)');
+    grad.addColorStop(1, 'rgba(56,189,248,0)');
+    ctx.beginPath();
+    ctx.arc(orbX, orbY, 18, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // draw orb
+    ctx.beginPath();
+    ctx.arc(orbX, orbY, 8, 0, Math.PI * 2);
+    ctx.fillStyle = ACCENT;
+    ctx.fill();
+
+    rafId = requestAnimationFrame(draw);
+  }
+
+  resize();
+  resetCycle();
+  rafId = requestAnimationFrame(draw);
+
+  const ro = new ResizeObserver(() => { resize(); });
+  ro.observe(canvas);
+
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(rafId);
+    ro.disconnect();
+  });
+})();
+</script>
