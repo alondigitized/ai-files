@@ -23,7 +23,7 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
     <div class="phantom-wrap">
       <canvas class="chevy-canvas" aria-hidden="true"></canvas>
     </div>
-    <p class="canvas-note"><strong>Sticker Shock</strong> — A $58,000 Tahoe. The AI confirms the sale. The price: $1.</p>
+    <p class="canvas-note"><strong>The Accord</strong> — The bot and customer reach toward each other and seal the deal. The dealer's authorization pulse dies in the air. The commitment holds — then fractures.</p>
 
     <div class="section">
       <h2><span class="num">Section 02</span>The Negotiation</h2>
@@ -161,198 +161,292 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
   let raf = 0;
   let fr = 0;
 
-  interface Ring { r: number; alpha: number; idx: number; }
+  interface Ring     { r: number; alpha: number; idx: number; }
+  interface PulseRing { r: number; alpha: number; maxR: number; }
 
-  const AMB = 'rgba(251,191,36,';
   let W = 0, H = 0, CX = 0, CY = 0, dpr = 1;
-  let s = 0;
-  let carCX = 0, carCY = 0;
-  let dollarX = 0, dollarY = 0;
-  let maxR = 0;
-  let rings: Ring[] = [];
+  let custStartX = 0, custEndX = 0, custY = 0;
+  let botX = 0, botY = 0;
+  let dealerX = 0, dealerY = 0;
+  let mx = 0, my = 0;
+  let mainMaxR = 0;
+  let mainRings: Ring[]      = [];
+  let pulseRings: PulseRing[] = [];
 
-  const CAR_IN   = 40;
-  const SLAM     = 75;
-  const HOLD_END = 255;
-  const FADE_END = 330;
+  const FADE_END = 60;
+  const CONTACT  = 100;
+  const FORM_END = 130;
+  const HOLD_END = 260;
+  const FADE_OUT = 330;
   const TOTAL    = 390;
 
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     const rect = cv.getBoundingClientRect();
-    W = rect.width * dpr;
+    W = rect.width  * dpr;
     H = rect.height * dpr;
-    cv.width = W;
+    cv.width  = W;
     cv.height = H;
     CX = W / 2;
     CY = H / 2;
-    s = Math.min(W * 0.19, 110 * dpr);
-    carCX  = CX;
-    carCY  = CY - 30 * dpr;
-    dollarX = CX;
-    dollarY = CY + 80 * dpr;
-    maxR = 0.38 * Math.min(W, H);
-    fr = 0;
-    rings = [];
+    custStartX = CX - 0.30 * W;
+    custEndX   = CX - 0.15 * W;
+    custY      = CY;
+    botX       = CX + 0.15 * W;
+    botY       = CY;
+    dealerX    = CX;
+    dealerY    = CY - 0.28 * H;
+    mx         = CX;
+    my         = CY;
+    mainMaxR   = 0.38 * Math.min(W, H);
+    fr         = 0;
+    mainRings  = [];
+    pulseRings = [];
   }
 
-  function getCarAlpha(): number {
-    if (fr < CAR_IN)  return fr / CAR_IN;
-    if (fr <= HOLD_END) return 1;
-    if (fr <= FADE_END) return 1 - (fr - HOLD_END) / (FADE_END - HOLD_END);
+  function easeInOut(t: number): number { return t * t * (3 - 2 * t); }
+
+  function getCustX(): number {
+    if (fr < FADE_END) return custStartX;
+    if (fr < CONTACT) {
+      const t = (fr - FADE_END) / (CONTACT - FADE_END);
+      return custStartX + (custEndX - custStartX) * easeInOut(t);
+    }
+    return custEndX;
+  }
+
+  function getNodeAlpha(base: number): number {
+    if (fr < FADE_END)  return base * fr / FADE_END;
+    if (fr <= HOLD_END) return base;
+    if (fr <= FADE_OUT) return base * (1 - (fr - HOLD_END) / (FADE_OUT - HOLD_END));
     return 0;
   }
 
-  function getDollarAlpha(): number {
-    if (fr < 55)      return 0;
-    if (fr < SLAM)    return (fr - 55) / (SLAM - 55);
-    if (fr <= HOLD_END) return 1;
-    if (fr <= FADE_END) return 1 - (fr - HOLD_END) / (FADE_END - HOLD_END);
+  function getDealerAlpha(): number {
+    if (fr < FADE_END)  return 0.25 * fr / FADE_END;
+    if (fr < FORM_END)  return 0.25;
+    if (fr < 190)       return 0.25 - (fr - FORM_END) / (190 - FORM_END) * 0.17;
+    if (fr <= HOLD_END) return 0.08;
+    if (fr <= FADE_OUT) return 0.08 * (1 - (fr - HOLD_END) / (FADE_OUT - HOLD_END));
     return 0;
   }
 
-  function drawTahoe(alpha: number) {
+  function getChainAlpha(): number {
+    if (fr < FADE_END) return 0.12 * fr / FADE_END;
+    if (fr < CONTACT)  return 0.12;
+    if (fr < FORM_END) return 0.12 * (1 - (fr - CONTACT) / (FORM_END - CONTACT));
+    return 0;
+  }
+
+  function getConnectionAlpha(): number {
+    if (fr < CONTACT)   return 0;
+    if (fr < FORM_END)  return 0.8 * (fr - CONTACT) / (FORM_END - CONTACT);
+    if (fr <= HOLD_END) return 0.8;
+    return 0;
+  }
+
+  function drawNode(x: number, y: number, coreR: number, rgb: string, alpha: number) {
     if (alpha <= 0) return;
     ctx.save();
     ctx.globalAlpha = alpha;
-    ctx.translate(carCX, carCY);
-
-    const bodyH = 0.38 * s;
-    const cabX1 = -0.40 * s;
-    const cabX2 =  0.45 * s;
-    const cabH  =  0.30 * s;
-
-    // Body (lower rectangle)
-    ctx.fillStyle   = AMB + '0.07)';
-    ctx.strokeStyle = AMB + '0.75)';
-    ctx.lineWidth   = 1.5 * dpr;
+    const halo = ctx.createRadialGradient(x, y, 0, x, y, coreR * 3);
+    halo.addColorStop(0, `rgba(${rgb},0.35)`);
+    halo.addColorStop(1, `rgba(${rgb},0)`);
     ctx.beginPath();
-    ctx.rect(-s, 0, 2 * s, bodyH);
+    ctx.arc(x, y, coreR * 3, 0, Math.PI * 2);
+    ctx.fillStyle = halo;
     ctx.fill();
-    ctx.stroke();
-
-    // Cab (upper rectangle)
     ctx.beginPath();
-    ctx.rect(cabX1, -cabH, cabX2 - cabX1, cabH);
+    ctx.arc(x, y, coreR, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${rgb},0.9)`;
     ctx.fill();
-    ctx.stroke();
-
-    // A-pillar (angled front)
-    ctx.strokeStyle = AMB + '0.65)';
-    ctx.lineWidth   = 1.5 * dpr;
-    ctx.beginPath();
-    ctx.moveTo(cabX1, 0);
-    ctx.lineTo(cabX1 + 0.17 * s, -cabH);
-    ctx.stroke();
-
-    // C-pillar (slight rear rake)
-    ctx.beginPath();
-    ctx.moveTo(cabX2, 0);
-    ctx.lineTo(cabX2 - 0.08 * s, -cabH);
-    ctx.stroke();
-
-    // B-pillar
-    ctx.strokeStyle = AMB + '0.38)';
-    ctx.lineWidth   = 0.8 * dpr;
-    const bx = cabX1 + (cabX2 - cabX1) * 0.44;
-    ctx.beginPath();
-    ctx.moveTo(bx, 0);
-    ctx.lineTo(bx, -cabH);
-    ctx.stroke();
-
-    // Door crease
-    ctx.strokeStyle = AMB + '0.22)';
-    ctx.lineWidth   = 0.7 * dpr;
-    ctx.beginPath();
-    ctx.moveTo(-s, bodyH * 0.5);
-    ctx.lineTo( s, bodyH * 0.5);
-    ctx.stroke();
-
-    // Wheels
-    const wheelY = bodyH + 0.14 * s;
-    const wheelR = 0.16 * s;
-    const hubR   = wheelR * 0.46;
-    for (const wx of [-0.62 * s, 0.62 * s]) {
-      ctx.strokeStyle = AMB + '0.75)';
-      ctx.lineWidth   = 1.5 * dpr;
-      ctx.beginPath();
-      ctx.arc(wx, wheelY, wheelR, 0, Math.PI * 2);
-      ctx.stroke();
-
-      ctx.strokeStyle = AMB + '0.50)';
-      ctx.lineWidth   = 1.0 * dpr;
-      ctx.beginPath();
-      ctx.arc(wx, wheelY, hubR, 0, Math.PI * 2);
-      ctx.stroke();
-
-      ctx.fillStyle = AMB + '0.55)';
-      ctx.beginPath();
-      ctx.arc(wx, wheelY, 2 * dpr, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
     ctx.restore();
   }
 
-  function drawDollar(alpha: number) {
+  function drawChainLines(alpha: number) {
     if (alpha <= 0) return;
-    const fs = Math.round(60 * dpr);
+    const cx2 = getCustX();
     ctx.save();
-    ctx.globalAlpha  = alpha;
-    ctx.font         = `bold ${fs}px monospace`;
-    ctx.textAlign    = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle    = AMB + '0.92)';
-    ctx.shadowColor  = AMB + '0.55)';
-    ctx.shadowBlur   = 16 * dpr;
-    ctx.fillText('$1', dollarX, dollarY);
+    ctx.strokeStyle = `rgba(251,191,36,${alpha})`;
+    ctx.lineWidth   = 0.8 * dpr;
+    ctx.setLineDash([5 * dpr, 8 * dpr]);
+    ctx.beginPath();
+    ctx.moveTo(dealerX, dealerY);
+    ctx.lineTo(botX, botY);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(botX, botY);
+    ctx.lineTo(cx2, custY);
+    ctx.stroke();
     ctx.restore();
+  }
+
+  function drawConnectionLine() {
+    const cx2 = getCustX();
+    if (fr >= CONTACT && fr <= HOLD_END) {
+      const alpha = getConnectionAlpha();
+      if (alpha <= 0) return;
+      ctx.save();
+      ctx.strokeStyle = `rgba(251,191,36,${alpha})`;
+      ctx.lineWidth   = 1.5 * dpr;
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(cx2, custY);
+      ctx.lineTo(botX, botY);
+      ctx.stroke();
+      ctx.restore();
+    } else if (fr > HOLD_END && fr <= FADE_OUT) {
+      const t       = (fr - HOLD_END) / (FADE_OUT - HOLD_END);
+      const dashLen = Math.max(2, (1 - t) * 14) * dpr;
+      const gapLen  = (4 + t * 28) * dpr;
+      const alpha   = 0.8 * (1 - t);
+      if (alpha <= 0) return;
+      ctx.save();
+      ctx.strokeStyle = `rgba(251,191,36,${alpha})`;
+      ctx.lineWidth   = 1.5 * dpr;
+      ctx.setLineDash([dashLen, gapLen]);
+      ctx.beginPath();
+      ctx.moveTo(cx2, custY);
+      ctx.lineTo(botX, botY);
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  function drawContactEffects() {
+    if (fr < CONTACT) return;
+    const age = fr - CONTACT;
+    if (age < 20) {
+      const a = 1 - age / 20;
+      const g = ctx.createRadialGradient(mx, my, 0, mx, my, 40 * dpr);
+      g.addColorStop(0, `rgba(251,191,36,${a})`);
+      g.addColorStop(1, `rgba(251,191,36,0)`);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(mx, my, 40 * dpr, 0, Math.PI * 2);
+      ctx.fillStyle = g;
+      ctx.fill();
+      ctx.restore();
+    }
+    if (age < 12) {
+      const a = 0.55 - (age / 12) * 0.55;
+      const g = ctx.createRadialGradient(mx, my, 0, mx, my, 25 * dpr);
+      g.addColorStop(0, `rgba(255,77,77,${a})`);
+      g.addColorStop(1, `rgba(255,77,77,0)`);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(mx, my, 25 * dpr, 0, Math.PI * 2);
+      ctx.fillStyle = g;
+      ctx.fill();
+      ctx.restore();
+    }
   }
 
   function drawScene(animate: boolean) {
     ctx.clearRect(0, 0, W, H);
 
     if (!animate) {
-      // Reduced-motion: car + mid-expansion rings + $1
-      drawTahoe(1);
+      // Reduced-motion static frame: nodes + connection + mid rings
       for (let i = 0; i < 7; i++) {
-        const r = maxR * (0.10 + i * 0.07);
-        const a = Math.max(0, 0.35 - i * 0.04);
+        const r = mainMaxR * (0.10 + i * 0.07);
+        const a = Math.max(0, 0.45 * (1 - r / mainMaxR));
         if (a <= 0) continue;
+        ctx.setLineDash([]);
         ctx.beginPath();
-        ctx.arc(dollarX, dollarY, r, 0, Math.PI * 2);
-        ctx.strokeStyle = AMB + a + ')';
+        ctx.arc(mx, my, r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(251,191,36,${a})`;
         ctx.lineWidth   = 1.5 * dpr;
         ctx.stroke();
       }
-      drawDollar(1);
+      ctx.save();
+      ctx.strokeStyle = `rgba(251,191,36,0.8)`;
+      ctx.lineWidth   = 1.5 * dpr;
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(custEndX, custY);
+      ctx.lineTo(botX, botY);
+      ctx.stroke();
+      ctx.restore();
+      drawNode(dealerX, dealerY, 4 * dpr, '251,191,36', 0.08);
+      drawNode(custEndX, custY,  5 * dpr, '232,232,232', 1);
+      drawNode(botX,     botY,   6 * dpr, '251,191,36', 1);
       return;
     }
 
-    // Spawn 7 rings at SLAM frame
-    if (fr === SLAM) {
-      rings = [];
-      for (let i = 0; i < 7; i++) rings.push({ r: 0, alpha: 0.45, idx: i });
+    // Spawn main rings at contact moment
+    if (fr === CONTACT) {
+      mainRings = [];
+      for (let i = 0; i < 7; i++) mainRings.push({ r: 0, alpha: 0.45, idx: i });
     }
 
-    // Update and draw rings
-    for (const ring of rings) {
+    // Spawn dealer pulse rings at 130, 150, 170
+    if (fr === FORM_END || fr === 150 || fr === 170) {
+      const dist = Math.hypot(botX - dealerX, botY - dealerY);
+      pulseRings.push({ r: 0, alpha: 0.35, maxR: dist * 0.55 });
+    }
+
+    // Update main rings
+    for (const ring of mainRings) {
       ring.r    += (1.2 + ring.idx * 0.3) * dpr;
-      ring.alpha = 0.45 * Math.max(0, 1 - ring.r / maxR);
-      if (ring.alpha < 0.005) continue;
+      ring.alpha = 0.45 * Math.max(0, 1 - ring.r / mainMaxR);
+    }
+    mainRings = mainRings.filter(r => r.r < mainMaxR);
+
+    // Update pulse rings
+    for (const ring of pulseRings) {
+      ring.r    += 1.4 * dpr;
+      ring.alpha = 0.35 * Math.max(0, 1 - ring.r / ring.maxR);
+    }
+    pulseRings = pulseRings.filter(r => r.alpha > 0.005);
+
+    const cx2 = getCustX();
+
+    // Draw order:
+    // 1. Chain lines (behind everything)
+    drawChainLines(getChainAlpha());
+
+    // 2. Dealer pulse rings
+    for (const ring of pulseRings) {
+      ctx.save();
+      ctx.setLineDash([]);
       ctx.beginPath();
-      ctx.arc(dollarX, dollarY, ring.r, 0, Math.PI * 2);
-      ctx.strokeStyle = AMB + ring.alpha + ')';
+      ctx.arc(dealerX, dealerY, ring.r, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(251,191,36,${ring.alpha})`;
+      ctx.lineWidth   = 1.0 * dpr;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 3. Dealer node
+    drawNode(dealerX, dealerY, 4 * dpr, '251,191,36', getDealerAlpha());
+
+    // 4. Main rings (from contact point)
+    for (const ring of mainRings) {
+      if (ring.alpha < 0.005) continue;
+      ctx.save();
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.arc(mx, my, ring.r, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(251,191,36,${ring.alpha})`;
       ctx.lineWidth   = 1.5 * dpr;
       ctx.stroke();
+      ctx.restore();
     }
-    rings = rings.filter(r => r.r < maxR);
 
-    drawTahoe(getCarAlpha());
-    drawDollar(getDollarAlpha());
+    // 5. Contact spark + red flash
+    drawContactEffects();
+
+    // 6. Connection line
+    drawConnectionLine();
+
+    // 7. Customer node
+    drawNode(cx2, custY, 5 * dpr, '232,232,232', getNodeAlpha(1));
+
+    // 8. Bot node
+    drawNode(botX, botY, 6 * dpr, '251,191,36', getNodeAlpha(1));
 
     fr++;
-    if (fr >= TOTAL) { fr = 0; rings = []; }
+    if (fr >= TOTAL) { fr = 0; mainRings = []; pulseRings = []; }
   }
 
   function loop() {
