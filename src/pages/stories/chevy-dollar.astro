@@ -165,16 +165,21 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
 
   const AMB = 'rgba(251,191,36,';
   let W = 0, H = 0, CX = 0, CY = 0, dpr = 1;
-  let strikeY = 0;
-  let headW = 0, headH = 0, handleW = 0, handleH = 0;
+  // Strike point: where the gavel head makes contact
+  let strikeX = 0, strikeY = 0;
+  // Pivot: wrist/fulcrum — above and to the right of center, slightly off-canvas
+  let pivotX = 0, pivotY = 0;
+  // Arm length from pivot to head center; angles in radians from downward vertical
+  let armLen = 0, strikeAngle = 0, startAngle = 0;
+  // Head dimensions
+  let headW = 0, headH = 0;
   let maxR = 0;
   let rings: Ring[] = [];
 
-  // Phase boundaries (frames)
-  const D_END = 90;   // descend ends / strike moment
-  const H_END = 270;  // hold ends
-  const L_END = 360;  // lift ends
-  const TOTAL = 420;  // pause then cycle
+  const D_END = 80;   // swing ends / strike moment
+  const H_END = 240;  // hold ends
+  const L_END = 320;  // lift ends
+  const TOTAL = 400;  // pause then cycle
 
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -185,31 +190,163 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
     cv.height = H;
     CX = W / 2;
     CY = H / 2;
-    headW = 60 * dpr;
-    headH = 22 * dpr;
-    handleW = 10 * dpr;
-    handleH = 80 * dpr;
-    strikeY = CY + 30 * dpr;
+
+    headW = 70 * dpr;
+    headH = 24 * dpr;
+    strikeX = CX;
+    strikeY = CY + 35 * dpr;
+
+    // Pivot: above canvas top, shifted right
+    const pivOX = 50 * dpr;
+    pivotX = CX + pivOX;
+    pivotY = -18 * dpr;
+
+    // Arm geometry: pivot → head center at strike
+    const dx = strikeX - pivotX;
+    const dy = strikeY - pivotY;
+    armLen = Math.sqrt(dx * dx + dy * dy);
+
+    // Angle at strike (from downward vertical; negative = tilted left)
+    strikeAngle = Math.atan2(dx, dy);
+
+    // Raised position: ~58° clockwise from strike (gavel up-right)
+    startAngle = strikeAngle + 1.01;
+
     maxR = 0.42 * Math.min(W, H);
     fr = 0;
     rings = [];
   }
 
-  // Returns vertical offset to add to strikeY for the gavel's impact point.
-  // 0 = gavel at strike position; negative = gavel above (off-screen).
-  function getGavelY(): number {
-    const offscreen = -(strikeY + headH + handleH + 10 * dpr);
+  // Current arm angle interpolated through phases
+  function getAngle(): number {
     if (fr < D_END) {
       const t = fr / D_END;
-      // ease out cubic: starts fast, arrives deliberately
-      return offscreen * Math.pow(1 - t, 3);
-    } else if (fr <= H_END) {
-      return 0;
-    } else if (fr <= L_END) {
-      const t = (fr - H_END) / (L_END - H_END);
-      return offscreen * (t * t);
+      // Ease-in: slow raise, accelerates into the strike
+      return startAngle + (strikeAngle - startAngle) * (t * t);
     }
-    return offscreen;
+    if (fr <= H_END) return strikeAngle;
+    if (fr <= L_END) {
+      const t = (fr - H_END) / (L_END - H_END);
+      // Ease-out: fast lift-off, settles at raised position
+      return strikeAngle + (startAngle - strikeAngle) * (1 - (1 - t) * (1 - t));
+    }
+    return startAngle;
+  }
+
+  // Helper: rounded rect path (manual arcTo for compatibility)
+  function rrect(x: number, y: number, w: number, h: number, r: number) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.arcTo(x + w, y, x + w, y + r, r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+    ctx.lineTo(x + r, y + h);
+    ctx.arcTo(x, y + h, x, y + h - r, r);
+    ctx.lineTo(x, y + r);
+    ctx.arcTo(x, y, x + r, y, r);
+    ctx.closePath();
+  }
+
+  function drawGavel(angle: number, globalA = 1) {
+    if (globalA <= 0) return;
+    // Head center world position
+    const hx = pivotX + armLen * Math.sin(angle);
+    const hy = pivotY + armLen * Math.cos(angle);
+
+    ctx.save();
+    ctx.globalAlpha = globalA;
+    ctx.translate(hx, hy);
+    ctx.rotate(angle); // tilt everything to match arm angle
+
+    // In local (rotated) space:
+    //   +Y = away from pivot (downward along arm)
+    //   +X = perpendicular (rightward relative to arm)
+    // Head is centered at origin; handle extends toward pivot (−Y direction).
+
+    const hw = headW;
+    const hh = headH;
+    const handleLen = armLen * 0.78; // handle runs most of the way to pivot
+    const hW0 = 13 * dpr;           // handle width at grip end (wider)
+    const hW1 = 8 * dpr;            // handle width at head end (narrower)
+    const colW = hW1 + 10 * dpr;    // collar width
+    const colH = 6 * dpr;           // collar height
+
+    // === HANDLE — drawn first (behind head) ===
+    ctx.fillStyle = AMB + '0.11)';
+    ctx.strokeStyle = AMB + '0.40)';
+    ctx.lineWidth = 1.5 * dpr;
+    ctx.beginPath();
+    // Tapered trapezoid: grip end is wider, narrows toward the head
+    ctx.moveTo(-hW0 / 2, -handleLen);
+    ctx.lineTo(hW0 / 2, -handleLen);
+    ctx.lineTo(hW1 / 2, 0);
+    ctx.lineTo(-hW1 / 2, 0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Grip wraps — two horizontal bands near the grip end
+    ctx.strokeStyle = AMB + '0.24)';
+    ctx.lineWidth = 0.8 * dpr;
+    for (const t of [0.09, 0.15]) {
+      const gy = -handleLen + handleLen * t;
+      const gw = hW0 * (1 - t * 0.15);
+      ctx.beginPath();
+      ctx.moveTo(-gw / 2, gy);
+      ctx.lineTo(gw / 2, gy);
+      ctx.stroke();
+    }
+
+    // === COLLAR — the neck band where handle meets head ===
+    ctx.fillStyle = AMB + '0.20)';
+    ctx.strokeStyle = AMB + '0.52)';
+    ctx.lineWidth = 1 * dpr;
+    rrect(-colW / 2, -colH / 2, colW, colH, 2 * dpr);
+    ctx.fill();
+    ctx.stroke();
+
+    // === HEAD ===
+    // Outer glow / shadow behind the head rect
+    ctx.save();
+    ctx.shadowColor = AMB + '0.42)';
+    ctx.shadowBlur = 10 * dpr;
+    ctx.fillStyle = AMB + '0.15)';
+    ctx.strokeStyle = AMB + '0.75)';
+    ctx.lineWidth = 1.5 * dpr;
+    rrect(-hw / 2, -hh / 2, hw, hh, 3 * dpr);
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore(); // clear shadow
+
+    // Striking-face center highlight (the zone that hits the block)
+    const faceW = 22 * dpr;
+    const fg = ctx.createLinearGradient(-faceW / 2, 0, faceW / 2, 0);
+    fg.addColorStop(0, AMB + '0)');
+    fg.addColorStop(0.5, AMB + '0.13)');
+    fg.addColorStop(1, AMB + '0)');
+    ctx.fillStyle = fg;
+    ctx.fillRect(-faceW / 2, -hh / 2, faceW, hh);
+
+    // Top bevel highlight (suggests cylindrical roundness)
+    ctx.strokeStyle = AMB + '0.28)';
+    ctx.lineWidth = 0.8 * dpr;
+    ctx.beginPath();
+    ctx.moveTo(-hw / 2 + 6 * dpr, -hh / 2 + 2.5 * dpr);
+    ctx.lineTo(hw / 2 - 6 * dpr, -hh / 2 + 2.5 * dpr);
+    ctx.stroke();
+
+    // End-cap divider lines (simulate the flat cylindrical end faces)
+    ctx.strokeStyle = AMB + '0.32)';
+    ctx.lineWidth = 0.8 * dpr;
+    for (const capX of [-hw / 2 + 7 * dpr, hw / 2 - 7 * dpr]) {
+      ctx.beginPath();
+      ctx.moveTo(capX, -hh / 2 + 2 * dpr);
+      ctx.lineTo(capX, hh / 2 - 2 * dpr);
+      ctx.stroke();
+    }
+
+    ctx.restore();
   }
 
   function getDollarAlpha(): number {
@@ -218,25 +355,6 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
     if (fr <= H_END) return 1;
     if (fr <= L_END) return 1 - (fr - H_END) / (L_END - H_END);
     return 0;
-  }
-
-  function drawGavel(oy: number) {
-    const ey = strikeY + oy;
-    ctx.save();
-    ctx.strokeStyle = AMB + '0.55)';
-    ctx.fillStyle = AMB + '0.12)';
-    ctx.lineWidth = 1.5 * dpr;
-    // Head (wide striking block)
-    ctx.beginPath();
-    ctx.rect(CX - headW / 2, ey - headH, headW, headH);
-    ctx.fill();
-    ctx.stroke();
-    // Handle (narrow shaft above head)
-    ctx.beginPath();
-    ctx.rect(CX - handleW / 2, ey - headH - handleH, handleW, handleH);
-    ctx.fill();
-    ctx.stroke();
-    ctx.restore();
   }
 
   function drawDollar(alpha: number) {
@@ -250,7 +368,7 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
     ctx.fillStyle = AMB + '0.9)';
     ctx.shadowColor = AMB + '0.5)';
     ctx.shadowBlur = 14 * dpr;
-    ctx.fillText('$1', CX, strikeY + 52 * dpr);
+    ctx.fillText('$1', CX, strikeY + 50 * dpr);
     ctx.restore();
   }
 
@@ -258,28 +376,26 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
     ctx.clearRect(0, 0, W, H);
 
     if (!animate) {
-      // Reduced-motion static frame: gavel at strike, rings mid-expansion, $1 visible
+      // Reduced-motion static: gavel at strike, rings mid-expansion, $1 visible
       for (let i = 0; i < 7; i++) {
         const r = maxR * (0.15 + i * 0.08);
         const a = Math.max(0, 0.32 - i * 0.04);
         if (a <= 0) continue;
         ctx.beginPath();
-        ctx.arc(CX, strikeY, r, 0, Math.PI * 2);
+        ctx.arc(strikeX, strikeY, r, 0, Math.PI * 2);
         ctx.strokeStyle = AMB + a + ')';
         ctx.lineWidth = 1.5 * dpr;
         ctx.stroke();
       }
       drawDollar(1);
-      drawGavel(0);
+      drawGavel(strikeAngle);
       return;
     }
 
-    // Spawn 7 rings at the exact strike moment
+    // Spawn 7 rings at the exact strike frame
     if (fr === D_END) {
       rings = [];
-      for (let i = 0; i < 7; i++) {
-        rings.push({ r: 0, alpha: 0.45, idx: i });
-      }
+      for (let i = 0; i < 7; i++) rings.push({ r: 0, alpha: 0.45, idx: i });
     }
 
     // Update and draw rings
@@ -288,26 +404,23 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
       ring.alpha = 0.45 * Math.max(0, 1 - ring.r / maxR);
       if (ring.alpha < 0.005) continue;
       ctx.beginPath();
-      ctx.arc(CX, strikeY, ring.r, 0, Math.PI * 2);
+      ctx.arc(strikeX, strikeY, ring.r, 0, Math.PI * 2);
       ctx.strokeStyle = AMB + ring.alpha + ')';
       ctx.lineWidth = 1.5 * dpr;
       ctx.stroke();
     }
     rings = rings.filter(r => r.r < maxR);
 
-    // Draw "$1" glowing at the impact point
     drawDollar(getDollarAlpha());
 
-    // Draw gavel (descend + hold + lift phases only; hidden during pause)
-    if (fr < L_END) {
-      drawGavel(getGavelY());
-    }
+    // Gavel: visible through lift, then fade out over pause
+    const angle = getAngle();
+    let gavelA = 1;
+    if (fr >= L_END) gavelA = Math.max(0, 1 - (fr - L_END) / (TOTAL - L_END));
+    drawGavel(angle, gavelA);
 
     fr++;
-    if (fr >= TOTAL) {
-      fr = 0;
-      rings = [];
-    }
+    if (fr >= TOTAL) { fr = 0; rings = []; }
   }
 
   function loop() {
