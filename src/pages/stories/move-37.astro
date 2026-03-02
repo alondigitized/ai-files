@@ -6,6 +6,44 @@ const story = stories.find(s => s.slug === 'move-37')!;
 ---
 
 <style is:global>
+  /* Animated stone swap — overrides global .story-emoji for move-37 only */
+  .story-emoji {
+    font-size: 0;
+    position: relative;
+    display: inline-block;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .story-emoji::before,
+  .story-emoji::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+  .story-emoji::before {
+    content: '⚪';
+    animation: go-white 3s ease-in-out infinite;
+  }
+  .story-emoji::after {
+    content: '⚫';
+    animation: go-black 3s ease-in-out infinite;
+  }
+  @keyframes go-white {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+  @keyframes go-black {
+    0%, 100% { opacity: 0; }
+    50%       { opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .story-emoji::before { animation: none; opacity: 1; }
+    .story-emoji::after  { animation: none; opacity: 0; }
+  }
+
   .stat-card.human .stat-num { color: var(--blue); }
 
   .board-wrap {
