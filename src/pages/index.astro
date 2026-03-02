@@ -178,6 +178,43 @@ const itemListSchema = {
   .story-card:hover { border-color: #3a3a3a; transform: translateY(-3px); }
   .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.25rem; }
   .card-icon { font-size: 2.5rem; }
+
+  /* Animated Go stone for move-37 card */
+  a[href="/stories/move-37"] .card-icon {
+    font-size: 0;
+    position: relative;
+    display: inline-block;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  a[href="/stories/move-37"] .card-icon::before,
+  a[href="/stories/move-37"] .card-icon::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 2.5rem;
+    line-height: 1;
+  }
+  a[href="/stories/move-37"] .card-icon::before {
+    content: '⚪';
+    animation: go-white 3s ease-in-out infinite;
+  }
+  a[href="/stories/move-37"] .card-icon::after {
+    content: '⚫';
+    animation: go-black 3s ease-in-out infinite;
+  }
+  @keyframes go-white {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+  @keyframes go-black {
+    0%, 100% { opacity: 0; }
+    50%       { opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    a[href="/stories/move-37"] .card-icon::before { animation: none; opacity: 1; }
+    a[href="/stories/move-37"] .card-icon::after  { animation: none; opacity: 0; }
+  }
   .card-chapter { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
   .card-title { font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 0.6rem; line-height: 1.3; letter-spacing: -0.01em; }
   .card-deck { font-size: 0.85rem; color: var(--muted); line-height: 1.55; flex: 1; margin-bottom: 1.25rem; }
