@@ -133,7 +133,7 @@ const story = stories.find(s => s.slug === 'alexa-laughs')!;
 <div class="phantom-wrap">
   <canvas class="alexa-laughs-canvas" aria-hidden="true"></canvas>
 </div>
-<p class="canvas-note"><strong>Unprompted</strong> — The canvas waits in silence. Then, without warning, it laughs. There is no pattern. There is no trigger. It just does.</p>
+<p class="canvas-note"><strong>Unprompted</strong> — The room is always being listened to. Ambient sounds orbit inward toward something at the center. Then — no command, no trigger — it laughs. The rings are imperfect. Wobbly. Off-center. Ghost artifacts linger where they were. Then silence. Then waiting.</p>
 
 <section class="section" id="why">
   <h2><span class="num">02 — The Explanation</span>What Was Actually Happening</h2>
@@ -226,104 +226,344 @@ const story = stories.find(s => s.slug === 'alexa-laughs')!;
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
 
-  const ACCENT = '#22d3ee';
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  let W = 0, H = 0, dpr = 1;
+  // ── Palette ───────────────────────────────────────────────────────────────
+  // #22d3ee --story
+  function rgba(a: number) { return `rgba(34,211,238,${Math.max(0, Math.min(1, a))})`; }
+  function rand(lo: number, hi: number) { return lo + Math.random() * (hi - lo); }
+
+  // ── Config ────────────────────────────────────────────────────────────────
+  const P_COUNT   = 24;  // ambient listening particles
+  const FL_COUNT  = 8;   // room floaters (ambient sound candidates)
+  const LAUGH_MIN = 220; // min silence frames before laugh (~3.7s)
+  const LAUGH_MAX = 520; // max silence frames before laugh (~8.7s)
+  const RING_N    = 6;   // rings per eruption
+  const RING_LAG  = 9;   // stagger between ring spawns (frames)
+
+  // ── Types ─────────────────────────────────────────────────────────────────
+  interface Particle {
+    angle: number; orbitR: number; alpha: number; drift: number;
+    scattered: boolean; sx: number; sy: number; wx: number; wy: number;
+  }
+  interface Ring {
+    ox: number; oy: number; r: number; alpha: number;
+    speed: number; decay: number;
+    wAmp: number; wFreq: number; wPhase: number; // wobble params
+    lw: number; birth: number;
+  }
+  interface Ghost { x: number; y: number; alpha: number; size: number; }
+  interface Floater { x: number; y: number; vx: number; vy: number; a: number; s: number; }
+
+  // ── State ─────────────────────────────────────────────────────────────────
+  let W = 0, H = 0, frame = 0, rafId = 0;
+  let nextLaugh  = LAUGH_MIN + Math.floor(Math.random() * (LAUGH_MAX - LAUGH_MIN));
+  let laughFrame = -999;
+  let ghostsDone = true;
+
+  let particles: Particle[] = [];
+  let pending:   Ring[]     = []; // rings waiting for their birth frame
+  let rings:     Ring[]     = []; // active expanding rings
+  let ghosts:    Ghost[]    = [];
+  let floaters:  Floater[]  = [];
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  function makeParticles() {
+    particles = Array.from({ length: P_COUNT }, (_, i) => ({
+      angle:     (i / P_COUNT) * Math.PI * 2 + rand(-0.15, 0.15),
+      orbitR:    rand(55, 95),
+      alpha:     rand(0.07, 0.18),
+      drift:     rand(0.025, 0.055),
+      scattered: false,
+      sx: 0, sy: 0, wx: 0, wy: 0,
+    }));
+  }
+
+  function makeFloaters() {
+    floaters = Array.from({ length: FL_COUNT }, () => ({
+      x: rand(0, W), y: rand(0, H),
+      vx: rand(-0.12, 0.12), vy: rand(-0.08, 0.08),
+      a: rand(0.02, 0.05), s: rand(1, 2.2),
+    }));
+  }
 
   function resize() {
-    dpr = window.devicePixelRatio || 1;
-    W = canvas.offsetWidth;
-    H = canvas.offsetHeight;
-    canvas.width = W * dpr;
-    canvas.height = H * dpr;
-    ctx.scale(dpr, dpr);
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth;
+    H = canvas!.offsetHeight;
+    canvas!.width  = W * dpr;
+    canvas!.height = H * dpr;
+    ctx!.scale(dpr, dpr);
   }
 
-  function drawStatic() {
-    resize();
-    ctx.clearRect(0, 0, W, H);
-    const cx = W / 2, cy = H / 2;
-    // breathing dot
-    ctx.beginPath();
-    ctx.arc(cx, cy, 4, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(34,211,238,0.06)';
-    ctx.fill();
-    // 3 frozen ring outlines
-    const radii = [40, 80, 130];
-    for (const r of radii) {
-      ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(34,211,238,0.18)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
+  // ── Wobble ring drawing ───────────────────────────────────────────────────
+  // Draws a closed loop where each point is displaced from the ideal radius
+  // by a sinusoidal wave — makes rings imperfect, organic, slightly wrong.
+  function drawWobbleRing(ring: Ring) {
+    const steps = 128;
+    ctx!.beginPath();
+    for (let i = 0; i <= steps; i++) {
+      const theta = (i / steps) * Math.PI * 2;
+      const rr = ring.r + ring.wAmp * Math.sin(theta * ring.wFreq + ring.wPhase);
+      const x  = ring.ox + Math.cos(theta) * rr;
+      const y  = ring.oy + Math.sin(theta) * rr;
+      i === 0 ? ctx!.moveTo(x, y) : ctx!.lineTo(x, y);
     }
+    ctx!.closePath();
+    ctx!.strokeStyle = rgba(ring.alpha);
+    ctx!.lineWidth   = ring.lw;
+    ctx!.stroke();
   }
+
+  // ── Laugh trigger ─────────────────────────────────────────────────────────
+  function triggerLaugh() {
+    laughFrame = frame;
+    ghostsDone = false;
+
+    // Jitter the eruption origin — the laugh doesn't come from exactly center
+    const cx = W / 2 + rand(-8, 8);
+    const cy = H / 2 + rand(-6, 6);
+
+    for (let i = 0; i < RING_N; i++) {
+      pending.push({
+        ox: cx + rand(-3, 3),
+        oy: cy + rand(-2, 2),
+        r: 3,
+        alpha:  rand(0.72, 0.90) - i * 0.06, // earlier rings slightly brighter
+        speed:  rand(1.6, 3.2),               // each ring expands at different speed
+        decay:  rand(0.962, 0.978),            // each ring fades at different rate
+        wAmp:   rand(3.5, 9.0),               // wobble amplitude
+        wFreq:  Math.floor(rand(3, 7)),        // bumps around the ring
+        wPhase: rand(0, Math.PI * 2),          // phase offset — no two rings align
+        lw:     rand(0.7, 2.0),               // line thickness variation
+        birth:  frame + i * RING_LAG,         // staggered spawn
+      });
+    }
+
+    // Scatter listening particles outward from center
+    const hcx = W / 2, hcy = H / 2;
+    particles.forEach(p => {
+      p.scattered = true;
+      p.wx = hcx + p.orbitR * Math.cos(p.angle);
+      p.wy = hcy + p.orbitR * Math.sin(p.angle);
+      const speed  = rand(1.2, 3.0);
+      const sAngle = p.angle + rand(-0.6, 0.6);
+      p.sx = Math.cos(sAngle) * speed;
+      p.sy = Math.sin(sAngle) * speed;
+    });
+
+    nextLaugh = frame + LAUGH_MIN + Math.floor(Math.random() * (LAUGH_MAX - LAUGH_MIN));
+  }
+
+  // ── Ghost artifacts ───────────────────────────────────────────────────────
+  // After rings fade, leave a few faint smears — the laugh lingers
+  function spawnGhosts() {
+    const cx = W / 2, cy = H / 2;
+    const n = 2 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < n; i++) {
+      const a = rand(0, Math.PI * 2);
+      const r = rand(28, 165);
+      ghosts.push({
+        x: cx + Math.cos(a) * r,
+        y: cy + Math.sin(a) * r,
+        alpha: rand(0.04, 0.10),
+        size:  rand(1.0, 2.8),
+      });
+    }
+    ghostsDone = true;
+  }
+
+  // ── Update ────────────────────────────────────────────────────────────────
+  function stepParticles() {
+    const cx = W / 2, cy = H / 2;
+    particles.forEach(p => {
+      if (p.scattered) {
+        p.wx    += p.sx;
+        p.wy    += p.sy;
+        p.sx    *= 0.93;
+        p.sy    *= 0.93;
+        p.alpha *= 0.97;
+        // Once velocity dies, reconvene at new orbit position
+        if (Math.sqrt(p.sx * p.sx + p.sy * p.sy) < 0.05) {
+          p.scattered = false;
+          p.angle  = Math.atan2(p.wy - cy, p.wx - cx);
+          p.orbitR = Math.sqrt((p.wx - cx) ** 2 + (p.wy - cy) ** 2);
+          p.alpha  = rand(0.07, 0.18);
+        }
+      } else {
+        // Drift inward — the always-listening state
+        p.orbitR -= p.drift;
+        p.angle  += rand(-0.003, 0.003); // slight orbital wander
+        // Reset to outer radius when too close to center
+        if (p.orbitR < 12) {
+          p.orbitR = rand(68, 98);
+          p.angle  = rand(0, Math.PI * 2);
+          p.alpha  = rand(0.07, 0.18);
+        }
+      }
+    });
+  }
+
+  function stepRings() {
+    // Activate any pending rings whose birth frame has arrived
+    pending = pending.filter(ring => {
+      if (frame >= ring.birth) { rings.push(ring); return false; }
+      return true;
+    });
+    rings.forEach(ring => {
+      ring.r      += ring.speed;
+      ring.alpha  *= ring.decay;
+      ring.wPhase += 0.015; // wobble pattern slowly rotates as ring expands
+    });
+    rings = rings.filter(ring => ring.alpha > 0.005);
+  }
+
+  function stepFloaters() {
+    floaters.forEach(f => {
+      f.x += f.vx; f.y += f.vy;
+      f.vx += rand(-0.005, 0.005);
+      f.vy += rand(-0.005, 0.005);
+      f.vx *= 0.99; f.vy *= 0.99;
+      // Wrap at canvas edges
+      if (f.x < 0) f.x = W; if (f.x > W) f.x = 0;
+      if (f.y < 0) f.y = H; if (f.y > H) f.y = 0;
+    });
+  }
+
+  function stepGhosts() {
+    ghosts.forEach(g => { g.alpha *= 0.984; });
+    ghosts = ghosts.filter(g => g.alpha > 0.004);
+  }
+
+  // ── Draw ──────────────────────────────────────────────────────────────────
+  function drawScene() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = '#0d0d0d';
+    ctx!.fillRect(0, 0, W, H);
+
+    const cx = W / 2, cy = H / 2;
+
+    // Ambient room floaters (barely visible — sounds that could be misheard)
+    floaters.forEach(f => {
+      ctx!.beginPath();
+      ctx!.arc(f.x, f.y, f.s, 0, Math.PI * 2);
+      ctx!.fillStyle = rgba(f.a);
+      ctx!.fill();
+    });
+
+    // Listening particles (orbit inward — the always-on listening state)
+    particles.forEach(p => {
+      const px = p.scattered ? p.wx : cx + Math.cos(p.angle) * p.orbitR;
+      const py = p.scattered ? p.wy : cy + Math.sin(p.angle) * p.orbitR;
+      ctx!.beginPath();
+      ctx!.arc(px, py, 1.5, 0, Math.PI * 2);
+      ctx!.fillStyle = rgba(p.alpha);
+      ctx!.fill();
+    });
+
+    // Ghost artifacts from previous laugh
+    ghosts.forEach(g => {
+      ctx!.beginPath();
+      ctx!.arc(g.x, g.y, g.size, 0, Math.PI * 2);
+      ctx!.fillStyle = rgba(g.alpha);
+      ctx!.fill();
+    });
+
+    // Imperfect expanding rings — drawn before center so center sits on top
+    rings.forEach(ring => drawWobbleRing(ring));
+
+    // Center: breathing dot with irregular multi-sine pulse
+    // Three overlapping sine waves at incommensurate frequencies = organic, never repeating
+    const pulse = 0.028
+      + 0.018 * Math.sin(frame * 0.031)
+      + 0.010 * Math.sin(frame * 0.073)
+      + 0.006 * Math.sin(frame * 0.017);
+    const sz = 4.5 + 1.5 * Math.sin(frame * 0.031) * Math.sin(frame * 0.073);
+
+    const gr = ctx!.createRadialGradient(cx, cy, 0, cx, cy, sz * 5);
+    gr.addColorStop(0, rgba(pulse * 0.9));
+    gr.addColorStop(1, rgba(0));
+    ctx!.beginPath();
+    ctx!.arc(cx, cy, sz * 5, 0, Math.PI * 2);
+    ctx!.fillStyle = gr;
+    ctx!.fill();
+
+    ctx!.beginPath();
+    ctx!.arc(cx, cy, sz, 0, Math.PI * 2);
+    ctx!.fillStyle = rgba(pulse * 2.8);
+    ctx!.fill();
+  }
+
+  // ── Static frame (reduced motion) ─────────────────────────────────────────
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = '#0d0d0d';
+    ctx!.fillRect(0, 0, W, H);
+    const cx = W / 2, cy = H / 2;
+
+    // Listening particles frozen in orbit
+    for (let i = 0; i < P_COUNT; i++) {
+      const a = (i / P_COUNT) * Math.PI * 2;
+      const r = 65 + (i % 3) * 12;
+      ctx!.beginPath();
+      ctx!.arc(cx + Math.cos(a) * r, cy + Math.sin(a) * r, 1.5, 0, Math.PI * 2);
+      ctx!.fillStyle = rgba(0.10);
+      ctx!.fill();
+    }
+
+    // Three frozen imperfect rings — visibly not perfect circles
+    [55, 108, 168].forEach((r, i) => {
+      drawWobbleRing({
+        ox: cx, oy: cy, r,
+        alpha: 0.20 - i * 0.05,
+        speed: 0, decay: 1,
+        wAmp:   5 + i * 2,
+        wFreq:  3 + i * 2,
+        wPhase: i * 1.1,
+        lw: 1, birth: 0,
+      });
+    });
+
+    // Center dot
+    ctx!.beginPath();
+    ctx!.arc(cx, cy, 4.5, 0, Math.PI * 2);
+    ctx!.fillStyle = rgba(0.06);
+    ctx!.fill();
+  }
+
+  // ── Loop ──────────────────────────────────────────────────────────────────
+  function tick() {
+    frame++;
+
+    // Trigger laugh when scheduled and no burst is mid-spawn
+    if (frame >= nextLaugh && pending.length === 0) triggerLaugh();
+
+    // Once all rings from a laugh fade, drop ghost artifacts
+    if (!ghostsDone && rings.length === 0 && pending.length === 0 && frame > laughFrame + 50) {
+      spawnGhosts();
+    }
+
+    stepParticles();
+    stepRings();
+    stepFloaters();
+    stepGhosts();
+    drawScene();
+
+    rafId = requestAnimationFrame(tick);
+  }
+
+  // ── Bootstrap ─────────────────────────────────────────────────────────────
+  const ro = new ResizeObserver(() => { resize(); if (prefersReduced) drawStatic(); });
+  ro.observe(canvas);
+  resize();
+  makeParticles();
+  makeFloaters();
 
   if (prefersReduced) {
     drawStatic();
-    return;
+  } else {
+    rafId = requestAnimationFrame(tick);
   }
-
-  interface Ring { r: number; alpha: number; }
-
-  let frame = 0;
-  let nextLaugh = 180 + Math.floor(Math.random() * 240);
-  let rings: Ring[] = [];
-  let rafId: number;
-
-  function triggerLaugh() {
-    const count = 5 + Math.floor(Math.random() * 3);
-    for (let i = 0; i < count; i++) {
-      rings.push({ r: 4, alpha: 0.85 - i * 0.08 });
-    }
-    nextLaugh = frame + 180 + Math.floor(Math.random() * 240);
-  }
-
-  function draw() {
-    frame++;
-    ctx.clearRect(0, 0, W, H);
-
-    const cx = W / 2, cy = H / 2;
-
-    // breathing center dot
-    const breathAlpha = 0.04 + 0.02 * Math.sin(frame * 0.025);
-    ctx.beginPath();
-    ctx.arc(cx, cy, 5, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(34,211,238,${breathAlpha})`;
-    ctx.fill();
-
-    // trigger laugh
-    if (frame >= nextLaugh) {
-      triggerLaugh();
-    }
-
-    // draw + update rings
-    const alive: Ring[] = [];
-    for (const rng of rings) {
-      rng.r += 2.5;
-      rng.alpha *= 0.97;
-      if (rng.alpha > 0.008) {
-        ctx.beginPath();
-        ctx.arc(cx, cy, rng.r, 0, Math.PI * 2);
-        ctx.strokeStyle = ACCENT;
-        ctx.globalAlpha = rng.alpha;
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-        ctx.globalAlpha = 1;
-        alive.push(rng);
-      }
-    }
-    rings = alive;
-
-    rafId = requestAnimationFrame(draw);
-  }
-
-  resize();
-  rafId = requestAnimationFrame(draw);
-
-  const ro = new ResizeObserver(() => { resize(); });
-  ro.observe(canvas);
 
   window.addEventListener('pagehide', () => {
     cancelAnimationFrame(rafId);
