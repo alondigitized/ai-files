@@ -6,7 +6,7 @@ const kv = new Redis({
 });
 
 function checkKey(key) {
-  const adminKey = process.env.theaifiles_ADMIN_KEY;
+  const adminKey = (process.env.theaifiles_ADMIN_KEY ?? '').trim();
   return adminKey && key === adminKey;
 }
 
