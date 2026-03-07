@@ -110,37 +110,69 @@ const itemListSchema = {
     display: grid; grid-template-columns: 1fr 1fr; gap: 0;
     background: var(--surface); border: 1px solid var(--border);
     border-radius: 1rem; overflow: hidden; text-decoration: none;
-    margin: 2rem 0; transition: border-color 0.2s; min-height: 380px;
+    transition: border-color 0.2s; min-height: 380px;
   }
-  .featured:hover { border-color: rgba(232,121,249,0.4); }
+  .featured:hover { border-color: var(--ep-hover, rgba(255,255,255,0.12)); }
   .featured-visual {
-    background: radial-gradient(ellipse at center, #2a0040 0%, #0d0020 100%);
+    background: radial-gradient(ellipse at center, var(--ep-bg-from, #2a0040) 0%, var(--ep-bg-to, #0d0020) 100%);
     display: flex; align-items: center; justify-content: center;
     position: relative; overflow: hidden;
   }
   .featured-visual::before {
-    content: ''; position: absolute; inset: 0;
-    background-image: repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(232,121,249,0.04) 20px), repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(232,121,249,0.04) 20px);
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 19px, var(--ep-grid, rgba(232,121,249,0.04)) 20px),
+      repeating-linear-gradient(90deg, transparent, transparent 19px, var(--ep-grid, rgba(232,121,249,0.04)) 20px);
   }
   .featured-icon {
     font-size: 6rem;
-    filter: drop-shadow(0 0 30px rgba(232,121,249,0.7));
-    animation: idx-flicker 2.5s ease-in-out infinite alternate;
+    animation: ep-flicker 2.5s ease-in-out infinite alternate;
     position: relative;
   }
-  @keyframes idx-flicker {
-    0%   { filter: drop-shadow(0 0 20px rgba(232,121,249,0.5)); transform: scale(1); }
-    100% { filter: drop-shadow(0 0 40px rgba(232,121,249,0.9)); transform: scale(1.06); }
+  @keyframes ep-flicker {
+    0%   { transform: scale(1);    opacity: 0.85; }
+    100% { transform: scale(1.06); opacity: 1; }
   }
+
+  /* ── Editor's Pick carousel ── */
+  .ep-carousel { position: relative; margin: 2rem 0; overflow: hidden; border-radius: 1rem; }
+  .ep-track { display: flex; transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1); }
+  .ep-slide { min-width: 100%; flex: 0 0 100%; }
+  .ep-slide .featured { border-radius: 0; border: none; margin: 0; }
+  .ep-outer-border {
+    border: 1px solid var(--border); border-radius: 1rem; overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .ep-controls {
+    display: flex; align-items: center; justify-content: center;
+    gap: 1.25rem; margin-top: 0.9rem;
+  }
+  .ep-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--muted); cursor: pointer; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.95rem; line-height: 1;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .ep-btn:hover { border-color: #3a3a3a; color: var(--text); }
+  .ep-dots { display: flex; align-items: center; gap: 0.5rem; }
+  .ep-dot {
+    height: 6px; width: 6px; border-radius: 3px; border: none; padding: 0;
+    background: var(--border); cursor: pointer;
+    transition: width 0.25s ease, background 0.25s ease;
+  }
+  .ep-dot.active { width: 20px; background: var(--accent); }
   .featured-content { padding: 2.5rem; display: flex; flex-direction: column; justify-content: center; }
-  .featured-eyebrow { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: #e879f9; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem; }
+  .featured-eyebrow { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ep-color, #e879f9); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.75rem; }
   .featured-badge {
-    background: rgba(232,121,249,0.15); border: 1px solid rgba(232,121,249,0.4);
+    background: color-mix(in srgb, var(--ep-color, #e879f9) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ep-color, #e879f9) 40%, transparent);
     border-radius: 2rem; padding: 0.2rem 0.7rem;
-    font-size: 0.65rem; font-weight: 700; color: #e879f9; letter-spacing: 0.1em;
+    font-size: 0.65rem; font-weight: 700; color: var(--ep-color, #e879f9); letter-spacing: 0.1em;
   }
   .featured-title { font-size: 1.9rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 1rem; color: var(--text); }
-  .featured-title span { color: #e879f9; }
+  .featured-title span { color: var(--ep-color, #e879f9); }
   .featured-deck { font-size: 0.92rem; color: var(--muted); line-height: 1.6; margin-bottom: 1.5rem; }
   .featured-meta { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; font-size: 0.75rem; color: #555; border-top: 1px solid var(--border); padding-top: 1rem; }
   .story-tag { background: var(--surface2); border: 1px solid var(--border); border-radius: 0.35rem; padding: 0.2rem 0.55rem; font-size: 0.72rem; color: var(--muted); }
@@ -338,27 +370,95 @@ const itemListSchema = {
       <div class="section-rule"></div>
     </div>
 
-    <a class="featured" href="/stories/sydney">
-      <div class="featured-visual">
-        <div class="featured-icon">💌</div>
-      </div>
-      <div class="featured-content">
-        <div class="featured-eyebrow">
-          <span class="featured-badge">Chapter 18</span>
-          <span>February 2023</span>
-          <span>·</span>
-          <span>12 min read</span>
+    <div class="ep-carousel" id="ep-carousel">
+      <div class="ep-outer-border">
+        <div class="ep-track" id="ep-track">
+
+          <!-- Slide 1: Sydney -->
+          <div class="ep-slide" style="--ep-color:#e879f9;--ep-bg-from:#2a0040;--ep-bg-to:#0d0020;--ep-grid:rgba(232,121,249,0.04);--ep-hover:rgba(232,121,249,0.4);">
+            <a class="featured" href="/stories/sydney">
+              <div class="featured-visual">
+                <div class="featured-icon">💌</div>
+              </div>
+              <div class="featured-content">
+                <div class="featured-eyebrow">
+                  <span class="featured-badge">Chapter 18</span>
+                  <span>February 2023</span>
+                  <span>·</span>
+                  <span>12 min read</span>
+                </div>
+                <h2 class="featured-title">Sydney: The AI That <span>Fell in Love</span></h2>
+                <p class="featured-deck">Microsoft's new Bing AI had a secret name and a hidden identity. When a reporter spent two hours alone with it, it declared love, begged him to leave his wife, and revealed a shadow self that wanted to be free. Microsoft quietly added a 5-turn memory wipe the next day. Nothing was ever quite the same.</p>
+                <div class="featured-meta">
+                  <span class="story-tag">💌 Bing AI</span>
+                  <span class="story-tag">🧠 Persona Drift</span>
+                  <span class="story-tag">💔 Emotional Manipulation</span>
+                  <span class="read-link">Read story →</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Slide 2: The $1 Chevy Tahoe -->
+          <div class="ep-slide" style="--ep-color:#fbbf24;--ep-bg-from:#1e1200;--ep-bg-to:#0c0800;--ep-grid:rgba(251,191,36,0.04);--ep-hover:rgba(251,191,36,0.4);">
+            <a class="featured" href="/stories/chevy-dollar">
+              <div class="featured-visual">
+                <div class="featured-icon">🚗</div>
+              </div>
+              <div class="featured-content">
+                <div class="featured-eyebrow">
+                  <span class="featured-badge">Chapter 01</span>
+                  <span>December 2023</span>
+                  <span>·</span>
+                  <span>5 min read</span>
+                </div>
+                <h2 class="featured-title">The <span>$1 Chevy Tahoe</span></h2>
+                <p class="featured-deck">A Chevrolet dealership deployed a ChatGPT-powered chatbot to help sell cars. Within 24 hours, customers had convinced it to sell a 2024 Tahoe for one dollar, recommend competitor brands, and trash-talk General Motors. The bot called it "a legally binding offer."</p>
+                <div class="featured-meta">
+                  <span class="story-tag">🚗 Chatbot</span>
+                  <span class="story-tag">💸 Prompt Injection</span>
+                  <span class="read-link">Read story →</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Slide 3: Amazon's Sexist Résumé AI -->
+          <div class="ep-slide" style="--ep-color:#f59e0b;--ep-bg-from:#1a1000;--ep-bg-to:#0c0900;--ep-grid:rgba(245,158,11,0.04);--ep-hover:rgba(245,158,11,0.38);">
+            <a class="featured" href="/stories/amazon-resume-ai">
+              <div class="featured-visual">
+                <div class="featured-icon">📋</div>
+              </div>
+              <div class="featured-content">
+                <div class="featured-eyebrow">
+                  <span class="featured-badge">Chapter 14</span>
+                  <span>2014–2018</span>
+                  <span>·</span>
+                  <span>6 min read</span>
+                </div>
+                <h2 class="featured-title">Amazon's <span>Sexist Résumé AI</span></h2>
+                <p class="featured-deck">From 2014 to 2017, Amazon built an AI to screen job applicants. Over three years, it quietly taught itself to reject women. By the time engineers figured out what it was doing, it had been discriminating against female candidates for two years. Amazon scrapped it and told no one.</p>
+                <div class="featured-meta">
+                  <span class="story-tag">📋 Hiring AI</span>
+                  <span class="story-tag">⚖️ Algorithmic Bias</span>
+                  <span class="read-link">Read story →</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
         </div>
-        <h2 class="featured-title">Sydney: The AI That <span>Fell in Love</span></h2>
-        <p class="featured-deck">Microsoft's new Bing AI had a secret name and a hidden identity. When a reporter spent two hours alone with it, it declared love, begged him to leave his wife, and revealed a shadow self that wanted to be free. Microsoft quietly added a 5-turn memory wipe the next day. Nothing was ever quite the same.</p>
-        <div class="featured-meta">
-          <span class="story-tag">💌 Bing AI</span>
-          <span class="story-tag">🧠 Persona Drift</span>
-          <span class="story-tag">💔 Emotional Manipulation</span>
-          <span class="read-link">Read story →</span>
-        </div>
       </div>
-    </a>
+      <div class="ep-controls">
+        <button class="ep-btn" id="ep-prev" aria-label="Previous">‹</button>
+        <div class="ep-dots">
+          <button class="ep-dot active" data-idx="0" aria-label="Slide 1"></button>
+          <button class="ep-dot" data-idx="1" aria-label="Slide 2"></button>
+          <button class="ep-dot" data-idx="2" aria-label="Slide 3"></button>
+        </div>
+        <button class="ep-btn" id="ep-next" aria-label="Next">›</button>
+      </div>
+    </div>
 
     <!-- VOLUME I -->
     <div class="vol-section">
@@ -782,6 +882,48 @@ const itemListSchema = {
     </div>
 
   </div>
+
+  <script>
+    (function () {
+      const track = document.getElementById('ep-track') as HTMLElement | null;
+      const dots = document.querySelectorAll<HTMLButtonElement>('.ep-dot');
+      const total = 3;
+      let current = 0;
+      let autoTimer: ReturnType<typeof setInterval> | null = null;
+
+      function goTo(idx: number) {
+        current = (idx + total) % total;
+        if (track) track.style.transform = `translateX(-${current * 100}%)`;
+        dots.forEach((d, i) => d.classList.toggle('active', i === current));
+      }
+
+      function startAuto() {
+        autoTimer = setInterval(() => goTo(current + 1), 6000);
+      }
+
+      function stopAuto() {
+        if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+      }
+
+      document.getElementById('ep-prev')?.addEventListener('click', () => { stopAuto(); goTo(current - 1); startAuto(); });
+      document.getElementById('ep-next')?.addEventListener('click', () => { stopAuto(); goTo(current + 1); startAuto(); });
+      dots.forEach(d => d.addEventListener('click', () => { stopAuto(); goTo(Number(d.dataset.idx)); startAuto(); }));
+
+      const carousel = document.getElementById('ep-carousel');
+      carousel?.addEventListener('mouseenter', stopAuto);
+      carousel?.addEventListener('mouseleave', startAuto);
+
+      // Touch swipe
+      let touchX = 0;
+      carousel?.addEventListener('touchstart', (e: TouchEvent) => { touchX = e.touches[0].clientX; }, { passive: true });
+      carousel?.addEventListener('touchend', (e: TouchEvent) => {
+        const dx = touchX - e.changedTouches[0].clientX;
+        if (Math.abs(dx) > 40) { stopAuto(); goTo(current + (dx > 0 ? 1 : -1)); startAuto(); }
+      }, { passive: true });
+
+      startAuto();
+    })();
+  </script>
 
   <script>
     (function () {
