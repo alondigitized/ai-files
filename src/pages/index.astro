@@ -253,6 +253,42 @@ const itemListSchema = {
   footer { text-align: center; padding: 3rem 2rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.82rem; }
   footer a { color: var(--blue); text-decoration: none; }
 
+  /* ── Ideas Section ── */
+  .ideas-section { border-top: 1px solid var(--border); padding: 4rem 0; }
+  .ideas-inner {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 4rem; align-items: start;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 1rem; padding: 3rem;
+  }
+  .ideas-eyebrow { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; font-weight: 700; }
+  .ideas-title { font-size: clamp(1.3rem, 2.5vw, 1.8rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 0.5rem; }
+  .ideas-deck { font-size: 0.85rem; color: var(--muted); line-height: 1.6; margin-bottom: 1.25rem; }
+  .ideas-form { display: flex; flex-direction: column; gap: 0.6rem; }
+  .ideas-input {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 0.5rem; color: var(--text); font-size: 0.88rem;
+    font-family: inherit; line-height: 1.5; padding: 0.65rem 0.9rem;
+    resize: none; box-sizing: border-box; transition: border-color 0.2s;
+  }
+  .ideas-input:focus { outline: none; border-color: var(--accent); }
+  .ideas-btn {
+    align-self: flex-start; background: var(--accent); color: #fff;
+    border: none; border-radius: 0.5rem; padding: 0.5rem 1.1rem;
+    font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s;
+  }
+  .ideas-btn:hover { opacity: 0.85; }
+  .ideas-thanks { font-size: 0.82rem; color: var(--muted); }
+  .ideas-right { display: flex; flex-direction: column; gap: 0.75rem; }
+  .ideas-top-label { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .ideas-top-list { display: flex; flex-direction: column; gap: 0.5rem; }
+  .idea-top-row { display: flex; align-items: baseline; gap: 0.75rem; }
+  .idea-top-votes { font-size: 0.85rem; font-weight: 700; color: #f59e0b; min-width: 28px; }
+  .idea-top-text { font-size: 0.85rem; color: var(--text); line-height: 1.4; }
+  .ideas-top-empty { font-size: 0.82rem; color: var(--muted); }
+  .ideas-more-link { font-size: 0.82rem; color: var(--blue); text-decoration: none; margin-top: 0.25rem; }
+  .ideas-more-link:hover { text-decoration: underline; }
+
   @media (max-width: 700px) {
     .featured { grid-template-columns: 1fr; min-height: auto; }
     .featured-visual { min-height: 220px; }
@@ -262,6 +298,7 @@ const itemListSchema = {
     .masthead-title { font-size: 3.5rem; }
     .site-nav { padding: 0.85rem 1rem; }
     .subscribe-inner { grid-template-columns: 1fr; gap: 2rem; padding: 2rem; }
+    .ideas-inner { grid-template-columns: 1fr; gap: 2rem; padding: 2rem; }
   }
 </style>
 
@@ -688,6 +725,31 @@ const itemListSchema = {
       </div>
     </div>
 
+    <!-- Ideas -->
+    <section class="ideas-section">
+      <div class="container">
+        <div class="ideas-inner">
+          <div class="ideas-left">
+            <div class="ideas-eyebrow">Reader Ideas</div>
+            <h2 class="ideas-title">Got a story idea?</h2>
+            <p class="ideas-deck">Suggest an AI moment worth documenting. The most-wanted ideas get written first.</p>
+            <form class="ideas-form" id="ideas-form-home">
+              <textarea class="ideas-input" id="ideas-input-home" placeholder="Describe the story in a sentence or two…" maxlength="280" rows="2"></textarea>
+              <button class="ideas-btn" type="submit">Submit idea →</button>
+            </form>
+            <p class="ideas-thanks" id="ideas-thanks-home" hidden>Thanks — we'll review it.</p>
+          </div>
+          <div class="ideas-right">
+            <div class="ideas-top-label">Top ideas</div>
+            <div class="ideas-top-list" id="ideas-top-home">
+              <!-- loaded by JS -->
+            </div>
+            <a href="/ideas" class="ideas-more-link">See all ideas →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- About & Coming Soon -->
     <div class="about">
       <div>
@@ -720,6 +782,72 @@ const itemListSchema = {
     </div>
 
   </div>
+
+  <script>
+    (function () {
+      const SUBMITTED_KEY = 'submitted-idea';
+      const form = document.getElementById('ideas-form-home');
+      const input = document.getElementById('ideas-input-home') as HTMLTextAreaElement | null;
+      const thanks = document.getElementById('ideas-thanks-home');
+      const topList = document.getElementById('ideas-top-home');
+
+      // If already submitted, hide form
+      if (localStorage.getItem(SUBMITTED_KEY) && form && thanks) {
+        (form as HTMLElement).hidden = true;
+        (thanks as HTMLElement).hidden = false;
+      }
+
+      if (form) {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const text = input?.value.trim() ?? '';
+          if (!text || text.length > 280) return;
+          const btn = form.querySelector('button') as HTMLButtonElement;
+          if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
+          try {
+            const r = await fetch('/api/ideas', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ text }),
+            });
+            if (r.ok) {
+              localStorage.setItem(SUBMITTED_KEY, '1');
+              if (form && thanks) {
+                (form as HTMLElement).hidden = true;
+                (thanks as HTMLElement).hidden = false;
+              }
+            } else {
+              if (btn) { btn.disabled = false; btn.textContent = 'Error — try again'; }
+            }
+          } catch {
+            if (btn) { btn.disabled = false; btn.textContent = 'Error — try again'; }
+          }
+        });
+      }
+
+      // Load top 3 ideas
+      if (topList) {
+        fetch('/api/ideas?limit=3')
+          .then(r => r.json())
+          .then((ideas: Array<{ id: string; text: string; votes: number }>) => {
+            if (!ideas.length) {
+              topList.innerHTML = '<span class="ideas-top-empty">No ideas yet — be the first.</span>';
+              return;
+            }
+            topList.innerHTML = '';
+            for (const idea of ideas) {
+              const row = document.createElement('div');
+              row.className = 'idea-top-row';
+              row.innerHTML = `<span class="idea-top-votes">${idea.votes}</span><span class="idea-top-text">${idea.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>`;
+              topList.appendChild(row);
+            }
+          })
+          .catch(() => {
+            if (topList) topList.innerHTML = '<span class="ideas-top-empty">–</span>';
+          });
+      }
+    })();
+  </script>
 
   <footer>
     <p>The AI Files · 3 Volumes · 21 Stories · True stories from the age of artificial intelligence</p>

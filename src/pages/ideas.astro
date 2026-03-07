@@ -1,0 +1,385 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<style is:global>
+  .ideas-page-nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,13,13,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.85rem 2rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ideas-page-nav a { font-size: 1rem; font-weight: 800; color: var(--text); text-decoration: none; letter-spacing: -0.01em; }
+  .ideas-page-nav a span { color: var(--accent); }
+
+  .ideas-hero {
+    padding: 5rem 2rem 3rem;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+    background: radial-gradient(ellipse at 50% 80%, #1a0000 0%, var(--bg) 65%);
+  }
+  .ideas-hero-eyebrow {
+    font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 1rem; font-weight: 700;
+  }
+  .ideas-hero-title {
+    font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900;
+    letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 1rem;
+  }
+  .ideas-hero-deck {
+    font-size: 1rem; color: var(--muted); max-width: 520px;
+    margin: 0 auto 2.5rem; line-height: 1.6;
+  }
+
+  /* Submit form */
+  .ideas-submit-wrap {
+    max-width: 560px; margin: 0 auto;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 1rem; padding: 1.5rem;
+  }
+  .ideas-submit-label {
+    font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 0.75rem; display: block;
+  }
+  .ideas-textarea {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 0.5rem; color: var(--text); font-size: 0.9rem;
+    font-family: inherit; line-height: 1.5; padding: 0.75rem 1rem;
+    resize: vertical; box-sizing: border-box; min-height: 80px;
+    transition: border-color 0.2s;
+  }
+  .ideas-textarea:focus { outline: none; border-color: var(--accent); }
+  .ideas-form-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 0.75rem; gap: 1rem;
+  }
+  .ideas-char-count { font-size: 0.75rem; color: var(--muted); }
+  .ideas-char-count.over { color: var(--accent); }
+  .ideas-submit-btn {
+    background: var(--accent); color: #fff; border: none;
+    border-radius: 0.5rem; padding: 0.5rem 1.25rem;
+    font-size: 0.85rem; font-weight: 700; cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .ideas-submit-btn:hover { opacity: 0.85; }
+  .ideas-submit-btn:disabled { opacity: 0.4; cursor: default; }
+  .ideas-thanks {
+    text-align: center; padding: 1rem; color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  /* Ideas list */
+  .ideas-list-section {
+    max-width: 720px; margin: 0 auto; padding: 3rem 2rem 5rem;
+  }
+  .ideas-list-heading {
+    font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 1.5rem; font-weight: 700;
+  }
+  .ideas-list { display: flex; flex-direction: column; gap: 0.75rem; }
+  .idea-row {
+    display: flex; align-items: center; gap: 1rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 0.75rem; padding: 1rem 1.25rem;
+  }
+  .idea-vote-block {
+    display: flex; flex-direction: column; align-items: center;
+    flex-shrink: 0; gap: 0.25rem;
+  }
+  .idea-vote-btn {
+    background: none; border: 1px solid var(--border);
+    border-radius: 0.4rem; width: 32px; height: 28px;
+    color: var(--muted); font-size: 0.8rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .idea-vote-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .idea-vote-btn:disabled { opacity: 0.4; cursor: default; }
+  .idea-vote-btn.voted { border-color: var(--accent); color: var(--accent); }
+  .idea-vote-count {
+    font-size: 0.85rem; font-weight: 700; color: #f59e0b; min-width: 20px;
+    text-align: center;
+  }
+  .idea-text { font-size: 0.9rem; color: var(--text); line-height: 1.5; flex: 1; }
+  .ideas-empty {
+    text-align: center; padding: 3rem 2rem; color: var(--muted); font-size: 0.9rem;
+  }
+
+  /* Admin section */
+  .ideas-admin-section {
+    max-width: 720px; margin: 0 auto; padding: 0 2rem 5rem;
+    border-top: 1px solid var(--border);
+  }
+  .ideas-admin-heading {
+    font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); margin: 2rem 0 1.5rem; font-weight: 700;
+  }
+  .ideas-pending-list { display: flex; flex-direction: column; gap: 0.75rem; }
+  .idea-pending-row {
+    display: flex; align-items: flex-start; gap: 1rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 0.75rem; padding: 1rem 1.25rem;
+  }
+  .idea-pending-text { font-size: 0.9rem; color: var(--text); flex: 1; line-height: 1.5; }
+  .idea-pending-meta { font-size: 0.72rem; color: var(--muted); margin-top: 0.3rem; }
+  .idea-admin-btns { display: flex; gap: 0.5rem; flex-shrink: 0; }
+  .idea-approve-btn, .idea-reject-btn {
+    border: none; border-radius: 0.4rem;
+    padding: 0.35rem 0.75rem; font-size: 0.75rem;
+    font-weight: 700; cursor: pointer; transition: opacity 0.2s;
+  }
+  .idea-approve-btn { background: #00ff88; color: #0d0d0d; }
+  .idea-reject-btn { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+  .idea-approve-btn:hover, .idea-reject-btn:hover { opacity: 0.75; }
+  .ideas-admin-empty { font-size: 0.85rem; color: var(--muted); }
+
+  footer.ideas-footer {
+    text-align: center; padding: 3rem 2rem;
+    border-top: 1px solid var(--border); color: var(--muted); font-size: 0.82rem;
+  }
+  footer.ideas-footer a { color: var(--blue); text-decoration: none; }
+
+  @media (max-width: 700px) {
+    .ideas-hero { padding: 3rem 1.5rem 2rem; }
+    .ideas-list-section, .ideas-admin-section { padding-left: 1.25rem; padding-right: 1.25rem; }
+  }
+</style>
+
+<BaseLayout
+  title="Story Ideas — The AI Files"
+  description="Suggest an AI story worth documenting. The most-wanted ideas get written first."
+>
+  <nav class="ideas-page-nav">
+    <a href="/"><span>The AI Files</span></a>
+  </nav>
+
+  <div class="ideas-hero">
+    <div class="ideas-hero-eyebrow">Reader Ideas</div>
+    <h1 class="ideas-hero-title">What should we cover next?</h1>
+    <p class="ideas-hero-deck">Suggest an AI moment worth documenting — a blunder, a breakthrough, or a case you think deserves the spotlight. The most-wanted ideas get written first.</p>
+
+    <div class="ideas-submit-wrap" id="submit-wrap">
+      <label class="ideas-submit-label" for="ideas-input-page">Your idea</label>
+      <textarea
+        class="ideas-textarea"
+        id="ideas-input-page"
+        placeholder="Describe the story in a sentence or two…"
+        maxlength="280"
+        rows="3"
+      ></textarea>
+      <div class="ideas-form-footer">
+        <span class="ideas-char-count" id="ideas-char-count">0 / 280</span>
+        <button class="ideas-submit-btn" id="ideas-submit-btn" type="button" disabled>Submit idea →</button>
+      </div>
+    </div>
+    <p class="ideas-thanks" id="ideas-thanks" hidden>Thanks — your idea has been submitted. We'll review it shortly.</p>
+  </div>
+
+  <!-- Approved ideas list -->
+  <div class="ideas-list-section">
+    <div class="ideas-list-heading">Top ideas · upvote to show support</div>
+    <div class="ideas-list" id="ideas-list">
+      <!-- loaded by JS -->
+    </div>
+    <div class="ideas-empty" id="ideas-empty" hidden>No ideas yet — be the first.</div>
+  </div>
+
+  <!-- Admin section (hidden until ?admin=KEY) -->
+  <div class="ideas-admin-section" id="admin-section" hidden>
+    <div class="ideas-admin-heading">Pending Review</div>
+    <div class="ideas-pending-list" id="pending-list"></div>
+    <div class="ideas-admin-empty" id="admin-empty" hidden>No pending ideas.</div>
+  </div>
+
+  <footer class="ideas-footer">
+    <p>The AI Files · <a href="/">← Back to stories</a></p>
+    <p style="margin-top:0.5rem; color:#444;">Ideas are reviewed before going public. No personal data collected.</p>
+  </footer>
+</BaseLayout>
+
+<script>
+  const VOTED_KEY = 'voted-ideas';
+  const SUBMITTED_KEY = 'submitted-idea';
+
+  function getVoted(): string[] {
+    try { return JSON.parse(localStorage.getItem(VOTED_KEY) ?? '[]'); } catch { return []; }
+  }
+  function markVoted(id: string) {
+    const v = getVoted();
+    if (!v.includes(id)) { v.push(id); localStorage.setItem(VOTED_KEY, JSON.stringify(v)); }
+  }
+
+  // Char counter
+  const textarea = document.getElementById('ideas-input-page') as HTMLTextAreaElement;
+  const charCount = document.getElementById('ideas-char-count')!;
+  const submitBtn = document.getElementById('ideas-submit-btn') as HTMLButtonElement;
+
+  textarea.addEventListener('input', () => {
+    const len = textarea.value.length;
+    charCount.textContent = `${len} / 280`;
+    charCount.classList.toggle('over', len > 280);
+    submitBtn.disabled = len < 1 || len > 280;
+  });
+
+  // Check if already submitted this session
+  if (localStorage.getItem(SUBMITTED_KEY)) {
+    document.getElementById('submit-wrap')!.setAttribute('hidden', '');
+    document.getElementById('ideas-thanks')!.removeAttribute('hidden');
+  }
+
+  // Submit form
+  submitBtn.addEventListener('click', async () => {
+    const text = textarea.value.trim();
+    if (!text || text.length > 280) return;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+    try {
+      const r = await fetch('/api/ideas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      if (r.ok) {
+        localStorage.setItem(SUBMITTED_KEY, '1');
+        document.getElementById('submit-wrap')!.setAttribute('hidden', '');
+        document.getElementById('ideas-thanks')!.removeAttribute('hidden');
+      } else {
+        submitBtn.textContent = 'Error — try again';
+        submitBtn.disabled = false;
+      }
+    } catch {
+      submitBtn.textContent = 'Error — try again';
+      submitBtn.disabled = false;
+    }
+  });
+
+  // Load approved ideas
+  async function loadIdeas() {
+    const list = document.getElementById('ideas-list')!;
+    const empty = document.getElementById('ideas-empty')!;
+    try {
+      const r = await fetch('/api/ideas?limit=50');
+      const ideas: Array<{ id: string; text: string; votes: number }> = await r.json();
+      const voted = getVoted();
+
+      if (!ideas.length) {
+        empty.removeAttribute('hidden');
+        return;
+      }
+
+      list.innerHTML = '';
+      for (const idea of ideas) {
+        const hasVoted = voted.includes(idea.id);
+        const row = document.createElement('div');
+        row.className = 'idea-row';
+        row.dataset.id = idea.id;
+        row.innerHTML = `
+          <div class="idea-vote-block">
+            <button class="idea-vote-btn${hasVoted ? ' voted' : ''}" data-id="${idea.id}"${hasVoted ? ' disabled' : ''} aria-label="Upvote">▲</button>
+            <span class="idea-vote-count">${idea.votes}</span>
+          </div>
+          <div class="idea-text">${escapeHtml(idea.text)}</div>
+        `;
+        list.appendChild(row);
+      }
+
+      list.addEventListener('click', async (e) => {
+        const btn = (e.target as Element).closest('.idea-vote-btn') as HTMLButtonElement | null;
+        if (!btn || btn.disabled) return;
+        const id = btn.dataset.id!;
+        btn.disabled = true;
+        try {
+          const r = await fetch('/api/ideas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, action: 'vote' }),
+          });
+          if (r.ok) {
+            const { votes } = await r.json();
+            btn.classList.add('voted');
+            btn.closest('.idea-vote-block')!.querySelector('.idea-vote-count')!.textContent = String(votes);
+            markVoted(id);
+          } else {
+            btn.disabled = false;
+          }
+        } catch {
+          btn.disabled = false;
+        }
+      });
+    } catch {
+      empty.removeAttribute('hidden');
+    }
+  }
+
+  function escapeHtml(s: string) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  loadIdeas();
+
+  // Admin section
+  const params = new URLSearchParams(window.location.search);
+  const adminKey = params.get('admin');
+  if (adminKey) {
+    const adminSection = document.getElementById('admin-section')!;
+    adminSection.removeAttribute('hidden');
+    loadPending(adminKey);
+  }
+
+  async function loadPending(key: string) {
+    const list = document.getElementById('pending-list')!;
+    const empty = document.getElementById('admin-empty')!;
+    try {
+      const r = await fetch(`/api/ideas-admin?key=${encodeURIComponent(key)}`);
+      if (!r.ok) { list.innerHTML = '<p style="color:var(--accent)">Unauthorized</p>'; return; }
+      const ideas: Array<{ id: string; text: string; submittedAt: string }> = await r.json();
+
+      if (!ideas.length) { empty.removeAttribute('hidden'); return; }
+
+      list.innerHTML = '';
+      for (const idea of ideas) {
+        const row = document.createElement('div');
+        row.className = 'idea-pending-row';
+        row.dataset.id = idea.id;
+        const date = new Date(idea.submittedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        row.innerHTML = `
+          <div style="flex:1">
+            <div class="idea-pending-text">${escapeHtml(idea.text)}</div>
+            <div class="idea-pending-meta">${date}</div>
+          </div>
+          <div class="idea-admin-btns">
+            <button class="idea-approve-btn" data-id="${idea.id}" data-action="approve">Approve</button>
+            <button class="idea-reject-btn" data-id="${idea.id}" data-action="reject">Reject</button>
+          </div>
+        `;
+        list.appendChild(row);
+      }
+
+      list.addEventListener('click', async (e) => {
+        const btn = (e.target as Element).closest('[data-action]') as HTMLButtonElement | null;
+        if (!btn) return;
+        const { id, action } = btn.dataset as { id: string; action: string };
+        btn.disabled = true;
+        try {
+          const r = await fetch('/api/ideas-admin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, action, key }),
+          });
+          if (r.ok) {
+            btn.closest('.idea-pending-row')!.remove();
+            if (!list.children.length) empty.removeAttribute('hidden');
+          } else {
+            btn.disabled = false;
+          }
+        } catch {
+          btn.disabled = false;
+        }
+      });
+    } catch {
+      list.innerHTML = '<p style="color:var(--muted)">Failed to load pending ideas.</p>';
+    }
+  }
+</script>
