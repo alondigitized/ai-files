@@ -1,0 +1,172 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ResearchBundle",
+  "description": "Output of the research-scout, optionally annotated by the source-critic. Contains all gathered facts, sources, timeline, claims, and open questions. Not a narrative — extraction only.",
+  "type": "object",
+  "required": [
+    "slug",
+    "sources",
+    "facts",
+    "timeline",
+    "claims",
+    "openQuestions",
+    "researchedAt"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "sources": {
+      "type": "array",
+      "description": "All sources consulted during research.",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "url", "type", "retrievedAt"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Short identifier used to reference this source in facts/claims (e.g. 'S1', 'S2')."
+          },
+          "label": {
+            "type": "string",
+            "description": "Human-readable label for the source."
+          },
+          "url": { "type": "string" },
+          "type": {
+            "type": "string",
+            "description": "Source type for credibility assessment.",
+            "enum": [
+              "primary-document",
+              "official-statement",
+              "regulatory-filing",
+              "court-filing",
+              "academic-paper",
+              "news-outlet",
+              "company-blog",
+              "press-release",
+              "social-media",
+              "aggregator"
+            ]
+          },
+          "credibilityScore": {
+            "type": "integer",
+            "description": "Assigned by source-critic. 1 (low) to 5 (primary document).",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "credibilityNotes": {
+            "type": "string",
+            "description": "Source-critic notes on reliability, bias, or circularity."
+          },
+          "retrievedAt": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "facts": {
+      "type": "array",
+      "description": "Discrete, dated, attributable facts extracted from sources. No narrative prose.",
+      "items": {
+        "type": "object",
+        "required": ["id", "fact", "sourceIds"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "description": "Short identifier (e.g. 'F1')." },
+          "fact": {
+            "type": "string",
+            "description": "A single discrete, attributed fact. No interpretation."
+          },
+          "date": {
+            "type": "string",
+            "description": "Date the fact occurred or was stated. ISO 8601 or approximate string."
+          },
+          "sourceIds": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "IDs from the sources array that support this fact.",
+            "minItems": 1
+          },
+          "certaintyLabel": {
+            "type": "string",
+            "description": "Assigned by source-critic.",
+            "enum": ["CONFIRMED", "PLAUSIBLE", "DISPUTED", "UNVERIFIED"]
+          }
+        }
+      },
+      "minItems": 3
+    },
+    "timeline": {
+      "type": "array",
+      "description": "Chronological sequence of key events. Each entry is a dated moment.",
+      "items": {
+        "type": "object",
+        "required": ["date", "event", "sourceIds"],
+        "additionalProperties": false,
+        "properties": {
+          "date": { "type": "string" },
+          "event": { "type": "string", "description": "What happened. One sentence max." },
+          "sourceIds": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1
+          }
+        }
+      }
+    },
+    "claims": {
+      "type": "array",
+      "description": "Specific claims — assertions made by principals, companies, researchers, etc. Distinguished from facts because claims may be contested.",
+      "items": {
+        "type": "object",
+        "required": ["id", "claimant", "claim", "sourceIds"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "claimant": {
+            "type": "string",
+            "description": "Who made the claim (named person, organization, anonymous)."
+          },
+          "claim": { "type": "string" },
+          "date": { "type": "string" },
+          "sourceIds": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1
+          },
+          "certaintyLabel": {
+            "type": "string",
+            "enum": ["CONFIRMED", "PLAUSIBLE", "DISPUTED", "UNVERIFIED"]
+          },
+          "counterClaim": {
+            "type": "string",
+            "description": "If disputed, the opposing claim or evidence."
+          }
+        }
+      }
+    },
+    "openQuestions": {
+      "type": "array",
+      "description": "Questions the research could not answer. Must be surfaced to the writer.",
+      "items": { "type": "string" }
+    },
+    "sourceCriticVerdict": {
+      "type": "string",
+      "description": "Overall verdict from source-critic.",
+      "enum": ["go", "no-go", "go-with-caveats"]
+    },
+    "sourceCriticNotes": {
+      "type": "string",
+      "description": "Narrative notes from source-critic on overall research quality, gaps, or risks."
+    },
+    "researchedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

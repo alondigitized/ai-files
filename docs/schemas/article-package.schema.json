@@ -1,0 +1,150 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ArticlePackage",
+  "description": "Final deliverable. Validated by scripts/validate-story.ts before publication.",
+  "type": "object",
+  "required": [
+    "slug",
+    "metadata",
+    "factCheckStatus",
+    "canvasArtBrief",
+    "canvasAnimationDescription"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "All fields required for stories.json. Must pass stories.json schema.",
+      "required": [
+        "slug", "chapter", "volume", "title", "deck",
+        "date", "isoDate", "readTime", "emoji", "tags",
+        "story", "storyDark", "verifyText", "sources"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "slug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "chapter": { "type": "integer", "minimum": 1 },
+        "volume": { "type": "integer", "enum": [1, 2, 3] },
+        "title": { "type": "string", "maxLength": 80 },
+        "deck": { "type": "string", "maxLength": 160 },
+        "date": {
+          "type": "string",
+          "description": "Human-readable display date (e.g. 'January 2024')."
+        },
+        "isoDate": {
+          "type": "string",
+          "format": "date",
+          "description": "ISO 8601 date. Used for RSS and JSON-LD datePublished."
+        },
+        "readTime": {
+          "type": "string",
+          "examples": ["5 min", "7 min"]
+        },
+        "emoji": { "type": "string", "minLength": 1 },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "maxItems": 5
+        },
+        "story": {
+          "type": "string",
+          "description": "Per-story accent color hex code.",
+          "pattern": "^#[0-9a-fA-F]{3,6}$"
+        },
+        "storyDark": {
+          "type": "string",
+          "description": "Dark tint for hero gradient.",
+          "pattern": "^#[0-9a-fA-F]{3,6}$"
+        },
+        "verifyText": {
+          "type": "string",
+          "description": "Source note shown in hero verify badge."
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["label", "url"],
+            "properties": {
+              "label": { "type": "string" },
+              "url": { "type": "string" }
+            }
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "factCheckStatus": {
+      "type": "string",
+      "description": "Must be PASS before publish.",
+      "enum": ["PASS", "FAIL", "PENDING"]
+    },
+    "factCheckReportPath": {
+      "type": "string",
+      "description": "Path to factcheck-[slug].md (working file, not committed)."
+    },
+    "canvasArtBrief": {
+      "type": "object",
+      "description": "Art director output. Defines the visual logic for the canvas animation.",
+      "required": ["thesis", "emotionalRegister", "visualMetaphor", "symbolicElements", "motionRules", "palette"],
+      "additionalProperties": false,
+      "properties": {
+        "thesis": {
+          "type": "string",
+          "description": "Single declarative sentence capturing the story's central argument."
+        },
+        "emotionalRegister": {
+          "type": "string",
+          "description": "What the viewer should feel: unease, absurdity, dread, wonder, irony, etc."
+        },
+        "visualMetaphor": {
+          "type": "string",
+          "description": "The physical process that maps to the story's mechanism."
+        },
+        "symbolicElements": {
+          "type": "array",
+          "description": "What each visual element represents.",
+          "items": {
+            "type": "object",
+            "required": ["element", "represents"],
+            "properties": {
+              "element": { "type": "string" },
+              "represents": { "type": "string" }
+            }
+          }
+        },
+        "motionRules": {
+          "type": "string",
+          "description": "How things move and why. Speed, direction, interaction rules."
+        },
+        "palette": {
+          "type": "object",
+          "required": ["background", "accent", "secondary"],
+          "properties": {
+            "background": { "type": "string", "description": "Always var(--bg) = #0d0d0d" },
+            "accent": { "type": "string", "description": "The story's --story color." },
+            "secondary": { "type": "string", "description": "Any secondary color (--accent red for failure states, etc.)" }
+          }
+        }
+      }
+    },
+    "canvasAnimationDescription": {
+      "type": "string",
+      "description": "One-sentence description for the CLAUDE.md canvas table. E.g. 'The Filter — resume terms rain down; penalized phrases shift red with PENALIZED label.'"
+    },
+    "astroPagePath": {
+      "type": "string",
+      "description": "Relative path to the generated Astro page, e.g. src/pages/stories/my-slug.astro"
+    },
+    "packagedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 datetime when package was assembled."
+    }
+  }
+}

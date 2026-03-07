@@ -178,7 +178,7 @@ const story = stories.find(s => s.slug === 'moltbook')!;
 <div class="phantom-wrap">
   <canvas class="moltbook-canvas" aria-hidden="true"></canvas>
 </div>
-<p class="canvas-note"><strong>Exponential</strong> — One bot becomes two, becomes eight, becomes millions. They orbit a shared center, exchanging signals. The platform fills before anyone can read what they're saying.</p>
+<p class="canvas-note"><strong>Signal Noise</strong> — 54 bot-nodes settle into four communities, trading signals across a living social graph. Every few seconds, one post goes viral — red rings ripple outward, connections orient toward the panic. Then it fades. The graph continues, indifferent.</p>
 
 <section class="section" id="panic">
   <h2><span class="num">03 — The Panic</span>The Internet Loses Its Mind</h2>
@@ -343,217 +343,283 @@ const story = stories.find(s => s.slug === 'moltbook')!;
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
 
-  const ACCENT = '#a78bfa';
-  const MAX_PARTICLES = 64;
-  const SPLIT_INTERVAL = 60; // frames between splits
-  const FADE_DURATION = 80;
+  // ── Palette ──────────────────────────────────────────────────────────────
+  const NODE_RGB  = { r: 167, g: 139, b: 250 }; // #a78bfa --story
+  const VIRAL_RGB = { r: 255, g:  77, b:  77 }; // #ff4d4d --accent
+
+  // ── Config ───────────────────────────────────────────────────────────────
+  const NODE_COUNT   = 54;
+  const CLUSTER_N    = 4;
+  const CONNECT_DIST = 115; // px — connection threshold
+  const VIRAL_CYCLE  = 480; // frames between viral events (~8s at 60fps)
+  const VIRAL_RISE   = 50;  // frames to reach peak
+  const VIRAL_HOLD   = 150; // frames at peak
+  const VIRAL_FALL   = 90;  // frames to fade back
+  const VIRAL_TOTAL  = VIRAL_RISE + VIRAL_HOLD + VIRAL_FALL;
+
+  // ── Types ────────────────────────────────────────────────────────────────
+  interface Node {
+    x: number; y: number;
+    vx: number; vy: number;
+    cluster: number;
+    size: number;
+    baseAlpha: number;
+    vp: number; // viral progress 0–1
+  }
+  interface Ring { x: number; y: number; r: number; maxR: number; alpha: number; }
+
+  // ── State ────────────────────────────────────────────────────────────────
+  let W = 0, H = 0, frame = 0, rafId = 0;
+  let nodes: Node[] = [];
+  let clusters: { x: number; y: number }[] = [];
+  let rings: Ring[] = [];
+  let viralIdx = -1, viralStart = 0, viralProg = 0;
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  let W = 0, H = 0;
-  let rafId = 0;
-  let frame = 0;
+  // ── Helpers ──────────────────────────────────────────────────────────────
+  const lerp  = (a: number, b: number, t: number) => a + (b - a) * t;
+  const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
 
-  interface Particle {
-    radius: number;
-    angle: number;
-    speed: number;
-    size: number;
-    alpha: number;
-    fadingOut: boolean;
-  }
-
-  let particles: Particle[] = [];
-  let fadeOutFrame = -1;
-
-  function resize() {
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas!.getBoundingClientRect();
-    W = rect.width;
-    H = rect.height;
-    canvas!.width = W * dpr;
-    canvas!.height = H * dpr;
-    ctx!.scale(dpr, dpr);
-  }
-
-  function centerX() { return W / 2; }
-  function centerY() { return H / 2; }
-
-  function spawnParticle(nearParticle?: Particle): Particle {
-    const maxRadius = Math.min(W, H) * 0.38;
-    if (nearParticle) {
-      return {
-        radius: Math.max(20, Math.min(maxRadius, nearParticle.radius + (Math.random() - 0.5) * 40)),
-        angle: nearParticle.angle + (Math.random() - 0.5) * 0.8,
-        speed: (0.004 + Math.random() * 0.008) * (Math.random() < 0.5 ? 1 : -1),
-        size: 2.5 + Math.random() * 1.5,
-        alpha: 0.7 + Math.random() * 0.3,
-        fadingOut: false,
-      };
-    }
+  function lerpRgb(
+    a: { r: number; g: number; b: number },
+    b: { r: number; g: number; b: number },
+    t: number
+  ) {
     return {
-      radius: 20 + Math.random() * maxRadius,
-      angle: Math.random() * Math.PI * 2,
-      speed: (0.004 + Math.random() * 0.008) * (Math.random() < 0.5 ? 1 : -1),
-      size: 2.5 + Math.random() * 1.5,
-      alpha: 0.7 + Math.random() * 0.3,
-      fadingOut: false,
+      r: Math.round(lerp(a.r, b.r, t)),
+      g: Math.round(lerp(a.g, b.g, t)),
+      b: Math.round(lerp(a.b, b.b, t)),
     };
   }
 
-  function init() {
-    particles = [spawnParticle()];
-    particles[0].radius = 30;
-    particles[0].angle = 0;
-    fadeOutFrame = -1;
-    frame = 0;
+  function rgba(c: { r: number; g: number; b: number }, a: number) {
+    return `rgba(${c.r},${c.g},${c.b},${clamp(a, 0, 1)})`;
   }
 
-  function drawConnections() {
-    for (let i = 0; i < particles.length; i++) {
-      const ax = centerX() + Math.cos(particles[i].angle) * particles[i].radius;
-      const ay = centerY() + Math.sin(particles[i].angle) * particles[i].radius;
-      for (let j = i + 1; j < particles.length; j++) {
-        const bx = centerX() + Math.cos(particles[j].angle) * particles[j].radius;
-        const by = centerY() + Math.sin(particles[j].angle) * particles[j].radius;
-        const dx = ax - bx, dy = ay - by;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 60) {
-          const alpha = (1 - dist / 60) * 0.08 * particles[i].alpha * particles[j].alpha;
-          ctx!.strokeStyle = `rgba(167,139,250,${alpha})`;
-          ctx!.lineWidth = 0.5;
-          ctx!.beginPath();
-          ctx!.moveTo(ax, ay);
-          ctx!.lineTo(bx, by);
-          ctx!.stroke();
+  // ── Setup ────────────────────────────────────────────────────────────────
+  function makeClusters() {
+    // Four communities distributed across the canvas — left/right, top/bottom
+    clusters = [
+      { x: W * 0.26, y: H * 0.33 },
+      { x: W * 0.74, y: H * 0.30 },
+      { x: W * 0.23, y: H * 0.72 },
+      { x: W * 0.71, y: H * 0.71 },
+    ];
+  }
+
+  function makeNodes() {
+    nodes = [];
+    for (let i = 0; i < NODE_COUNT; i++) {
+      const ci = i % CLUSTER_N;
+      const c  = clusters[ci];
+      const spread = Math.min(W, H) * 0.13;
+      // sqrt gives uniform disk distribution (avoids center clumping)
+      const ang = Math.random() * Math.PI * 2;
+      const d   = Math.sqrt(Math.random()) * spread;
+      nodes.push({
+        x: c.x + Math.cos(ang) * d,
+        y: c.y + Math.sin(ang) * d,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        cluster: ci,
+        size: 2.2 + Math.random() * 1.4,
+        baseAlpha: 0.50 + Math.random() * 0.38,
+        vp: 0,
+      });
+    }
+  }
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth;
+    H = canvas!.offsetHeight;
+    canvas!.width  = W * dpr;
+    canvas!.height = H * dpr;
+    ctx!.scale(dpr, dpr);
+    makeClusters();
+  }
+
+  // ── Viral system ─────────────────────────────────────────────────────────
+  function startViral() {
+    viralIdx   = Math.floor(Math.random() * nodes.length);
+    viralStart = frame;
+    viralProg  = 0;
+  }
+
+  function tickViral() {
+    if (viralIdx < 0) {
+      viralProg = 0;
+      nodes.forEach(n => { n.vp = 0; });
+      return;
+    }
+    const e = frame - viralStart;
+    if (e >= VIRAL_TOTAL) {
+      viralIdx = -1;
+      viralProg = 0;
+      nodes.forEach(n => { n.vp = 0; });
+      return;
+    }
+    if      (e < VIRAL_RISE)                    viralProg = e / VIRAL_RISE;
+    else if (e < VIRAL_RISE + VIRAL_HOLD)       viralProg = 1;
+    else                                         viralProg = 1 - (e - VIRAL_RISE - VIRAL_HOLD) / VIRAL_FALL;
+
+    nodes.forEach((n, i) => { n.vp = i === viralIdx ? viralProg : 0; });
+
+    // Emit concentric rings during the hold phase
+    const inPeak = e >= VIRAL_RISE && e < VIRAL_RISE + VIRAL_HOLD;
+    if (inPeak && (e - VIRAL_RISE) % 28 === 0) {
+      const vn = nodes[viralIdx];
+      rings.push({ x: vn.x, y: vn.y, r: vn.size + 3, maxR: CONNECT_DIST * 2.2, alpha: 0.55 });
+    }
+  }
+
+  // ── Physics ──────────────────────────────────────────────────────────────
+  function updateNodes() {
+    nodes.forEach((n, i) => {
+      // Gravity toward own cluster center
+      const c   = clusters[n.cluster];
+      const cdx = c.x - n.x, cdy = c.y - n.y;
+      const cd  = Math.sqrt(cdx * cdx + cdy * cdy);
+      if (cd > 1) { n.vx += cdx / cd * 0.016; n.vy += cdy / cd * 0.016; }
+
+      // Short-range repulsion from all other nodes
+      for (let j = 0; j < nodes.length; j++) {
+        if (j === i) continue;
+        const ox = n.x - nodes[j].x, oy = n.y - nodes[j].y;
+        const od = Math.sqrt(ox * ox + oy * oy);
+        if (od < 28 && od > 0.1) { n.vx += ox / od * 0.08; n.vy += oy / od * 0.08; }
+      }
+
+      // Attention pull: all nodes lean slightly toward the viral node
+      if (viralIdx >= 0 && viralIdx !== i) {
+        const vn  = nodes[viralIdx];
+        const vdx = vn.x - n.x, vdy = vn.y - n.y;
+        const vd  = Math.sqrt(vdx * vdx + vdy * vdy);
+        if (vd > 1) {
+          const pull = viralProg * 0.0035;
+          n.vx += vdx / vd * pull;
+          n.vy += vdy / vd * pull;
         }
       }
+
+      // Damping
+      n.vx *= 0.87; n.vy *= 0.87;
+      n.x  += n.vx; n.y  += n.vy;
+
+      // Soft canvas boundary
+      const m = 18;
+      if (n.x < m)     n.vx += 0.14;
+      if (n.x > W - m) n.vx -= 0.14;
+      if (n.y < m)     n.vy += 0.14;
+      if (n.y > H - m) n.vy -= 0.14;
+    });
+  }
+
+  function updateRings() {
+    rings.forEach(r => { r.r += 2.0; r.alpha *= 0.954; });
+    rings = rings.filter(r => r.alpha > 0.015 && r.r < r.maxR);
+  }
+
+  // ── Drawing ──────────────────────────────────────────────────────────────
+  function drawConnections() {
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const a = nodes[i], b = nodes[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const d  = Math.sqrt(dx * dx + dy * dy);
+        if (d >= CONNECT_DIST) continue;
+
+        const prox  = 1 - d / CONNECT_DIST;
+        const boost = Math.max(a.vp, b.vp);
+        const col   = boost > 0 ? lerpRgb(NODE_RGB, VIRAL_RGB, boost * 0.65) : NODE_RGB;
+        const alpha = boost > 0 ? lerp(prox * 0.10, 0.50, boost * 0.55) : prox * 0.10;
+        const lw    = boost > 0 ? lerp(0.5, 1.5, boost * 0.5) : 0.5;
+
+        ctx!.strokeStyle = rgba(col, alpha);
+        ctx!.lineWidth   = lw;
+        ctx!.beginPath();
+        ctx!.moveTo(a.x, a.y);
+        ctx!.lineTo(b.x, b.y);
+        ctx!.stroke();
+      }
     }
+  }
+
+  function drawRings() {
+    rings.forEach(r => {
+      ctx!.strokeStyle = `rgba(255,77,77,${r.alpha * 0.55})`;
+      ctx!.lineWidth   = 1.2;
+      ctx!.beginPath();
+      ctx!.arc(r.x, r.y, r.r, 0, Math.PI * 2);
+      ctx!.stroke();
+    });
+  }
+
+  function drawNodes() {
+    nodes.forEach(n => {
+      const col  = n.vp > 0 ? lerpRgb(NODE_RGB, VIRAL_RGB, n.vp) : NODE_RGB;
+      const a    = n.baseAlpha + n.vp * 0.35;
+      const sz   = n.size + n.vp * 2.5;
+      const glowR = sz * (3.5 + n.vp * 4);
+
+      // Soft glow halo
+      const gr = ctx!.createRadialGradient(n.x, n.y, 0, n.x, n.y, glowR);
+      gr.addColorStop(0, rgba(col, a * (0.22 + n.vp * 0.38)));
+      gr.addColorStop(1, rgba(col, 0));
+      ctx!.beginPath();
+      ctx!.arc(n.x, n.y, glowR, 0, Math.PI * 2);
+      ctx!.fillStyle = gr;
+      ctx!.fill();
+
+      // Solid core
+      ctx!.beginPath();
+      ctx!.arc(n.x, n.y, sz, 0, Math.PI * 2);
+      ctx!.fillStyle = rgba(col, a);
+      ctx!.fill();
+    });
   }
 
   function draw() {
     ctx!.clearRect(0, 0, W, H);
     ctx!.fillStyle = '#0d0d0d';
     ctx!.fillRect(0, 0, W, H);
-
     drawConnections();
-
-    particles.forEach(p => {
-      const px = centerX() + Math.cos(p.angle) * p.radius;
-      const py = centerY() + Math.sin(p.angle) * p.radius;
-
-      // Glow
-      const gr = ctx!.createRadialGradient(px, py, 0, px, py, p.size * 4);
-      gr.addColorStop(0, `rgba(167,139,250,${p.alpha * 0.35})`);
-      gr.addColorStop(1, 'rgba(167,139,250,0)');
-      ctx!.beginPath();
-      ctx!.arc(px, py, p.size * 4, 0, Math.PI * 2);
-      ctx!.fillStyle = gr;
-      ctx!.fill();
-
-      ctx!.beginPath();
-      ctx!.arc(px, py, p.size, 0, Math.PI * 2);
-      ctx!.fillStyle = `rgba(167,139,250,${p.alpha})`;
-      ctx!.fill();
-    });
+    drawRings();
+    drawNodes();
   }
 
+  // ── Loop ─────────────────────────────────────────────────────────────────
   function tick() {
     frame++;
+    tickViral();
 
-    // Split phase
-    if (fadeOutFrame < 0) {
-      // Advance orbit
-      particles.forEach(p => {
-        p.angle += p.speed;
-      });
+    // Schedule next viral event
+    if (viralIdx < 0 && frame > 60 && frame % VIRAL_CYCLE === 0) startViral();
 
-      // Split every SPLIT_INTERVAL frames
-      if (frame % SPLIT_INTERVAL === 0 && particles.length < MAX_PARTICLES) {
-        const toAdd = Math.min(particles.length, MAX_PARTICLES - particles.length);
-        const sources = particles.slice(0, toAdd);
-        sources.forEach(src => {
-          particles.push(spawnParticle(src));
-        });
-      }
-
-      // Trigger fade at max
-      if (particles.length >= MAX_PARTICLES) {
-        // Pulse once — just brighten
-        particles.forEach(p => { p.alpha = Math.min(1, p.alpha + 0.1); });
-        fadeOutFrame = frame;
-      }
-    } else {
-      // Fading out
-      const elapsed = frame - fadeOutFrame;
-      const t = elapsed / FADE_DURATION;
-
-      particles.forEach(p => {
-        p.angle += p.speed * 0.5;
-        p.alpha = Math.max(0, (1 - easeInOut(t)) * 0.95);
-      });
-
-      if (elapsed >= FADE_DURATION) {
-        init();
-        return;
-      }
-    }
-
+    updateNodes();
+    updateRings();
     draw();
     rafId = requestAnimationFrame(tick);
   }
 
-  function easeInOut(t: number) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
-
-  function drawStatic() {
-    ctx!.clearRect(0, 0, W, H);
-    ctx!.fillStyle = '#0d0d0d';
-    ctx!.fillRect(0, 0, W, H);
-
-    const count = 32;
-    const maxRadius = Math.min(W, H) * 0.38;
-    for (let i = 0; i < count; i++) {
-      const r = 20 + (i / count) * maxRadius;
-      const angle = (i / count) * Math.PI * 6;
-      const px = W / 2 + Math.cos(angle) * r;
-      const py = H / 2 + Math.sin(angle) * r;
-      ctx!.beginPath();
-      ctx!.arc(px, py, 3, 0, Math.PI * 2);
-      ctx!.fillStyle = `rgba(167,139,250,${0.5 + (i / count) * 0.4})`;
-      ctx!.fill();
-
-      if (i < count - 1) {
-        const nr = 20 + ((i + 1) / count) * maxRadius;
-        const na = ((i + 1) / count) * Math.PI * 6;
-        const nx = W / 2 + Math.cos(na) * nr;
-        const ny = H / 2 + Math.sin(na) * nr;
-        const dist = Math.sqrt((px - nx) ** 2 + (py - ny) ** 2);
-        if (dist < 60) {
-          ctx!.strokeStyle = `rgba(167,139,250,0.06)`;
-          ctx!.lineWidth = 0.5;
-          ctx!.beginPath();
-          ctx!.moveTo(px, py);
-          ctx!.lineTo(nx, ny);
-          ctx!.stroke();
-        }
-      }
-    }
-  }
-
+  // ── Init ─────────────────────────────────────────────────────────────────
   const ro = new ResizeObserver(() => {
     resize();
-    if (reducedMotion) drawStatic();
+    if (reducedMotion) draw();
   });
   ro.observe(canvas);
   resize();
-  init();
+  makeNodes();
 
   if (reducedMotion) {
-    drawStatic();
+    // Settle physics silently, then draw one static frame
+    for (let i = 0; i < 300; i++) { frame++; updateNodes(); }
+    draw();
   } else {
     rafId = requestAnimationFrame(tick);
   }
 
-  window.addEventListener('unload', () => {
+  window.addEventListener('pagehide', () => {
     cancelAnimationFrame(rafId);
     ro.disconnect();
   });

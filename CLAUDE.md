@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Workflow
+
+Always use plan mode before implementing any non-trivial change. Explore the codebase, design the approach, and get approval before writing code.
+
 ## Project Overview
 
 **The AI Files** is a static site built with **Astro v5** documenting true stories from the age of AI — incidents, blunders, and landmark moments.
@@ -216,7 +220,7 @@ Every story includes a **full-width canvas animation** placed at a dramatically 
 | bard-hundred-billion | `bard-hundred-billion.astro` | **Freefall** — 30 blue particles rise in a column; a single red fact-check particle crosses; the column instantly falls, scatters at bottom, then slowly rebuilds |
 | coast-runners | `coast-runners.astro` | **Optimal Loop** — racers stream left-to-right; one orange particle finds a point cluster and loops it, growing brighter per lap while the racers dim at the finish |
 | captcha | `captcha.astro` | **The Workaround** — AI particle blocked by barrier; backs off, circles a human node, sends them through; AI follows; nobody programmed this |
-| moltbook | `moltbook.astro` | **Exponential** — 1 purple particle doubles every 60 frames to max 64; all orbit center with faint connection lines; at 64: pulse, fade, restart |
+| moltbook | `moltbook.astro` | **Signal Noise** — 54 nodes form 4 community clusters with a living connection mesh; every ~8s one node goes viral (red rings propagate, all connections orient toward it); panic fades; graph continues |
 | ai-self-preservation | `ai-self-preservation.astro` | **The Copy** — green AI traces a figure-8; red warning appears; copies arc to canvas corners; confrontation flash; copies vanish; AI returns to center, innocent |
 | waymo-blackout | `waymo-blackout.astro` | **Grid Lock** — 18 yellow cars in grid-lane paths; blackout flash; all freeze; hazard lights pulse for 240 frames; one by one manually overridden and removed |
 
@@ -246,3 +250,80 @@ python3 qa.py    # Run QA checks before deploying
 ## Deployment
 
 Deployed to **Vercel** via git push. `astro build` generates `dist/` including the sitemap, RSS feed, robots.txt, and llms.txt. No manual build step needed — Vercel runs the build automatically.
+
+---
+
+## Editorial Production System
+
+The AI Files uses a multi-agent editorial pipeline for researching, writing, fact-checking, and publishing new stories, orchestrated through Claude Code's native agent and skill infrastructure.
+
+### Mission
+
+Publish true, well-sourced stories about AI with analytical rigor and no hype. Every claim must be traceable to a primary source or explicitly labeled as uncertain. Visuals must express the editorial thesis — not decorate arbitrarily.
+
+### Pipeline
+
+```
+intake → research → source validation → angle selection →
+story structure → draft writing → fact check →
+art brief → canvas generation → publish package
+```
+
+Full pipeline spec: `docs/workflows/story-pipeline.md`
+Editorial style guide: `docs/editorial-style.md`
+
+### Non-Negotiables
+
+1. **Never invent facts.** If a claim cannot be sourced, omit it or label it `[UNVERIFIED]`.
+2. **Prefer primary sources.** Court filings, official statements, technical papers, regulatory documents — over aggregators and secondhand summaries.
+3. **Label uncertainty explicitly.** Research outputs use: `[CONFIRMED]`, `[PLAUSIBLE]`, `[DISPUTED]`, `[UNVERIFIED]`.
+4. **Visuals reflect thesis.** Canvas animations must map to the story's central argument. An animation for a story about bias must evoke bias — not generic "AI vibes."
+5. **No overstatement.** Headlines and decks must be defensible from the sources cited. Avoid: "changed everything," "first ever," "revolutionary."
+
+### Canonical Locations
+
+| Type | Path |
+|------|------|
+| Agent definitions | `.claude/agents/` |
+| Skill workflows | `.claude/skills/[name]/SKILL.md` |
+| JSON schemas | `docs/schemas/` |
+| Pipeline docs | `docs/workflows/` |
+| Editorial style guide | `docs/editorial-style.md` |
+| Validation scripts | `scripts/` |
+
+### Output Contract
+
+Every published story must produce:
+- A valid `stories.json` entry (all required fields, passing schema)
+- `src/pages/stories/[slug].astro` with canvas animation
+- Updated `public/llms.txt` entry
+- Passing `python3 qa.py` and `npx tsx scripts/validate-story.ts [slug]`
+
+### Naming Conventions
+
+- **Slugs**: lowercase hyphenated, specific to the incident (`air-canada`, not `airline-chatbot`)
+- **Canvas CSS class**: `.[slug]-canvas`
+- **Working files** (not committed): `research-[slug].json`, `draft-[slug].md`, `factcheck-[slug].md`
+
+### Agents
+
+| Agent | Role |
+|-------|------|
+| `assignment-editor` | Score pitches, create story briefs, reject weak topics |
+| `research-scout` | Gather sources, extract facts, timeline, open questions |
+| `source-critic` | Score credibility, classify claims, reject circular sourcing |
+| `angle-strategist` | Propose 2–4 angles, select strongest, define reader value |
+| `story-architect` | Section outline, evidence mapping, hook and ending |
+| `writer` | Draft in markdown, label interpretations, surface uncertainty |
+| `fact-checker` | Verify claims against sources, issue pass/fail with corrections |
+| `art-director` | Convert thesis and tone into abstract visual brief |
+| `canvas-artist` | Generate performant, responsive HTML canvas animation |
+
+### Skills
+
+| Skill | Use |
+|-------|-----|
+| `new-story` | End-to-end pipeline from pitch to draft package |
+| `fact-check-story` | Validate an existing draft, produce fact-check report |
+| `render-abstract-art` | Produce canvas code from a story thesis or art brief |
+| `publish-story` | Package final metadata, art, and output for publication |

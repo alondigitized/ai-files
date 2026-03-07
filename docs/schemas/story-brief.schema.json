@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "StoryBrief",
+  "description": "Output of the assignment-editor. Defines the approved topic, angle, and key questions before research begins.",
+  "type": "object",
+  "required": [
+    "slug",
+    "title",
+    "deck",
+    "type",
+    "qualityScore",
+    "whyNow",
+    "angle",
+    "keyQuestions",
+    "primarySourceHints",
+    "targetReadTime",
+    "status"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "slug": {
+      "type": "string",
+      "description": "Proposed URL slug. Lowercase hyphenated. Specific to the incident.",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "title": {
+      "type": "string",
+      "description": "Working title. May change after research.",
+      "maxLength": 80
+    },
+    "deck": {
+      "type": "string",
+      "description": "One-sentence summary. Max 160 chars. Must be defensible from sources.",
+      "maxLength": 160
+    },
+    "type": {
+      "type": "string",
+      "description": "Story classification.",
+      "enum": ["incident", "milestone", "pattern", "anatomy"]
+    },
+    "qualityScore": {
+      "type": "number",
+      "description": "Weighted quality score 1–10. Must be ≥ 6.0 to approve.",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "scoringBreakdown": {
+      "type": "object",
+      "description": "Per-criterion scores that produced qualityScore.",
+      "properties": {
+        "sourceQuality": { "type": "number", "minimum": 1, "maximum": 10 },
+        "consequence": { "type": "number", "minimum": 1, "maximum": 10 },
+        "novelty": { "type": "number", "minimum": 1, "maximum": 10 },
+        "whyNowScore": { "type": "number", "minimum": 1, "maximum": 10 },
+        "readerValue": { "type": "number", "minimum": 1, "maximum": 10 }
+      }
+    },
+    "whyNow": {
+      "type": "string",
+      "description": "Concrete reason this story matters today. Must name a specific event, development, or context — not a generic AI trend."
+    },
+    "angle": {
+      "type": "string",
+      "description": "The specific editorial angle to pursue. A single declarative sentence."
+    },
+    "keyQuestions": {
+      "type": "array",
+      "description": "Questions the research must answer. Drives the research-scout's agenda.",
+      "items": { "type": "string" },
+      "minItems": 2,
+      "maxItems": 8
+    },
+    "primarySourceHints": {
+      "type": "array",
+      "description": "Leads for primary documents the research-scout should locate.",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "targetReadTime": {
+      "type": "string",
+      "description": "Estimated finished read time (e.g. '6 min').",
+      "examples": ["4 min", "6 min", "8 min"]
+    },
+    "status": {
+      "type": "string",
+      "description": "Assignment editor verdict.",
+      "enum": ["approved", "rejected", "pending"]
+    },
+    "rejectionReason": {
+      "type": "string",
+      "description": "Required if status is 'rejected'. Specific reason for rejection."
+    },
+    "repitchConditions": {
+      "type": "string",
+      "description": "Required if status is 'rejected'. What would need to change for this to be re-pitched."
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "if": {
+    "properties": { "status": { "const": "rejected" } }
+  },
+  "then": {
+    "required": ["rejectionReason", "repitchConditions"]
+  }
+}
