@@ -1,0 +1,657 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'zillow-offers')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .zillow-offers-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  .warn { background: rgba(255,77,77,0.08); border: 1px solid rgba(255,77,77,0.3); border-radius: 0.75rem; padding: 1.25rem 1.5rem; display: flex; gap: 1rem; align-items: flex-start; margin: 2rem 0; }
+  .warn-icon { font-size: 1.4rem; flex-shrink: 0; }
+  .warn-text { font-size: 0.88rem; color: #ff9999; }
+  .warn-text strong { display: block; margin-bottom: 0.25rem; color: var(--accent); }
+
+  .highlight-box { background: rgba(245,158,11,0.06); border-left: 3px solid var(--story); border-radius: 0 0.5rem 0.5rem 0; padding: 0.9rem 1.2rem; margin: 1.25rem 0; font-size: 0.92rem; color: #fde68a; }
+
+  .home-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+    gap: 0.5rem;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+  }
+  .home-node {
+    aspect-ratio: 1;
+    border-radius: 0.25rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    position: relative;
+  }
+  .home-node.overbid { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); }
+  .home-node.loss    { background: rgba(255,77,77,0.08);  border: 1px solid rgba(255,77,77,0.25); }
+  .home-grid-label {
+    font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 0.5rem; font-weight: 700;
+  }
+
+  .ticker {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    margin: 2rem 0;
+  }
+  .ticker-header {
+    background: rgba(245,158,11,0.08);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 1.25rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .ticker-label { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--story); font-weight: 700; }
+  .ticker-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.85rem; }
+  .ticker-row { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+  .ticker-name { font-size: 0.88rem; color: var(--muted); }
+  .ticker-val { font-size: 0.95rem; font-weight: 700; font-family: 'Courier New', monospace; }
+  .ticker-val.loss { color: var(--accent); }
+  .ticker-val.amber { color: var(--story); }
+  .ticker-val.down { color: var(--accent); }
+
+  .property-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    margin: 0.75rem 0;
+    display: flex; flex-direction: column; gap: 0.5rem;
+  }
+  .property-header { display: flex; align-items: center; justify-content: space-between; }
+  .property-addr { font-size: 0.82rem; font-weight: 700; color: var(--text); }
+  .property-tag { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .property-prices { display: flex; gap: 1.5rem; }
+  .price-row { display: flex; flex-direction: column; gap: 0.15rem; }
+  .price-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+  .price-val { font-size: 1rem; font-weight: 700; font-family: 'Courier New', monospace; }
+  .price-val.paid { color: var(--story); }
+  .price-val.sold { color: var(--accent); }
+  .price-loss { font-size: 0.78rem; color: var(--accent); font-weight: 700; }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="intro">
+      <h2><span class="num">01 — The Bet</span>Zillow's Machine for Buying Houses</h2>
+      <p>In the spring of 2021, Zillow did something no real estate company had ever tried at scale: it handed its algorithm the keys.</p>
+      <p>Zillow had spent fifteen years building the Zestimate — a machine learning model that estimated the value of nearly every home in the United States. By 2021, the company believed its model was accurate enough to do something more than estimate. It could buy. In February 2021, Zillow announced that the Zestimate would serve as a live cash offer on approximately 900,000 eligible homes across 23 markets. A homeowner could visit Zillow's site, see the model's estimate of their home's value, and accept it as an actual purchase offer — no negotiation, no agent, no waiting.</p>
+      <p>The pitch was elegant. Zillow would use algorithmic precision to buy homes at fair value, perform light renovations, and resell them for a small profit. At scale, even a thin margin on thousands of transactions would add up to something significant. The real estate market had been rising for a decade. The model had been trained on that rising market. It knew what homes were worth.</p>
+      <p>It did not know what they would be worth next quarter.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="zillow-offers-canvas" aria-hidden="true"></canvas>
+    </div>
+
+    <section class="section" id="implosion">
+      <h2><span class="num">02 — The Implosion</span>9,790 Homes, $569 Million, 2,000 Jobs</h2>
+      <p>In the third quarter of 2021, Zillow bought more homes than it had in the previous eighteen months combined.</p>
+      <p>This was not an accident. As competition from rival iBuyers like Opendoor intensified, Zillow's team had adjusted the algorithm — a practice they called, internally, "offer calibration." When the model suggested a purchase price, operators would sometimes raise the actual offer by thousands of dollars above that figure to increase the odds of winning the deal. The algorithm said one number. Zillow bid higher.</p>
+      <p>The result was visible from the outside before Zillow acknowledged it publicly. Real estate analyst Mike DelPrete, working from public listing data at the University of Colorado Boulder, noticed it in October 2021. "Every key metric I've seen from Zillow over the past few months just doesn't make sense," he said. "It's like it's making decisions two to three months too late relative to the market."</p>
+
+      <div class="ticker">
+        <div class="ticker-header">
+          <span class="ticker-label">Phoenix, AZ — Zillow Active Listings, October 2021</span>
+        </div>
+        <div class="ticker-body">
+          <div class="ticker-row">
+            <span class="ticker-name">Active listings priced below purchase price</span>
+            <span class="ticker-val amber">~250 homes</span>
+          </div>
+          <div class="ticker-row">
+            <span class="ticker-name">Average discount vs. Zillow purchase price</span>
+            <span class="ticker-val loss">−6% / −$29,000</span>
+          </div>
+        </div>
+      </div>
+
+      <p>Individual transactions confirmed the pattern:</p>
+
+      <div class="property-card">
+        <div class="property-header">
+          <span class="property-addr">Phoenix, AZ</span>
+          <span class="property-tag">Documented loss</span>
+        </div>
+        <div class="property-prices">
+          <div class="price-row">
+            <span class="price-label">Purchased by Zillow</span>
+            <span class="price-val paid">$531,300</span>
+          </div>
+          <div class="price-row">
+            <span class="price-label">Relisted 10 days later</span>
+            <span class="price-val sold">$494,900</span>
+          </div>
+        </div>
+        <span class="price-loss">Immediate paper loss: $36,400</span>
+      </div>
+
+      <div class="property-card">
+        <div class="property-header">
+          <span class="property-addr">Tolleson, AZ</span>
+          <span class="property-tag">Documented loss</span>
+        </div>
+        <div class="property-prices">
+          <div class="price-row">
+            <span class="price-label">Purchased by Zillow</span>
+            <span class="price-val paid">$412,000</span>
+          </div>
+          <div class="price-row">
+            <span class="price-label">Sold two weeks later</span>
+            <span class="price-val sold">$387,000</span>
+          </div>
+        </div>
+        <span class="price-loss">Realized loss: $25,000</span>
+      </div>
+
+      <p>On October 17, Zillow halted new home purchases, citing "operational capacity." It was holding 9,790 homes in inventory and had another 8,172 under contract — homes it was contractually obligated to still purchase.</p>
+
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-num">9,790</div>
+          <div class="stat-label">Homes in inventory, Q3 end</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">8,172</div>
+          <div class="stat-label">Homes still under contract</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">$569M</div>
+          <div class="stat-label">Total write-downs Q3+Q4</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">2,000</div>
+          <div class="stat-label">Employees laid off (25%)</div>
+        </div>
+      </div>
+
+      <p>On November 2, Zillow announced the shutdown of Zillow Offers entirely. The Q3 write-down was $304 million. Total projected write-downs: up to $569 million. On November 3, Zillow's stock fell 25%.</p>
+    </section>
+
+    <section class="section" id="mechanism">
+      <h2><span class="num">03 — The Model</span>What the Algorithm Got Wrong — and Why Nobody Stopped It</h2>
+      <p>The technical failure had a name: concept drift.</p>
+      <p>The Zestimate model had been trained on years of housing market data, almost all of it reflecting a rising market. When the market began to cool in mid-2021 — partly because the pandemic-era suburban rush was fading as vaccines became available — the model did not detect the shift. It continued to predict prices as if the conditions that had prevailed through its entire training history were still in effect. The world changed. The model didn't know.</p>
+
+      <div class="cards">
+        <div class="card">
+          <div class="card-icon">📉</div>
+          <h3>Concept Drift</h3>
+          <p>A model trained on historical patterns becomes inaccurate when market conditions shift outside its training distribution. Without real-time monitoring against ground truth, the drift is invisible until it's expensive.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">🔺</div>
+          <h3>Offer Calibration</h3>
+          <p>Zillow's human operators manually raised bids above the model's suggested price to win more deals. This override amplified the model's systematic overpayment rather than correcting it.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">📊</div>
+          <h3>No Circuit-Breaker</h3>
+          <p>No real-time model performance tracking flagged the drift as it accumulated. Losses were visible to an outside analyst from public data before Zillow's leadership acted.</p>
+        </div>
+        <div class="card">
+          <div class="card-icon">⚡</div>
+          <h3>Scaling While Broken</h3>
+          <p>In August 2021, while the drift was already underway, Zillow raised $450 million via bond backed by unsold inventory. The company was scaling an operation whose core model was already compromised.</p>
+        </div>
+      </div>
+
+      <div class="pull-quote">
+        "Every key metric I've seen from Zillow over the past few months just doesn't make sense. It's like it's making decisions two to three months too late relative to the market."
+        <cite>Mike DelPrete, real estate tech strategist, University of Colorado Boulder, October 2021</cite>
+      </div>
+
+      <p>By the time the losses were visible to an outside analyst looking at Phoenix listing data, Zillow had accumulated nearly 18,000 homes at inflated prices — 9,790 in inventory plus 8,172 more it was still obligated to purchase.</p>
+    </section>
+
+    <section class="section" id="consequence">
+      <h2><span class="num">04 — The Cost</span>What Was Lost</h2>
+      <p>The financial accounting was large enough that the numbers lost their texture.</p>
+      <p>A $569 million write-down. A 25% workforce reduction. A stock that fell 25% on the announcement day and never recovered its pre-announcement high. A securities class action filed by investors who alleged the company had misled them about the Zestimate's accuracy and the viability of the Offers program.</p>
+      <p>Behind those numbers were the 2,000 employees who received severance packages — ten weeks of pay, outplacement services, extended healthcare — and were told their jobs no longer existed because the algorithm they had built and operated had systematically overpaid for nearly 10,000 homes.</p>
+
+      <div class="warn">
+        <span class="warn-icon">⚠️</span>
+        <div class="warn-text">
+          <strong>Sector-wide Damage</strong>
+          Zillow's implosion chilled the entire iBuying sector. Redfin exited its own home-buying program in 2022. Other algorithmic buyers scaled back aggressively. The momentum toward AI-driven residential real estate purchasing was effectively frozen for years.
+        </div>
+      </div>
+
+      <p>In the markets where Zillow had been most active, the inflated purchase prices it had paid may have temporarily distorted local comparable sales data, affecting what ordinary buyers paid for nearby homes. The algorithm's consequences were not contained to Zillow's balance sheet.</p>
+
+      <div class="pull-quote">
+        "We've determined the unpredictability in forecasting home prices far exceeds what we anticipated and continuing to scale Zillow Offers would result in too much earnings and balance-sheet volatility."
+        <cite>Rich Barton, CEO, Zillow Group — November 2, 2021</cite>
+      </div>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">05 — The Lesson</span>The Machine You Trust Is the Machine You Don't Watch</h2>
+      <p>The most common way to tell this story is as a failure of AI. The algorithm was wrong. But that framing misses the more specific failure underneath it.</p>
+      <p>Algorithms are always approximations. They're accurate under the conditions they were trained on and increasingly inaccurate as conditions drift. This is not a bug — it is the nature of any predictive model operating in a changing world. The risk is not that the model will be wrong. The risk is that no one will notice it becoming wrong until the cost is already enormous.</p>
+      <p>Zillow had every incentive to monitor its model's performance in real time. It was using that model to make purchase offers on actual homes with actual capital. Instead, it compounded the drift with manual overrides that pushed further in the wrong direction, and scaled its operations through August 2021 even as the warning signs accumulated.</p>
+
+      <div class="highlight-box">
+        What good deployment looks like: continuous model performance monitoring against ground truth, human circuit-breakers that reduce exposure when predictions diverge from outcomes, conservative scaling while monitoring is immature, and an organizational culture that can distinguish between "the market was unpredictable" and "our model failed to detect the change."
+      </div>
+
+      <p>Zillow named its valuation model the Zestimate. The diminutive suffix was meant to signal humility — an estimate, not a certainty. In 2021, the company forgot the distinction. The 2,000 employees who lost their jobs that November did not build a rogue AI. They built one that worked — right up until it didn't, and no one in the building was watching the right numbers.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.zillow-offers-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ── Palette ───────────────────────────────────────────────────────────────
+  // #f59e0b = amber (--story); #ff4d4d = loss red (--accent)
+  function amberA(a: number) { return `rgba(245,158,11,${Math.max(0, Math.min(1, a))})`; }
+  function redA(a: number)   { return `rgba(255,77,77,${Math.max(0, Math.min(1, a))})`; }
+  function dimA(a: number)   { return `rgba(232,232,232,${Math.max(0, Math.min(1, a))})`; }
+  function rand(lo: number, hi: number) { return lo + Math.random() * (hi - lo); }
+
+  // ── Config ────────────────────────────────────────────────────────────────
+  const COLS = 8;
+  const ROWS = 5;
+  const TOTAL_NODES = COLS * ROWS;
+  const MARKET_DESCENT_RATE = 0.18; // px per frame — slow, like market cooling
+  const ORB_SPEED = 1.6;
+
+  // ── Types ─────────────────────────────────────────────────────────────────
+  interface HomeNode {
+    x: number; y: number; w: number; h: number;
+    state: 'empty' | 'purchased' | 'loss';
+    purchaseAlpha: number;
+    lossAlpha: number;
+    pulseT: number;        // countdown for purchase pulse animation
+  }
+  interface Orb {
+    x: number; y: number;
+    targetIdx: number;
+    vx: number; vy: number;
+    pulseT: number;
+  }
+
+  // ── State ─────────────────────────────────────────────────────────────────
+  let W = 0, H = 0, frame = 0, rafId = 0;
+  let nodes: HomeNode[] = [];
+  let orb: Orb = { x: 0, y: 0, targetIdx: 0, vx: 0, vy: 0, pulseT: 0 };
+  let marketLineY = -20;  // starts above canvas, descends slowly
+  let purchasedCount = 0;
+  let phase: 'buying' | 'collapsing' | 'resetting' = 'buying';
+  let resetTimer = 0;
+
+  // ── Layout ────────────────────────────────────────────────────────────────
+  function buildNodes() {
+    nodes = [];
+    purchasedCount = 0;
+    phase = 'buying';
+    marketLineY = -20;
+    resetTimer = 0;
+
+    const padX = W * 0.08;
+    const padY = H * 0.18;
+    const areaW = W - padX * 2;
+    const areaH = H - padY * 2;
+    const nodeW = (areaW / COLS) * 0.72;
+    const nodeH = (areaH / ROWS) * 0.60;
+    const gapX  = (areaW - nodeW * COLS) / (COLS - 1);
+    const gapY  = (areaH - nodeH * ROWS) / (ROWS - 1);
+
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        nodes.push({
+          x: padX + c * (nodeW + gapX),
+          y: padY + r * (nodeH + gapY),
+          w: nodeW,
+          h: nodeH,
+          state: 'empty',
+          purchaseAlpha: 0,
+          lossAlpha: 0,
+          pulseT: 0,
+        });
+      }
+    }
+
+    // Place orb at first node
+    orb.x = nodes[0].x + nodes[0].w / 2;
+    orb.y = nodes[0].y + nodes[0].h / 2;
+    orb.targetIdx = 0;
+    orb.vx = 0;
+    orb.vy = 0;
+    orb.pulseT = 0;
+  }
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth;
+    H = canvas!.offsetHeight;
+    canvas!.width  = W * dpr;
+    canvas!.height = H * dpr;
+    ctx!.scale(dpr, dpr);
+    buildNodes();
+  }
+
+  // ── Next target for orb ───────────────────────────────────────────────────
+  function pickNextTarget(): number {
+    // Find next unpurchased node in order, or loop if all purchased
+    const unpurchased = nodes
+      .map((n, i) => ({ n, i }))
+      .filter(({ n }) => n.state === 'empty');
+    if (unpurchased.length === 0) return orb.targetIdx;
+    // Pick the one closest in grid order
+    const afterCurrent = unpurchased.filter(({ i }) => i > orb.targetIdx);
+    if (afterCurrent.length > 0) return afterCurrent[0].i;
+    return unpurchased[0].i;
+  }
+
+  // ── Update: buying phase ──────────────────────────────────────────────────
+  function stepBuying() {
+    const target = nodes[orb.targetIdx];
+    if (!target) return;
+
+    const tx = target.x + target.w / 2;
+    const ty = target.y + target.h / 2;
+    const dx = tx - orb.x;
+    const dy = ty - orb.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist < 3) {
+      // Arrived — purchase this node
+      orb.x = tx; orb.y = ty;
+      if (target.state === 'empty') {
+        target.state = 'purchased';
+        target.purchaseAlpha = 1;
+        target.pulseT = 30;
+        orb.pulseT = 20;
+        purchasedCount++;
+      }
+
+      if (purchasedCount >= TOTAL_NODES) {
+        // All purchased — switch to collapse
+        phase = 'collapsing';
+        marketLineY = -20;
+        return;
+      }
+
+      // Move to next
+      orb.targetIdx = pickNextTarget();
+    } else {
+      // Move toward target
+      const speed = Math.min(ORB_SPEED, dist * 0.12);
+      orb.x += (dx / dist) * speed;
+      orb.y += (dy / dist) * speed;
+    }
+
+    // Market line descends even in buying phase — slowly revealing the cooling
+    marketLineY += MARKET_DESCENT_RATE * 0.25;
+
+    // Orb pulse decay
+    if (orb.pulseT > 0) orb.pulseT--;
+
+    // Node pulse decay
+    nodes.forEach(n => {
+      if (n.pulseT > 0) n.pulseT--;
+    });
+  }
+
+  // ── Update: collapsing phase ──────────────────────────────────────────────
+  function stepCollapsing() {
+    marketLineY += MARKET_DESCENT_RATE;
+
+    nodes.forEach(n => {
+      if (n.state === 'purchased') {
+        const nodeCenterY = n.y + n.h / 2;
+        if (marketLineY > nodeCenterY) {
+          // Market line has passed this node — it becomes a loss
+          n.state = 'loss';
+          n.lossAlpha = 0;
+        }
+      }
+      if (n.state === 'loss') {
+        n.lossAlpha = Math.min(1, n.lossAlpha + 0.04);
+        n.purchaseAlpha *= 0.92;
+      }
+    });
+
+    if (marketLineY > H + 40) {
+      // All losses revealed — wait, then reset
+      phase = 'resetting';
+      resetTimer = 90; // ~1.5s hold at end
+    }
+
+    if (orb.pulseT > 0) orb.pulseT--;
+  }
+
+  // ── Update: resetting phase ───────────────────────────────────────────────
+  function stepResetting() {
+    // Fade out all nodes
+    let allFaded = true;
+    nodes.forEach(n => {
+      n.purchaseAlpha *= 0.93;
+      n.lossAlpha    *= 0.93;
+      if (n.purchaseAlpha > 0.02 || n.lossAlpha > 0.02) allFaded = false;
+    });
+    resetTimer--;
+    if (allFaded || resetTimer <= 0) {
+      buildNodes();
+    }
+  }
+
+  // ── Draw ──────────────────────────────────────────────────────────────────
+  function drawScene() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = '#0d0d0d';
+    ctx!.fillRect(0, 0, W, H);
+
+    // Draw home nodes
+    nodes.forEach(n => {
+      const cx = n.x + n.w / 2;
+      const cy = n.y + n.h / 2;
+
+      // Base: faint empty node
+      ctx!.fillStyle = dimA(0.025);
+      ctx!.strokeStyle = dimA(0.05);
+      ctx!.lineWidth = 0.5;
+      ctx!.beginPath();
+      ctx!.roundRect(n.x, n.y, n.w, n.h, 3);
+      ctx!.fill();
+      ctx!.stroke();
+
+      // Purchased glow
+      if (n.purchaseAlpha > 0.01) {
+        const pulse = n.pulseT > 0 ? 1 + (n.pulseT / 30) * 0.5 : 1;
+        ctx!.fillStyle = amberA(n.purchaseAlpha * 0.18 * pulse);
+        ctx!.strokeStyle = amberA(n.purchaseAlpha * 0.55 * pulse);
+        ctx!.lineWidth = 0.8;
+        ctx!.beginPath();
+        ctx!.roundRect(n.x, n.y, n.w, n.h, 3);
+        ctx!.fill();
+        ctx!.stroke();
+
+        // Small amber dot at center
+        ctx!.beginPath();
+        ctx!.arc(cx, cy, 2.5, 0, Math.PI * 2);
+        ctx!.fillStyle = amberA(n.purchaseAlpha * 0.8);
+        ctx!.fill();
+      }
+
+      // Loss overlay
+      if (n.lossAlpha > 0.01) {
+        ctx!.fillStyle = redA(n.lossAlpha * 0.12);
+        ctx!.strokeStyle = redA(n.lossAlpha * 0.45);
+        ctx!.lineWidth = 0.8;
+        ctx!.beginPath();
+        ctx!.roundRect(n.x, n.y, n.w, n.h, 3);
+        ctx!.fill();
+        ctx!.stroke();
+
+        // Red dot
+        ctx!.beginPath();
+        ctx!.arc(cx, cy, 2.5, 0, Math.PI * 2);
+        ctx!.fillStyle = redA(n.lossAlpha * 0.7);
+        ctx!.fill();
+      }
+    });
+
+    // Market line — slow horizontal descent
+    if (marketLineY > 0 && marketLineY < H + 20) {
+      const intensity = phase === 'collapsing' ? 0.55 : 0.18;
+      const gradient = ctx!.createLinearGradient(0, marketLineY, W, marketLineY);
+      gradient.addColorStop(0,   `rgba(77,166,255,0)`);
+      gradient.addColorStop(0.2, `rgba(77,166,255,${intensity})`);
+      gradient.addColorStop(0.8, `rgba(77,166,255,${intensity})`);
+      gradient.addColorStop(1,   `rgba(77,166,255,0)`);
+      ctx!.strokeStyle = gradient;
+      ctx!.lineWidth = phase === 'collapsing' ? 1.2 : 0.6;
+      ctx!.beginPath();
+      ctx!.moveTo(0, marketLineY);
+      ctx!.lineTo(W, marketLineY);
+      ctx!.stroke();
+
+      // Subtle glow above the line
+      const glowGrad = ctx!.createLinearGradient(0, marketLineY - 12, 0, marketLineY);
+      glowGrad.addColorStop(0, `rgba(77,166,255,0)`);
+      glowGrad.addColorStop(1, `rgba(77,166,255,${intensity * 0.08})`);
+      ctx!.fillStyle = glowGrad;
+      ctx!.fillRect(0, marketLineY - 12, W, 12);
+    }
+
+    // Orb
+    if (phase === 'buying') {
+      const pulseBoost = orb.pulseT > 0 ? (orb.pulseT / 20) * 0.4 : 0;
+      const orbAlpha = 0.85 + pulseBoost;
+      const orbR = 5 + pulseBoost * 3;
+
+      // Glow
+      const gr = ctx!.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, orbR * 5);
+      gr.addColorStop(0, amberA(orbAlpha * 0.35));
+      gr.addColorStop(1, amberA(0));
+      ctx!.beginPath();
+      ctx!.arc(orb.x, orb.y, orbR * 5, 0, Math.PI * 2);
+      ctx!.fillStyle = gr;
+      ctx!.fill();
+
+      // Core
+      ctx!.beginPath();
+      ctx!.arc(orb.x, orb.y, orbR, 0, Math.PI * 2);
+      ctx!.fillStyle = amberA(orbAlpha);
+      ctx!.fill();
+    }
+
+    // Ambient grid lines (very faint)
+    ctx!.strokeStyle = dimA(0.03);
+    ctx!.lineWidth = 0.5;
+    for (let x = W * 0.1; x < W; x += W * 0.12) {
+      ctx!.beginPath();
+      ctx!.moveTo(x, 0);
+      ctx!.lineTo(x, H);
+      ctx!.stroke();
+    }
+  }
+
+  // ── Static frame (reduced motion) ─────────────────────────────────────────
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = '#0d0d0d';
+    ctx!.fillRect(0, 0, W, H);
+
+    // Show grid of purchased nodes, market line halfway down, some nodes in loss
+    const padX = W * 0.08;
+    const padY = H * 0.18;
+    const areaW = W - padX * 2;
+    const areaH = H - padY * 2;
+    const nodeW = (areaW / COLS) * 0.72;
+    const nodeH = (areaH / ROWS) * 0.60;
+    const gapX  = (areaW - nodeW * COLS) / (COLS - 1);
+    const gapY  = (areaH - nodeH * ROWS) / (ROWS - 1);
+    const midY  = H * 0.52;
+
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const x = padX + c * (nodeW + gapX);
+        const y = padY + r * (nodeH + gapY);
+        const cy = y + nodeH / 2;
+        const isLoss = cy < midY;
+
+        ctx!.beginPath();
+        ctx!.roundRect(x, y, nodeW, nodeH, 3);
+
+        if (isLoss) {
+          ctx!.fillStyle = redA(0.1);
+          ctx!.strokeStyle = redA(0.4);
+        } else {
+          ctx!.fillStyle = amberA(0.12);
+          ctx!.strokeStyle = amberA(0.45);
+        }
+        ctx!.lineWidth = 0.8;
+        ctx!.fill();
+        ctx!.stroke();
+
+        // Center dot
+        ctx!.beginPath();
+        ctx!.arc(x + nodeW / 2, cy, 2.5, 0, Math.PI * 2);
+        ctx!.fillStyle = isLoss ? redA(0.6) : amberA(0.7);
+        ctx!.fill();
+      }
+    }
+
+    // Market line
+    ctx!.strokeStyle = 'rgba(77,166,255,0.5)';
+    ctx!.lineWidth = 1.2;
+    ctx!.beginPath();
+    ctx!.moveTo(W * 0.05, midY);
+    ctx!.lineTo(W * 0.95, midY);
+    ctx!.stroke();
+  }
+
+  // ── Loop ──────────────────────────────────────────────────────────────────
+  function tick() {
+    frame++;
+
+    if (phase === 'buying')      stepBuying();
+    else if (phase === 'collapsing') stepCollapsing();
+    else if (phase === 'resetting')  stepResetting();
+
+    drawScene();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  // ── Bootstrap ─────────────────────────────────────────────────────────────
+  const ro = new ResizeObserver(() => { resize(); if (prefersReduced) drawStatic(); });
+  ro.observe(canvas);
+  resize();
+
+  if (prefersReduced) {
+    drawStatic();
+  } else {
+    rafId = requestAnimationFrame(tick);
+  }
+
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(rafId);
+    ro.disconnect();
+  });
+})();
+</script>
