@@ -39,6 +39,7 @@ const description = story.deck.length > 160
 const canonicalPath = `/stories/${story.slug}`;
 const siteURL = Astro.site ?? new URL('https://theaifiles.app');
 const canonicalURL = new URL(canonicalPath, siteURL).href;
+const ogImage = new URL(`/og/${story.slug}.png`, siteURL).href;
 
 const articleSchema = {
   '@context': 'https://schema.org',
@@ -66,6 +67,7 @@ const articleSchema = {
     url: s.url,
   })),
   isBasedOn: story.sources.map(s => s.url),
+  image: ogImage,
 };
 
 const breadcrumbSchema = {
@@ -88,6 +90,7 @@ const related = [...sameVol, ...diffVol].slice(0, 4);
   description={description}
   canonicalPath={canonicalPath}
   ogType="article"
+  ogImage={ogImage}
   publishedISO={story.isoDate}
   tags={story.tags}
   story={story.story}
