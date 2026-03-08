@@ -266,7 +266,7 @@ Publish true, well-sourced stories about AI with analytical rigor and no hype. E
 ```
 intake → research → source validation → angle selection →
 story structure → draft writing → fact check →
-art brief → canvas generation → publish package
+art brief → canvas generation → publish package → discoverability audit
 ```
 
 Full pipeline spec: `docs/workflows/story-pipeline.md`
@@ -318,6 +318,7 @@ Every published story must produce:
 | `fact-checker` | Verify claims against sources, issue pass/fail with corrections |
 | `art-director` | Convert thesis and tone into abstract visual brief |
 | `canvas-artist` | Generate performant, responsive HTML canvas animation |
+| `seo-geo-specialist` | Audit and optimize SEO/GEO discoverability — meta tags, structured data, OG images, llms.txt, RSS |
 
 ### Skills
 
