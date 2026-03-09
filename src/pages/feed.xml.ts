@@ -8,7 +8,7 @@ export async function GET(context: APIContext) {
     description: 'True stories from the age of artificial intelligence — documented incidents, landmark moments, and cautionary tales.',
     site: context.site!,
     items: stories
-      .filter(s => s.isoDate)
+      .filter(s => s.isoDate && !s.wip)
       .sort((a, b) => new Date(b.isoDate!).getTime() - new Date(a.isoDate!).getTime())
       .map(s => ({
         title: s.title,

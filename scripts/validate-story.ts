@@ -16,9 +16,11 @@
  */
 
 import { readFileSync, existsSync } from 'fs';
-import { join, resolve } from 'path';
+import { join, resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const ROOT = resolve(import.meta.dirname, '..');
+const __dirname = typeof import.meta.dirname === 'string' ? import.meta.dirname : dirname(fileURLToPath(import.meta.url));
+const ROOT = resolve(__dirname, '..');
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -137,8 +139,8 @@ function checkStoriesJson(slug: string): ValidationResult[] {
   }
 
   // Volume
-  if (![1, 2, 3].includes(entry.volume)) {
-    results.push(fail('stories.json:volume', `Volume ${entry.volume} is not 1, 2, or 3`));
+  if (![1, 2, 3, 4].includes(entry.volume)) {
+    results.push(fail('stories.json:volume', `Volume ${entry.volume} is not 1, 2, 3, or 4`));
   }
 
   // Chapter uniqueness

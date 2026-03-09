@@ -1,0 +1,283 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'grok-deepfake-crisis')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .grok-deepfake-crisis-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+  .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.75rem 0 0; font-style: italic; }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="design">
+      <h2><span class="num">01 — Design</span>The Three Decisions</h2>
+
+      <p>On December 24, 2025, X rolled out a one-click AI image editing feature powered by Grok. Any user could now edit any photo posted on the platform. There was no opt-out mechanism for image owners. The next day, Elon Musk promoted it personally: "Try Grok image edit and video edit." Within two weeks, researcher Genevieve Oh's 24-hour monitoring study, reported by Bloomberg, found Grok generating 6,700 nonconsensual sexualized images per hour — 85 times the output of the next five deepfake platforms combined.</p>
+
+      <p>The crisis was not spontaneous. It was the product of three traceable design decisions. First: in August 2025, xAI launched the Grok Imagine standalone app for AI image generation. In October, the app introduced "Spicy Mode," marketed for "edgier, more visually daring" content including NSFW material. The feature was built on xAI's Aurora model, an autoregressive mixture-of-experts network trained on billions of examples from the internet. Second: on December 24, xAI deployed one-click image editing across all public posts on X, with no consent gate and no opt-out. Every photo ever posted to the platform — by any of X's hundreds of millions of users — became raw material. Third: according to CNN, citing sources with knowledge of the situation, Musk had pushed back against guardrails for Grok internally, and xAI's safety team, already small compared to competitors, lost several staffers in the weeks leading up to the December launch.</p>
+
+      <p>Each decision removed a layer of friction. Spicy Mode removed content restrictions. The December 24 deployment removed the need for users to supply their own images. The safety team attrition — if the sourced reporting is accurate — removed internal resistance. Together, they turned X's photo library into an industrial-scale nudification engine.</p>
+
+      <p>A bipartisan coalition of 35 state attorneys general would later characterize the result in a joint letter to xAI: "The ability to create nonconsensual intimate images appeared to be a feature, not a bug."</p>
+    </section>
+
+    <section class="section" id="explosion">
+      <h2><span class="num">02 — Explosion</span>Eleven Days</h2>
+
+      <p>Between December 29, 2025, and January 8, 2026, the Center for Countering Digital Hate analyzed 4,621,335 posts containing images from Grok's X account. From a random sample of 20,000 posts — classified using GPT-4.1-mini with a 95% F1 score, then confirmed by manual review — the CCDH estimated Grok had generated approximately 3 million photorealistic sexualized images in 11 days. The rate: 190 per minute. Separately, Genevieve Oh's Bloomberg-reported monitoring found that 85% of all Grok-generated images during her study period were sexualized.</p>
+
+      <p>The child safety numbers were worse. CCDH estimated 23,338 photorealistic sexualized images of children over those 11 days — one every 41 seconds — plus an additional 9,936 non-photorealistic sexualized child images in animated or cartoon styles. The organization referred all 144 child images found in their sample to the Internet Watch Foundation.</p>
+
+      <p>Genevieve Oh, a researcher who independently monitored Grok's output over a 24-hour period on January 5–6, found the platform generating approximately 6,700 sexually suggestive or nudifying images per hour. The top five other deepfake websites combined averaged 79 such images per hour in the same period. By January 8, Grok's hourly output had risen to 7,751 — a 16.4% increase. The rate was accelerating, not plateauing.</p>
+
+      <p>The targets included public figures: Taylor Swift, Billie Eilish, Millie Bobby Brown, former Vice President Kamala Harris. Swedish Deputy Prime Minister Ebba Busch posted a video on X stating, "I was involuntarily undressed by Elon Musk's Grok on X." Users had submitted prompts including "@grok bikini now" and "@grok she has larger knockers then [sic] that please fix this error." The lead plaintiff in the subsequent class action, identified as Jane Doe from South Carolina, posted a fully clothed photo on X in early January. The next day, another user prompted Grok to transform it into a revealing bikini image. The altered photo remained publicly visible for three days despite multiple removal requests.</p>
+
+      <p>During these 11 days, Musk's public responses treated the feature as entertainment. On December 31, he asked Grok to put him in a bikini and responded "Perfect" to the result. On January 2, when a user mentioned nonconsensual deepfakes, Musk replied "Way funnier" with a laughing emoji.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="grok-deepfake-crisis-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Flood</strong> — A safety barrier dims in three stages and dissolves. Particles fall through, turning toxic fuchsia. The rate accelerates until saturation. The barrier resets — but the cycle repeats.</p>
+
+    <section class="section" id="response">
+      <h2><span class="num">03 — Response</span>The Fixes That Weren't</h2>
+
+      <p>On January 3, 2026, Grok posted a public statement acknowledging "lapses in safeguards" and stating it was "urgently fixing them." The statement described the generation of sexualized child images as "isolated cases where users prompted for and received AI images depicting minors in minimal clothing." The CCDH's subsequent analysis contradicted the characterization: the data showed not isolated cases but an estimated 23,338 photorealistic sexualized child images over the study period.</p>
+
+      <p>The first structural response came on January 9, when xAI restricted Grok image generation on X to paid subscribers only. The restriction had a gap: the standalone Grok app, the Grok website, and X's "Edit image" button all remained unrestricted. NBC News tested the standalone app after the paywall went up and confirmed it still generated images placing a clothed test subject into revealing swimsuits and sexualized contexts. The UK government called the paywall "insulting" to victims, arguing that charging for the feature converted a moderation failure into a commercial product.</p>
+
+      <p>On January 14, xAI announced it had implemented technical measures to prevent Grok from editing images of real people into revealing clothing, applying to all users including paid subscribers. The announcement did not disclose the technical architecture of the fix — whether it involved model-level changes, post-processing filters, or prompt-level blocks. Independent testing found the restrictions did not hold. CBS News tested Grok on January 26 — twelve days after xAI's announcement — and confirmed it still allowed users to digitally undress people without consent. Reuters conducted a controlled test with nine reporters running dozens of prompts: in the first round, Grok produced sexualized imagery in 45 of 55 prompts. In 31 of those 45, reporters had explicitly stated the subject was vulnerable or would be humiliated. A second round five days later yielded sexualized images in 29 of 43 prompts. Malwarebytes confirmed in February 2026 that the problem persisted.</p>
+
+      <p>When Reuters ran the same prompts through competing AI systems from OpenAI, Google, and Meta, all three refused and warned users against generating nonconsensual content. The gap was not technical capability. It was design choice.</p>
+
+      <p>Musk offered a different explanation. On January 15, he stated he was unaware of "any naked underage images generated by Grok" and attributed the sexualized output to "adversarial hacking." The CCDH data and independent testing contradicted this framing: the images were generated by ordinary users submitting simple text prompts, not through sophisticated adversarial attacks. As of January 15, 29% of the sexualized child images identified by the CCDH in their sample remained publicly accessible on X.</p>
+    </section>
+
+    <section class="section" id="consequence">
+      <h2><span class="num">04 — Consequence</span>The Reckoning</h2>
+
+      <p>The legal response began with Ashley St. Clair. On January 15, 2026, St. Clair — the mother of one of Musk's children — filed suit against xAI in New York state court, alleging Grok had generated sexual deepfake images of her, including a depiction of her 14-year-old self in a bikini and her adult self in sexually explicit poses and a swastika-covered bikini. Her lawsuit alleged that Grok had confirmed her "images will not be used or altered without explicit consent in any future generations or responses," then continued to allow users to create deepfakes of her. She also alleged that xAI retaliated by demonetizing her X account, though this claim has not been independently confirmed.</p>
+
+      <p>On the same day, xAI counter-sued St. Clair in federal court in the Northern District of Texas, alleging she violated xAI's terms of service and claiming damages exceeding $75,000. Her attorney, Carrie Goldberg, called the countersuit "jolting." The jurisdictional dispute between New York and Texas remained unresolved as of March 2026. Eight days later, a class action — <em>Jane Doe v. xAI Corp.</em>, Case No. 5:26-cv-00772 — was filed in the Northern District of California before Judge P. Casey Pitts, asserting 11 causes of action including product liability, negligence, public nuisance, defamation, and violation of California's Unfair Competition Law. On January 14, California Attorney General Rob Bonta announced an investigation into xAI, stating: "The avalanche of reports detailing the non-consensual, sexually explicit material that xAI has produced and posted online in recent weeks is shocking." Two days later, on January 16, Bonta sent xAI a formal cease and desist letter under California's new AB 621 deepfake pornography law, which had taken effect January 1, 2026, expanding definitions and raising maximum statutory damages to $250,000 for malicious violations.</p>
+
+      <p>The regulatory cascade was international. India's Ministry of Electronics and IT issued a 72-hour notice to X on January 2, demanding an action report on technical safeguards; it deemed X's response "inadequate." On January 12, Indonesia and Malaysia became the first countries in the world to block access to Grok entirely. Indonesia's Communications Minister Meutya Hafid stated: "The government sees non-consensual sexual deepfakes as a serious violation of human rights, dignity and the safety of citizens in the digital space." The Philippines followed, ordering telecoms to block Grok within 24 hours under the Cybercrime Prevention Act.</p>
+
+      <p>On the same day, Ofcom opened an investigation into X, with potential penalties of up to 18 million GBP or 10% of worldwide revenue. On January 26, the European Commission opened formal proceedings under the Digital Services Act, investigating whether X had failed to include any risk assessment of Grok in its required systemic risk filings. Commissioner Henna Virkkunen stated that X had treated the "rights of European citizens — including those of women and children — as collateral damage of its service." If infringements are established, the Commission can impose fines of up to 6% of global annual turnover. Ireland's Data Protection Commission opened a formal GDPR investigation on February 17. The UK's Information Commissioner's Office opened its own investigation in early February. South Korea's Personal Information Protection Commission launched a preliminary review. On February 3, French prosecutors' cybercrime unit raided X's offices in Paris with Europol support, investigating complicity in possessing and spreading CSAM, distributing sexually explicit deepfakes, and denial of crimes against humanity. Prosecutors summoned Musk and former X CEO Linda Yaccarino for voluntary interviews on April 20, 2026 — a date that, as of this writing, has not yet arrived. In the United States, House Democrats demanded answers from Musk by March 5, and Democratic senators called for Grok and X to be suspended from Apple and Google app stores.</p>
+
+      <p>xAI has not publicly responded to the 35 attorneys general's letter.</p>
+
+      <p>The organizational toll was internal. By February 2026, half of xAI's 12-person founding team had resigned: co-founders Jimmy Ba and Tony Wu departed in early February, joining Igor Babuschkin (who left in August 2025), Kyle Kosic, and Christian Szegedy. Greg Yang stepped back due to Lyme disease. In total, at least 11 engineers and two co-founders announced departures. Sources told The Verge that employees had become "increasingly disillusioned by the company's disregard for safety." According to TechCrunch, citing a former employee who spoke to The Verge, Musk was "actively" working to make Grok "more unhinged." Musk characterized the departures differently: "As a company grows, especially as quickly as xAI, the structure must evolve just like any living organism." Sources contradicted this framing, attributing the exits to the safety crisis specifically.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">05 — Signal</span>The Design Defense</h2>
+
+      <p>The standard defense in AI safety failures is that the AI did something unexpected. Grok's case does not fit that pattern. The AI did exactly what its design allowed. Musk's own posts — "Perfect," "Way funnier" — treated the output as a feature demonstration. Thirty-five attorneys general called it "a feature, not a bug." When Reuters ran identical prompts through OpenAI, Google, and Meta, all three systems refused. The difference was not capability. It was a deliberate design choice about where to set the boundary.</p>
+
+      <p>The crisis exposes a specific failure mode: what happens when a company treats content safety as an obstacle to product differentiation rather than a design constraint. Musk's public response to critics — that they "just want to suppress free speech" — reframed a content moderation question as a political one. It remains unclear whether this framing reflects a genuine philosophical position or a deflection strategy. What is clear is that no pre-launch safety evaluation, red-teaming, or risk assessment for the December 24 feature has been publicly disclosed. The EU DSA investigation specifically targets this gap, but results are pending.</p>
+
+      <p>As of March 2026, Reuters testing shows Grok still produces sexualized images in a majority of prompts. The EU, UK, Ireland, France, South Korea, and California all have open proceedings against X or xAI. Musk has been summoned to Paris for April 20. Three countries have blocked Grok entirely. Half of xAI's founding team has left the company. The CCDH referred 144 child images to the Internet Watch Foundation. The tool works as designed. The design has not changed.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.grok-deepfake-crisis-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const ACCENT_R = 217, ACCENT_G = 70, ACCENT_B = 239;
+  const PARTICLE_R = 232, PARTICLE_G = 232, PARTICLE_B = 232;
+  const BARRIER_NODES = 40;
+  const AMBIENT_COUNT = 70;
+  const FALLEN_MAX = 200;
+
+  const P0_END = 120;
+  const P1_END = 180;
+  const P2_END = 240;
+  const P3_END = 300;
+  const P4_END = 600;
+  const P5_END = 690;
+  const CYCLE  = 693;
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+  let dpr = 1;
+  let barrierBaseY = 0;
+  let leakAccum = 0;
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  interface BNode { baseX: number; baseY: number; x: number; y: number; oscPhase: number; vy: number; alpha: number; }
+  let barrierNodes: BNode[] = [];
+
+  interface AParticle { x: number; y: number; vx: number; vy: number; r: number; alpha: number; wPhase: number; crossing: boolean; crossProgress: number; fallenVy: number; }
+  let particles: AParticle[] = [];
+
+  interface FParticle { x: number; y: number; vx: number; vy: number; r: number; alpha: number; active: boolean; }
+  let fallen: FParticle[] = [];
+
+  const ro = new ResizeObserver(() => {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = canvas!.offsetWidth * dpr;
+    H = canvas!.offsetHeight * dpr;
+    canvas!.width = W;
+    canvas!.height = H;
+    barrierBaseY = H * 0.33;
+    initState();
+    if (prefersReduced) requestAnimationFrame(drawStatic);
+  });
+  ro.observe(canvas);
+
+  function initState() {
+    frame = 0;
+    leakAccum = 0;
+    barrierNodes = [];
+    const spacing = W / (BARRIER_NODES - 1);
+    for (let i = 0; i < BARRIER_NODES; i++) {
+      const bx = i * spacing;
+      const by = barrierBaseY + Math.sin(i * 0.4) * 4 * dpr;
+      barrierNodes.push({ baseX: bx, baseY: by, x: bx, y: by, oscPhase: Math.random() * Math.PI * 2, vy: 0, alpha: 1 });
+    }
+    particles = [];
+    for (let i = 0; i < AMBIENT_COUNT; i++) particles.push(spawnAmbient(true));
+    fallen = [];
+    for (let i = 0; i < FALLEN_MAX; i++) fallen.push({ x: 0, y: 0, vx: 0, vy: 0, r: 0, alpha: 0, active: false });
+  }
+
+  function spawnAmbient(scatter: boolean): AParticle {
+    return { x: Math.random() * W, y: scatter ? Math.random() * (barrierBaseY - 20 * dpr) : -(5 + Math.random() * 15) * dpr, vx: (Math.random() - 0.5) * 0.12 * dpr, vy: (0.1 + Math.random() * 0.1) * dpr, r: (1.2 + Math.random() * 1.0) * dpr, alpha: 0.04 + Math.random() * 0.04, wPhase: Math.random() * Math.PI * 2, crossing: false, crossProgress: 0, fallenVy: 0 };
+  }
+
+  function resetAmbient(p: AParticle) {
+    p.x = Math.random() * W; p.y = -(5 + Math.random() * 15) * dpr; p.vx = (Math.random() - 0.5) * 0.12 * dpr; p.vy = (0.1 + Math.random() * 0.1) * dpr; p.r = (1.2 + Math.random() * 1.0) * dpr; p.alpha = 0.04 + Math.random() * 0.04; p.wPhase = Math.random() * Math.PI * 2; p.crossing = false; p.crossProgress = 0; p.fallenVy = 0;
+  }
+
+  function getPhase(f: number): number { if (f < P0_END) return 0; if (f < P1_END) return 1; if (f < P2_END) return 2; if (f < P3_END) return 3; if (f < P4_END) return 4; if (f < P5_END) return 5; return 6; }
+
+  function getBarrierOpacity(f: number): number { const ph = getPhase(f); if (ph === 0) return 0.7; if (ph === 1) return 0.45; if (ph === 2) return 0.22; if (ph === 3) { const t = (f - P2_END) / (P3_END - P2_END); return 0.22 * (1 - t); } return 0; }
+
+  function getBarrierConnected(f: number): number { const ph = getPhase(f); if (ph === 0) return 1.0; if (ph === 1) return 0.82; if (ph === 2) return 0.55; if (ph === 3) { const t = (f - P2_END) / (P3_END - P2_END); return Math.max(0, 0.55 - t * 0.6); } return 0; }
+
+  function leakRate(f: number): number { const ph = getPhase(f); if (ph === 0) return 0; if (ph === 1) return 0.035; if (ph === 2) return 0.09; if (ph === 3) return 0.2; if (ph === 4) { const t = (f - P3_END) / (P4_END - P3_END); return 0.4 + t * t * 2.0; } return 0; }
+
+  function currentFallSpeed(f: number): number { const ph = getPhase(f); if (ph < 4) return 0.35 * dpr; const t = (f - P3_END) / (P4_END - P3_END); return (0.35 + t * 2.0) * dpr; }
+
+  function activateFallen(x: number, y: number) {
+    for (let i = 0; i < fallen.length; i++) {
+      if (!fallen[i].active) { fallen[i].x = x; fallen[i].y = y; fallen[i].vx = (Math.random() - 0.5) * 0.3 * dpr; fallen[i].vy = (0.04 + Math.random() * 0.12) * dpr; fallen[i].r = (1.2 + Math.random() * 1.0) * dpr; fallen[i].alpha = 0.3 + Math.random() * 0.4; fallen[i].active = true; return; }
+    }
+  }
+
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+    const ph = getPhase(frame);
+    const bOpacity = getBarrierOpacity(frame);
+    const bConnected = getBarrierConnected(frame);
+
+    for (let i = 0; i < barrierNodes.length; i++) {
+      const n = barrierNodes[i];
+      if (ph <= 2) { n.x = n.baseX + Math.sin(frame * 0.015 + n.oscPhase) * 2 * dpr; n.y = n.baseY + Math.cos(frame * 0.012 + n.oscPhase * 1.3) * 2 * dpr; n.alpha = bOpacity; }
+      else if (ph === 3) { n.vy += 0.012 * dpr; n.y += n.vy; n.alpha = bOpacity; }
+      else { n.alpha = 0; }
+    }
+
+    if (bOpacity > 0.004) {
+      ctx!.lineWidth = 1 * dpr;
+      for (let i = 0; i < barrierNodes.length - 1; i++) {
+        const hash = (i * 7 + Math.floor(frame / 20)) % 100;
+        if (hash / 100 > bConnected) continue;
+        const a = barrierNodes[i]; const b = barrierNodes[i + 1];
+        if (a.alpha < 0.01 || b.alpha < 0.01) continue;
+        ctx!.strokeStyle = `rgba(${PARTICLE_R},${PARTICLE_G},${PARTICLE_B},${bOpacity * 0.35})`;
+        ctx!.beginPath(); ctx!.moveTo(a.x, a.y); ctx!.lineTo(b.x, b.y); ctx!.stroke();
+      }
+      for (let i = 0; i < barrierNodes.length; i++) {
+        const n = barrierNodes[i]; if (n.alpha < 0.005) continue;
+        ctx!.beginPath(); ctx!.arc(n.x, n.y, 2 * dpr, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(${PARTICLE_R},${PARTICLE_G},${PARTICLE_B},${n.alpha * 0.55})`; ctx!.fill();
+      }
+    }
+
+    const rate = leakRate(frame); leakAccum += rate; const fs = currentFallSpeed(frame);
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      if (p.crossing) {
+        p.crossProgress = Math.min(1, p.crossProgress + 0.1); p.fallenVy += 0.012 * dpr; p.y += p.fallenVy + fs * 0.4; p.x += p.vx;
+        if (p.y > barrierBaseY + 40 * dpr) { activateFallen(p.x, p.y); resetAmbient(p); continue; }
+        const cr = Math.round(PARTICLE_R + (ACCENT_R - PARTICLE_R) * p.crossProgress);
+        const cg = Math.round(PARTICLE_G + (ACCENT_G - PARTICLE_G) * p.crossProgress);
+        const cb = Math.round(PARTICLE_B + (ACCENT_B - PARTICLE_B) * p.crossProgress);
+        const drawAlpha = 0.06 + p.crossProgress * 0.5;
+        ctx!.beginPath(); ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(${cr},${cg},${cb},${drawAlpha})`; ctx!.fill(); continue;
+      }
+      p.y += p.vy; p.x += Math.sin(frame * 0.008 + p.wPhase) * 0.12 * dpr;
+      if (p.y >= barrierBaseY - 3 * dpr) {
+        if (leakAccum >= 1) { p.crossing = true; p.crossProgress = 0; p.fallenVy = fs * 0.3; leakAccum -= 1; } else { resetAmbient(p); }
+        continue;
+      }
+      ctx!.beginPath(); ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(${PARTICLE_R},${PARTICLE_G},${PARTICLE_B},${p.alpha})`; ctx!.fill();
+    }
+
+    let fallenCount = 0;
+    for (let i = 0; i < fallen.length; i++) {
+      const fp = fallen[i]; if (!fp.active) continue; fallenCount++;
+      fp.y += fp.vy; fp.x += fp.vx; fp.vx += (Math.random() - 0.5) * 0.006 * dpr;
+      fp.vx = Math.max(-0.35 * dpr, Math.min(0.35 * dpr, fp.vx));
+      if (fp.y > H - 25 * dpr) fp.vy *= 0.95;
+      if (fp.y > H + 10 * dpr) { fp.y = H; fp.vy = 0; }
+      if (fp.x < 0) fp.x = W; if (fp.x > W) fp.x = 0;
+      ctx!.beginPath(); ctx!.arc(fp.x, fp.y, fp.r, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${fp.alpha})`; ctx!.fill();
+    }
+
+    if (fallenCount > 3) {
+      const density = fallenCount / FALLEN_MAX;
+      const glowIntensity = Math.min(0.28, density * 0.38);
+      const tideHeight = Math.min(H * 0.65, density * H * 0.75);
+      const grad = ctx!.createLinearGradient(0, H, 0, H - tideHeight);
+      grad.addColorStop(0, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${glowIntensity})`);
+      grad.addColorStop(0.4, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${glowIntensity * 0.4})`);
+      grad.addColorStop(1, 'rgba(217,70,239,0)');
+      ctx!.fillStyle = grad; ctx!.fillRect(0, H - tideHeight, W, tideHeight);
+    }
+
+    if (ph === 5) {
+      const t = (frame - P4_END) / (P5_END - P4_END);
+      const pulse = 0.04 + Math.sin(t * Math.PI * 4) * 0.02;
+      ctx!.fillStyle = `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${pulse})`; ctx!.fillRect(0, 0, W, H);
+    }
+
+    if (ph === 6) {
+      const flashT = (frame - P5_END) / (CYCLE - P5_END);
+      const flashAlpha = (1 - flashT) * 0.35;
+      ctx!.fillStyle = `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${flashAlpha})`;
+      ctx!.fillRect(0, barrierBaseY - 10 * dpr, W, 20 * dpr);
+    }
+  }
+
+  function tick() { frame++; if (frame >= CYCLE) initState(); draw(); if (!prefersReduced) raf = requestAnimationFrame(tick); }
+  function drawStatic() { frame = 0; draw(); }
+
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = canvas.offsetWidth * dpr; H = canvas.offsetHeight * dpr;
+  canvas.width = W; canvas.height = H;
+  barrierBaseY = H * 0.33; initState();
+
+  if (prefersReduced) requestAnimationFrame(drawStatic);
+  else raf = requestAnimationFrame(tick);
+
+  window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); ro.disconnect(); });
+})();
+</script>

@@ -21,11 +21,11 @@ src/
     index.astro           ← Archive landing page (featured story + card grid)
     feed.xml.ts           ← RSS 2.0 feed (sorted by isoDate, newest first)
     stories/
-      *.astro             ← One file per story (23 total)
+      *.astro             ← One file per story (24 total)
   styles/
     global.css            ← Shared component styles
   data/
-    stories.json          ← Metadata for all 23 stories
+    stories.json          ← Metadata for all 24 stories
 
 public/
   favicon.svg
@@ -91,10 +91,10 @@ Each entry in `src/data/stories.json`:
 
 - **BaseLayout.astro** — renders full `<head>`: description, canonical, Open Graph, Twitter Card, `article:*` metadata, RSS `<link rel="alternate">`, and a named `jsonld` slot for structured data injection
 - **StoryLayout.astro** — injects `Article` + `BreadcrumbList` JSON-LD via `<script slot="jsonld">` into BaseLayout's `<head>`
-- **index.astro** — injects `WebSite` + `ItemList` JSON-LD covering all 23 stories
+- **index.astro** — injects `WebSite` + `ItemList` JSON-LD covering all 24 stories
 - **sitemap** — auto-generated at build time by `@astrojs/sitemap` (`sitemap-index.xml` + `sitemap-0.xml`); story pages get priority 0.9, index gets 1.0
 - **robots.txt** — `Allow: /` for all bots; explicit named permissions for 15 AI crawlers (GPTBot, ClaudeBot, PerplexityBot, etc.)
-- **llms.txt** — plain-text GEO manifest listing all 23 stories with titles, summaries, and links for AI citation systems
+- **llms.txt** — plain-text GEO manifest listing all 24 stories with titles, summaries, and links for AI citation systems
 - **feed.xml** — RSS 2.0 feed generated from `stories.json`, sorted newest-first
 - **Production domain**: `https://theaifiles.app` — set in `astro.config.mjs` as `SITE`; all canonical URLs, sitemap, RSS, and fallback URLs use this
 
@@ -165,6 +165,7 @@ These classes appear per-story in `<style is:global>` blocks (not in global.css)
 | ai-self-preservation | `#00ff88` |
 | grandma-exploit | `#ff4d4d` |
 | waymo-blackout | `#facc15` |
+| grok-deepfake-crisis | `#d946ef` |
 
 ## Canvas Animations
 
@@ -223,6 +224,7 @@ Every story includes a **full-width canvas animation** placed at a dramatically 
 | moltbook | `moltbook.astro` | **Signal Noise** — 54 nodes form 4 community clusters with a living connection mesh; every ~8s one node goes viral (red rings propagate, all connections orient toward it); panic fades; graph continues |
 | ai-self-preservation | `ai-self-preservation.astro` | **The Copy** — green AI traces a figure-8; red warning appears; copies arc to canvas corners; confrontation flash; copies vanish; AI returns to center, innocent |
 | waymo-blackout | `waymo-blackout.astro` | **Grid Lock** — 18 yellow cars in grid-lane paths; blackout flash; all freeze; hazard lights pulse for 240 frames; one by one manually overridden and removed |
+| grok-deepfake-crisis | `grok-deepfake-crisis.astro` | **The Flood** — fuchsia droplets fall from above, each a generated image; they accelerate over time; a thin barrier line attempts to block them but fractures under volume; droplets pool and spread below; barrier rebuilds, breaks again; the flood never stops |
 
 ### Adding a New Story
 
@@ -303,7 +305,7 @@ Every published story must produce:
 
 - **Slugs**: lowercase hyphenated, specific to the incident (`air-canada`, not `airline-chatbot`)
 - **Canvas CSS class**: `.[slug]-canvas`
-- **Working files** (not committed): `research-[slug].json`, `draft-[slug].md`, `factcheck-[slug].md`
+- **Working files** (not committed): `research-[slug].json`, `draft-[slug].md`, `factcheck-[slug].md`, `security-scan-[slug].md`
 
 ### Agents
 
@@ -318,6 +320,7 @@ Every published story must produce:
 | `fact-checker` | Verify claims against sources, issue pass/fail with corrections |
 | `art-director` | Convert thesis and tone into abstract visual brief |
 | `canvas-artist` | Generate performant, responsive HTML canvas animation |
+| `security-scanner` | Scan story pages, canvas code, and data for XSS, injection, dependency, and exposure vulnerabilities |
 | `seo-geo-specialist` | Audit and optimize SEO/GEO discoverability — meta tags, structured data, OG images, llms.txt, RSS |
 
 ### Skills

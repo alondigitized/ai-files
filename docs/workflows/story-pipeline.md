@@ -37,7 +37,10 @@ This document specifies the end-to-end editorial workflow for producing a new st
 [9. Canvas]          canvas-artist
    |                 → canvas JS block (inline script)
    v
-[10. Publish]        publish-story skill
+[10. Security]       security-scanner
+   |                 → security-scan-[slug].md (pass/fail + findings)
+   v
+[11. Publish]        publish-story skill
                      → article-package.json + all site files updated
 ```
 
@@ -244,7 +247,36 @@ This document specifies the end-to-end editorial workflow for producing a new st
 
 ---
 
-## Stage 10 — Publish Package
+## Stage 10 — Security Scan
+
+**Agent**: `security-scanner`
+**Trigger**: Assembled Astro page with canvas code inserted, stories.json entry drafted.
+
+**Inputs**:
+- `src/pages/stories/[slug].astro` (with canvas script block)
+- `src/data/stories.json` entry for the story
+- Canvas JS block (inline script)
+
+**Process**:
+- Scan all `<script>` blocks for XSS vectors: `eval()`, `innerHTML`, `set:html` with dynamic data, `document.write()`
+- Verify canvas script is self-contained (no network requests, no DOM manipulation outside its canvas)
+- Validate all source URLs in stories.json are HTTPS and point to reputable domains
+- Check for script injection in text fields (title, deck, verifyText, tags)
+- Verify slug contains only lowercase alphanumeric and hyphens
+- Check external scripts for SRI attributes
+- Check `target="_blank"` links for `rel="noopener"`
+- Grep for exposed secrets or API keys
+
+**Outputs**:
+- `security-scan-[slug].md` with finding-by-finding table, severity levels, and verdict
+- Overall verdict: `PASS` or `FAIL`
+- If `FAIL`: required fixes before re-scan
+
+**Gate**: Do not proceed to publish unless security scan verdict is `PASS`. No CRITICAL or HIGH severity findings allowed.
+
+---
+
+## Stage 11 — Publish Package
 
 **Skill**: `publish-story`
 **Trigger**: All previous stages complete.
@@ -272,5 +304,6 @@ Working files are produced during the pipeline and should not be committed to th
 | `draft-[slug].md` | 6 | Article draft in markdown |
 | `factcheck-[slug].md` | 7 | Fact-check report |
 | `canvas-brief.json` | 8 | Art direction brief |
+| `security-scan-[slug].md` | 10 | Security scan report |
 
 Only the final Astro page, stories.json entry, and llms.txt update get committed.
