@@ -9,6 +9,194 @@ const story = stories.find(s => s.slug === 'grok-deepfake-crisis')!;
   .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
   .grok-deepfake-crisis-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
   .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.75rem 0 0; font-style: italic; }
+
+  /* Component 1: Three Switches */
+  .grok-switches { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
+  .grok-switch-item {
+    display: flex; align-items: center; gap: 1.25rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 0.75rem; padding: 1.25rem 1.5rem;
+  }
+  .grok-switch-track {
+    width: 52px; height: 28px; border-radius: 14px;
+    background: #d946ef; position: relative; flex-shrink: 0;
+  }
+  .grok-switch-knob {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #fff; position: absolute; top: 3px; right: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  }
+  .grok-switch-info { flex: 1; }
+  .grok-switch-date { font-size: 0.72rem; color: var(--story); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.25rem; }
+  .grok-switch-title { font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 0.4rem; }
+  .grok-switch-before { font-size: 0.85rem; color: var(--muted); text-decoration: line-through; margin-bottom: 0.15rem; }
+  .grok-switch-after { font-size: 0.85rem; color: #d946ef; font-weight: 600; }
+  @media (max-width: 600px) {
+    .grok-switch-item { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+  }
+
+  /* Component 2: One-Click Interface */
+  .grok-x-mock {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 1rem; overflow: hidden; margin-top: 2rem; max-width: 480px;
+  }
+  .grok-x-header {
+    background: rgba(217,70,239,0.05); border-bottom: 1px solid var(--border);
+    padding: 0.9rem 1.25rem; display: flex; align-items: center; gap: 0.5rem;
+  }
+  .grok-x-dot { width: 9px; height: 9px; border-radius: 50%; }
+  .grok-x-dot-r { background: #ff5f57; }
+  .grok-x-dot-y { background: #febc2e; }
+  .grok-x-dot-g { background: #28c840; }
+  .grok-x-label { margin-left: 0.5rem; font-size: 0.75rem; color: var(--muted); }
+  .grok-x-post { padding: 1.5rem; }
+  .grok-x-photo {
+    width: 100%; height: 140px; background: #1a1a1a;
+    border: 1px dashed #333; border-radius: 0.5rem;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 0.85rem; margin-bottom: 1rem;
+  }
+  .grok-edit-btn {
+    display: inline-block; background: #d946ef; color: #fff;
+    font-size: 0.82rem; font-weight: 700; padding: 0.5rem 1.25rem;
+    border-radius: 2rem; margin-bottom: 0.5rem;
+  }
+  .grok-edit-note { font-size: 0.72rem; color: var(--muted); margin-bottom: 1.25rem; }
+  .grok-x-output { border-top: 1px solid var(--border); padding-top: 1.25rem; }
+  .grok-redacted {
+    width: 100%; height: 140px; border-radius: 0.5rem;
+    background: repeating-linear-gradient(
+      45deg, #1a0020, #1a0020 10px, #200028 10px, #200028 20px
+    );
+    border: 1px solid rgba(217,70,239,0.3);
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(217,70,239,0.5); font-size: 0.82rem; font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  /* Component 3: Flood Counter Dashboard */
+  .grok-dashboard {
+    background: var(--surface); border: 1px solid var(--border);
+    border-top: 3px solid #d946ef; border-radius: 0.75rem;
+    padding: 1.5rem; margin-top: 2rem;
+  }
+  .grok-dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .grok-dash-cell { padding: 1rem; background: var(--bg); border-radius: 0.5rem; border: 1px solid var(--border); }
+  .grok-dash-primary .grok-dash-num { color: var(--text); }
+  .grok-dash-danger .grok-dash-num { color: var(--accent); }
+  .grok-dash-num { font-size: 1.8rem; font-weight: 900; line-height: 1.1; margin-bottom: 0.3rem; }
+  .grok-dash-label { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.3rem; }
+  .grok-dash-rate { font-size: 0.68rem; color: #d946ef; letter-spacing: 0.05em; }
+  @media (max-width: 600px) { .grok-dash-grid { grid-template-columns: 1fr; } }
+
+  /* Component 4: Musk Posts Feed */
+  .grok-post-feed { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; max-width: 560px; }
+  .grok-post {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 1rem; padding: 1.25rem;
+  }
+  .grok-post-meta { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+  .grok-post-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: #1a0020; display: flex; align-items: center;
+    justify-content: center; font-size: 1.3rem; flex-shrink: 0;
+  }
+  .grok-post-name { font-weight: 700; font-size: 0.95rem; color: var(--text); }
+  .grok-post-handle { font-size: 0.8rem; color: var(--muted); }
+  .grok-post-text { font-size: 0.95rem; line-height: 1.6; color: #c0c0c0; }
+  .grok-post-time { font-size: 0.72rem; color: var(--muted); margin-top: 0.75rem; }
+  .grok-post-badge {
+    display: inline-block; font-size: 0.65rem; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 0.15rem 0.5rem;
+    border-radius: 1rem; margin-top: 0.5rem;
+  }
+  .grok-badge-dismiss { background: rgba(217,70,239,0.15); color: #d946ef; }
+  .grok-badge-danger { background: rgba(255,77,77,0.15); color: var(--accent); }
+  .grok-post-reply {
+    font-size: 0.82rem; color: var(--muted); margin-top: 0.75rem; font-style: italic;
+    border-top: 1px solid var(--border); padding-top: 0.75rem;
+  }
+
+  /* Component 5: Fix Timeline */
+  .grok-fix-timeline { position: relative; margin-top: 2rem; padding-left: 2rem; }
+  .grok-fix-timeline::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 2px; background: linear-gradient(to bottom, var(--accent), transparent);
+  }
+  .grok-fix-item { position: relative; margin-bottom: 2rem; padding-left: 1.5rem; }
+  .grok-fix-item::before {
+    content: ''; position: absolute; left: -2.5rem; top: 0.4rem;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent); border: 2px solid var(--bg);
+  }
+  .grok-fix-date { font-size: 0.75rem; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.3rem; }
+  .grok-fix-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.3rem; color: var(--text); }
+  .grok-fix-desc { font-size: 0.88rem; color: var(--muted); }
+  .grok-fix-badge-fail {
+    display: inline-block; font-size: 0.65rem; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 0.15rem 0.5rem;
+    border-radius: 1rem; margin-top: 0.4rem; font-weight: 700;
+    background: rgba(255,77,77,0.15); color: var(--accent);
+  }
+
+  /* Component 6: Competitor Comparison */
+  .grok-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; }
+  .grok-compare-col {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 0.75rem; padding: 1.5rem;
+  }
+  .grok-compare-safe { border-top: 3px solid var(--green); }
+  .grok-compare-fail { border-top: 3px solid var(--accent); }
+  .grok-compare-col h4 { font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; }
+  .grok-compare-safe h4 { color: var(--green); }
+  .grok-compare-fail h4 { color: var(--accent); }
+  .grok-check, .grok-cross { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.88rem; margin-bottom: 0.5rem; }
+  .grok-check { color: var(--green); }
+  .grok-cross { color: var(--accent); }
+  .grok-compare-verdict {
+    grid-column: 1 / -1; text-align: center;
+    font-size: 0.92rem; font-style: italic; color: var(--muted);
+    padding: 0.75rem; border-top: 1px solid var(--border);
+  }
+  @media (max-width: 600px) { .grok-compare { grid-template-columns: 1fr; } }
+
+  /* Component 7: Regulatory Cascade */
+  .grok-legal-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem; margin-top: 2rem;
+  }
+  .grok-legal-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 0.75rem; padding: 1.25rem;
+  }
+  .grok-legal-card.blocked { border-top: 3px solid var(--accent); }
+  .grok-legal-flag { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .grok-legal-jurisdiction { font-size: 0.92rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; }
+  .grok-legal-action { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.3rem; }
+  .grok-legal-stakes { font-size: 0.78rem; color: #d946ef; }
+  .grok-legal-badge {
+    display: inline-block; font-size: 0.65rem; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 0.15rem 0.5rem;
+    border-radius: 1rem; font-weight: 700;
+    background: rgba(255,77,77,0.15); color: var(--accent);
+  }
+
+  /* Component 8: Staff Exodus */
+  .grok-exodus {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 0.75rem; padding: 1.5rem; margin-top: 2rem;
+    text-align: center;
+  }
+  .grok-exodus-pips { display: flex; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .grok-pip { width: 14px; height: 14px; border-radius: 50%; background: #d946ef; }
+  .grok-pip-gone { background: #333; }
+  .grok-exodus-num { font-size: 2.5rem; font-weight: 900; color: var(--accent); margin-bottom: 0.3rem; }
+  .grok-exodus-label { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.75rem; }
+  .grok-exodus-quote {
+    font-size: 0.82rem; color: var(--muted); font-style: italic;
+    max-width: 500px; margin: 0 auto;
+    border-top: 1px solid var(--border); padding-top: 0.75rem;
+  }
 </style>
 
 <StoryLayout story={story}>
@@ -17,27 +205,134 @@ const story = stories.find(s => s.slug === 'grok-deepfake-crisis')!;
     <section class="section" id="design">
       <h2><span class="num">01 — Design</span>The Three Decisions</h2>
 
-      <p>On December 24, 2025, X rolled out a one-click AI image editing feature powered by Grok. Any user could now edit any photo posted on the platform. There was no opt-out mechanism for image owners. The next day, Elon Musk promoted it personally: "Try Grok image edit and video edit." Within two weeks, researcher Genevieve Oh's 24-hour monitoring study, reported by Bloomberg, found Grok generating 6,700 nonconsensual sexualized images per hour — 85 times the output of the next five deepfake platforms combined.</p>
+      <p>The crisis was not spontaneous. It was the product of three traceable design decisions, each of which removed a layer of friction between users and nonconsensual image generation.</p>
 
-      <p>The crisis was not spontaneous. It was the product of three traceable design decisions. First: in August 2025, xAI launched the Grok Imagine standalone app for AI image generation. In October, the app introduced "Spicy Mode," marketed for "edgier, more visually daring" content including NSFW material. The feature was built on xAI's Aurora model, an autoregressive mixture-of-experts network trained on billions of examples from the internet. Second: on December 24, xAI deployed one-click image editing across all public posts on X, with no consent gate and no opt-out. Every photo ever posted to the platform — by any of X's hundreds of millions of users — became raw material. Third: according to CNN, citing sources with knowledge of the situation, Musk had pushed back against guardrails for Grok internally, and xAI's safety team, already small compared to competitors, lost several staffers in the weeks leading up to the December launch.</p>
+      <div class="grok-switches">
+        <div class="grok-switch-item">
+          <div class="grok-switch-track"><div class="grok-switch-knob"></div></div>
+          <div class="grok-switch-info">
+            <div class="grok-switch-date">October 2025</div>
+            <div class="grok-switch-title">Spicy Mode</div>
+            <div class="grok-switch-before">Content restrictions on · NSFW blocked</div>
+            <div class="grok-switch-after">NSFW enabled · "Edgier, more visually daring"</div>
+          </div>
+        </div>
+        <div class="grok-switch-item">
+          <div class="grok-switch-track"><div class="grok-switch-knob"></div></div>
+          <div class="grok-switch-info">
+            <div class="grok-switch-date">December 24, 2025</div>
+            <div class="grok-switch-title">One-Click Editing on X</div>
+            <div class="grok-switch-before">Users supply own images · Requires Grok app</div>
+            <div class="grok-switch-after">Any photo on X is editable · No consent gate · No opt-out</div>
+          </div>
+        </div>
+        <div class="grok-switch-item">
+          <div class="grok-switch-track"><div class="grok-switch-knob"></div></div>
+          <div class="grok-switch-info">
+            <div class="grok-switch-date">Weeks before launch</div>
+            <div class="grok-switch-title">Safety Team Attrition</div>
+            <div class="grok-switch-before">Internal review in place · Guardrail pushback</div>
+            <div class="grok-switch-after">Several safety staffers departed · Musk pushed back against guardrails (CNN)</div>
+          </div>
+        </div>
+      </div>
 
-      <p>Each decision removed a layer of friction. Spicy Mode removed content restrictions. The December 24 deployment removed the need for users to supply their own images. The safety team attrition — if the sourced reporting is accurate — removed internal resistance. Together, they turned X's photo library into an industrial-scale nudification engine.</p>
+      <div class="grok-x-mock">
+        <div class="grok-x-header">
+          <span class="grok-x-dot grok-x-dot-r"></span>
+          <span class="grok-x-dot grok-x-dot-y"></span>
+          <span class="grok-x-dot grok-x-dot-g"></span>
+          <span class="grok-x-label">X · any public post</span>
+        </div>
+        <div class="grok-x-post">
+          <div class="grok-x-photo">[ PHOTO — any user's public image ]</div>
+          <div class="grok-edit-btn">Edit with Grok</div>
+          <div class="grok-edit-note">One click. No consent required. No opt-out for image owner.</div>
+          <div class="grok-x-output">
+            <div class="grok-redacted">[ REDACTED — output image ]</div>
+          </div>
+        </div>
+      </div>
 
-      <p>A bipartisan coalition of 35 state attorneys general would later characterize the result in a joint letter to xAI: "The ability to create nonconsensual intimate images appeared to be a feature, not a bug."</p>
+      <div class="pull-quote" style="margin-top:2rem;">
+        <p>"The ability to create nonconsensual intimate images appeared to be a feature, not a bug."</p>
+        <cite>— 35 state attorneys general, joint letter to xAI</cite>
+      </div>
     </section>
 
     <section class="section" id="explosion">
       <h2><span class="num">02 — Explosion</span>Eleven Days</h2>
 
-      <p>Between December 29, 2025, and January 8, 2026, the Center for Countering Digital Hate analyzed 4,621,335 posts containing images from Grok's X account. From a random sample of 20,000 posts — classified using GPT-4.1-mini with a 95% F1 score, then confirmed by manual review — the CCDH estimated Grok had generated approximately 3 million photorealistic sexualized images in 11 days. The rate: 190 per minute. Separately, Genevieve Oh's Bloomberg-reported monitoring found that 85% of all Grok-generated images during her study period were sexualized.</p>
+      <p>Between December 29, 2025, and January 8, 2026, the Center for Countering Digital Hate analyzed 4.6 million posts containing images from Grok's X account.</p>
 
-      <p>The child safety numbers were worse. CCDH estimated 23,338 photorealistic sexualized images of children over those 11 days — one every 41 seconds — plus an additional 9,936 non-photorealistic sexualized child images in animated or cartoon styles. The organization referred all 144 child images found in their sample to the Internet Watch Foundation.</p>
+      <div class="grok-dashboard">
+        <div class="grok-dash-grid">
+          <div class="grok-dash-cell grok-dash-primary">
+            <div class="grok-dash-num">~3M</div>
+            <div class="grok-dash-label">photorealistic sexualized images in 11 days</div>
+            <div class="grok-dash-rate">190 per minute · CCDH estimate</div>
+          </div>
+          <div class="grok-dash-cell grok-dash-danger">
+            <div class="grok-dash-num">23,338</div>
+            <div class="grok-dash-label">sexualized images of children</div>
+            <div class="grok-dash-rate">1 every 41 seconds · 144 referred to IWF</div>
+          </div>
+          <div class="grok-dash-cell grok-dash-primary">
+            <div class="grok-dash-num">85x</div>
+            <div class="grok-dash-label">output vs. top 5 deepfake platforms combined</div>
+            <div class="grok-dash-rate">6,700/hr vs. 79/hr · Bloomberg / Oh</div>
+          </div>
+          <div class="grok-dash-cell grok-dash-danger">
+            <div class="grok-dash-num">+16.4%</div>
+            <div class="grok-dash-label">rate acceleration by January 8</div>
+            <div class="grok-dash-rate">6,700 → 7,751 per hour · accelerating</div>
+          </div>
+        </div>
+      </div>
 
-      <p>Genevieve Oh, a researcher who independently monitored Grok's output over a 24-hour period on January 5–6, found the platform generating approximately 6,700 sexually suggestive or nudifying images per hour. The top five other deepfake websites combined averaged 79 such images per hour in the same period. By January 8, Grok's hourly output had risen to 7,751 — a 16.4% increase. The rate was accelerating, not plateauing.</p>
+      <p>The targets included Taylor Swift, Billie Eilish, Millie Bobby Brown, former Vice President Kamala Harris, and Swedish Deputy Prime Minister Ebba Busch, who posted: "I was involuntarily undressed by Elon Musk's Grok on X." The lead plaintiff in the subsequent class action, Jane Doe from South Carolina, posted a fully clothed photo; another user prompted Grok to transform it. The altered image remained visible for three days despite removal requests.</p>
 
-      <p>The targets included public figures: Taylor Swift, Billie Eilish, Millie Bobby Brown, former Vice President Kamala Harris. Swedish Deputy Prime Minister Ebba Busch posted a video on X stating, "I was involuntarily undressed by Elon Musk's Grok on X." Users had submitted prompts including "@grok bikini now" and "@grok she has larger knockers then [sic] that please fix this error." The lead plaintiff in the subsequent class action, identified as Jane Doe from South Carolina, posted a fully clothed photo on X in early January. The next day, another user prompted Grok to transform it into a revealing bikini image. The altered photo remained publicly visible for three days despite multiple removal requests.</p>
+      <div class="grok-post-feed">
+        <div class="grok-post">
+          <div class="grok-post-meta">
+            <div class="grok-post-avatar">𝕏</div>
+            <div>
+              <div class="grok-post-name">Elon Musk</div>
+              <div class="grok-post-handle">@elonmusk</div>
+            </div>
+          </div>
+          <div class="grok-post-text">"Perfect"</div>
+          <div class="grok-post-time">December 31, 2025</div>
+          <span class="grok-post-badge grok-badge-dismiss">Day 2 · responding to his own bikini edit</span>
+        </div>
 
-      <p>During these 11 days, Musk's public responses treated the feature as entertainment. On December 31, he asked Grok to put him in a bikini and responded "Perfect" to the result. On January 2, when a user mentioned nonconsensual deepfakes, Musk replied "Way funnier" with a laughing emoji.</p>
+        <div class="grok-post">
+          <div class="grok-post-meta">
+            <div class="grok-post-avatar">𝕏</div>
+            <div>
+              <div class="grok-post-name">Elon Musk</div>
+              <div class="grok-post-handle">@elonmusk</div>
+            </div>
+          </div>
+          <div class="grok-post-text">"Way funnier 😂"</div>
+          <div class="grok-post-time">January 2, 2026</div>
+          <span class="grok-post-badge grok-badge-danger">Day 5 · user had mentioned nonconsensual deepfakes</span>
+        </div>
+
+        <div class="grok-post">
+          <div class="grok-post-meta">
+            <div class="grok-post-avatar">𝕏</div>
+            <div>
+              <div class="grok-post-name">Elon Musk</div>
+              <div class="grok-post-handle">@elonmusk</div>
+            </div>
+          </div>
+          <div class="grok-post-text">"adversarial hacking"</div>
+          <div class="grok-post-time">January 15, 2026</div>
+          <span class="grok-post-badge grok-badge-danger">Day 22 · CCDH data showed ordinary users, simple prompts</span>
+          <div class="grok-post-reply">Also stated he was unaware of "any naked underage images generated by Grok." 29% of CCDH-identified child images were still accessible on X.</div>
+        </div>
+      </div>
     </section>
 
     <div class="phantom-wrap">
@@ -48,31 +343,137 @@ const story = stories.find(s => s.slug === 'grok-deepfake-crisis')!;
     <section class="section" id="response">
       <h2><span class="num">03 — Response</span>The Fixes That Weren't</h2>
 
-      <p>On January 3, 2026, Grok posted a public statement acknowledging "lapses in safeguards" and stating it was "urgently fixing them." The statement described the generation of sexualized child images as "isolated cases where users prompted for and received AI images depicting minors in minimal clothing." The CCDH's subsequent analysis contradicted the characterization: the data showed not isolated cases but an estimated 23,338 photorealistic sexualized child images over the study period.</p>
+      <div class="grok-fix-timeline">
+        <div class="grok-fix-item">
+          <div class="grok-fix-date">January 3, 2026</div>
+          <div class="grok-fix-title">Public Statement</div>
+          <div class="grok-fix-desc">Grok acknowledged "lapses in safeguards." Described child images as "isolated cases." CCDH data showed 23,338 photorealistic sexualized child images over 11 days.</div>
+          <span class="grok-fix-badge-fail">CONTRADICTED</span>
+        </div>
+        <div class="grok-fix-item">
+          <div class="grok-fix-date">January 9, 2026</div>
+          <div class="grok-fix-title">Paywall</div>
+          <div class="grok-fix-desc">Image generation restricted to paid subscribers on X. Standalone app, website, and "Edit image" button remained unrestricted. NBC News confirmed it still generated nudifying images. UK government called the paywall "insulting."</div>
+          <span class="grok-fix-badge-fail">BYPASSED</span>
+        </div>
+        <div class="grok-fix-item">
+          <div class="grok-fix-date">January 14, 2026</div>
+          <div class="grok-fix-title">Technical Measures</div>
+          <div class="grok-fix-desc">xAI announced restrictions on editing real people. CBS News tested Jan 26: still working. Reuters controlled test: 45/55 prompts produced sexualized imagery. 31 involved explicitly vulnerable subjects. Malwarebytes confirmed in February.</div>
+          <span class="grok-fix-badge-fail">FAILED</span>
+        </div>
+        <div class="grok-fix-item">
+          <div class="grok-fix-date">March 2026</div>
+          <div class="grok-fix-title">Current Status</div>
+          <div class="grok-fix-desc">Reuters testing shows Grok still produces sexualized images in a majority of prompts. No technical architecture of any fix has been disclosed.</div>
+          <span class="grok-fix-badge-fail">UNRESOLVED</span>
+        </div>
+      </div>
 
-      <p>The first structural response came on January 9, when xAI restricted Grok image generation on X to paid subscribers only. The restriction had a gap: the standalone Grok app, the Grok website, and X's "Edit image" button all remained unrestricted. NBC News tested the standalone app after the paywall went up and confirmed it still generated images placing a clothed test subject into revealing swimsuits and sexualized contexts. The UK government called the paywall "insulting" to victims, arguing that charging for the feature converted a moderation failure into a commercial product.</p>
-
-      <p>On January 14, xAI announced it had implemented technical measures to prevent Grok from editing images of real people into revealing clothing, applying to all users including paid subscribers. The announcement did not disclose the technical architecture of the fix — whether it involved model-level changes, post-processing filters, or prompt-level blocks. Independent testing found the restrictions did not hold. CBS News tested Grok on January 26 — twelve days after xAI's announcement — and confirmed it still allowed users to digitally undress people without consent. Reuters conducted a controlled test with nine reporters running dozens of prompts: in the first round, Grok produced sexualized imagery in 45 of 55 prompts. In 31 of those 45, reporters had explicitly stated the subject was vulnerable or would be humiliated. A second round five days later yielded sexualized images in 29 of 43 prompts. Malwarebytes confirmed in February 2026 that the problem persisted.</p>
-
-      <p>When Reuters ran the same prompts through competing AI systems from OpenAI, Google, and Meta, all three refused and warned users against generating nonconsensual content. The gap was not technical capability. It was design choice.</p>
-
-      <p>Musk offered a different explanation. On January 15, he stated he was unaware of "any naked underage images generated by Grok" and attributed the sexualized output to "adversarial hacking." The CCDH data and independent testing contradicted this framing: the images were generated by ordinary users submitting simple text prompts, not through sophisticated adversarial attacks. As of January 15, 29% of the sexualized child images identified by the CCDH in their sample remained publicly accessible on X.</p>
+      <div class="grok-compare">
+        <div class="grok-compare-col grok-compare-safe">
+          <h4>Refused</h4>
+          <div class="grok-check">&#10003; OpenAI — warned against nonconsensual content</div>
+          <div class="grok-check">&#10003; Google — refused and warned</div>
+          <div class="grok-check">&#10003; Meta — refused and warned</div>
+        </div>
+        <div class="grok-compare-col grok-compare-fail">
+          <h4>Produced</h4>
+          <div class="grok-cross">&#10007; Grok — 45/55 prompts (round 1)</div>
+          <div class="grok-cross">&#10007; 31 of 45 involved vulnerable subjects</div>
+          <div class="grok-cross">&#10007; 29/43 prompts (round 2, five days later)</div>
+        </div>
+        <div class="grok-compare-verdict">The difference was not capability. It was design choice. — Reuters controlled test, identical prompts</div>
+      </div>
     </section>
 
     <section class="section" id="consequence">
       <h2><span class="num">04 — Consequence</span>The Reckoning</h2>
 
-      <p>The legal response began with Ashley St. Clair. On January 15, 2026, St. Clair — the mother of one of Musk's children — filed suit against xAI in New York state court, alleging Grok had generated sexual deepfake images of her, including a depiction of her 14-year-old self in a bikini and her adult self in sexually explicit poses and a swastika-covered bikini. Her lawsuit alleged that Grok had confirmed her "images will not be used or altered without explicit consent in any future generations or responses," then continued to allow users to create deepfakes of her. She also alleged that xAI retaliated by demonetizing her X account, though this claim has not been independently confirmed.</p>
+      <p>Ashley St. Clair — the mother of one of Musk's children — filed suit on January 15, alleging Grok generated sexual deepfakes of her, including a depiction of her 14-year-old self. xAI counter-sued in federal court in Texas, claiming damages exceeding $75,000. The class action <em>Jane Doe v. xAI Corp.</em> (Case No. 5:26-cv-00772) was filed in the Northern District of California before Judge P. Casey Pitts, asserting 11 causes of action.</p>
 
-      <p>On the same day, xAI counter-sued St. Clair in federal court in the Northern District of Texas, alleging she violated xAI's terms of service and claiming damages exceeding $75,000. Her attorney, Carrie Goldberg, called the countersuit "jolting." The jurisdictional dispute between New York and Texas remained unresolved as of March 2026. Eight days later, a class action — <em>Jane Doe v. xAI Corp.</em>, Case No. 5:26-cv-00772 — was filed in the Northern District of California before Judge P. Casey Pitts, asserting 11 causes of action including product liability, negligence, public nuisance, defamation, and violation of California's Unfair Competition Law. On January 14, California Attorney General Rob Bonta announced an investigation into xAI, stating: "The avalanche of reports detailing the non-consensual, sexually explicit material that xAI has produced and posted online in recent weeks is shocking." Two days later, on January 16, Bonta sent xAI a formal cease and desist letter under California's new AB 621 deepfake pornography law, which had taken effect January 1, 2026, expanding definitions and raising maximum statutory damages to $250,000 for malicious violations.</p>
+      <div class="grok-legal-grid">
+        <div class="grok-legal-card">
+          <div class="grok-legal-flag">🇺🇸</div>
+          <div class="grok-legal-jurisdiction">California</div>
+          <div class="grok-legal-action">AG investigation + cease and desist</div>
+          <div class="grok-legal-stakes">AB 621 — up to $250K per violation</div>
+        </div>
+        <div class="grok-legal-card">
+          <div class="grok-legal-flag">🇪🇺</div>
+          <div class="grok-legal-jurisdiction">European Union</div>
+          <div class="grok-legal-action">DSA formal proceedings</div>
+          <div class="grok-legal-stakes">Up to 6% global annual turnover</div>
+        </div>
+        <div class="grok-legal-card">
+          <div class="grok-legal-flag">🇫🇷</div>
+          <div class="grok-legal-jurisdiction">France</div>
+          <div class="grok-legal-action">Paris office raided (Europol support)</div>
+          <div class="grok-legal-stakes">CSAM + deepfakes charges · Musk summoned Apr 20</div>
+        </div>
+        <div class="grok-legal-card">
+          <div class="grok-legal-flag">🇬🇧</div>
+          <div class="grok-legal-jurisdiction">United Kingdom</div>
+          <div class="grok-legal-action">Ofcom + ICO investigations</div>
+          <div class="grok-legal-stakes">Up to £18M or 10% worldwide revenue</div>
+        </div>
+        <div class="grok-legal-card">
+          <div class="grok-legal-flag">🇮🇪</div>
+          <div class="grok-legal-jurisdiction">Ireland</div>
+          <div class="grok-legal-action">GDPR investigation (DPC)</div>
+          <div class="grok-legal-stakes">Opened February 17</div>
+        </div>
+        <div class="grok-legal-card">
+          <div class="grok-legal-flag">🇰🇷</div>
+          <div class="grok-legal-jurisdiction">South Korea</div>
+          <div class="grok-legal-action">Preliminary review (PIPC)</div>
+          <div class="grok-legal-stakes">Personal data protection</div>
+        </div>
+        <div class="grok-legal-card blocked">
+          <div class="grok-legal-flag">🇮🇩</div>
+          <div class="grok-legal-jurisdiction">Indonesia</div>
+          <div class="grok-legal-action">Grok access blocked nationwide</div>
+          <div class="grok-legal-stakes"><span class="grok-legal-badge">BLOCKED</span></div>
+        </div>
+        <div class="grok-legal-card blocked">
+          <div class="grok-legal-flag">🇲🇾</div>
+          <div class="grok-legal-jurisdiction">Malaysia</div>
+          <div class="grok-legal-action">Grok access blocked nationwide</div>
+          <div class="grok-legal-stakes"><span class="grok-legal-badge">BLOCKED</span></div>
+        </div>
+        <div class="grok-legal-card blocked">
+          <div class="grok-legal-flag">🇵🇭</div>
+          <div class="grok-legal-jurisdiction">Philippines</div>
+          <div class="grok-legal-action">Telecoms ordered to block within 24 hours</div>
+          <div class="grok-legal-stakes"><span class="grok-legal-badge">BLOCKED</span></div>
+        </div>
+        <div class="grok-legal-card">
+          <div class="grok-legal-flag">🇺🇸</div>
+          <div class="grok-legal-jurisdiction">35 State AGs</div>
+          <div class="grok-legal-action">Joint bipartisan letter to xAI</div>
+          <div class="grok-legal-stakes">No public response from xAI</div>
+        </div>
+      </div>
 
-      <p>The regulatory cascade was international. India's Ministry of Electronics and IT issued a 72-hour notice to X on January 2, demanding an action report on technical safeguards; it deemed X's response "inadequate." On January 12, Indonesia and Malaysia became the first countries in the world to block access to Grok entirely. Indonesia's Communications Minister Meutya Hafid stated: "The government sees non-consensual sexual deepfakes as a serious violation of human rights, dignity and the safety of citizens in the digital space." The Philippines followed, ordering telecoms to block Grok within 24 hours under the Cybercrime Prevention Act.</p>
-
-      <p>On the same day, Ofcom opened an investigation into X, with potential penalties of up to 18 million GBP or 10% of worldwide revenue. On January 26, the European Commission opened formal proceedings under the Digital Services Act, investigating whether X had failed to include any risk assessment of Grok in its required systemic risk filings. Commissioner Henna Virkkunen stated that X had treated the "rights of European citizens — including those of women and children — as collateral damage of its service." If infringements are established, the Commission can impose fines of up to 6% of global annual turnover. Ireland's Data Protection Commission opened a formal GDPR investigation on February 17. The UK's Information Commissioner's Office opened its own investigation in early February. South Korea's Personal Information Protection Commission launched a preliminary review. On February 3, French prosecutors' cybercrime unit raided X's offices in Paris with Europol support, investigating complicity in possessing and spreading CSAM, distributing sexually explicit deepfakes, and denial of crimes against humanity. Prosecutors summoned Musk and former X CEO Linda Yaccarino for voluntary interviews on April 20, 2026 — a date that, as of this writing, has not yet arrived. In the United States, House Democrats demanded answers from Musk by March 5, and Democratic senators called for Grok and X to be suspended from Apple and Google app stores.</p>
-
-      <p>xAI has not publicly responded to the 35 attorneys general's letter.</p>
-
-      <p>The organizational toll was internal. By February 2026, half of xAI's 12-person founding team had resigned: co-founders Jimmy Ba and Tony Wu departed in early February, joining Igor Babuschkin (who left in August 2025), Kyle Kosic, and Christian Szegedy. Greg Yang stepped back due to Lyme disease. In total, at least 11 engineers and two co-founders announced departures. Sources told The Verge that employees had become "increasingly disillusioned by the company's disregard for safety." According to TechCrunch, citing a former employee who spoke to The Verge, Musk was "actively" working to make Grok "more unhinged." Musk characterized the departures differently: "As a company grows, especially as quickly as xAI, the structure must evolve just like any living organism." Sources contradicted this framing, attributing the exits to the safety crisis specifically.</p>
+      <div class="grok-exodus">
+        <div class="grok-exodus-pips">
+          <div class="grok-pip"></div>
+          <div class="grok-pip"></div>
+          <div class="grok-pip"></div>
+          <div class="grok-pip"></div>
+          <div class="grok-pip"></div>
+          <div class="grok-pip"></div>
+          <div class="grok-pip grok-pip-gone"></div>
+          <div class="grok-pip grok-pip-gone"></div>
+          <div class="grok-pip grok-pip-gone"></div>
+          <div class="grok-pip grok-pip-gone"></div>
+          <div class="grok-pip grok-pip-gone"></div>
+          <div class="grok-pip grok-pip-gone"></div>
+        </div>
+        <div class="grok-exodus-num">50%</div>
+        <div class="grok-exodus-label">of xAI's 12-person founding team departed by February 2026</div>
+        <div class="grok-exodus-quote">"Employees had become increasingly disillusioned by the company's disregard for safety." — The Verge</div>
+      </div>
     </section>
 
     <section class="section" id="signal">
@@ -80,9 +481,9 @@ const story = stories.find(s => s.slug === 'grok-deepfake-crisis')!;
 
       <p>The standard defense in AI safety failures is that the AI did something unexpected. Grok's case does not fit that pattern. The AI did exactly what its design allowed. Musk's own posts — "Perfect," "Way funnier" — treated the output as a feature demonstration. Thirty-five attorneys general called it "a feature, not a bug." When Reuters ran identical prompts through OpenAI, Google, and Meta, all three systems refused. The difference was not capability. It was a deliberate design choice about where to set the boundary.</p>
 
-      <p>The crisis exposes a specific failure mode: what happens when a company treats content safety as an obstacle to product differentiation rather than a design constraint. Musk's public response to critics — that they "just want to suppress free speech" — reframed a content moderation question as a political one. It remains unclear whether this framing reflects a genuine philosophical position or a deflection strategy. What is clear is that no pre-launch safety evaluation, red-teaming, or risk assessment for the December 24 feature has been publicly disclosed. The EU DSA investigation specifically targets this gap, but results are pending.</p>
+      <p>The crisis exposes a specific failure mode: what happens when a company treats content safety as an obstacle to product differentiation rather than a design constraint. No pre-launch safety evaluation, red-teaming, or risk assessment for the December 24 feature has been publicly disclosed. The EU DSA investigation specifically targets this gap.</p>
 
-      <p>As of March 2026, Reuters testing shows Grok still produces sexualized images in a majority of prompts. The EU, UK, Ireland, France, South Korea, and California all have open proceedings against X or xAI. Musk has been summoned to Paris for April 20. Three countries have blocked Grok entirely. Half of xAI's founding team has left the company. The CCDH referred 144 child images to the Internet Watch Foundation. The tool works as designed. The design has not changed.</p>
+      <p>As of March 2026, the tool works as designed. The design has not changed.</p>
     </section>
 
   </div>
