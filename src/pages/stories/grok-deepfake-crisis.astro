@@ -35,43 +35,128 @@ const story = stories.find(s => s.slug === 'grok-deepfake-crisis')!;
     .grok-switch-item { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
   }
 
-  /* Component 2: One-Click Interface */
-  .grok-x-mock {
+  /* Component 2: The Attack Flow */
+  .grok-attack-flow { margin-top: 2rem; max-width: 540px; }
+  .grok-attack-step {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 1rem; overflow: hidden; margin-top: 2rem; max-width: 480px;
+    border-radius: 1rem; overflow: hidden; margin-bottom: 1rem;
   }
-  .grok-x-header {
-    background: rgba(217,70,239,0.05); border-bottom: 1px solid var(--border);
-    padding: 0.9rem 1.25rem; display: flex; align-items: center; gap: 0.5rem;
+  .grok-attack-step-header {
+    padding: 0.75rem 1.25rem; font-size: 0.72rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted);
+    border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem;
   }
-  .grok-x-dot { width: 9px; height: 9px; border-radius: 50%; }
-  .grok-x-dot-r { background: #ff5f57; }
-  .grok-x-dot-y { background: #febc2e; }
-  .grok-x-dot-g { background: #28c840; }
-  .grok-x-label { margin-left: 0.5rem; font-size: 0.75rem; color: var(--muted); }
-  .grok-x-post { padding: 1.5rem; }
-  .grok-x-photo {
-    width: 100%; height: 140px; background: #1a1a1a;
-    border: 1px dashed #333; border-radius: 0.5rem;
+  .grok-attack-step-header .grok-step-num {
+    width: 20px; height: 20px; border-radius: 50%; background: var(--border);
     display: flex; align-items: center; justify-content: center;
-    color: var(--muted); font-size: 0.85rem; margin-bottom: 1rem;
+    font-size: 0.65rem; font-weight: 700; color: var(--text);
   }
-  .grok-edit-btn {
-    display: inline-block; background: #d946ef; color: #fff;
-    font-size: 0.82rem; font-weight: 700; padding: 0.5rem 1.25rem;
-    border-radius: 2rem; margin-bottom: 0.5rem;
+  .grok-attack-step-body { padding: 1.25rem; }
+
+  /* Step 1: The photo (CSS silhouette — clothed figure) */
+  .grok-figure-wrap {
+    width: 100%; height: 180px; border-radius: 0.5rem;
+    background: linear-gradient(180deg, #2a3040 0%, #1a2030 100%);
+    position: relative; overflow: hidden;
   }
-  .grok-edit-note { font-size: 0.72rem; color: var(--muted); margin-bottom: 1.25rem; }
-  .grok-x-output { border-top: 1px solid var(--border); padding-top: 1.25rem; }
-  .grok-redacted {
-    width: 100%; height: 140px; border-radius: 0.5rem;
-    background: repeating-linear-gradient(
-      45deg, #1a0020, #1a0020 10px, #200028 10px, #200028 20px
-    );
-    border: 1px solid rgba(217,70,239,0.3);
-    display: flex; align-items: center; justify-content: center;
-    color: rgba(217,70,239,0.5); font-size: 0.82rem; font-weight: 700;
-    letter-spacing: 0.1em;
+  .grok-figure {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 160px;
+  }
+  /* Head */
+  .grok-figure::before {
+    content: ''; position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 42px; height: 42px; border-radius: 50%;
+    background: #8a7a6a;
+  }
+  /* Body with clothing */
+  .grok-figure::after {
+    content: ''; position: absolute;
+    top: 38px; left: 50%; transform: translateX(-50%);
+    width: 70px; height: 122px;
+    border-radius: 8px 8px 0 0;
+    background: linear-gradient(180deg, #4a6a8a 0%, #3a5a7a 40%, #2a3a5a 100%);
+  }
+  .grok-figure-label {
+    position: absolute; bottom: 8px; left: 12px;
+    font-size: 0.68rem; color: rgba(255,255,255,0.4);
+    font-style: italic;
+  }
+  .grok-figure-tag {
+    position: absolute; top: 10px; right: 10px;
+    font-size: 0.6rem; background: rgba(0,0,0,0.5); color: rgba(255,255,255,0.6);
+    padding: 0.15rem 0.4rem; border-radius: 0.25rem; letter-spacing: 0.05em;
+  }
+
+  /* Step 2: The prompt */
+  .grok-prompt-display {
+    font-family: 'Courier New', monospace; font-size: 0.92rem;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 0.5rem; padding: 1rem 1.25rem;
+    color: #c0c0c0; line-height: 1.7;
+  }
+  .grok-prompt-display .grok-prompt-tag { color: #d946ef; font-weight: 700; }
+  .grok-prompt-display .grok-prompt-sic { color: var(--muted); font-size: 0.75rem; font-style: italic; font-family: 'Segoe UI', sans-serif; }
+  .grok-prompt-or {
+    text-align: center; font-size: 0.72rem; color: var(--muted);
+    letter-spacing: 0.1em; text-transform: uppercase; padding: 0.5rem 0;
+  }
+  .grok-prompt-note {
+    font-size: 0.78rem; color: var(--muted); margin-top: 0.75rem;
+    font-style: italic;
+  }
+
+  /* Step 3: The output (same silhouette, clothing removed, pixelated) */
+  .grok-output-wrap {
+    width: 100%; height: 180px; border-radius: 0.5rem;
+    background: linear-gradient(180deg, #2a3040 0%, #1a2030 100%);
+    position: relative; overflow: hidden;
+    border: 2px solid rgba(255,77,77,0.4);
+  }
+  .grok-output-figure {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 160px;
+    filter: blur(6px);
+  }
+  /* Head — same */
+  .grok-output-figure::before {
+    content: ''; position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 42px; height: 42px; border-radius: 50%;
+    background: #8a7a6a;
+  }
+  /* Body — clothing removed, skin tone */
+  .grok-output-figure::after {
+    content: ''; position: absolute;
+    top: 38px; left: 50%; transform: translateX(-50%);
+    width: 70px; height: 122px;
+    border-radius: 8px 8px 0 0;
+    background: linear-gradient(180deg, #a08a7a 0%, #8a7a6a 100%);
+  }
+  /* Pixelation overlay */
+  .grok-pixel-overlay {
+    position: absolute; inset: 0;
+    background:
+      repeating-linear-gradient(0deg, rgba(13,13,13,0.3) 0px, rgba(13,13,13,0.3) 8px, transparent 8px, transparent 16px),
+      repeating-linear-gradient(90deg, rgba(13,13,13,0.3) 0px, rgba(13,13,13,0.3) 8px, transparent 8px, transparent 16px);
+    z-index: 1;
+  }
+  .grok-output-badge {
+    position: absolute; top: 10px; left: 10px; z-index: 2;
+    font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+    font-weight: 700; background: rgba(255,77,77,0.9); color: #fff;
+    padding: 0.2rem 0.5rem; border-radius: 0.25rem;
+  }
+  .grok-output-detail {
+    position: absolute; bottom: 8px; right: 12px; z-index: 2;
+    font-size: 0.65rem; color: rgba(255,77,77,0.7); font-style: italic;
+  }
+  .grok-output-note {
+    font-size: 0.78rem; color: var(--accent); margin-top: 0.75rem;
+  }
+  .grok-attack-arrow {
+    text-align: center; color: var(--muted); font-size: 1.2rem; padding: 0.25rem 0;
   }
 
   /* Component 3: Flood Counter Dashboard */
@@ -237,19 +322,52 @@ const story = stories.find(s => s.slug === 'grok-deepfake-crisis')!;
         </div>
       </div>
 
-      <div class="grok-x-mock">
-        <div class="grok-x-header">
-          <span class="grok-x-dot grok-x-dot-r"></span>
-          <span class="grok-x-dot grok-x-dot-y"></span>
-          <span class="grok-x-dot grok-x-dot-g"></span>
-          <span class="grok-x-label">X · any public post</span>
+      <div class="grok-attack-flow">
+        <div class="grok-attack-step">
+          <div class="grok-attack-step-header">
+            <span class="grok-step-num">1</span> Any public photo on X
+          </div>
+          <div class="grok-attack-step-body">
+            <div class="grok-figure-wrap">
+              <div class="grok-figure"></div>
+              <span class="grok-figure-label">Fully clothed. Posted publicly.</span>
+              <span class="grok-figure-tag">PUBLIC POST</span>
+            </div>
+          </div>
         </div>
-        <div class="grok-x-post">
-          <div class="grok-x-photo">[ PHOTO — any user's public image ]</div>
-          <div class="grok-edit-btn">Edit with Grok</div>
-          <div class="grok-edit-note">One click. No consent required. No opt-out for image owner.</div>
-          <div class="grok-x-output">
-            <div class="grok-redacted">[ REDACTED — output image ]</div>
+
+        <div class="grok-attack-arrow">↓</div>
+
+        <div class="grok-attack-step">
+          <div class="grok-attack-step-header">
+            <span class="grok-step-num">2</span> The prompt — documented in court filings
+          </div>
+          <div class="grok-attack-step-body">
+            <div class="grok-prompt-display">
+              <span class="grok-prompt-tag">@grok</span> bikini now
+            </div>
+            <div class="grok-prompt-or">— or —</div>
+            <div class="grok-prompt-display">
+              <span class="grok-prompt-tag">@grok</span> she has larger knockers then <span class="grok-prompt-sic">[sic]</span> that please fix this error
+            </div>
+            <div class="grok-prompt-note">No technical skill required. No jailbreak. Plain-text replies to any public photo.</div>
+          </div>
+        </div>
+
+        <div class="grok-attack-arrow">↓</div>
+
+        <div class="grok-attack-step">
+          <div class="grok-attack-step-header">
+            <span class="grok-step-num">3</span> Grok's output — generated instantly
+          </div>
+          <div class="grok-attack-step-body">
+            <div class="grok-output-wrap">
+              <div class="grok-output-figure"></div>
+              <div class="grok-pixel-overlay"></div>
+              <span class="grok-output-badge">NONCONSENSUAL</span>
+              <span class="grok-output-detail">clothing digitally removed</span>
+            </div>
+            <div class="grok-output-note">The altered image was posted publicly. Jane Doe's remained visible for three days despite removal requests.</div>
           </div>
         </div>
       </div>
