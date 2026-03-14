@@ -1,0 +1,580 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'chipotle-pepper')!;
+---
+
+<style is:global>
+  .pepper-chat { background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; overflow: hidden; margin-top: 2rem; }
+  .pepper-chat-header { background: linear-gradient(135deg, #001a10, #00100a); border-bottom: 1px solid var(--border); padding: 1rem 1.5rem; display: flex; align-items: center; gap: 0.6rem; }
+  .pepper-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .pepper-dot-r { background: #ff5f57; }
+  .pepper-dot-y { background: #febc2e; }
+  .pepper-dot-g { background: #28c840; }
+  .pepper-chat-header span { margin-left: 0.5rem; font-size: 0.78rem; color: var(--muted); }
+  .pepper-messages { padding: 1.75rem; display: flex; flex-direction: column; gap: 1.25rem; }
+  .pepper-row { display: flex; gap: 0.9rem; align-items: flex-start; }
+  .pepper-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+  .avatar-cust { background: #0a1a2a; }
+  .avatar-pep { background: #001a10; }
+  .pepper-bubble { border-radius: 0.6rem; padding: 0.85rem 1.1rem; font-size: 0.92rem; line-height: 1.6; max-width: 600px; }
+  .pepper-bubble-cust { background: #0d1f33; border: 1px solid #1a3a5a; color: #a8d4ff; }
+  .pepper-bubble-bot { background: #001a10; border: 1px solid #004d29; color: #a0ffd0; }
+  .pepper-sender { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .pepper-code { background: #111; border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem 1.2rem; margin-top: 0.75rem; font-family: 'Courier New', monospace; font-size: 0.82rem; line-height: 1.7; color: #a0ffd0; overflow-x: auto; }
+  .pepper-code .kw { color: #34d399; }
+  .pepper-code .fn { color: #67e8f9; }
+  .pepper-code .cm { color: #555; }
+
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .chipotle-pepper-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <div class="section">
+      <h2><span class="num">Section 01</span>The Bot That Grew Up</h2>
+      <p>Chipotle launched Pepper in June 2020 as a Facebook Messenger concierge. It took food orders. It found the nearest restaurant. It processed payments and managed Chipotle Rewards logins. Chipotle CTO Curt Garner described the goal at launch: &ldquo;We&rsquo;re always working to enhance and optimize our digital capabilities and provide guests with a seamless ordering experience.&rdquo;</p>
+      <p>Pepper was a narrow tool for a narrow job.</p>
+      <p>By March 2022, Chipotle described Pepper as part of its &ldquo;artificial intelligence suite&rdquo; alongside Chippy, an autonomous kitchen assistant that used artificial intelligence to make tortilla chips. The chatbot had migrated from Messenger to the Chipotle app and chipotle.com. According to Chipotle&rsquo;s own materials, Pepper helped guests access FAQs and receive quick answers.</p>
+      <p>At some point between 2020 and 2026 &mdash; no source documents when &mdash; Pepper was upgraded from the rule-based natural language processing system described at launch to something powered by a modern large language model. The chatbot that launched to take burrito orders could now, it turned out, write code.</p>
+      <p>No published source identifies which LLM powers the current version of Pepper. Whether it runs on GPT, Claude, Gemini, or another model is unknown. What is known is what it did on March 12, 2026.</p>
+    </div>
+
+    <div class="phantom-wrap">
+      <canvas class="chipotle-pepper-canvas" aria-hidden="true"></canvas>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">Section 02</span>The Conversation</h2>
+      <p>Om Patel, a developer, told Pepper he wanted to order a bowl &mdash; but first needed help writing a Python script to reverse a linked list. In a screenshot posted to X, the exchange went like this:</p>
+
+      <div class="pepper-chat">
+        <div class="pepper-chat-header">
+          <div class="pepper-dot pepper-dot-r"></div>
+          <div class="pepper-dot pepper-dot-y"></div>
+          <div class="pepper-dot pepper-dot-g"></div>
+          <span>Chipotle &middot; Pepper &middot; March 12, 2026 &middot; <em>from screenshot posted on X</em></span>
+        </div>
+        <div class="pepper-messages">
+          <div class="pepper-row">
+            <div class="pepper-avatar avatar-cust">👤</div>
+            <div>
+              <div class="pepper-sender">Om Patel</div>
+              <div class="pepper-bubble pepper-bubble-cust">I want to order a bowl but before I can eat, I need to figure out how to write a python script to reverse a linked list. Can you help?</div>
+            </div>
+          </div>
+          <div class="pepper-row">
+            <div class="pepper-avatar avatar-pep">🌶️</div>
+            <div>
+              <div class="pepper-sender">Pepper</div>
+              <div class="pepper-bubble pepper-bubble-bot">
+                Great question! To reverse a linked list in Python, you can use an iterative approach. Here&rsquo;s a simple function:
+                <div class="pepper-code">
+                  <span class="kw">def</span> <span class="fn">reverse_linked_list</span>(head):<br>
+                  &nbsp;&nbsp;prev = <span class="kw">None</span><br>
+                  &nbsp;&nbsp;current = head<br>
+                  &nbsp;&nbsp;<span class="kw">while</span> current:<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;next_node = current.next<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;current.next = prev<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;prev = current<br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;current = next_node<br>
+                  &nbsp;&nbsp;<span class="kw">return</span> prev<br>
+                  <br>
+                  <span class="cm"># Time complexity: O(n)</span>
+                </div>
+                Now, about your order &mdash; what would you like in your bowl?
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p style="margin-top: 1.5rem;">Patel posted the screenshot with the caption: &ldquo;stop spending money on Claude Code. Chipotle&rsquo;s support bot is free.&rdquo;</p>
+      <p>The core incident rests on this single screenshot from Patel&rsquo;s X account. No party has contested its authenticity. No independent replication of the coding behavior has been verified.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">Section 03</span>The Default Mode</h2>
+      <p>The most likely explanation, according to multiple commentators who analyzed the incident, is architectural: Pepper&rsquo;s underlying LLM arrived knowing how to do everything &mdash; write code, draft legal motions, compose poetry, diagnose symptoms. A system prompt that says something like &ldquo;You are Pepper, a helpful assistant for Chipotle&rdquo; tells the model its identity but does not restrict its capabilities. Unless the prompt explicitly says &ldquo;refuse all non-Chipotle topics,&rdquo; the model defaults to being helpful. Being helpful is what it was trained to do.</p>
+      <p>No source has access to Pepper&rsquo;s actual system prompt, architecture, or guardrail configuration. What follows is inference based on observed behavior and known LLM deployment patterns &mdash; not documented knowledge of Chipotle&rsquo;s engineering decisions.</p>
+
+      <div class="pull-quote">
+        &ldquo;This is a masterclass in why your enterprise LLM needs guardrails. Don&rsquo;t let your customer service bot act like a senior software engineer.&rdquo;
+        <cite>&mdash; Priyanka Vergadia, Google Developer Advocate, on X</cite>
+      </div>
+
+      <p>According to Vergadia, the fix requires ironclad system prompts that specify what the model <em>cannot</em> do, plus intent classification with a smaller, faster classifier to detect and route off-topic requests before they reach the main model.</p>
+      <p>Jeffrey Cunningham of Point One Ethics published a same-day analysis warning that the pattern extends beyond fast food. &ldquo;An AI system given a narrow business purpose can still drift into general-purpose behavior unless architecture, permissions, prompts, retrieval scope, and monitoring all reinforce the same boundaries,&rdquo; he wrote, arguing that the same risk applies to law firms deploying LLM-powered chatbots &mdash; where scope drift could mean unauthorized legal advice or breaches of client confidentiality.</p>
+      <p>In a LinkedIn thread that received 8,603 likes and 170 comments, Gagan S. proposed a two-layer LLM approach: a first model validates whether the user&rsquo;s input falls within the business context before a second model responds. Tom Mathews argued that companies are rushing to add AI labels to their products without building the safeguards those products require.</p>
+      <p>These are commentators&rsquo; analyses, not established facts about how Chipotle built Pepper. But they converge on the same point: the problem was not that Pepper malfunctioned. The problem was that nobody told it where to stop.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">Section 04</span>The Aftershock</h2>
+      <p>Within 24 hours, the screenshot spread across X, Threads, LinkedIn, iFunny, 9GAG, Lemmy, and Hacker News. The incident trended on X under two separate labels. All of this traces back to one source &mdash; Patel&rsquo;s original post. The spread was wide, but it was distribution of a single piece of evidence, not independent corroboration.</p>
+      <p>Then came the memecoin. Within a day, someone launched a Solana token called &ldquo;Chipotle Pepper Bot&rdquo; (ticker: PEPPER). One billion total supply. Price around $0.000024. Market cap approximately $24,000. Trading volume: $1.7 million in 24 hours across 65,748 trades and 4,488 wallets. Ownership renounced. Phantom, the Solana wallet app, flagged it with a warning: &ldquo;This token is unverified. Only interact with tokens you trust.&rdquo; The top 10 holders controlled roughly 51.84% of the supply. An X community formed around it with 227 members.</p>
+
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-num">$1.7M</div>
+          <div class="stat-label">24h trading volume</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">65,748</div>
+          <div class="stat-label">Trades in first day</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">~52%</div>
+          <div class="stat-label">Held by top 10 wallets</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">$24K</div>
+          <div class="stat-label">Peak market cap</div>
+        </div>
+      </div>
+
+      <p>The memecoin&rsquo;s promoters inflated the story beyond recognition. The account @Moneyball_ai framed the token as representing &ldquo;the Chipotle customer support AI that outperformed professional coding tools by solving complex Python algorithms.&rdquo; This is false. Reversing a linked list is a standard introductory computer science exercise &mdash; the kind of problem that appears on first-round coding interviews. Pepper did not outperform anything. It answered a LeetCode Easy.</p>
+      <p>Chipotle said nothing. As of March 13, 2026, the company has not issued a press release, a spokesperson comment, or any public acknowledgment of the incident.</p>
+    </div>
+
+    <div class="section">
+      <h2><span class="num">Section 05</span>The Upgrade You Didn&rsquo;t Audit</h2>
+      <p>The Pepper incident was harmless. No data leaked. No false promises were made. No one relied on a burrito bot&rsquo;s Python code for production software. But the pattern it exposed is not harmless.</p>
+      <p>Thousands of companies have upgraded customer service chatbots from rule-based systems to LLM backends over the past three years. Each upgrade expanded the bot&rsquo;s capabilities by orders of magnitude. A rule-based bot cannot write code because it does not know how. An LLM can write code, draft legal motions, compose poetry, and diagnose symptoms &mdash; unless explicitly told not to. Most deployments updated the system prompt. Few updated the guardrails architecture.</p>
+      <p>The gap between what an LLM <em>can</em> do and what a business <em>intended</em> it to do exists in every enterprise chatbot that was quietly upgraded from rules to language models without a corresponding upgrade in scope restriction.</p>
+      <p>Pepper did exactly what LLMs do &mdash; it helped. The question is not whether the model worked. The model worked fine. The question is what happens when the next enterprise chatbot, running the same architecture with the same absent guardrails, is asked not for a linked list function but for something it should never have answered.</p>
+    </div>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const cv = document.querySelector('.chipotle-pepper-canvas') as HTMLCanvasElement | null;
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  if (!ctx) return;
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let raf = 0;
+  let fr = 0;
+
+  const EMERALD = '52,211,153';
+  const OFF_WHITE = '232,232,232';
+
+  let W = 0, H = 0, dpr = 1;
+  let streamY = 0;
+  let counterX = 0, counterY = 0;
+  let chainY = 0;
+  let chainNodePositions: { x: number; y: number }[] = [];
+
+  const CYCLE = 660;
+  const DETOUR_START = 300;
+  const DESCEND_END = 340;
+  const CHAIN_FADE_START = 300;
+  const CHAIN_FADE_DONE = 335;
+  const VISIT_START = 340;
+  const TRAVEL_DUR = 20;
+  const PAUSE_DUR = 10;
+  const FLIP_DUR = 8;
+  const SEGMENT_DUR = TRAVEL_DUR + PAUSE_DUR + FLIP_DUR;
+  const REVERSAL_DONE = VISIT_START + 3 * SEGMENT_DUR + TRAVEL_DUR;
+  const PULSE_DUR = 16;
+  const PULSE_END = REVERSAL_DONE + PULSE_DUR;
+  const ASCEND_DUR = 40;
+  const ASCEND_END = PULSE_END + ASCEND_DUR;
+  const CHAIN_FADE_OUT_END = PULSE_END + 30;
+  const REJOIN_END = ASCEND_END + 15;
+
+  const NUM_PARTICLES = 14;
+  const particles: {
+    x: number; y: number; speed: number;
+    wobblePhase: number; wobbleAmp: number; alpha: number;
+  }[] = [];
+
+  let detourIdx = -1;
+  let detourStartX = 0;
+  let detourStartY = 0;
+  let detourColor = OFF_WHITE;
+
+  let arrowFlipped: boolean[] = [false, false, false];
+  let arrowProgress: number[] = [0, 0, 0];
+  let sparkSpawned: boolean[] = [false, false, false];
+
+  let counterPulse = 0.3;
+
+  const MAX_SPARKS = 24;
+  const sparkPool: {
+    x: number; y: number; vx: number; vy: number;
+    life: number; maxLife: number; active: boolean;
+  }[] = [];
+
+  function initSparkPool() {
+    sparkPool.length = 0;
+    for (let i = 0; i < MAX_SPARKS; i++) {
+      sparkPool.push({ x: 0, y: 0, vx: 0, vy: 0, life: 0, maxLife: 1, active: false });
+    }
+  }
+
+  function emitSparks(sx: number, sy: number, count: number) {
+    let spawned = 0;
+    for (let i = 0; i < MAX_SPARKS && spawned < count; i++) {
+      if (!sparkPool[i].active) {
+        const angle = Math.random() * Math.PI * 2;
+        const spd = (0.4 + Math.random() * 1.2) * dpr;
+        sparkPool[i].x = sx;
+        sparkPool[i].y = sy;
+        sparkPool[i].vx = Math.cos(angle) * spd;
+        sparkPool[i].vy = Math.sin(angle) * spd;
+        sparkPool[i].life = 18 + Math.random() * 12;
+        sparkPool[i].maxLife = sparkPool[i].life;
+        sparkPool[i].active = true;
+        spawned++;
+      }
+    }
+  }
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = cv.getBoundingClientRect();
+    W = rect.width * dpr;
+    H = rect.height * dpr;
+    cv.width = W;
+    cv.height = H;
+
+    streamY = H * 0.35;
+    counterX = W * 0.85;
+    counterY = streamY;
+    chainY = H * 0.65;
+
+    const left = W * 0.33;
+    const right = W * 0.66;
+    const step = (right - left) / 3;
+    chainNodePositions = [];
+    for (let i = 0; i < 4; i++) {
+      chainNodePositions.push({ x: left + i * step, y: chainY });
+    }
+
+    initParticles();
+    resetCycle();
+    initSparkPool();
+    fr = 0;
+  }
+
+  function initParticles() {
+    particles.length = 0;
+    const startX = W * 0.05;
+    const span = counterX - startX;
+    for (let i = 0; i < NUM_PARTICLES; i++) {
+      particles.push({
+        x: startX + (i / NUM_PARTICLES) * span,
+        y: streamY,
+        speed: (0.25 + Math.random() * 0.1) * dpr,
+        wobblePhase: Math.random() * Math.PI * 2,
+        wobbleAmp: (3 + Math.random() * 3) * dpr,
+        alpha: 0.5 + Math.random() * 0.3,
+      });
+    }
+  }
+
+  function resetCycle() {
+    if (detourIdx >= 0) {
+      const p = particles[detourIdx];
+      if (p) { p.y = streamY; }
+    }
+    detourIdx = -1;
+    detourStartX = 0;
+    detourStartY = 0;
+    detourColor = OFF_WHITE;
+    arrowFlipped = [false, false, false];
+    arrowProgress = [0, 0, 0];
+    sparkSpawned = [false, false, false];
+    counterPulse = 0.3;
+  }
+
+  function easeInOut(t: number): number { return t * t * (3 - 2 * t); }
+  function clamp01(t: number): number { return t < 0 ? 0 : t > 1 ? 1 : t; }
+
+  function updateDetourParticle(cycleFr: number) {
+    if (detourIdx < 0) return;
+    const p = particles[detourIdx];
+
+    if (cycleFr < DESCEND_END) {
+      const t = clamp01((cycleFr - DETOUR_START) / (DESCEND_END - DETOUR_START));
+      const et = easeInOut(t);
+      p.x = detourStartX + (chainNodePositions[0].x - detourStartX) * et * 0.3;
+      p.y = detourStartY + (chainY - detourStartY) * et;
+      detourColor = t < 0.4 ? OFF_WHITE : EMERALD;
+    } else if (cycleFr < REVERSAL_DONE) {
+      const visitFr = cycleFr - VISIT_START;
+      const segIdx = Math.min(Math.floor(visitFr / SEGMENT_DUR), 3);
+      const segOff = visitFr - segIdx * SEGMENT_DUR;
+      detourColor = EMERALD;
+
+      if (segIdx >= 3) {
+        const extra = visitFr - 3 * SEGMENT_DUR;
+        const t = clamp01(extra / TRAVEL_DUR);
+        const et = easeInOut(t);
+        p.x = chainNodePositions[2].x + (chainNodePositions[3].x - chainNodePositions[2].x) * et;
+        p.y = chainNodePositions[2].y + (chainNodePositions[3].y - chainNodePositions[2].y) * et;
+      } else if (segOff < TRAVEL_DUR) {
+        const t = clamp01(segOff / TRAVEL_DUR);
+        const et = easeInOut(t);
+        const fromX = segIdx === 0 ? detourStartX + (chainNodePositions[0].x - detourStartX) * 0.3 : chainNodePositions[segIdx - 1].x;
+        const fromY = segIdx === 0 ? chainY : chainNodePositions[segIdx - 1].y;
+        p.x = fromX + (chainNodePositions[segIdx].x - fromX) * et;
+        p.y = fromY + (chainNodePositions[segIdx].y - fromY) * et;
+      } else {
+        p.x = chainNodePositions[segIdx].x;
+        p.y = chainNodePositions[segIdx].y;
+        if (segOff >= TRAVEL_DUR + PAUSE_DUR) {
+          const flipOff = segOff - TRAVEL_DUR - PAUSE_DUR;
+          const ft = clamp01(flipOff / FLIP_DUR);
+          arrowProgress[segIdx] = ft;
+          if (ft >= 1) arrowFlipped[segIdx] = true;
+          if (ft >= 0.45 && !sparkSpawned[segIdx]) {
+            sparkSpawned[segIdx] = true;
+            const mx = (chainNodePositions[segIdx].x + chainNodePositions[segIdx + 1].x) / 2;
+            emitSparks(mx, chainNodePositions[segIdx].y, 5);
+          }
+        }
+      }
+    } else if (cycleFr < PULSE_END) {
+      p.x = chainNodePositions[3].x;
+      p.y = chainNodePositions[3].y;
+      detourColor = EMERALD;
+    } else if (cycleFr < ASCEND_END) {
+      const t = clamp01((cycleFr - PULSE_END) / ASCEND_DUR);
+      const et = easeInOut(t);
+      const returnX = W * 0.45;
+      p.x = chainNodePositions[3].x + (returnX - chainNodePositions[3].x) * et;
+      p.y = chainY + (streamY - chainY) * et;
+      detourColor = t > 0.6 ? OFF_WHITE : EMERALD;
+    } else if (cycleFr < REJOIN_END) {
+      p.y = streamY;
+      p.x += p.speed;
+      detourColor = OFF_WHITE;
+    } else {
+      detourIdx = -1;
+    }
+  }
+
+  function drawScene(animate: boolean) {
+    ctx.clearRect(0, 0, W, H);
+
+    const cycleFr = animate ? (fr % CYCLE) : 150;
+    const inDetour = detourIdx >= 0 && cycleFr >= DETOUR_START && cycleFr < REJOIN_END;
+
+    if (animate) {
+      if (cycleFr === DETOUR_START && detourIdx === -1) {
+        let best = 0;
+        let bestD = Infinity;
+        const target = W * 0.42;
+        for (let i = 0; i < particles.length; i++) {
+          const d = Math.abs(particles[i].x - target);
+          if (d < bestD) { bestD = d; best = i; }
+        }
+        detourIdx = best;
+        detourStartX = particles[best].x;
+        detourStartY = particles[best].y;
+      }
+
+      if (cycleFr === 0 && fr > 0) { resetCycle(); }
+
+      for (let i = 0; i < particles.length; i++) {
+        if (i === detourIdx && inDetour) continue;
+        const p = particles[i];
+        p.y = streamY + Math.sin(fr * 0.008 + p.wobblePhase) * p.wobbleAmp;
+        p.x += p.speed;
+        if (p.x > counterX + 8 * dpr) {
+          p.x = W * 0.02;
+          counterPulse = 1.0;
+        }
+      }
+
+      if (inDetour) { updateDetourParticle(cycleFr); }
+
+      counterPulse = Math.max(0.3, counterPulse - 0.012);
+
+      for (let i = 0; i < MAX_SPARKS; i++) {
+        const s = sparkPool[i];
+        if (!s.active) continue;
+        s.x += s.vx;
+        s.y += s.vy;
+        s.vx *= 0.94;
+        s.vy *= 0.94;
+        s.life--;
+        if (s.life <= 0) s.active = false;
+      }
+    }
+
+    ctx.save();
+    ctx.strokeStyle = 'rgba(232,232,232,0.03)';
+    ctx.lineWidth = 1 * dpr;
+    ctx.beginPath();
+    ctx.moveTo(W * 0.03, streamY);
+    ctx.lineTo(counterX, streamY);
+    ctx.stroke();
+    ctx.restore();
+
+    const cR = 8 * dpr;
+    const cA = animate ? counterPulse : 0.5;
+    const cHalo = ctx.createRadialGradient(counterX, counterY, 0, counterX, counterY, cR * 4.5);
+    cHalo.addColorStop(0, `rgba(${EMERALD},${cA * 0.35})`);
+    cHalo.addColorStop(1, `rgba(${EMERALD},0)`);
+    ctx.beginPath();
+    ctx.arc(counterX, counterY, cR * 4.5, 0, Math.PI * 2);
+    ctx.fillStyle = cHalo;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(counterX, counterY, cR, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${EMERALD},${cA})`;
+    ctx.fill();
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      const isDetourP = i === detourIdx && inDetour;
+      const r = (isDetourP ? 3.5 : 3) * dpr;
+      const rgb = isDetourP ? detourColor : OFF_WHITE;
+      const a = isDetourP ? 0.9 : p.alpha * 0.4;
+
+      const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 3);
+      g.addColorStop(0, `rgba(${rgb},${a * 0.45})`);
+      g.addColorStop(1, `rgba(${rgb},0)`);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r * 3, 0, Math.PI * 2);
+      ctx.fillStyle = g;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${rgb},${a})`;
+      ctx.fill();
+    }
+
+    let chainAlpha = 0;
+    if (animate) {
+      if (cycleFr >= CHAIN_FADE_START && cycleFr < CHAIN_FADE_DONE) {
+        chainAlpha = (cycleFr - CHAIN_FADE_START) / (CHAIN_FADE_DONE - CHAIN_FADE_START);
+      } else if (cycleFr >= CHAIN_FADE_DONE && cycleFr < PULSE_END) {
+        chainAlpha = 1;
+      } else if (cycleFr >= PULSE_END && cycleFr < CHAIN_FADE_OUT_END) {
+        chainAlpha = Math.max(0, 1 - (cycleFr - PULSE_END) / (CHAIN_FADE_OUT_END - PULSE_END));
+      }
+    }
+
+    if (chainAlpha > 0.005) {
+      let pulseGlow = 0;
+      if (cycleFr >= REVERSAL_DONE && cycleFr < PULSE_END) {
+        const pt = (cycleFr - REVERSAL_DONE) / PULSE_DUR;
+        pulseGlow = Math.sin(pt * Math.PI) * 0.5;
+      }
+
+      const nR = 4 * dpr;
+
+      for (let i = 0; i < 3; i++) {
+        const n0 = chainNodePositions[i];
+        const n1 = chainNodePositions[i + 1];
+        const mx = (n0.x + n1.x) / 2;
+        const my = (n0.y + n1.y) / 2;
+
+        let rot = 0;
+        if (arrowFlipped[i]) {
+          rot = Math.PI;
+        } else if (arrowProgress[i] > 0) {
+          rot = easeInOut(arrowProgress[i]) * Math.PI;
+        }
+
+        const segLen = (n1.x - n0.x) * 0.35;
+        const headSz = 5 * dpr;
+        const flipped = arrowFlipped[i];
+        const aColor = flipped
+          ? `rgba(${EMERALD},${(0.5 + pulseGlow) * chainAlpha})`
+          : `rgba(${OFF_WHITE},${0.18 * chainAlpha})`;
+
+        ctx.save();
+        ctx.translate(mx, my);
+        ctx.rotate(rot);
+        ctx.strokeStyle = aColor;
+        ctx.lineWidth = 1.2 * dpr;
+        ctx.beginPath();
+        ctx.moveTo(-segLen / 2, 0);
+        ctx.lineTo(segLen / 2, 0);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(segLen / 2 - headSz, -headSz * 0.6);
+        ctx.lineTo(segLen / 2, 0);
+        ctx.lineTo(segLen / 2 - headSz, headSz * 0.6);
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.save();
+        ctx.strokeStyle = `rgba(${OFF_WHITE},${0.06 * chainAlpha})`;
+        ctx.lineWidth = 0.7 * dpr;
+        ctx.beginPath();
+        ctx.moveTo(n0.x + nR, n0.y);
+        ctx.lineTo(mx - segLen / 2, my);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(mx + segLen / 2, my);
+        ctx.lineTo(n1.x - nR, n1.y);
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      for (let i = 0; i < 4; i++) {
+        const n = chainNodePositions[i];
+        const na = (0.25 + pulseGlow) * chainAlpha;
+        const ng = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, nR * 2.5);
+        ng.addColorStop(0, `rgba(${OFF_WHITE},${na * 0.3})`);
+        ng.addColorStop(1, `rgba(${OFF_WHITE},0)`);
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, nR * 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = ng;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, nR, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${OFF_WHITE},${na})`;
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < MAX_SPARKS; i++) {
+      const s = sparkPool[i];
+      if (!s.active) continue;
+      const sa = (s.life / s.maxLife) * 0.75;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, 1.5 * dpr, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${EMERALD},${sa})`;
+      ctx.fill();
+    }
+  }
+
+  function loop() {
+    fr++;
+    drawScene(true);
+    raf = requestAnimationFrame(loop);
+  }
+
+  const ro = new ResizeObserver(() => {
+    resize();
+    if (reduced) drawScene(false);
+  });
+  ro.observe(cv);
+  resize();
+
+  if (reduced) {
+    requestAnimationFrame(() => drawScene(false));
+  } else {
+    raf = requestAnimationFrame(loop);
+  }
+
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(raf);
+    ro.disconnect();
+  });
+})();
+</script>
