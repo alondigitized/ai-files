@@ -191,15 +191,15 @@ const pad = (n: number) => String(n).padStart(2, '0');
   /* ── Section header ── */
   .section-header {
     padding: 4rem 0 2rem;
-    display: flex; align-items: baseline; justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-    gap: 1rem; flex-wrap: wrap;
+    display: flex; align-items: center; justify-content: center;
+    gap: 1rem;
   }
   .section-header h2 {
     font-size: 0.72rem; font-weight: 700;
     letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted);
+    white-space: nowrap;
   }
-  .section-header .section-rule { flex: 1; height: 1px; background: var(--border); margin: 0 1rem; }
+  .section-header .section-rule { flex: 1; height: 1px; background: var(--border); }
 
   /* ── Featured story ── */
   .featured {
@@ -279,7 +279,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .vol-header {
     padding: 2.5rem 0 2rem;
     border-bottom: 1px solid var(--border);
-    display: flex; flex-direction: column; gap: 0.4rem;
+    display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.4rem;
   }
   .vol-eyebrow { font-size: 0.68rem; letter-spacing: 0.22em; text-transform: uppercase; font-weight: 700; margin-bottom: 0.4rem; }
   .vol-title { font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
@@ -493,6 +493,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
   <div class="idx-container">
 
     <div class="section-header" data-ep="dark">
+      <div class="section-rule"></div>
       <h2>Editor's Pick</h2>
       <div class="section-rule"></div>
     </div>
@@ -588,6 +589,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
     </div>
 
     <div class="section-header" data-ep="light" style="display:none;">
+      <div class="section-rule"></div>
       <h2>Editor's Pick</h2>
       <div class="section-rule"></div>
     </div>
