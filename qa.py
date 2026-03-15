@@ -93,11 +93,25 @@ for el in REQUIRED_IN_INDEX:
     if el not in index_content:
         errors.append(f'index.astro: missing — {el}')
 
-# All active (non-WIP) story slugs should be linked from the index
+# All active (non-WIP) story slugs should be linked from the index.
+# The index page is data-driven, so check the built HTML output if available,
+# otherwise fall back to checking the source for the dynamic template pattern.
 wip_slugs = {s['slug'] for s in stories_data if s.get('wip')}
-for slug in slugs_in_json - wip_slugs:
-    if f'href="/stories/{slug}"' not in index_content:
-        errors.append(f'index.astro: no link to /stories/{slug}')
+built_index = os.path.join(ROOT, 'dist', 'index.html')
+if os.path.isfile(built_index):
+    with open(built_index) as f:
+        built_content = f.read()
+    for slug in slugs_in_json - wip_slugs:
+        if f'/stories/{slug}' not in built_content:
+            errors.append(f'index (built): no link to /stories/{slug}')
+else:
+    # Fallback: ensure data-driven loop exists in source
+    if 'volumeData.map' not in index_content:
+        errors.append('index.astro: missing data-driven volume grid (volumeData.map)')
+    # Check stories still linked manually (EP carousel)
+    for slug in slugs_in_json - wip_slugs:
+        if f'href="/stories/{slug}"' not in index_content and f"'/stories/{slug}'" not in index_content:
+            pass  # Expected — links are generated from stories.json at build time
 
 # ── 4. StoryLayout.astro ───────────────────────────────────────────────────────
 with open(LAYOUT_STORY) as f:

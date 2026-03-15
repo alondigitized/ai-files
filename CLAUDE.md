@@ -88,7 +88,7 @@ Stories have a `side` field: `"dark"` or `"light"`. Dark stories use the existin
 
 - **BaseLayout.astro** sets `<html data-theme={side}>` which activates the light CSS override block in `global.css`
 - **StoryLayout.astro** reads `story.side` and passes it to BaseLayout; "more stories" prioritizes same-side stories
-- **Index page** has a filter toggle (`● All` / `◐ Dark Side` / `○ Light Side`) using `data-side` on `.vol-section` elements
+- **Index page** has a two-state toggle (`◐ Dark Side` / `○ Light Side`) that switches the full page theme (`data-theme` on `<html>`), swaps the tagline, swaps the Editor's Pick (dark: 3-slide carousel; light: single rosie-vaccine card), and shows/hides volume sections via `data-side` on `.vol-section` and `data-ep` on Editor's Pick elements. Default is dark.
 - Volume 5 ("What Went Right") contains light-side stories
 
 ### Light theme CSS variables (`:root[data-theme="light"]`)
@@ -131,10 +131,10 @@ Each entry in `src/data/stories.json`:
 
 - **BaseLayout.astro** — renders full `<head>`: description, canonical, Open Graph, Twitter Card, `article:*` metadata, RSS `<link rel="alternate">`, and a named `jsonld` slot for structured data injection
 - **StoryLayout.astro** — injects `Article` + `BreadcrumbList` JSON-LD via `<script slot="jsonld">` into BaseLayout's `<head>`
-- **index.astro** — injects `WebSite` + `ItemList` JSON-LD covering all 24 stories
+- **index.astro** — injects `WebSite` + `ItemList` JSON-LD covering all 27 stories
 - **sitemap** — auto-generated at build time by `@astrojs/sitemap` (`sitemap-index.xml` + `sitemap-0.xml`); story pages get priority 0.9, index gets 1.0
 - **robots.txt** — `Allow: /` for all bots; explicit named permissions for 15 AI crawlers (GPTBot, ClaudeBot, PerplexityBot, etc.)
-- **llms.txt** — plain-text GEO manifest listing all 24 stories with titles, summaries, and links for AI citation systems
+- **llms.txt** — plain-text GEO manifest listing all 27 stories with titles, summaries, and links for AI citation systems
 - **feed.xml** — RSS 2.0 feed generated from `stories.json`, sorted newest-first
 - **Production domain**: `https://theaifiles.app` — set in `astro.config.mjs` as `SITE`; all canonical URLs, sitemap, RSS, and fallback URLs use this
 
