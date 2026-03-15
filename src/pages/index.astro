@@ -50,6 +50,9 @@ const volumeData = VOLUMES.map(v => ({
     .sort((a, b) => a.chapter - b.chapter),
 }));
 
+const darkCount = activeStories.filter(s => (s.side ?? 'dark') === 'dark').length;
+const lightCount = activeStories.filter(s => s.side === 'light').length;
+
 const storyMap = Object.fromEntries(activeStories.map(s => [s.slug, s]));
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -114,57 +117,61 @@ const pad = (n: number) => String(n).padStart(2, '0');
     font-size: 0.78rem; color: var(--accent);
   }
 
-  /* ── Side Toggle ── */
-  .side-toggle {
-    display: flex; justify-content: center; padding: 1.5rem 0 0;
-  }
-  .side-toggle-track {
+  /* ── Edition Picker ── */
+  .edition-picker {
     display: grid; grid-template-columns: 1fr 1fr;
-    width: 340px; max-width: 90vw;
-    border-radius: 0.75rem; overflow: hidden;
-    border: 1px solid var(--border);
-    position: relative;
+    gap: 1.25rem; padding: 2rem 0 0;
+    max-width: 600px; margin: 0 auto;
   }
-  .side-btn {
-    position: relative;
-    padding: 0.7rem 1rem;
-    font-family: inherit; font-size: 0.85rem; font-weight: 700;
-    letter-spacing: 0.04em;
-    cursor: pointer; border: none;
-    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-    transition: background 0.3s, color 0.3s, box-shadow 0.3s;
+  .edition-card {
+    position: relative; border-radius: 0.75rem; overflow: hidden;
+    cursor: pointer; border: 1px solid var(--border);
+    transition: opacity 0.4s, border-color 0.4s, box-shadow 0.4s;
+    height: 180px;
   }
-  .side-btn .btn-icon { font-size: 1.1rem; line-height: 1; }
-
-  /* Demons button */
-  .side-btn[data-filter="dark"] {
-    background: rgba(255,77,77,0.06); color: var(--muted);
+  .edition-card.active { opacity: 1; }
+  .edition-card[data-edition="dark"].active {
+    border-color: rgba(255,77,77,0.5);
+    box-shadow: 0 0 24px rgba(255,77,77,0.15);
   }
-  .side-btn[data-filter="dark"]:hover {
-    background: rgba(255,77,77,0.1); color: #ff6b6b;
+  .edition-card[data-edition="light"].active {
+    border-color: rgba(200,150,62,0.5);
+    box-shadow: 0 0 24px rgba(200,150,62,0.15);
   }
-  .side-btn[data-filter="dark"].active {
-    background: rgba(255,77,77,0.14); color: #ff4d4d;
-    box-shadow: inset 0 0 20px rgba(255,77,77,0.08);
+  .edition-card:not(.active) { opacity: 0.35; }
+  .edition-card:not(.active):hover { opacity: 0.55; }
+  .edition-canvas {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    display: block;
   }
-
-  /* Angels button */
-  .side-btn[data-filter="light"] {
-    background: rgba(200,150,62,0.06); color: var(--muted);
+  .demons-canvas { background: #0d0d0d; }
+  .angels-canvas { background: #f5f0e8; }
+  .edition-overlay {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    pointer-events: none; gap: 0.4rem;
+    padding: 1rem;
   }
-  .side-btn[data-filter="light"]:hover {
-    background: rgba(200,150,62,0.1); color: #d4a94e;
+  .edition-icon { font-size: 2.5rem; line-height: 1; margin-bottom: 0.15rem; }
+  .edition-label {
+    font-size: 0.95rem; font-weight: 800; letter-spacing: 0.04em;
   }
-  .side-btn[data-filter="light"].active {
-    background: rgba(200,150,62,0.14); color: #c8963e;
-    box-shadow: inset 0 0 20px rgba(200,150,62,0.08);
+  .edition-card[data-edition="dark"] .edition-label { color: rgba(255,200,200,0.95); }
+  .edition-card[data-edition="light"] .edition-label { color: rgba(60,50,30,0.95); }
+  .edition-info {
+    display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
   }
-
-  /* Divider line between buttons */
-  .side-toggle-track::after {
-    content: ''; position: absolute; top: 20%; bottom: 20%; left: 50%;
-    width: 1px; background: var(--border); pointer-events: none;
+  .edition-count {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
   }
+  .edition-card[data-edition="dark"] .edition-count { color: rgba(255,77,77,0.85); }
+  .edition-card[data-edition="light"] .edition-count { color: rgba(200,150,62,0.9); }
+  .edition-tagline {
+    font-size: 0.7rem; font-style: italic; text-align: center; line-height: 1.4;
+    max-width: 200px;
+  }
+  .edition-card[data-edition="dark"] .edition-tagline { color: rgba(200,200,200,0.55); }
+  .edition-card[data-edition="light"] .edition-tagline { color: rgba(60,50,30,0.55); }
 
   .vol-section.hidden-by-filter { display: none; }
 
@@ -410,12 +417,14 @@ const pad = (n: number) => String(n).padStart(2, '0');
     .site-nav { padding: 0.85rem 1rem; }
     .subscribe-inner { grid-template-columns: 1fr; gap: 2rem; padding: 2rem; }
     .ideas-inner { grid-template-columns: 1fr; gap: 2rem; padding: 2rem; }
+    .edition-picker { grid-template-columns: 1fr; max-width: 320px; }
+    .edition-card { height: 140px; }
   }
 </style>
 
 <BaseLayout
   title="The AI Files — True Stories from the Age of Artificial Intelligence"
-  description="True stories from the age of artificial intelligence — documented incidents, landmark moments, and cautionary tales. 26 stories across 5 volumes."
+  description="True stories from the age of artificial intelligence — documented incidents, landmark moments, and cautionary tales. Two editions: Demons and Angels."
   ogImage="https://theaifiles.app/og/default.png"
 >
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
@@ -437,14 +446,30 @@ const pad = (n: number) => String(n).padStart(2, '0');
       <p class="masthead-tagline" data-side="dark">True stories from the age of artificial intelligence — the blunders, the exploits, and the moments that changed everything.</p>
       <p class="masthead-tagline" data-side="light" style="display:none;">True stories from the age of artificial intelligence — the breakthroughs, the cures, and the moments that gave us hope.</p>
       <div class="masthead-meta">
-        <span class="masthead-count">● 26 Stories</span>
-        <span class="divider">·</span>
-        <span>5 Volumes</span>
+        <span class="masthead-count" id="masthead-edition-info">● Demons Edition · {darkCount} Stories</span>
       </div>
-      <div class="side-toggle" id="side-filter">
-        <div class="side-toggle-track">
-          <button class="side-btn active" data-filter="dark"><span class="btn-icon">😈</span> Demons</button>
-          <button class="side-btn" data-filter="light"><span class="btn-icon">😇</span> Angels</button>
+      <div class="edition-picker" id="side-filter">
+        <div class="edition-card active" data-edition="dark" role="button" tabindex="0" aria-label="Switch to Demons Edition">
+          <canvas class="edition-canvas demons-canvas" aria-hidden="true"></canvas>
+          <div class="edition-overlay">
+            <div class="edition-icon">😈</div>
+            <div class="edition-label">Demons Edition</div>
+            <div class="edition-info">
+              <span class="edition-count">{darkCount} Stories</span>
+              <span class="edition-tagline">Blunders, exploits, and cautionary tales</span>
+            </div>
+          </div>
+        </div>
+        <div class="edition-card" data-edition="light" role="button" tabindex="0" aria-label="Switch to Angels Edition">
+          <canvas class="edition-canvas angels-canvas" aria-hidden="true"></canvas>
+          <div class="edition-overlay">
+            <div class="edition-icon">😇</div>
+            <div class="edition-label">Angels Edition</div>
+            <div class="edition-info">
+              <span class="edition-count">{lightCount} Stories</span>
+              <span class="edition-tagline">Breakthroughs, cures, and hope</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -653,7 +678,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
         <h3>About This Archive</h3>
         <p>The AI Files documents true stories from the first era of large language models — the surprising failures, unexpected behaviors, and legal and social consequences that defined AI's emergence into everyday life.</p>
         <p>These aren't cautionary tales invented to scare. They're documented events: court rulings, published research, and viral moments that changed how companies, governments, and individuals think about artificial intelligence.</p>
-        <p>Five volumes. Twenty-six stories. More coming.</p>
+        <p>Two editions — Demons and Angels. Twenty-six stories. More coming.</p>
       </div>
       <div>
         <h3>In The Workshop</h3>
@@ -724,16 +749,248 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
   <script>
     (function () {
+      /* ── Edition Canvas Animations ── */
+      const demonsEl = document.querySelector('.demons-canvas') as HTMLCanvasElement | null;
+      const angelsEl = document.querySelector('.angels-canvas') as HTMLCanvasElement | null;
+      if (!demonsEl || !angelsEl) return;
+
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let activeSide = 'dark';
+      (window as any).__setEditionSide = (s: string) => { activeSide = s; };
+
+      function setupCanvas(canvas: HTMLCanvasElement) {
+        const ctx = canvas.getContext('2d')!;
+        const dpr = window.devicePixelRatio || 1;
+        function resize() {
+          const r = canvas.getBoundingClientRect();
+          canvas.width = r.width * dpr;
+          canvas.height = r.height * dpr;
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        const ro = new ResizeObserver(resize);
+        ro.observe(canvas);
+        resize();
+        return { ctx, dpr, ro };
+      }
+
+      /* ── Demons Canvas ── */
+      const dCtx = setupCanvas(demonsEl);
+      interface DemonParticle { x: number; y: number; vy: number; vx: number; size: number; alpha: number; }
+      const dParticles: DemonParticle[] = [];
+      function initDemons() {
+        const r = demonsEl!.getBoundingClientRect();
+        dParticles.length = 0;
+        for (let i = 0; i < 20; i++) {
+          dParticles.push({
+            x: Math.random() * r.width,
+            y: Math.random() * r.height,
+            vy: 0.15 + Math.random() * 0.3,
+            vx: (Math.random() - 0.5) * 0.3,
+            size: 1 + Math.random() * 1.5,
+            alpha: 0.3 + Math.random() * 0.5,
+          });
+        }
+      }
+      initDemons();
+      let dGlitchTimer = 0;
+      interface Glitch { x: number; y: number; dx: number; alpha: number; life: number; }
+      const dGlitches: Glitch[] = [];
+      interface Pulse { x: number; y: number; alpha: number; }
+      const dPulses: Pulse[] = [];
+
+      function drawDemons(frame: number) {
+        const c = dCtx.ctx;
+        const r = demonsEl!.getBoundingClientRect();
+        const w = r.width, h = r.height;
+        const isActive = activeSide === 'dark';
+        const speedMul = isActive ? 1 : 0.25;
+        const alphaMul = isActive ? 1 : 0.3;
+
+        c.clearRect(0, 0, w, h);
+        c.fillStyle = '#0d0d0d';
+        c.fillRect(0, 0, w, h);
+
+        // Grid
+        const gridAlpha = 0.06 * alphaMul;
+        c.strokeStyle = `rgba(255,77,77,${gridAlpha})`;
+        c.lineWidth = 0.5;
+        for (let x = 0; x < w; x += 40) {
+          c.beginPath(); c.moveTo(x, 0); c.lineTo(x, h); c.stroke();
+        }
+        for (let y = 0; y < h; y += 40) {
+          c.beginPath(); c.moveTo(0, y); c.lineTo(w, y); c.stroke();
+        }
+
+        // Glitch segments
+        dGlitchTimer += speedMul;
+        if (dGlitchTimer > 60 && Math.random() < 0.03 * speedMul) {
+          dGlitchTimer = 0;
+          const gx = Math.floor(Math.random() * (w / 40)) * 40;
+          const gy = Math.floor(Math.random() * (h / 40)) * 40;
+          dGlitches.push({ x: gx, y: gy, dx: (Math.random() - 0.5) * 6, alpha: 0.4, life: 30 });
+        }
+        for (let i = dGlitches.length - 1; i >= 0; i--) {
+          const g = dGlitches[i];
+          g.life -= speedMul;
+          g.alpha *= 0.95;
+          if (g.life <= 0) { dGlitches.splice(i, 1); continue; }
+          c.strokeStyle = `rgba(255,77,77,${g.alpha * alphaMul})`;
+          c.lineWidth = 1;
+          const vertical = Math.random() > 0.5;
+          c.beginPath();
+          if (vertical) {
+            c.moveTo(g.x + g.dx, g.y); c.lineTo(g.x + g.dx, g.y + 40);
+          } else {
+            c.moveTo(g.x, g.y + g.dx); c.lineTo(g.x + 40, g.y + g.dx);
+          }
+          c.stroke();
+        }
+
+        // Pulses on intersections
+        if (Math.random() < 0.02 * speedMul) {
+          const px = Math.floor(Math.random() * (w / 40)) * 40;
+          const py = Math.floor(Math.random() * (h / 40)) * 40;
+          dPulses.push({ x: px, y: py, alpha: 0.6 });
+        }
+        for (let i = dPulses.length - 1; i >= 0; i--) {
+          const p = dPulses[i];
+          p.alpha *= 0.93;
+          if (p.alpha < 0.02) { dPulses.splice(i, 1); continue; }
+          c.beginPath();
+          c.arc(p.x, p.y, 3, 0, Math.PI * 2);
+          c.fillStyle = `rgba(255,77,77,${p.alpha * alphaMul})`;
+          c.fill();
+        }
+
+        // Particles
+        for (const p of dParticles) {
+          p.y += p.vy * speedMul;
+          p.x += p.vx * speedMul;
+          if (p.y > h + 5) { p.y = -5; p.x = Math.random() * w; }
+          if (p.x < -5) p.x = w + 5;
+          if (p.x > w + 5) p.x = -5;
+          c.beginPath();
+          c.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          c.fillStyle = `rgba(255,77,77,${p.alpha * alphaMul})`;
+          c.fill();
+        }
+      }
+
+      /* ── Angels Canvas ── */
+      const aCtx = setupCanvas(angelsEl);
+      interface AngelParticle { x: number; y: number; baseX: number; phase: number; speed: number; size: number; alpha: number; }
+      const aParticles: AngelParticle[] = [];
+      function initAngels() {
+        const r = angelsEl!.getBoundingClientRect();
+        aParticles.length = 0;
+        for (let i = 0; i < 15; i++) {
+          aParticles.push({
+            x: Math.random() * r.width,
+            y: Math.random() * r.height,
+            baseX: r.width * 0.5,
+            phase: Math.random() * Math.PI * 2,
+            speed: 0.2 + Math.random() * 0.25,
+            size: 1.5 + Math.random() * 2,
+            alpha: 0.4 + Math.random() * 0.4,
+          });
+        }
+      }
+      initAngels();
+      let aRingPhase = 0;
+
+      function drawAngels(frame: number) {
+        const c = aCtx.ctx;
+        const r = angelsEl!.getBoundingClientRect();
+        const w = r.width, h = r.height;
+        const isActive = activeSide === 'light';
+        const speedMul = isActive ? 1 : 0.25;
+        const alphaMul = isActive ? 1 : 0.3;
+
+        c.clearRect(0, 0, w, h);
+        c.fillStyle = '#f5f0e8';
+        c.fillRect(0, 0, w, h);
+
+        const cx = w / 2, cy = h / 2;
+
+        // Concentric rings
+        aRingPhase += 0.008 * speedMul;
+        for (let i = 0; i < 5; i++) {
+          const radius = ((aRingPhase * 60 + i * 40) % (Math.max(w, h) * 0.8));
+          const ringAlpha = 0.04 * (1 - radius / (Math.max(w, h) * 0.8)) * alphaMul;
+          if (ringAlpha <= 0) continue;
+          c.beginPath();
+          c.arc(cx, cy, radius, 0, Math.PI * 2);
+          c.strokeStyle = `rgba(200,150,62,${ringAlpha})`;
+          c.lineWidth = 1;
+          c.stroke();
+        }
+
+        // Particles
+        for (const p of aParticles) {
+          p.phase += 0.015 * speedMul;
+          p.y -= p.speed * speedMul;
+          p.x = p.baseX + Math.sin(p.phase) * 60;
+          // Gentle convergence toward center
+          p.baseX += (cx - p.baseX) * 0.0004 * speedMul;
+          if (p.y < -10) {
+            p.y = h + 10;
+            p.baseX = Math.random() * w;
+            p.phase = Math.random() * Math.PI * 2;
+          }
+
+          // Glow halo
+          const grad = c.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 4);
+          grad.addColorStop(0, `rgba(200,150,62,${0.12 * p.alpha * alphaMul})`);
+          grad.addColorStop(1, 'rgba(200,150,62,0)');
+          c.fillStyle = grad;
+          c.fillRect(p.x - p.size * 4, p.y - p.size * 4, p.size * 8, p.size * 8);
+
+          // Core dot
+          c.beginPath();
+          c.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          c.fillStyle = `rgba(200,150,62,${p.alpha * alphaMul})`;
+          c.fill();
+        }
+      }
+
+      /* ── Animation Loop ── */
+      if (reduced) {
+        drawDemons(0);
+        drawAngels(0);
+      } else {
+        let frame = 0;
+        let rafId: number;
+        function tick() {
+          frame++;
+          drawDemons(frame);
+          drawAngels(frame);
+          rafId = requestAnimationFrame(tick);
+        }
+        rafId = requestAnimationFrame(tick);
+        window.addEventListener('unload', () => cancelAnimationFrame(rafId));
+      }
+    })();
+  </script>
+
+  <script>
+    (function () {
+      /* ── Edition Toggle ── */
       const filter = document.getElementById('side-filter');
       if (!filter) return;
-      const btns = filter.querySelectorAll<HTMLButtonElement>('.side-btn');
+      const cards = filter.querySelectorAll<HTMLElement>('.edition-card');
       const sections = document.querySelectorAll<HTMLElement>('.vol-section[data-side]');
       const taglines = document.querySelectorAll<HTMLElement>('.masthead-tagline[data-side]');
       const epBlocks = document.querySelectorAll<HTMLElement>('[data-ep]');
+      const mastheadInfo = document.getElementById('masthead-edition-info');
+
+      const counts: Record<string, string> = {
+        dark: mastheadInfo?.textContent?.match(/\d+/)?.[0] || '24',
+        light: document.querySelector('.edition-card[data-edition="light"] .edition-count')?.textContent?.match(/\d+/)?.[0] || '2',
+      };
 
       function switchTo(side: string) {
         document.documentElement.dataset.theme = side;
-        btns.forEach(b => b.classList.toggle('active', b.dataset.filter === side));
+        cards.forEach(c => c.classList.toggle('active', c.dataset.edition === side));
         sections.forEach(sec => {
           sec.classList.toggle('hidden-by-filter', sec.dataset.side !== side);
         });
@@ -743,10 +1000,23 @@ const pad = (n: number) => String(n).padStart(2, '0');
         epBlocks.forEach(ep => {
           ep.style.display = ep.dataset.ep === side ? '' : 'none';
         });
+        if (mastheadInfo) {
+          const label = side === 'dark' ? 'Demons' : 'Angels';
+          mastheadInfo.textContent = `● ${label} Edition · ${counts[side]} Stories`;
+        }
+        if ((window as any).__setEditionSide) {
+          (window as any).__setEditionSide(side);
+        }
       }
 
-      btns.forEach(btn => {
-        btn.addEventListener('click', () => switchTo(btn.dataset.filter!));
+      cards.forEach(card => {
+        card.addEventListener('click', () => switchTo(card.dataset.edition!));
+        card.addEventListener('keydown', (e: KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            switchTo(card.dataset.edition!);
+          }
+        });
       });
     })();
   </script>
@@ -818,7 +1088,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
   </script>
 
   <footer>
-    <p>The AI Files · 5 Volumes · 26 Stories · True stories from the age of artificial intelligence</p>
+    <p>The AI Files · Demons & Angels · 26 Stories · True stories from the age of artificial intelligence</p>
     <p style="margin-top:0.5rem; color:var(--muted);">All stories are based on documented public events, court records, and published research.</p>
     <p style="margin-top:0.75rem; color:var(--muted);">
       &copy; {new Date().getFullYear()} &middot;
