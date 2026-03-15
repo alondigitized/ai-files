@@ -173,6 +173,29 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .edition-card[data-edition="dark"] .edition-tagline { color: rgba(200,200,200,0.55); }
   .edition-card[data-edition="light"] .edition-tagline { color: rgba(60,50,30,0.55); }
 
+  /* ── Scroll Cue ── */
+  .scroll-cue {
+    display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+    margin-top: 2rem;
+    opacity: 1; transition: opacity 0.6s;
+  }
+  .scroll-cue.hidden { opacity: 0; pointer-events: none; }
+  .scroll-cue-text {
+    font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .scroll-cue-arrow {
+    font-size: 1.1rem; color: var(--muted);
+    animation: scroll-bounce 1.8s ease-in-out infinite;
+  }
+  @keyframes scroll-bounce {
+    0%, 100% { transform: translateY(0); opacity: 0.6; }
+    50% { transform: translateY(6px); opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-cue-arrow { animation: none; }
+  }
+
   .vol-section.hidden-by-filter { display: none; }
 
   /* ── Container ── */
@@ -472,6 +495,10 @@ const pad = (n: number) => String(n).padStart(2, '0');
           </div>
         </div>
       </div>
+      <div class="scroll-cue" id="scroll-cue" aria-hidden="true">
+        <span class="scroll-cue-text">Scroll to explore</span>
+        <span class="scroll-cue-arrow">&#8595;</span>
+      </div>
     </div>
   </header>
 
@@ -749,6 +776,20 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
   <script>
     (function () {
+      const cue = document.getElementById('scroll-cue');
+      if (!cue) return;
+      let hidden = false;
+      window.addEventListener('scroll', () => {
+        if (!hidden && window.scrollY > 80) {
+          hidden = true;
+          cue.classList.add('hidden');
+        }
+      }, { passive: true });
+    })();
+  </script>
+
+  <script>
+    (function () {
       /* ── Edition Canvas Animations ── */
       const demonsEl = document.querySelector('.demons-canvas') as HTMLCanvasElement | null;
       const angelsEl = document.querySelector('.angels-canvas') as HTMLCanvasElement | null;
@@ -988,6 +1029,28 @@ const pad = (n: number) => String(n).padStart(2, '0');
         light: document.querySelector('.edition-card[data-edition="light"] .edition-count')?.textContent?.match(/\d+/)?.[0] || '2',
       };
 
+      const contentTarget = document.querySelector('.idx-container') as HTMLElement | null;
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function smoothScrollTo(target: HTMLElement, duration: number) {
+        const start = window.scrollY;
+        const end = target.getBoundingClientRect().top + start - 20;
+        const distance = end - start;
+        if (Math.abs(distance) < 10) return;
+        let startTime: number | null = null;
+        function ease(t: number) {
+          return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+        function step(time: number) {
+          if (!startTime) startTime = time;
+          const elapsed = time - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          window.scrollTo(0, start + distance * ease(progress));
+          if (progress < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+
       function switchTo(side: string) {
         document.documentElement.dataset.theme = side;
         cards.forEach(c => c.classList.toggle('active', c.dataset.edition === side));
@@ -1006,6 +1069,9 @@ const pad = (n: number) => String(n).padStart(2, '0');
         }
         if ((window as any).__setEditionSide) {
           (window as any).__setEditionSide(side);
+        }
+        if (contentTarget && !reduceMotion) {
+          smoothScrollTo(contentTarget, 800);
         }
       }
 
