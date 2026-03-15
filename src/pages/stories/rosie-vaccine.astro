@@ -1,0 +1,375 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'rosie-vaccine')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .rosie-vaccine-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="intro">
+      <h2><span class="num">01 — The Diagnosis</span>The Prognosis</h2>
+      <p>In December 2025, a Sydney tech entrepreneur drove ten hours from Sydney to rural Queensland with his dying dog in the back seat, carrying a vaccine he had designed on his laptop.</p>
+      <p>Paul Conyngham is an electrical and computing engineer with seventeen years of experience in machine learning and data science. He co-founded Core Intelligence Technologies, an AI consultancy whose clients include the Australian Department of Defence, Woolworths, and PwC. He has no formal biomedical degree. In 2019, he adopted Rosie — a Staffordshire Bull Terrier-Shar Pei cross — from a Sydney animal shelter. "She's my best mate," he told reporters.</p>
+      <p>In 2024, large tumors appeared on one of Rosie's back legs. The diagnosis was mast cell cancer, the most common skin cancer found in dogs. Conyngham tried everything available. Surgery. Chemotherapy. Immunotherapy. All of them slowed the tumors. None of them shrank them. Veterinarians estimated Rosie had between one and six months to live.</p>
+      <p>The statistics were not encouraging. According to a 2024 peer-reviewed study in <em>Frontiers in Veterinary Science</em>, median survival time for dogs with high-grade cutaneous mast cell tumors is 317 days. The two-year survival rate is 30%. Conyngham decided not to accept those numbers. He had spent his career building machine learning pipelines. He started building one for Rosie.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="rosie-vaccine-canvas" aria-hidden="true"></canvas>
+    </div>
+
+    <section class="section" id="build">
+      <h2><span class="num">02 — The Build</span>From Tissue to Data</h2>
+      <p>The pipeline Conyngham describes began with a $3,000 payment to have Rosie's tumor DNA sequenced at UNSW's Ramaciotti Centre for Genomics. That converted her cancer from a biological problem into a data problem. "We took her tumour, sequenced the DNA, we converted it from tissue to data," Conyngham said.</p>
+      <p>From there, according to Conyngham, he used ChatGPT to plan the research pipeline and draft an R&D plan — not to design the vaccine itself, but to structure the process. He used AlphaFold, Google DeepMind's protein structure prediction tool, to model the 3D structure of proteins encoded by Rosie's mutated genes, specifically the c-KIT protein that drives mast cell cancer in dogs. He then used custom machine learning algorithms he built himself to select which neoantigens — mutated proteins unique to Rosie's tumor — were most likely to provoke an immune response. He condensed the analysis into a half-page of formulas.</p>
+      <p>The critical distinction: the AI tools handled the research phase. ChatGPT organized the workflow. AlphaFold predicted protein structures. Conyngham's own machine learning expertise selected the targets. A skilled non-specialist, working with publicly available tools, could design a vaccine candidate on a laptop. He could not produce it there.</p>
+      <p>The institutional handoff came through failure. When Conyngham approached an immunotherapy manufacturer about compassionate use for Rosie, the company refused. Martin Smith, director of the Ramaciotti Centre for Genomics, introduced Conyngham to Pall Thordarson, director of the UNSW RNA Institute. That connection changed the project's trajectory.</p>
+      <p>What followed, by Conyngham's account, was approximately three months of navigating Australian ethics approval to run a drug trial on a dog. "I had to do everything by the book because you can't just willy-nilly create a vaccine in Australia," Conyngham told Cancer Health. "The red tape was actually harder than the vaccine creation, and I was trying to get an Australian ethics approval to run a drug trial on Rosie."</p>
+    </section>
+
+    <section class="section" id="vaccine">
+      <h2><span class="num">03 — The Vaccine</span>From Data to Needle</h2>
+      <p>Pall Thordarson and the UNSW RNA Institute designed and produced the bespoke mRNA vaccine from Conyngham's sequence data. The technology was the same delivery mechanism used in the Pfizer/BioNTech and Moderna COVID-19 vaccines: mRNA packaged in lipid nanoparticles. From the point of receiving Conyngham's sequence, Thordarson's team completed the vaccine in under two months. "Once we had the sequence that Paul designed, it was less than two months until we handed it over to Paul, to the vet," Thordarson said.</p>
+      <p>But producing the vaccine was not the final barrier. Administering it required a credentialed researcher with existing ethics approval for experimental treatments. Rachel Allavena, a professor of canine immunotherapy at the University of Queensland's School of Veterinary Science in Gatton, already held that approval. Conyngham loaded Rosie into his car and drove ten hours from Sydney to Gatton. In December 2025, Allavena administered the first injection.</p>
+      <p>Within approximately one month, a tennis ball-sized tumor on Rosie's hock shrank significantly. Sources disagree on the exact magnitude — some report approximately 50 percent, others approximately 75 percent. No clinical measurement data, imaging, or independent veterinary assessment of the shrinkage has been made public. The discrepancy across sources may reflect different measurement methods or different timepoints. What is clear is that the tumor got visibly smaller. By January 2026, Rosie had regained enough mobility to jump over a fence to chase a rabbit — behavior that had disappeared during her illness.</p>
+      <p>A second, larger tumor did not respond to the vaccine. Conyngham was planning a second round of DNA sequencing to investigate why. A booster injection was administered in early 2026, with a third dose planned for approximately March 2026.</p>
+      <p>Conyngham's own framing was measured. "I'm under no illusion that this is a cure," he told Cancer Health, "but I do believe this treatment has bought Rosie significantly more time and quality of life."</p>
+      <p>One tumor shrank. One did not. That partial response is the honest core of the story.</p>
+    </section>
+
+    <section class="section" id="limits">
+      <h2><span class="num">04 — The Limits</span>What One Dog Does and Does Not Prove</h2>
+      <p>This is an observation from a single animal with no control group, no blinding, and no peer review. One tumor responded to treatment. One did not. No academic paper has been published or announced. The story, as of March 2026, exists entirely in press coverage and university press releases.</p>
+      <p>Expert reaction spans a wide range. David Thomas, inaugural director of the UNSW Centre for Molecular Oncology, called the outcome "a very impressive thing" and described it as "citizen science, where a punter in the street, with a computer science background, can use their skills in the scientific process." Dr. Kate Michie, a structural biologist at UNSW, said it was "exciting to me that someone who's not a scientist has been able to do this."</p>
+      <p>Thordarson described it as the first time a personalized cancer vaccine had been designed for a dog. That claim is plausible but difficult to verify absolutely. The University of Florida has an ongoing mRNA vaccine trial for dogs with osteosarcoma, though that trial is not personalized to individual animals.</p>
+      <p>The sharpest counterpoint came from Patrick Heiser, who describes himself as a biomedical engineer. "It is trivially easy to make a single mRNA vaccine. It's not hard," Heiser wrote, adding: "y'all are overhyping it." He noted that even in his own cancer research, where 100 percent of untreated animals were euthanized and 100 percent of treated animals survived, the researchers were still "extremely far away from 'proving that it works.'" His credentials have not been independently verified beyond the outlet that quoted him, but his point stands on its own logic: a single positive observation, no matter how dramatic, is not clinical evidence.</p>
+      <p>The broader context makes the story more than a curiosity, though it does not validate Rosie's specific outcome. In January 2026, Merck and Moderna announced five-year follow-up data from the KEYNOTE-942 Phase 2b trial: their personalized mRNA cancer vaccine, combined with pembrolizumab, reduced the risk of recurrence or death by 49 percent in 157 melanoma patients. Separately, BioNTech's autogene cevumeran showed that six of eight immune-responding pancreatic cancer patients remained cancer-free at three years. These are human trials with peer-reviewed data. They are not Rosie's trial. But they establish that personalized mRNA cancer vaccines are a real and advancing field of medicine, not a fringe concept.</p>
+      <p>The cost barrier remains substantial. Personalized mRNA cancer vaccines currently cost approximately $100,000 per patient to produce, according to Cancer Health.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">05 — Signal</span>The Laptop and the Institution</h2>
+      <p>The structural insight of Rosie's case is not that a man cured his dog's cancer. He did not. It is that the research phase of personalized vaccine design — the part that once required a specialized team and years of work — was compressed by a single skilled non-specialist using publicly available AI tools into months of work on a laptop. The production phase still required the UNSW RNA Institute. The administration phase still required a credentialed veterinary researcher with ethics approval. The regulatory phase took three months of paperwork.</p>
+      <p>Personalized medicine is not going to arrive as a single breakthrough. It is going to arrive as a series of cost and access reductions at each phase of the pipeline. The research phase just got dramatically cheaper. Production and delivery have not — yet.</p>
+      <p>The partial response itself argues for the mechanism that could make personalized cancer vaccines transformative. One tumor shrank. One did not. Conyngham was already planning to sequence the second tumor's DNA and design a new vaccine targeting it. If the first design half-works, you sequence again, redesign, produce again. The mechanism is not getting one shot right. It is making each iteration fast and cheap enough to try again.</p>
+      <p>"What Rosie is teaching us is that personalized medicine can be very effective and done in a time-sensitive manner with mRNA technology," Thordarson said. Martin Smith, the Ramaciotti Centre director who made the introduction that started the project, put the question more bluntly: "It raises the question, if we can do this for a dog, why aren't we rolling this out to all humans with cancer?"</p>
+      <p>The answer is not capability. It is cost, regulation, and scale. Those are solvable problems. They are not solved yet.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.rosie-vaccine-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  // --- Palette (light theme) ---
+  const GOLD = '#c8963e';
+  const GOLD_R = 200, GOLD_G = 150, GOLD_B = 62;
+  const MASS_R = 120, MASS_G = 100, MASS_B = 70;
+  const AMB_R = 160, AMB_G = 140, AMB_B = 100;
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f5f0e8';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const [bgR, bgG, bgB] = hexToRgb(BG_COLOR.startsWith('#') ? BG_COLOR : '#f5f0e8');
+
+  // --- State ---
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  // --- Resize ---
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  });
+  ro.observe(canvas);
+
+  // --- Reduced motion ---
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // --- Phase thresholds ---
+  const P0 = 180;
+  const P1 = 300;
+  const P2 = 420;
+  const P3 = 480;
+  const P4 = 540;
+  const CYCLE = 600;
+
+  // --- Ambient particles ---
+  const NUM_AMB = 14;
+  interface Amb { x: number; y: number; vx: number; vy: number; r: number; a: number; }
+  const ambs: Amb[] = [];
+
+  function initAmb() {
+    ambs.length = 0;
+    for (let i = 0; i < NUM_AMB; i++) {
+      ambs.push({
+        x: Math.random() * (W || 800),
+        y: Math.random() * (H || 380),
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        r: 1.5 + Math.random() * 2,
+        a: 0.05 + Math.random() * 0.05,
+      });
+    }
+  }
+
+  // --- Helix particles ---
+  const NUM_H = 24;
+  interface HP {
+    idx: number; strand: number; angleOff: number; r: number; baseAlpha: number;
+    x: number; y: number; alpha: number;
+    state: number;
+    target: number;
+    oAngle: number;
+    dvx: number; dvy: number;
+    spawnedReform: boolean;
+  }
+  const hps: HP[] = [];
+
+  function initHelix() {
+    hps.length = 0;
+    for (let i = 0; i < NUM_H; i++) {
+      hps.push({
+        idx: i, strand: i % 2,
+        angleOff: (i / NUM_H) * Math.PI * 2,
+        r: 2.5 + Math.random() * 1.5,
+        baseAlpha: 0.7 + Math.random() * 0.3,
+        x: 0, y: 0, alpha: 0.8,
+        state: 0,
+        target: i < NUM_H / 2 ? 0 : 1,
+        oAngle: (i / NUM_H) * Math.PI * 2,
+        dvx: 0, dvy: 0,
+        spawnedReform: false,
+      });
+    }
+  }
+
+  // --- Mass state ---
+  const MASS_R_INIT = 30;
+  let mLR = MASS_R_INIT, mLA = 0.15;
+  let mRR = MASS_R_INIT, mRA = 0.15;
+  let mLX = 0, mLY = 0, mRX = 0, mRY = 0;
+  let bloomA = 0, bloomR = 0, bgPulse = 0;
+
+  function syncMassPos() {
+    mLX = W / 2 - 55;
+    mLY = H / 2;
+    mRX = W / 2 + 55;
+    mRY = H / 2;
+  }
+
+  function resetMasses() {
+    mLR = MASS_R_INIT; mLA = 0.15;
+    mRR = MASS_R_INIT; mRA = 0.15;
+    bloomA = 0; bloomR = 0; bgPulse = 0;
+  }
+
+  function helixXY(p: HP, rotation: number, amp: number): [number, number] {
+    const cx = W / 2, cy = H / 2;
+    const len = Math.min(H * 0.7, 260);
+    const t = p.idx / NUM_H;
+    const yy = cy - len / 2 + t * len;
+    const ang = p.angleOff + rotation + (p.strand === 1 ? Math.PI : 0);
+    return [cx + Math.sin(ang) * amp, yy];
+  }
+
+  function update() {
+    const cf = frame % CYCLE;
+    const rot = cf * 0.018;
+
+    for (const a of ambs) {
+      a.x += a.vx; a.y += a.vy;
+      if (a.x < -10) a.x = W + 10;
+      if (a.x > W + 10) a.x = -10;
+      if (a.y < -10) a.y = H + 10;
+      if (a.y > H + 10) a.y = -10;
+    }
+
+    syncMassPos();
+
+    if (cf < P0) {
+      for (const p of hps) {
+        const [hx, hy] = helixXY(p, rot, 60);
+        p.x = hx; p.y = hy; p.alpha = p.baseAlpha; p.state = 0; p.spawnedReform = false;
+      }
+      resetMasses();
+    } else if (cf < P1) {
+      const t = (cf - P0) / (P1 - P0);
+      const amp = 60 - t * 40;
+      const pull = Math.min(1, t * 1.2);
+      for (const p of hps) {
+        const [hx, hy] = helixXY(p, rot, amp);
+        const tx = p.target === 0 ? mLX : mRX;
+        const ty = p.target === 0 ? mLY : mRY;
+        p.x = hx + (tx - hx) * pull * 0.6;
+        p.y = hy + (ty - hy) * pull * 0.6;
+        p.alpha = p.baseAlpha; p.state = 0;
+        if (t > 0.95) { p.oAngle = Math.atan2(p.y - ty, p.x - tx); }
+      }
+    } else if (cf < P2) {
+      const t = (cf - P1) / (P2 - P1);
+      mLR = Math.max(8, MASS_R_INIT - t * 22);
+      mLA = 0.15 + t * 0.15;
+      for (const p of hps) {
+        if (p.target === 0) {
+          if (p.state < 2) {
+            p.state = 1; p.oAngle += 0.035;
+            const orbR = 35 * (1 - t * 0.85);
+            p.x = mLX + Math.cos(p.oAngle) * orbR;
+            p.y = mLY + Math.sin(p.oAngle) * orbR;
+            if (orbR < 6) { p.state = 2; p.alpha = 0; }
+          } else { p.alpha = 0; }
+        } else {
+          if (p.state < 3) {
+            p.state = 1; p.oAngle += 0.03;
+            p.x = mRX + Math.cos(p.oAngle) * 35;
+            p.y = mRY + Math.sin(p.oAngle) * 35;
+            const pRank = p.idx - NUM_H / 2;
+            const deflectAt = (pRank + 1) / (NUM_H / 2 + 1);
+            if (t >= deflectAt) {
+              p.state = 3;
+              const dx = p.x - mRX, dy = p.y - mRY;
+              const d = Math.sqrt(dx * dx + dy * dy) || 1;
+              p.dvx = (dx / d) * 0.4 + (Math.random() - 0.5) * 0.25;
+              p.dvy = (dy / d) * 0.4 + (Math.random() - 0.5) * 0.25;
+            }
+          }
+          if (p.state === 3) { p.x += p.dvx; p.y += p.dvy; p.alpha = Math.max(0.08, p.alpha - 0.003); }
+        }
+      }
+    } else if (cf < P3) {
+      const t = (cf - P2) / (P3 - P2);
+      mLR = Math.max(0, 8 * (1 - t)); mLA = 0.3 * (1 - t);
+      bloomR = t * 80; bloomA = Math.sin(t * Math.PI) * 0.5;
+      bgPulse = Math.sin(t * Math.PI) * 0.03; mRA = 0.12;
+      for (const p of hps) { if (p.state === 3) { p.x += p.dvx; p.y += p.dvy; p.alpha = Math.max(0.04, p.alpha - 0.004); } }
+    } else if (cf < P4) {
+      const t = (cf - P3) / (P4 - P3);
+      bloomA = Math.max(0, 0.5 * (1 - t)); bloomR = 80;
+      bgPulse = Math.max(0, 0.03 * (1 - t)); mLR = 0; mLA = 0; mRA = 0.12 + t * 0.03;
+      for (const p of hps) {
+        const [tx, ty] = helixXY(p, rot, 60);
+        if (p.state === 2 && !p.spawnedReform) {
+          p.x = mLX + (p.idx - NUM_H / 4) * 3; p.y = mLY + (p.strand === 0 ? -8 : 8);
+          p.alpha = 0.05; p.state = 4; p.spawnedReform = true;
+        } else if (p.state === 3 && !p.spawnedReform) { p.state = 4; p.spawnedReform = true; }
+        if (p.state === 4) { p.x += (tx - p.x) * 0.035; p.y += (ty - p.y) * 0.035; p.alpha = Math.min(p.baseAlpha, p.alpha + 0.012); }
+      }
+    } else {
+      const t = (cf - P4) / (CYCLE - P4);
+      bloomA = 0; bgPulse = 0;
+      mLR = MASS_R_INIT * t; mLA = 0.15 * t; mRR = MASS_R_INIT; mRA = 0.15;
+      for (const p of hps) {
+        const [tx, ty] = helixXY(p, rot, 60);
+        p.x += (tx - p.x) * 0.08; p.y += (ty - p.y) * 0.08;
+        p.alpha = Math.min(p.baseAlpha, p.alpha + 0.01); p.state = 4;
+      }
+    }
+  }
+
+  function draw() {
+    if (bgPulse > 0.001) {
+      const pr = Math.min(255, bgR + bgPulse * 80) | 0;
+      const pg = Math.min(255, bgG + bgPulse * 65) | 0;
+      const pb = Math.min(255, bgB + bgPulse * 25) | 0;
+      ctx.fillStyle = `rgb(${pr},${pg},${pb})`;
+    } else { ctx.fillStyle = BG_COLOR; }
+    ctx.fillRect(0, 0, W, H);
+
+    for (const a of ambs) {
+      ctx.globalAlpha = a.a;
+      ctx.fillStyle = `rgb(${AMB_R},${AMB_G},${AMB_B})`;
+      ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    if (mLR > 0.5) {
+      ctx.globalAlpha = mLA;
+      ctx.fillStyle = `rgb(${MASS_R},${MASS_G},${MASS_B})`;
+      ctx.beginPath(); ctx.arc(mLX, mLY, mLR, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = mRA;
+    ctx.fillStyle = `rgb(${MASS_R},${MASS_G},${MASS_B})`;
+    ctx.beginPath(); ctx.arc(mRX, mRY, mRR, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 1;
+
+    if (bloomA > 0.005) {
+      const grad = ctx.createRadialGradient(mLX, mLY, 0, mLX, mLY, bloomR);
+      grad.addColorStop(0, `rgba(${GOLD_R},${GOLD_G},${GOLD_B},${(bloomA * 0.6).toFixed(3)})`);
+      grad.addColorStop(0.5, `rgba(${GOLD_R},${GOLD_G},${GOLD_B},${(bloomA * 0.25).toFixed(3)})`);
+      grad.addColorStop(1, `rgba(${GOLD_R},${GOLD_G},${GOLD_B},0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath(); ctx.arc(mLX, mLY, bloomR, 0, Math.PI * 2); ctx.fill();
+    }
+
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = `rgba(${GOLD_R},${GOLD_G},${GOLD_B},0.12)`;
+    for (let s = 0; s < 2; s++) {
+      ctx.beginPath();
+      let started = false; let prevX = 0, prevY = 0;
+      for (let i = s; i < NUM_H; i += 2) {
+        const p = hps[i];
+        if (p.alpha < 0.05) { started = false; continue; }
+        if (!started) { ctx.moveTo(p.x, p.y); started = true; }
+        else {
+          const dx = p.x - prevX, dy = p.y - prevY;
+          if (dx * dx + dy * dy < 12000) ctx.lineTo(p.x, p.y);
+          else ctx.moveTo(p.x, p.y);
+        }
+        prevX = p.x; prevY = p.y;
+      }
+      ctx.stroke();
+    }
+
+    ctx.strokeStyle = `rgba(${GOLD_R},${GOLD_G},${GOLD_B},0.06)`;
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < NUM_H - 1; i += 2) {
+      const a = hps[i], b = hps[i + 1];
+      if (a.alpha < 0.1 || b.alpha < 0.1) continue;
+      const dx = a.x - b.x, dy = a.y - b.y;
+      if (dx * dx + dy * dy < 25000) { ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
+    }
+
+    for (const p of hps) {
+      if (p.alpha < 0.02) continue;
+      ctx.globalAlpha = p.alpha * 0.18;
+      ctx.fillStyle = `rgb(${GOLD_R},${GOLD_G},${GOLD_B})`;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 3, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = p.alpha;
+      ctx.fillStyle = GOLD;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function tick() { frame++; update(); draw(); raf = requestAnimationFrame(tick); }
+
+  function init() { initAmb(); initHelix(); resetMasses(); syncMassPos(); }
+
+  requestAnimationFrame(() => {
+    init();
+    if (prefersReduced) {
+      const rot = 1.2;
+      for (const p of hps) { const [hx, hy] = helixXY(p, rot, 60); p.x = hx; p.y = hy; p.alpha = p.baseAlpha; }
+      draw();
+    } else { raf = requestAnimationFrame(tick); }
+  });
+
+  window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); ro.disconnect(); });
+})();
+</script>
