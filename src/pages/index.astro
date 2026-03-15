@@ -104,19 +104,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
     max-width: 480px; margin: 1.5rem auto 0;
     line-height: 1.6; font-style: italic;
   }
-  .masthead-meta {
-    margin-top: 2.5rem;
-    display: flex; align-items: center; justify-content: center;
-    gap: 1.5rem; font-size: 0.78rem; color: var(--muted); flex-wrap: wrap;
-  }
-  .masthead-meta .divider { color: var(--border); }
-  .masthead-count {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    background: color-mix(in srgb, var(--accent) 10%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
-    border-radius: 2rem; padding: 0.3rem 0.9rem;
-    font-size: 0.78rem; color: var(--accent);
-  }
-
   /* ── Edition Picker ── */
   .edition-picker {
     display: grid; grid-template-columns: 1fr 1fr;
@@ -442,6 +429,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
     .ideas-inner { grid-template-columns: 1fr; gap: 2rem; padding: 2rem; }
     .edition-picker { max-width: 90vw; }
     .edition-card { height: 140px; }
+    .edition-icon { margin-top: 0.5rem; }
   }
 </style>
 
@@ -468,9 +456,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
       </h1>
       <p class="masthead-tagline" data-side="dark">True stories from the age of artificial intelligence — the blunders, the exploits, and the moments that changed everything.</p>
       <p class="masthead-tagline" data-side="light" style="display:none;">True stories from the age of artificial intelligence — the breakthroughs, the cures, and the moments that gave us hope.</p>
-      <div class="masthead-meta">
-        <span class="masthead-count" id="masthead-edition-info">● Demons Edition · {darkCount} Stories</span>
-      </div>
       <div class="edition-picker" id="side-filter">
         <div class="edition-card active" data-edition="dark" role="button" tabindex="0" aria-label="Switch to Demons Edition">
           <canvas class="edition-canvas demons-canvas" aria-hidden="true"></canvas>
@@ -1022,12 +1007,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
       const sections = document.querySelectorAll<HTMLElement>('.vol-section[data-side]');
       const taglines = document.querySelectorAll<HTMLElement>('.masthead-tagline[data-side]');
       const epBlocks = document.querySelectorAll<HTMLElement>('[data-ep]');
-      const mastheadInfo = document.getElementById('masthead-edition-info');
-
-      const counts: Record<string, string> = {
-        dark: mastheadInfo?.textContent?.match(/\d+/)?.[0] || '24',
-        light: document.querySelector('.edition-card[data-edition="light"] .edition-count')?.textContent?.match(/\d+/)?.[0] || '2',
-      };
 
       const contentTarget = document.querySelector('.idx-container') as HTMLElement | null;
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1063,10 +1042,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
         epBlocks.forEach(ep => {
           ep.style.display = ep.dataset.ep === side ? '' : 'none';
         });
-        if (mastheadInfo) {
-          const label = side === 'dark' ? 'Demons' : 'Angels';
-          mastheadInfo.textContent = `● ${label} Edition · ${counts[side]} Stories`;
-        }
         if ((window as any).__setEditionSide) {
           (window as any).__setEditionSide(side);
         }
