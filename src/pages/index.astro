@@ -89,21 +89,58 @@ const itemListSchema = {
     font-size: 0.78rem; color: var(--accent);
   }
 
-  /* ── Side Filter ── */
-  .side-filter {
-    display: flex; align-items: center; justify-content: center;
-    gap: 0.5rem; padding: 1.25rem 0 0;
+  /* ── Side Toggle ── */
+  .side-toggle {
+    display: flex; justify-content: center; padding: 1.5rem 0 0;
+  }
+  .side-toggle-track {
+    display: grid; grid-template-columns: 1fr 1fr;
+    width: 340px; max-width: 90vw;
+    border-radius: 0.75rem; overflow: hidden;
+    border: 1px solid var(--border);
+    position: relative;
   }
   .side-btn {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 2rem; padding: 0.35rem 1rem;
-    font-family: inherit; font-size: 0.75rem; font-weight: 600;
-    color: var(--muted); cursor: pointer;
-    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    position: relative;
+    padding: 0.7rem 1rem;
+    font-family: inherit; font-size: 0.85rem; font-weight: 700;
     letter-spacing: 0.04em;
+    cursor: pointer; border: none;
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+    transition: background 0.3s, color 0.3s, box-shadow 0.3s;
   }
-  .side-btn:hover { border-color: var(--border-hover); color: var(--text); }
-  .side-btn.active { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  .side-btn .btn-icon { font-size: 1.1rem; line-height: 1; }
+
+  /* Demons button */
+  .side-btn[data-filter="dark"] {
+    background: rgba(255,77,77,0.06); color: var(--muted);
+  }
+  .side-btn[data-filter="dark"]:hover {
+    background: rgba(255,77,77,0.1); color: #ff6b6b;
+  }
+  .side-btn[data-filter="dark"].active {
+    background: rgba(255,77,77,0.14); color: #ff4d4d;
+    box-shadow: inset 0 0 20px rgba(255,77,77,0.08);
+  }
+
+  /* Angels button */
+  .side-btn[data-filter="light"] {
+    background: rgba(200,150,62,0.06); color: var(--muted);
+  }
+  .side-btn[data-filter="light"]:hover {
+    background: rgba(200,150,62,0.1); color: #d4a94e;
+  }
+  .side-btn[data-filter="light"].active {
+    background: rgba(200,150,62,0.14); color: #c8963e;
+    box-shadow: inset 0 0 20px rgba(200,150,62,0.08);
+  }
+
+  /* Divider line between buttons */
+  .side-toggle-track::after {
+    content: ''; position: absolute; top: 20%; bottom: 20%; left: 50%;
+    width: 1px; background: var(--border); pointer-events: none;
+  }
+
   .vol-section.hidden-by-filter { display: none; }
 
   /* ── Container ── */
@@ -379,9 +416,11 @@ const itemListSchema = {
         <span class="divider">·</span>
         <span>5 Volumes</span>
       </div>
-      <div class="side-filter" id="side-filter">
-        <button class="side-btn active" data-filter="dark">◐ Dark Side</button>
-        <button class="side-btn" data-filter="light">○ Light Side</button>
+      <div class="side-toggle" id="side-filter">
+        <div class="side-toggle-track">
+          <button class="side-btn active" data-filter="dark"><span class="btn-icon">😈</span> Demons</button>
+          <button class="side-btn" data-filter="light"><span class="btn-icon">😇</span> Angels</button>
+        </div>
       </div>
     </div>
   </header>
