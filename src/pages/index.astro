@@ -20,9 +20,12 @@ const itemListSchema = {
   name: 'The AI Files — Story Archive',
   url: SITE,
   numberOfItems: activeStories.length,
-  itemListElement: activeStories.map(s => ({
+  itemListElement: [
+    ...activeStories.filter(s => (s.side ?? 'dark') === 'dark').sort((a, b) => a.chapter - b.chapter),
+    ...activeStories.filter(s => s.side === 'light').sort((a, b) => a.chapter - b.chapter),
+  ].map((s, i) => ({
     '@type': 'ListItem',
-    position: s.chapter,
+    position: i + 1,
     name: s.title,
     url: `${SITE}/stories/${s.slug}`,
     description: s.deck,
@@ -34,7 +37,7 @@ const VOLUMES = [
   { num: 2, side: 'dark', color: '#f97316', title: 'What It Cost', tagline: 'The stories where the laughing stopped.' },
   { num: 3, side: 'dark', color: '#ff4d4d', title: 'What It Means', tagline: "The stories you can't un-read." },
   { num: 4, side: 'dark', color: '#00ff88', title: "What We're Left With", tagline: 'The stories still being written.' },
-  { num: 5, side: 'light', color: '#c8963e', title: 'What Went Right', tagline: 'The stories that gave us hope.' },
+  { num: 1, side: 'light', color: '#c8963e', title: 'What Went Right', tagline: 'The stories that gave us hope.' },
 ];
 
 const VOL_LABELS = ['I','II','III','IV','V'];
@@ -43,7 +46,7 @@ const volumeData = VOLUMES.map(v => ({
   ...v,
   label: VOL_LABELS[v.num - 1],
   stories: activeStories
-    .filter(s => s.volume === v.num)
+    .filter(s => s.volume === v.num && (s.side ?? 'dark') === v.side)
     .sort((a, b) => a.chapter - b.chapter),
 }));
 

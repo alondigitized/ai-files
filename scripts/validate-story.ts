@@ -149,16 +149,21 @@ function checkStoriesJson(slug: string): ValidationResult[] {
   }
 
   // Volume
-  if (![1, 2, 3, 4, 5].includes(entry.volume)) {
-    results.push(fail('stories.json:volume', `Volume ${entry.volume} is not 1, 2, 3, 4, or 5`));
+  if (![1, 2, 3, 4].includes(entry.volume)) {
+    results.push(fail('stories.json:volume', `Volume ${entry.volume} is not 1, 2, 3, or 4`));
   }
 
   // Chapter uniqueness
-  const chapterConflicts = stories.filter(s => s.chapter === entry.chapter && s.slug !== slug);
+  const entrySide = (entry as any).side ?? 'dark';
+  const chapterConflicts = stories.filter(s =>
+    s.chapter === entry.chapter &&
+    s.slug !== slug &&
+    ((s as any).side ?? 'dark') === entrySide
+  );
   if (chapterConflicts.length > 0) {
     results.push(fail('stories.json:chapter', `Chapter ${entry.chapter} is also used by: ${chapterConflicts.map(s => s.slug).join(', ')}`));
   } else {
-    results.push(pass('stories.json:chapter', `Chapter ${entry.chapter} is unique`));
+    results.push(pass('stories.json:chapter', `Chapter ${entry.chapter} is unique within ${entrySide} side`));
   }
 
   return results;
