@@ -62,36 +62,25 @@ const story = stories.find(s => s.slug === 'my-story-slug')!;
 
 **StoryLayout** auto-generates: nav, hero (chapter, title, deck, byline, verify badge), sources block, more-stories grid, and footer — all from `story` metadata. Related stories are picked automatically: same-volume stories first, then others, capped at 4.
 
-## The "What If" Section (Required)
+## The "What If" Section (Required — Most Important Section)
 
-Every story **must** end with a "What If" section. This is the most important section of the story. Its purpose is to extrapolate the incident to its logical extreme — what happens when the same failure mode scales to infinity, when the stakes are orders of magnitude higher, when the technology is weaponized beyond its current use.
+Every story **must** have a `whatIf` field in `stories.json`. This is the most important part of the story. `StoryLayout.astro` auto-renders it as the final block on every story page (with the `∞ WHAT IF?` label). Its purpose is to extrapolate the incident to its logical extreme — what happens when the same failure mode scales to infinity, when the stakes are orders of magnitude higher, when the technology is weaponized beyond its current use.
 
-**What it is NOT:** A recap, a legacy summary, or a "what does this reveal" analysis. Those belong in earlier sections.
+**What it is NOT:** A recap, a legacy summary, or a "what does this reveal" analysis. Those belong in story sections.
 
 **What it IS:** A visceral, specific exploration of the worst-case trajectory. Pick ONE extrapolation and go deep. Make the reader feel the weight of what's coming if the underlying problem is not solved.
 
 ### Guidelines
 
 - **Go to infinity.** Don't stop at "this could get worse." Show exactly how and why it gets catastrophically worse. Name the specific mechanism.
-- **One deep cut, not three shallow ones.** Pick the single most terrifying extrapolation and elaborate fully. Three bullet points dilute the impact.
-- **Be specific, not abstract.** "This could be used for political manipulation" is weak. "A state actor generates 10,000 deepfakes of opposition candidates in the 72 hours before an election, each tailored to local constituencies, each indistinguishable from real footage" is strong.
+- **One deep cut, not three shallow ones.** Pick the single most terrifying extrapolation and elaborate fully. Multiple scenarios dilute the impact.
+- **Be specific, not abstract.** "This could be used for political manipulation" is weak. "A single operator cross-references voter databases with social media photos and generates ten thousand hyperlocal deepfakes in 72 hours before a school board election — there is no correction infrastructure at that resolution" is strong.
 - **Connect to real capabilities.** The extrapolation must be technically plausible given the trajectory demonstrated by the incident.
 - **End on the open question.** The section should leave the reader with a question that has no comfortable answer.
 
-### Pattern
+### Implementation
 
-```html
-<section class="section" id="what-if">
-  <h2><span class="num">NN — What If</span>Section Title</h2>
-  <!-- Deep, specific extrapolation of the incident's failure mode at scale -->
-</section>
-```
-
-### Examples of good "What If" framing
-
-- **Grok deepfakes →** Not just nudity — deepfakes weaponized for political blackmail, evidence fabrication, identity destruction at industrial scale
-- **AI lawyer hallucinations →** Not just fake citations — AI-generated legal briefs that fabricate entire precedents, altering the trajectory of real cases before anyone catches it
-- **Grandma exploit →** Not just napalm recipes — emotional manipulation as a universal bypass for every safety system ever built, including autonomous weapons constraints
+Set the `whatIf` field in the story's `stories.json` entry. StoryLayout renders it automatically — no manual HTML section needed.
 
 ## stories.json Schema
 
