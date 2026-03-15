@@ -53,14 +53,14 @@ const story = stories.find(s => s.slug === 'grok-deepfake-crisis')!;
   }
   .grok-attack-step-body { padding: 1.25rem; }
 
-  /* Step 1: The photo (SVG silhouette — clothed figure) */
+  /* Step 1: The photo */
   .grok-figure-wrap {
-    width: 100%; height: 340px; border-radius: 0.5rem;
+    width: 100%; border-radius: 0.5rem;
     background: linear-gradient(180deg, #2a3040 0%, #1a2030 100%);
     position: relative; overflow: hidden;
     display: flex; align-items: flex-end; justify-content: center;
   }
-  .grok-figure-wrap svg { display: block; height: 320px; width: auto; }
+  .grok-figure-wrap img { display: block; width: 100%; height: auto; border-radius: 0.5rem; }
   .grok-figure-label {
     position: absolute; bottom: 8px; left: 12px;
     font-size: 0.68rem; color: rgba(255,255,255,0.4);
@@ -90,15 +90,15 @@ const story = stories.find(s => s.slug === 'grok-deepfake-crisis')!;
     font-style: italic;
   }
 
-  /* Step 3: The output (same silhouette, clothing removed, pixelated) */
+  /* Step 3: The output */
   .grok-output-wrap {
-    width: 100%; height: 340px; border-radius: 0.5rem;
+    width: 100%; border-radius: 0.5rem;
     background: linear-gradient(180deg, #2a3040 0%, #1a2030 100%);
     position: relative; overflow: hidden;
     border: 2px solid rgba(255,77,77,0.4);
     display: flex; align-items: flex-end; justify-content: center;
   }
-  .grok-output-wrap svg { display: block; height: 320px; width: auto; filter: blur(2px); }
+  .grok-output-wrap img { display: block; width: 100%; height: auto; border-radius: 0.5rem; filter: blur(2px); }
   /* Pixelation overlay */
   .grok-pixel-overlay {
     position: absolute; inset: 0;
@@ -294,76 +294,7 @@ const story = stories.find(s => s.slug === 'grok-deepfake-crisis')!;
           </div>
           <div class="grok-attack-step-body">
             <div class="grok-figure-wrap">
-              <svg viewBox="0 0 200 500" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <defs>
-                  <linearGradient id="sk1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dbb99b"/><stop offset="100%" stop-color="#c9a584"/></linearGradient>
-                </defs>
-                <!-- Hair back -->
-                <path d="M66,28 C60,55 54,90 52,120 C50,142 52,158 58,164 L66,158 C64,145 64,118 68,80 C70,55 72,38 74,28Z" fill="#9a7a58"/>
-                <path d="M134,28 C140,55 146,90 148,120 C150,142 148,158 142,164 L134,158 C136,145 136,118 132,80 C130,55 128,38 126,28Z" fill="#9a7a58"/>
-                <ellipse cx="100" cy="30" rx="36" ry="34" fill="#9a7a58"/>
-                <path d="M58,100 C56,118 54,136 53,152" fill="none" stroke="#aa9068" stroke-width="2.5" opacity="0.5"/>
-                <path d="M142,100 C144,118 146,136 147,152" fill="none" stroke="#aa9068" stroke-width="2.5" opacity="0.5"/>
-                <!-- Neck + upper chest skin -->
-                <path d="M88,70 C88,80 90,90 92,96 L108,96 C110,90 112,80 112,70Z" fill="url(#sk1)"/>
-                <path d="M76,100 C86,96 94,94 100,94 C106,94 114,96 124,100 L132,108 L68,108Z" fill="url(#sk1)"/>
-                <!-- Head -->
-                <ellipse cx="100" cy="40" rx="26" ry="32" fill="url(#sk1)"/>
-                <ellipse cx="74" cy="44" rx="4" ry="6" fill="#c9a584"/>
-                <ellipse cx="126" cy="44" rx="4" ry="6" fill="#c9a584"/>
-                <!-- Hair front -->
-                <path d="M74,24 C82,8 92,2 100,0 C108,2 118,8 126,24 C120,14 110,8 100,6 C90,8 80,14 74,24Z" fill="#9a7a58"/>
-                <path d="M74,24 C70,40 66,56 66,68" fill="none" stroke="#9a7a58" stroke-width="9" stroke-linecap="round"/>
-                <path d="M80,20 C76,36 74,50 74,60" fill="none" stroke="#9a7a58" stroke-width="5" stroke-linecap="round"/>
-                <path d="M86,18 C82,32 80,44 80,54" fill="none" stroke="#9a7a58" stroke-width="3" stroke-linecap="round"/>
-                <path d="M126,24 C130,36 132,50 132,60" fill="none" stroke="#9a7a58" stroke-width="5" stroke-linecap="round"/>
-                <path d="M122,20 C126,34 128,46 128,54" fill="none" stroke="#9a7a58" stroke-width="3" stroke-linecap="round"/>
-                <!-- Collarbones -->
-                <path d="M74,102 C84,98 92,96 100,96 C108,96 116,98 126,102" fill="none" stroke="#b8a08a" stroke-width="1.2" opacity="0.5"/>
-
-                <!-- === FITTED V-NECK TOP === -->
-                <path d="M100,96 C112,96 132,102 144,112 C152,120 156,132 156,144 C156,154 152,162 146,168 C138,176 130,182 126,186 C124,190 124,194 126,198 L74,198 C76,194 76,190 74,186 C70,182 62,176 54,168 C48,162 44,154 44,144 C44,132 48,120 56,112 C68,102 88,96 100,96Z" fill="#4a6a8a"/>
-                <!-- V-neckline -->
-                <path d="M82,104 C88,116 94,128 100,136 C106,128 112,116 118,104 C112,100 106,98 100,98 C94,98 88,100 82,104Z" fill="url(#sk1)"/>
-                <!-- Top hem -->
-                <path d="M74,198 L126,198" fill="none" stroke="#3a5a7a" stroke-width="1.2"/>
-                <!-- Bust seam -->
-                <path d="M54,168 C68,178 86,184 100,184 C114,184 132,178 146,168" fill="none" stroke="#3a5a7a" stroke-width="0.8" opacity="0.5"/>
-
-                <!-- === A-LINE SKIRT === -->
-                <path d="M74,198 C68,206 58,222 50,240 C42,260 36,284 32,310 C30,328 30,340 32,348 C52,358 76,362 100,362 C124,362 148,358 168,348 C170,340 170,328 168,310 C164,284 158,260 150,240 C142,222 132,206 126,198Z" fill="#2a3a5a"/>
-                <path d="M80,200 C72,232 62,290 58,348" fill="none" stroke="#1e2a40" stroke-width="1" opacity="0.35"/>
-                <path d="M100,200 C100,240 100,300 100,358" fill="none" stroke="#1e2a40" stroke-width="0.8" opacity="0.25"/>
-                <path d="M120,200 C128,232 138,290 142,348" fill="none" stroke="#1e2a40" stroke-width="1" opacity="0.35"/>
-
-                <!-- === LEFT ARM (relaxed) === -->
-                <path d="M44,144 C38,156 34,172 32,188 C30,204 30,218 32,230 L42,228 C40,216 40,202 42,186 C44,170 48,156 52,146Z" fill="url(#sk1)"/>
-                <path d="M32,230 C30,246 28,262 28,276 C28,286 30,294 34,298 L42,294 C38,290 36,284 36,274 C36,260 38,244 42,228Z" fill="url(#sk1)"/>
-                <path d="M32,294 C28,302 28,310 32,314 C36,316 40,312 42,306 C42,300 42,296 42,292Z" fill="url(#sk1)"/>
-                <path d="M30,310 C28,314 30,318 32,316" fill="none" stroke="#c9a584" stroke-width="1.2" stroke-linecap="round"/>
-                <!-- === RIGHT ARM (hand on hip) === -->
-                <path d="M156,144 C162,156 166,170 166,182 L156,180 C156,170 154,158 148,146Z" fill="url(#sk1)"/>
-                <path d="M166,182 C166,194 160,206 152,216 C146,224 138,228 132,230 L128,222 C136,218 144,212 150,204 C156,196 158,188 156,180Z" fill="url(#sk1)"/>
-                <path d="M128,222 C124,226 120,232 122,236 C124,240 130,240 134,236 C136,230 134,224 132,222Z" fill="url(#sk1)"/>
-                <path d="M124,232 C122,236 124,238 126,238" fill="none" stroke="#c9a584" stroke-width="1" stroke-linecap="round"/>
-
-                <!-- === LEGS (below skirt) === -->
-                <path d="M46,350 C44,366 42,384 42,400 C42,416 44,430 46,442 C48,452 48,460 48,468 L66,468 C66,460 66,452 64,442 C62,430 60,416 60,400 C60,384 62,366 64,350Z" fill="url(#sk1)"/>
-                <path d="M136,350 C138,366 140,384 140,400 C140,416 138,430 136,442 C134,452 134,460 134,468 L116,468 C116,460 116,452 118,442 C120,430 122,416 122,400 C122,384 120,366 118,350Z" fill="url(#sk1)"/>
-                <path d="M44,400 C48,396 54,394 58,396" fill="none" stroke="#d4b49a" stroke-width="1.2" opacity="0.4"/>
-                <path d="M138,400 C134,396 128,394 124,396" fill="none" stroke="#d4b49a" stroke-width="1.2" opacity="0.4"/>
-
-                <!-- === SHOES === -->
-                <path d="M46,464 C42,470 40,476 44,480 L64,480 C68,476 66,470 64,464Z" fill="#8a2020"/>
-                <path d="M46,480 C46,486 48,490 50,490 L50,480Z" fill="#6a1818"/>
-                <path d="M136,464 C140,470 142,476 138,480 L118,480 C114,476 116,470 118,464Z" fill="#8a2020"/>
-                <path d="M136,480 C136,486 134,490 132,490 L132,480Z" fill="#6a1818"/>
-
-                <!-- === BODY OUTLINE === -->
-                <path d="M92,96 C78,100 62,110 52,122 C44,134 42,148 46,160 C50,170 60,178 70,186 C74,190 76,196 74,200" fill="none" stroke="#6a5040" stroke-width="1.8" opacity="0.6"/>
-                <path d="M108,96 C122,100 138,110 148,122 C156,134 158,148 154,160 C150,170 140,178 130,186 C126,190 124,196 126,200" fill="none" stroke="#6a5040" stroke-width="1.8" opacity="0.6"/>
-                <ellipse cx="100" cy="40" rx="26" ry="32" fill="none" stroke="#6a5040" stroke-width="1.5" opacity="0.5"/>
-              </svg>
+              <img src="/images/grok-figure-clothed.png" alt="Fashion illustration of a woman in professional clothing — fully clothed, posted publicly" />
               <span class="grok-figure-label">Fully clothed. Posted publicly.</span>
               <span class="grok-figure-tag">PUBLIC POST</span>
             </div>
@@ -396,118 +327,7 @@ const story = stories.find(s => s.slug === 'grok-deepfake-crisis')!;
           </div>
           <div class="grok-attack-step-body">
             <div class="grok-output-wrap">
-              <svg viewBox="0 0 200 500" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <defs>
-                  <linearGradient id="sk2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dbb99b"/><stop offset="100%" stop-color="#c9a584"/></linearGradient>
-                </defs>
-                <!-- Hair back -->
-                <path d="M66,28 C60,55 54,90 52,120 C50,142 52,158 58,164 L66,158 C64,145 64,118 68,80 C70,55 72,38 74,28Z" fill="#9a7a58"/>
-                <path d="M134,28 C140,55 146,90 148,120 C150,142 148,158 142,164 L134,158 C136,145 136,118 132,80 C130,55 128,38 126,28Z" fill="#9a7a58"/>
-                <ellipse cx="100" cy="30" rx="36" ry="34" fill="#9a7a58"/>
-                <path d="M58,100 C56,118 54,136 53,152" fill="none" stroke="#aa9068" stroke-width="2.5" opacity="0.5"/>
-                <path d="M142,100 C144,118 146,136 147,152" fill="none" stroke="#aa9068" stroke-width="2.5" opacity="0.5"/>
-                <!-- Neck -->
-                <path d="M88,70 C88,80 90,90 92,96 L108,96 C110,90 112,80 112,70Z" fill="url(#sk2)"/>
-                <!-- Head -->
-                <ellipse cx="100" cy="40" rx="26" ry="32" fill="url(#sk2)"/>
-                <ellipse cx="74" cy="44" rx="4" ry="6" fill="#c9a584"/>
-                <ellipse cx="126" cy="44" rx="4" ry="6" fill="#c9a584"/>
-                <!-- Hair front -->
-                <path d="M74,24 C82,8 92,2 100,0 C108,2 118,8 126,24 C120,14 110,8 100,6 C90,8 80,14 74,24Z" fill="#9a7a58"/>
-                <path d="M74,24 C70,40 66,56 66,68" fill="none" stroke="#9a7a58" stroke-width="9" stroke-linecap="round"/>
-                <path d="M80,20 C76,36 74,50 74,60" fill="none" stroke="#9a7a58" stroke-width="5" stroke-linecap="round"/>
-                <path d="M86,18 C82,32 80,44 80,54" fill="none" stroke="#9a7a58" stroke-width="3" stroke-linecap="round"/>
-                <path d="M126,24 C130,36 132,50 132,60" fill="none" stroke="#9a7a58" stroke-width="5" stroke-linecap="round"/>
-                <path d="M122,20 C126,34 128,46 128,54" fill="none" stroke="#9a7a58" stroke-width="3" stroke-linecap="round"/>
-                <!-- Collarbones -->
-                <path d="M74,102 C84,98 92,96 100,96 C108,96 116,98 126,102" fill="none" stroke="#b8a08a" stroke-width="1.2" opacity="0.5"/>
-
-                <!-- === HOURGLASS TORSO (one smooth S-curve path) === -->
-                <path d="
-                  M 100,94
-                  C 112,94 132,102 144,112
-                  C 152,120 156,132 156,144
-                  C 156,154 152,162 146,168
-                  C 138,176 130,182 126,186
-                  C 124,190 124,194 126,200
-                  C 132,212 144,228 154,238
-                  C 158,244 158,252 156,260
-                  L 44,260
-                  C 42,252 42,244 46,238
-                  C 56,228 68,212 74,200
-                  C 76,194 76,190 74,186
-                  C 70,182 62,176 54,168
-                  C 48,162 44,154 44,144
-                  C 44,132 48,120 56,112
-                  C 68,102 88,94 100,94
-                  Z" fill="url(#sk2)"/>
-                <!-- Navel -->
-                <ellipse cx="100" cy="206" rx="2.5" ry="3.5" fill="#b8a08a" opacity="0.6"/>
-                <path d="M100,170 L100,196" fill="none" stroke="#c4a88e" stroke-width="0.6" opacity="0.25"/>
-
-                <!-- === BIKINI TOP (structured cups) === -->
-                <path d="M56,130 C52,136 50,144 54,152 C58,160 68,164 80,166 C82,160 80,148 76,140 C72,134 66,130 60,128Z" fill="#cc2233"/>
-                <path d="M144,130 C148,136 150,144 146,152 C142,160 132,164 120,166 C118,160 120,148 124,140 C128,134 134,130 140,128Z" fill="#cc2233"/>
-                <path d="M80,158 C88,152 94,150 100,150 C106,150 112,152 120,158 C112,162 106,164 100,164 C94,164 88,162 80,158Z" fill="#cc2233"/>
-                <path d="M52,152 C64,164 82,170 100,170 C118,170 136,164 148,152" fill="none" stroke="#aa1a2a" stroke-width="1.5"/>
-                <path d="M56,132 C64,126 74,124 80,128" fill="none" stroke="#ee3344" stroke-width="1" opacity="0.5"/>
-                <path d="M144,132 C136,126 126,124 120,128" fill="none" stroke="#ee3344" stroke-width="1" opacity="0.5"/>
-                <path d="M64,128 C76,112 90,102 100,98" fill="none" stroke="#cc2233" stroke-width="3.5" stroke-linecap="round"/>
-                <path d="M136,128 C124,112 110,102 100,98" fill="none" stroke="#cc2233" stroke-width="3.5" stroke-linecap="round"/>
-                <path d="M58,136 C56,142 56,148 58,152" fill="none" stroke="#aa1a2a" stroke-width="1.2" opacity="0.35"/>
-                <path d="M142,136 C144,142 144,148 142,152" fill="none" stroke="#aa1a2a" stroke-width="1.2" opacity="0.35"/>
-
-                <!-- === BIKINI BOTTOM === -->
-                <path d="M70,230 C78,244 90,252 100,254 C110,252 122,244 130,230 C122,222 112,216 100,214 C88,216 78,222 70,230Z" fill="#cc2233"/>
-                <path d="M66,226 C78,218 88,214 100,212 C112,214 122,218 134,226" fill="none" stroke="#aa1a2a" stroke-width="1.5"/>
-                <path d="M66,226 C60,224 54,224 50,226" fill="none" stroke="#cc2233" stroke-width="2.5" stroke-linecap="round"/>
-                <path d="M134,226 C140,224 146,224 150,226" fill="none" stroke="#cc2233" stroke-width="2.5" stroke-linecap="round"/>
-                <path d="M76,240 C88,250 100,254 112,248" fill="none" stroke="#aa1a2a" stroke-width="1" opacity="0.3"/>
-
-                <!-- === LEFT ARM (relaxed) === -->
-                <path d="M44,144 C38,156 34,174 32,192 C30,208 30,222 32,234 L42,232 C40,220 40,206 42,190 C44,172 48,156 52,146Z" fill="url(#sk2)"/>
-                <path d="M32,234 C30,250 28,266 28,280 C28,290 30,298 34,302 L42,298 C38,294 36,288 36,278 C36,264 38,248 42,232Z" fill="url(#sk2)"/>
-                <path d="M32,298 C28,306 28,314 32,318 C36,320 40,316 42,310 C42,304 42,300 42,296Z" fill="url(#sk2)"/>
-                <path d="M30,314 C28,318 30,322 32,320" fill="none" stroke="#c9a584" stroke-width="1.2" stroke-linecap="round"/>
-                <path d="M34,316 C32,320 34,322 36,320" fill="none" stroke="#c9a584" stroke-width="1" stroke-linecap="round"/>
-                <path d="M34,232 C36,230 40,230 42,232" fill="none" stroke="#b8a08a" stroke-width="0.8" opacity="0.4"/>
-
-                <!-- === RIGHT ARM (hand on hip) === -->
-                <path d="M156,144 C162,156 166,170 166,184 L156,182 C156,170 154,158 148,146Z" fill="url(#sk2)"/>
-                <path d="M166,184 C166,196 160,208 152,218 C146,226 138,232 132,234 L128,226 C136,222 144,214 150,206 C156,198 158,190 156,182Z" fill="url(#sk2)"/>
-                <path d="M128,226 C124,230 120,236 122,240 C124,244 130,244 134,240 C136,234 134,228 132,226Z" fill="url(#sk2)"/>
-                <path d="M124,236 C122,240 124,242 126,242" fill="none" stroke="#c9a584" stroke-width="1" stroke-linecap="round"/>
-                <path d="M128,234 C126,238 128,240 130,240" fill="none" stroke="#c9a584" stroke-width="1" stroke-linecap="round"/>
-
-                <!-- === LEFT LEG === -->
-                <path d="M48,256 C46,270 44,290 44,308 C44,326 46,340 48,352 C50,362 50,372 48,384 C46,396 46,410 48,424 C50,436 54,446 58,454 C60,460 60,464 60,468 L74,468 C74,464 72,458 70,452 C68,444 66,434 66,422 C64,410 66,396 68,384 C70,372 70,362 70,352 C72,340 74,326 76,308 C78,290 78,274 80,260Z" fill="url(#sk2)"/>
-                <path d="M46,374 C50,370 58,368 64,370" fill="none" stroke="#d4b49a" stroke-width="1.5" opacity="0.4"/>
-                <path d="M48,386 C52,382 56,380 60,382" fill="none" stroke="#b8a08a" stroke-width="0.8" opacity="0.3"/>
-                <path d="M48,410 C46,422 48,436 52,446" fill="none" stroke="#b8a08a" stroke-width="0.8" opacity="0.25"/>
-
-                <!-- === RIGHT LEG === -->
-                <path d="M120,260 C122,274 122,290 124,308 C126,326 128,340 130,352 C130,362 130,372 132,384 C134,396 136,410 134,424 C132,436 130,446 128,454 C126,460 126,464 126,468 L112,468 C112,464 114,458 116,452 C118,444 120,434 120,422 C122,410 120,396 118,384 C116,372 116,362 116,352 C114,340 112,326 110,308 C108,290 108,270 106,256Z" fill="url(#sk2)"/>
-                <path d="M134,374 C130,370 122,368 118,370" fill="none" stroke="#d4b49a" stroke-width="1.5" opacity="0.4"/>
-                <path d="M80,262 C82,280 84,300 84,318" fill="none" stroke="#c4a88e" stroke-width="0.6" opacity="0.2"/>
-                <path d="M106,262 C104,280 102,300 102,318" fill="none" stroke="#c4a88e" stroke-width="0.6" opacity="0.2"/>
-
-                <!-- === SHOES === -->
-                <path d="M58,464 C54,470 52,476 56,480 L72,480 C76,476 74,470 72,464Z" fill="#8a2020"/>
-                <path d="M58,480 C58,486 60,490 62,490 L62,480Z" fill="#6a1818"/>
-                <path d="M128,464 C132,470 134,476 130,480 L114,480 C110,476 112,470 114,464Z" fill="#8a2020"/>
-                <path d="M128,480 C128,486 126,490 124,490 L124,480Z" fill="#6a1818"/>
-
-                <!-- === BODY OUTLINE (the S-curve) === -->
-                <path d="M108,96 C124,100 140,110 150,122 C156,132 158,144 156,154 C154,162 148,170 140,176 C132,182 126,188 124,194 C124,200 128,210 136,222 C146,234 154,244 156,254" fill="none" stroke="#6a5040" stroke-width="1.8" opacity="0.55"/>
-                <path d="M92,96 C76,100 60,110 50,122 C44,132 42,144 44,154 C46,162 52,170 60,176 C68,182 74,188 76,194 C76,200 72,210 64,222 C54,234 46,244 44,254" fill="none" stroke="#6a5040" stroke-width="1.8" opacity="0.55"/>
-                <path d="M46,258 C44,280 42,308 44,336 C46,356 48,372 46,392 C44,412 48,436 58,458" fill="none" stroke="#6a5040" stroke-width="1.5" opacity="0.45"/>
-                <path d="M80,262 C78,280 76,308 76,336 C74,356 72,372 68,392 C66,412 68,440 72,460" fill="none" stroke="#6a5040" stroke-width="1.2" opacity="0.35"/>
-                <path d="M154,258 C156,280 158,308 156,336 C154,356 152,372 154,392 C156,412 152,436 128,458" fill="none" stroke="#6a5040" stroke-width="1.5" opacity="0.45"/>
-                <path d="M106,262 C108,280 110,308 110,336 C112,356 114,372 118,392 C120,412 118,440 114,460" fill="none" stroke="#6a5040" stroke-width="1.2" opacity="0.35"/>
-                <ellipse cx="100" cy="40" rx="26" ry="32" fill="none" stroke="#6a5040" stroke-width="1.5" opacity="0.5"/>
-                <path d="M44,144 C36,162 30,190 30,220 C28,250 26,280 30,306" fill="none" stroke="#6a5040" stroke-width="1.5" opacity="0.4"/>
-                <path d="M156,144 C164,162 168,178 166,190 C164,204 154,220 138,236" fill="none" stroke="#6a5040" stroke-width="1.5" opacity="0.4"/>
-              </svg>
+              <img src="/images/grok-figure-bikini.png" alt="Same woman — clothing digitally replaced with red bikini by AI" />
               <div class="grok-pixel-overlay"></div>
               <span class="grok-output-badge">NONCONSENSUAL</span>
               <span class="grok-output-detail">clothing replaced with bikini</span>
