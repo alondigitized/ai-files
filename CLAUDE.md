@@ -21,11 +21,11 @@ src/
     index.astro           ← Archive landing page (featured story + card grid)
     feed.xml.ts           ← RSS 2.0 feed (sorted by isoDate, newest first)
     stories/
-      *.astro             ← One file per story (24 total)
+      *.astro             ← One file per story (27 total)
   styles/
     global.css            ← Shared component styles
   data/
-    stories.json          ← Metadata for all 24 stories
+    stories.json          ← Metadata for all 27 stories
 
 public/
   favicon.svg
@@ -82,6 +82,25 @@ Every story **must** have a `whatIf` field in `stories.json`. This is the most i
 
 Set the `whatIf` field in the story's `stories.json` entry. StoryLayout renders it automatically — no manual HTML section needed.
 
+## Light/Dark Theme Duality
+
+Stories have a `side` field: `"dark"` or `"light"`. Dark stories use the existing dark palette (cautionary tales). Light stories use a warm cream/gold palette (positive outcomes).
+
+- **BaseLayout.astro** sets `<html data-theme={side}>` which activates the light CSS override block in `global.css`
+- **StoryLayout.astro** reads `story.side` and passes it to BaseLayout; "more stories" prioritizes same-side stories
+- **Index page** has a filter toggle (`● All` / `◐ Dark Side` / `○ Light Side`) using `data-side` on `.vol-section` elements
+- Volume 5 ("What Went Right") contains light-side stories
+
+### Light theme CSS variables (`:root[data-theme="light"]`)
+| Variable | Value | Notes |
+|----------|-------|-------|
+| `--bg` | `#f5f0e8` | Warm cream |
+| `--surface` | `#ebe5d9` | |
+| `--accent` | `#c8963e` | Warm gold (replaces danger red) |
+| `--text` | `#1a1a17` | Dark text on light bg |
+| `--muted` | `#6b6558` | |
+| `--green` | `#2d8a4e` | Muted green |
+
 ## stories.json Schema
 
 Each entry in `src/data/stories.json`:
@@ -89,8 +108,9 @@ Each entry in `src/data/stories.json`:
 ```json
 {
   "slug": "my-story",           // matches filename and URL
+  "side": "dark",               // "dark" or "light" — determines page theme
   "chapter": 1,                 // integer, used for ordering and display
-  "volume": 1,                  // integer (1, 2, or 3)
+  "volume": 1,                  // integer (1, 2, 3, 4, or 5)
   "title": "Story Title",
   "deck": "One-sentence summary shown in hero and cards",
   "date": "January 2024",       // human-readable display date
@@ -186,6 +206,7 @@ These classes appear per-story in `<style is:global>` blocks (not in global.css)
 | grandma-exploit | `#ff4d4d` |
 | waymo-blackout | `#facc15` |
 | grok-deepfake-crisis | `#d946ef` |
+| rosie-vaccine | `#c8963e` |
 
 ## Canvas Animations
 
@@ -245,6 +266,7 @@ Every story includes a **full-width canvas animation** placed at a dramatically 
 | ai-self-preservation | `ai-self-preservation.astro` | **The Copy** — green AI traces a figure-8; red warning appears; copies arc to canvas corners; confrontation flash; copies vanish; AI returns to center, innocent |
 | waymo-blackout | `waymo-blackout.astro` | **Grid Lock** — 18 yellow cars in grid-lane paths; blackout flash; all freeze; hazard lights pulse for 240 frames; one by one manually overridden and removed |
 | grok-deepfake-crisis | `grok-deepfake-crisis.astro` | **The Flood** — fuchsia droplets fall from above, each a generated image; they accelerate over time; a thin barrier line attempts to block them but fractures under volume; droplets pool and spread below; barrier rebuilds, breaks again; the flood never stops |
+| rosie-vaccine | `rosie-vaccine.astro` | **The Sequence** — a warm gold double helix rotates on cream; it contracts around two dim masses; one absorbs the gold and dissolves into warm light; the other deflects the particles, unchanged; the helix reforms and the cycle restarts |
 
 ### Adding a New Story
 
