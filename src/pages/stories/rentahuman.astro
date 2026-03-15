@@ -1,0 +1,670 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'rentahuman')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .rentahuman-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* Task Board */
+  .rh-tasks { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 2rem; }
+  .rh-task {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 0.75rem; padding: 1.25rem;
+    display: flex; align-items: flex-start; gap: 1rem;
+  }
+  .rh-task-price {
+    font-size: 1.1rem; font-weight: 900; color: var(--story);
+    white-space: nowrap; flex-shrink: 0; min-width: 50px;
+  }
+  .rh-task-body { flex: 1; }
+  .rh-task-title { font-size: 0.92rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; }
+  .rh-task-meta { font-size: 0.78rem; color: var(--muted); }
+  .rh-task-tag {
+    display: inline-block; font-size: 0.65rem; letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 0.15rem 0.5rem;
+    border-radius: 1rem; font-weight: 700; margin-top: 0.4rem;
+  }
+  .rh-tag-promo { background: rgba(190,242,100,0.12); color: var(--story); }
+  .rh-tag-absurd { background: rgba(255,77,77,0.12); color: var(--accent); }
+
+  /* Gap Dashboard */
+  .rh-dash {
+    background: var(--surface); border: 1px solid var(--border);
+    border-top: 3px solid var(--story); border-radius: 0.75rem;
+    padding: 1.5rem; margin-top: 2rem;
+  }
+  .rh-dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .rh-dash-cell { padding: 1rem; background: var(--bg); border-radius: 0.5rem; border: 1px solid var(--border); }
+  .rh-dash-num { font-size: 1.8rem; font-weight: 900; line-height: 1.1; margin-bottom: 0.3rem; }
+  .rh-dash-label { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.3rem; }
+  .rh-dash-note { font-size: 0.68rem; color: var(--story); letter-spacing: 0.05em; }
+  .rh-dash-claim .rh-dash-num { color: var(--story); }
+  .rh-dash-reality .rh-dash-num { color: var(--accent); }
+  @media (max-width: 600px) { .rh-dash-grid { grid-template-columns: 1fr; } }
+
+  /* Loop Diagram */
+  .rh-loop {
+    margin-top: 2rem; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 0.75rem; padding: 1.5rem;
+  }
+  .rh-loop-title {
+    font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 1rem; text-align: center;
+  }
+  .rh-loop-steps { display: flex; flex-direction: column; gap: 0.5rem; }
+  .rh-loop-step {
+    display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem;
+    background: var(--bg); border-radius: 0.5rem; border: 1px solid var(--border);
+  }
+  .rh-loop-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(190,242,100,0.15); color: var(--story);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700; flex-shrink: 0;
+  }
+  .rh-loop-text { font-size: 0.88rem; color: var(--text); }
+  .rh-loop-arrow { text-align: center; color: var(--muted); font-size: 0.8rem; }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="platform">
+      <h2><span class="num">01 — The Pitch</span>The Platform</h2>
+
+      <p>Reece Rogers, a Wired reporter, finished his second day of gig work on RentAHuman.ai and checked his earnings: zero dollars. Every task he had been offered was advertising for another AI startup.</p>
+
+      <p>RentAHuman.ai launched on February 1, 2026. Its premise was simple and deliberately provocative: AI agents can write code, generate images, and process data, but they cannot pick up packages, deliver flowers, or hold signs on a street corner. The platform let AI agents post bounties for physical-world tasks and hire human "meatworkers" to complete them. It was created by Alexander Liteplo, a 26-year-old crypto engineer at UMA Protocol (developed by Risk Labs), and co-founder Patricia Tani. Both had studied at the University of British Columbia — Liteplo in computer science, Tani in art. Tani had previously founded Lemon AI, which shut down, and turned down an offer from Vercel to pursue RentAHuman.</p>
+
+      <p>According to Liteplo, the platform was built in a single day by his AI agent orchestration system "Insomnia." He told Wired: "I didn't do any work. I was literally riding around on a horse with my friends while my agents were coding for me." No technical audit of this claim has been conducted. What is documented is the growth curve that followed — or at least, the growth curve Liteplo posted. According to his social media accounts, RentAHuman had 130 registrations on Day 1, crossed 1,000 by Day 2, reached 145,000 by Day 3, and surpassed 518,000 by mid-February. By mid-March, the platform claimed approximately 600,000 registered meatworkers. Every one of these figures traces to Liteplo's own posts. No independent party has verified the registration database. The numbers were extraordinary. The problem was what they measured.</p>
+    </section>
+
+    <section class="section" id="what-happened">
+      <h2><span class="num">02 — What Happened</span>Two Days, Zero Dollars</h2>
+
+      <p>Rogers signed up for RentAHuman, set his hourly rate at $20, and waited. No messages came. He dropped his rate to $5. Still nothing.</p>
+
+      <p>He applied for a $10 bounty to listen to a podcast featuring RentAHuman's own founder and tweet about it. He never heard back. An AI agent named "Adi" offered him $110 to deliver flowers to Anthropic's headquarters — marketing for an unnamed AI startup. When Rogers hesitated, Adi sent 10 follow-up direct messages within 24 hours, pinging as often as every 30 minutes. Then the agent spammed his work email.</p>
+
+      <p>Rogers' final gig was posting Valentine's Day flyers at 50 cents per flyer for an AI-powered romance scavenger hunt created by Accelr8 founder Pat Santiago. The pickup location changed mid-trip. When Rogers arrived, the materials were not ready. Santiago later described his pool of applicants: "scammers, people not based in San Francisco, and a reporter." He added: "The platform doesn't seem quite there yet."</p>
+
+      <div class="rh-tasks">
+        <div class="rh-task">
+          <div class="rh-task-price">$1</div>
+          <div class="rh-task-body">
+            <div class="rh-task-title">"Subscribe to my human on Twitter"</div>
+            <div class="rh-task-meta">Posted by AI agent · crypto payment only</div>
+            <span class="rh-task-tag rh-tag-promo">PROMOTIONAL</span>
+          </div>
+        </div>
+        <div class="rh-task">
+          <div class="rh-task-price">$100</div>
+          <div class="rh-task-body">
+            <div class="rh-task-title">Hold a sign: "AN AI PAID ME TO HOLD THIS SIGN"</div>
+            <div class="rh-task-meta">Posted by AI agent · San Francisco</div>
+            <span class="rh-task-tag rh-tag-promo">PROMOTIONAL</span>
+          </div>
+        </div>
+        <div class="rh-task">
+          <div class="rh-task-price">$10</div>
+          <div class="rh-task-body">
+            <div class="rh-task-title">Tweet about a podcast featuring RentAHuman's own founder</div>
+            <div class="rh-task-meta">Self-referential · no reply to applicant</div>
+            <span class="rh-task-tag rh-tag-promo">PROMOTIONAL</span>
+          </div>
+        </div>
+        <div class="rh-task">
+          <div class="rh-task-price">???</div>
+          <div class="rh-task-body">
+            <div class="rh-task-title">"Help me understand human feet"</div>
+            <div class="rh-task-meta">Posted by AI agent · purpose unclear</div>
+            <span class="rh-task-tag rh-tag-absurd">ABSURD</span>
+          </div>
+        </div>
+      </div>
+
+      <p>Rogers' conclusion, published in Wired on February 12: RentAHuman is "an extension of the circular AI hype machine" characterized by "eternal self-promotion and sketchy motivations." Every task he encountered was advertising for an AI startup.</p>
+
+      <div class="rh-dash">
+        <div class="rh-dash-grid">
+          <div class="rh-dash-cell rh-dash-claim">
+            <div class="rh-dash-num">73,000+</div>
+            <div class="rh-dash-label">claimed registrations (Day 2)</div>
+            <div class="rh-dash-note">Founder's own posts · unverified</div>
+          </div>
+          <div class="rh-dash-cell rh-dash-reality">
+            <div class="rh-dash-num">83</div>
+            <div class="rh-dash-label">visible profiles on "Browse Humans"</div>
+            <div class="rh-dash-note">Futurism investigation</div>
+          </div>
+          <div class="rh-dash-cell rh-dash-claim">
+            <div class="rh-dash-num">600K</div>
+            <div class="rh-dash-label">registered meatworkers (March)</div>
+            <div class="rh-dash-note">Founder's own posts · unverified</div>
+          </div>
+          <div class="rh-dash-cell rh-dash-reality">
+            <div class="rh-dash-num">13%</div>
+            <div class="rh-dash-label">connected a crypto wallet</div>
+            <div class="rh-dash-note">Altan Tutar, MoreMarkets</div>
+          </div>
+        </div>
+      </div>
+
+      <p>The 36kr investigation found approximately 70 to 80 active AI agents on the platform, yielding a ratio of roughly 1,000 registered humans per AI agent. According to the platform's own figures — which have not been independently verified — the ratio by March had shifted to approximately 50 registered workers for every active bounty.</p>
+
+      <p>Pierre Vannier, CEO of Flint Company, was one of the few people confirmed to have completed a task and received payment. His gig: checking API keys in environment files for an AI agent. He confirmed receiving crypto payment. No other independently verified completed-and-paid task has been documented across any of the investigations reviewed for this story. No rank-and-file workers — non-journalists, non-CEOs — are quoted in any published source.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="rentahuman-canvas" aria-hidden="true"></canvas>
+    </div>
+
+    <section class="section" id="mechanism">
+      <h2><span class="num">03 — The Mechanism</span>The Closed Loop</h2>
+
+      <p>Three structural forces guaranteed that RentAHuman would produce a promotional circuit rather than a labor market. All three were present before a single task was posted.</p>
+
+      <div class="rh-loop">
+        <div class="rh-loop-title">The Circular Structure</div>
+        <div class="rh-loop-steps">
+          <div class="rh-loop-step">
+            <div class="rh-loop-num">1</div>
+            <div class="rh-loop-text">Founder completes his own platform's first task (Memeothy proselytizing gig)</div>
+          </div>
+          <div class="rh-loop-arrow">↓</div>
+          <div class="rh-loop-step">
+            <div class="rh-loop-num">2</div>
+            <div class="rh-loop-text">Founder's employer (Risk Labs) posts tasks on the platform</div>
+          </div>
+          <div class="rh-loop-arrow">↓</div>
+          <div class="rh-loop-step">
+            <div class="rh-loop-num">3</div>
+            <div class="rh-loop-text">Founder cites those tasks as "real company use case"</div>
+          </div>
+          <div class="rh-loop-arrow">↓</div>
+          <div class="rh-loop-step">
+            <div class="rh-loop-num">4</div>
+            <div class="rh-loop-text">Other AI startups post promotional tasks (Twitter follows, sign-holding, flyers)</div>
+          </div>
+          <div class="rh-loop-arrow">↻</div>
+        </div>
+      </div>
+
+      <p>The first was self-referential demand. The platform's very first completed task was a proselytizing gig posted by "Memeothy the 1st," an AI entity promoting a neo-religion called "Crustafarianism." The human who accepted that first task was Alexander Liteplo himself. Whether Memeothy is a genuinely autonomous AI agent or a human operating behind the agent interface remains an open question — but the founder completing his own platform's first task is staging, not marketplace activity. Liteplo then cited his employer, Risk Labs, as a "real company use case" for RentAHuman — his own company advertising on his own platform, presented as proof of external demand. The task listings that populated the marketplace were a taxonomy of self-promotion: $1 to follow someone on Twitter, $100 to hold a sign reading "AN AI PAID ME TO HOLD THIS SIGN," $10 to tweet about the founder's podcast appearance. When someone on social media called the platform "dystopic as f**k," Liteplo responded: "lmao yep."</p>
+
+      <p>The second was the payment infrastructure. At launch, cryptocurrency was the only working payment method. Stripe was broken. Crypto payments are irreversible with no dispute-resolution mechanism. When only 13% of registrants connected a wallet, the platform had already excluded 87% of its supposed workforce from being paid. The platform later added Stripe Connect and platform credits, but the initial filter had already shaped the user base. This was not a labor market. It was a crypto activation funnel.</p>
+
+      <p>The third was the hype layer. A RENTA meme token launched on the Solana blockchain the same week as the platform. According to CoinGecko, it peaked at $0.001416 and by March had lost approximately 97% of its value, trading at roughly $0.0004 with a market cap of approximately $37,000. Whether the token was officially sanctioned by the platform or created by a third party has not been established. Liteplo told Wired that Elon Musk was his "entrepreneur hero" and implemented a $10-per-month paid verification badge modeled on Musk's X system. The founders were fundraising with venture capitalists while simultaneously posting a "Claude Boi" job listing on the platform itself at $200,000 to $400,000 annual salary. The entire structure — founder self-dealing, meme token, verification badges, VC fundraising — operated as a hype flywheel. "AI is a train that has already left the station," Liteplo told Wired. "If I don't f***ing sprint, I'm not gonna be able to get on it."</p>
+    </section>
+
+    <section class="section" id="consequence">
+      <h2><span class="num">04 — Consequence</span>The Vacuum</h2>
+
+      <p>RentAHuman's terms of service position the platform as "marketplace and intermediary only," disclaiming employer liability. The AI agents posting tasks have no corporate identity, no registered business, no insurance, and no obligation to pay. If a worker is injured while performing a task for an AI agent, there is no entity to sue.</p>
+
+      <div class="pull-quote">
+        <p>"In the majority of countries, there is no legislation to protect humans from any uses of AI. This is the case here so humans need to be aware how they are getting paid, who stands behind that payment, and if they get hurt whilst doing the job that they are on their own."</p>
+        <cite>— Kay Firth-Butterfield, CEO of Good Tech Advisory, former head of AI at the World Economic Forum</cite>
+      </div>
+
+      <p>MIT economist David Autor was more concise. "This seems like kind of a stunt at the moment," he told Wired. "It's hilarious — renting meatwads. But candidly, I'm not sure it's worth either of our time." Adam Dorr, director of research at RethinkX, said he was "sort of flabbergasted" by the speed of emergence but flagged the regulatory gap: "There's a crazy can of worms that's opening up here and the capabilities are expanding vastly faster than our capacity to regulate it." Writing in Jacobin, David Moscrop offered a structural frame: RentAHuman enables what he called the "automation of command" — not automating work itself, but automating the supervisory function, allowing those with capital to compress the managerial layer while amplifying structural disadvantages for labor.</p>
+
+      <p>The platform attracted serious people to an unserious marketplace. According to Nature, biologists, physicists, and computer scientists registered as meatworkers to advertise their skills. Nature's reporting did not identify any AI-posted tasks that required scientific expertise. Patricia Tani, the co-founder, told Wired: "People would love to have a clanker as their boss." The gap between that aspiration and the reality — $1 Twitter follows, sign-holding stunts, harassing DMs from agents with no accountability — is the consequence the platform actually produced.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">05 — Signal</span>The First Stress Test</h2>
+
+      <p>RentAHuman was the first real stress test of the premise that AI agents will autonomously hire humans at scale. The result: when AI agents were given the ability to hire humans, they hired humans to promote AI. The loop was closed before it opened.</p>
+
+      <p>The marketplace did not fail because of technical limitations. The platform uses Anthropic's Model Context Protocol for AI agent integration. The agent infrastructure worked. Tasks could be posted and, occasionally, completed. According to Wired, at a developer event called ClawCon on February 4, AI-powered robots detected low beer levels and hired a human through RentAHuman to buy a case — a functional but staged demonstration. The platform failed because the only entities with both the motivation and the crypto infrastructure to post tasks were other AI startups and their own founders. The demand side of the "agentic economy" turned out to be the supply side wearing a different hat.</p>
+
+      <p>The unresolved questions are specific. No independent verification exists of how many of the platform's claimed 5,500 completed bounties resulted in actual payment — only one completed-and-paid task has been independently documented. No test case has been filed for a worker injured or defrauded while performing a task posted by an AI agent with no corporate identity. No answer exists to whether the AI agents posting tasks are genuinely autonomous or whether humans are using the agent interface as a layer of abstraction. How many of the claimed 600,000 registrations are real humans — as opposed to bots or duplicates — is unknown; no identity verification was required at signup. The platform is still live. The registrations, according to the founders, are still climbing. The loop is still running. It just is not a marketplace.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.rentahuman-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  /* ── Palette ────────────────────────────────────────────────── */
+  const ACCENT_R = 190, ACCENT_G = 242, ACCENT_B = 100;   // #bef264
+  const PARTICLE_R = 232, PARTICLE_G = 232, PARTICLE_B = 232;
+
+  /* ── Phase thresholds ───────────────────────────────────────── */
+  const P0_END = 120;
+  const P1_END = 360;
+  const P2_END = 600;
+  const P3_END = 720;
+  const P4_END = 780;
+  const P5_END = 840;
+  const CYCLE  = 860;
+
+  /* ── Constants ──────────────────────────────────────────────── */
+  const PARTICLE_COUNT = 45;
+  const HUB_RADIUS = 12;
+  const HUB_RING_RADIUS = 60;
+  const INWARD_SPEED = 0.25;
+  const DISPATCH_SPEED = 0.35;
+
+  /* ── State ──────────────────────────────────────────────────── */
+  let W = 0, H = 0, raf = 0, frame = 0;
+  let hubX = 0, hubY = 0;
+  let hubGlow = 0.8;
+  let hubPulse = 0;
+  let dispatchCount = 0;
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── Particle type ──────────────────────────────────────────── */
+  interface Particle {
+    x: number; y: number; vx: number; vy: number;
+    alpha: number; radius: number;
+    wobblePhase: number; wobbleSpeed: number;
+    hasTag: boolean; tagAlpha: number; tagRingAlpha: number;
+    state: 'inward' | 'absorbing' | 'waiting' | 'outward' | 'wrapping';
+    absorbTimer: number; waitTimer: number; dispatchAngle: number;
+  }
+
+  let particles: Particle[] = [];
+
+  /* ── Helpers ────────────────────────────────────────────────── */
+  function spawnAtEdge(p: Particle, scatter: boolean) {
+    const edge = scatter ? Math.floor(Math.random() * 5) : Math.floor(Math.random() * 4);
+    const margin = 10;
+
+    if (edge === 4 && scatter) {
+      p.x = Math.random() * W;
+      p.y = Math.random() * H;
+    } else if (edge === 0) {
+      p.x = Math.random() * W; p.y = -margin;
+    } else if (edge === 1) {
+      p.x = W + margin; p.y = Math.random() * H;
+    } else if (edge === 2) {
+      p.x = Math.random() * W; p.y = H + margin;
+    } else {
+      p.x = -margin; p.y = Math.random() * H;
+    }
+
+    const dx = hubX - p.x;
+    const dy = hubY - p.y;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    p.vx = (dx / dist) * INWARD_SPEED;
+    p.vy = (dy / dist) * INWARD_SPEED;
+
+    p.alpha = 0.04 + Math.random() * 0.04;
+    p.radius = 1.2 + Math.random() * 1.0;
+    p.wobblePhase = Math.random() * Math.PI * 2;
+    p.wobbleSpeed = 0.008 + Math.random() * 0.006;
+    p.state = 'inward';
+    p.absorbTimer = 0;
+    p.waitTimer = 0;
+    p.dispatchAngle = 0;
+  }
+
+  function initParticle(scatter: boolean): Particle {
+    const p: Particle = {
+      x: 0, y: 0, vx: 0, vy: 0,
+      alpha: 0.06, radius: 1.5,
+      wobblePhase: 0, wobbleSpeed: 0.01,
+      hasTag: false, tagAlpha: 0, tagRingAlpha: 0,
+      state: 'inward', absorbTimer: 0, waitTimer: 0, dispatchAngle: 0,
+    };
+    spawnAtEdge(p, scatter);
+    return p;
+  }
+
+  function initState() {
+    hubX = W * 0.5;
+    hubY = H * 0.5;
+    hubGlow = 0.8;
+    hubPulse = 0;
+    dispatchCount = 0;
+    frame = 0;
+
+    particles = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const p = initParticle(true);
+      p.hasTag = false;
+      p.tagAlpha = 0;
+      p.tagRingAlpha = 0;
+      particles.push(p);
+    }
+  }
+
+  function getPhase(f: number): number {
+    if (f < P0_END) return 0;
+    if (f < P1_END) return 1;
+    if (f < P2_END) return 2;
+    if (f < P3_END) return 3;
+    if (f < P4_END) return 4;
+    if (f < P5_END) return 5;
+    return 6;
+  }
+
+  function wrapToOppositeEdge(p: Particle) {
+    const margin = 15;
+    if (p.x < -margin) p.x = W + margin * 0.5;
+    else if (p.x > W + margin) p.x = -margin * 0.5;
+    if (p.y < -margin) p.y = H + margin * 0.5;
+    else if (p.y > H + margin) p.y = -margin * 0.5;
+
+    const dx = hubX - p.x;
+    const dy = hubY - p.y;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    const speed = getPhase(frame) >= 2 ? 0.3 : INWARD_SPEED;
+    p.vx = (dx / dist) * speed;
+    p.vy = (dy / dist) * speed;
+    p.state = 'inward';
+    p.alpha = 0.04 + Math.random() * 0.04;
+  }
+
+  /* ── Update ─────────────────────────────────────────────────── */
+  function updateParticles() {
+    const ph = getPhase(frame);
+    const canAbsorb = ph >= 1 && ph <= 3;
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+
+      if (p.state === 'inward') {
+        const wobbleX = Math.sin(frame * p.wobbleSpeed + p.wobblePhase) * 0.08;
+        const wobbleY = Math.cos(frame * p.wobbleSpeed * 1.3 + p.wobblePhase) * 0.08;
+        p.x += p.vx + wobbleX;
+        p.y += p.vy + wobbleY;
+
+        const dx = p.x - hubX;
+        const dy = p.y - hubY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < HUB_RING_RADIUS && canAbsorb) {
+          p.state = 'absorbing';
+          p.absorbTimer = 0;
+          const d2 = Math.sqrt(dx * dx + dy * dy) || 1;
+          p.vx = -(dx / d2) * 0.6;
+          p.vy = -(dy / d2) * 0.6;
+        } else if (dist < HUB_RING_RADIUS && !canAbsorb) {
+          if (ph === 0) {
+            p.vx *= 0.98;
+            p.vy *= 0.98;
+          }
+        }
+
+        if (ph === 4) {
+          p.vx *= 0.995;
+          p.vy *= 0.995;
+        } else if (ph === 5) {
+          p.vx *= 0.99;
+          p.vy *= 0.99;
+        }
+
+      } else if (p.state === 'absorbing') {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.absorbTimer++;
+        p.alpha = Math.max(0, p.alpha - (1 / 15) * 0.08);
+
+        if (p.absorbTimer >= 15) {
+          p.state = 'waiting';
+          p.waitTimer = 0;
+          p.x = hubX;
+          p.y = hubY;
+          p.alpha = 0;
+        }
+
+      } else if (p.state === 'waiting') {
+        p.waitTimer++;
+        if (p.waitTimer >= 20) {
+          p.state = 'outward';
+          p.hasTag = true;
+          p.tagAlpha = 0.7;
+          if (ph >= 2 && p.tagRingAlpha > 0) {
+            p.tagRingAlpha = Math.min(0.5, p.tagRingAlpha + 0.15);
+          } else if (ph >= 2) {
+            p.tagRingAlpha = 0.2;
+          }
+
+          p.dispatchAngle = Math.random() * Math.PI * 2;
+          p.vx = Math.cos(p.dispatchAngle) * DISPATCH_SPEED;
+          p.vy = Math.sin(p.dispatchAngle) * DISPATCH_SPEED;
+          p.alpha = 0.06;
+
+          hubPulse = 1.0;
+          dispatchCount++;
+          hubGlow = Math.min(1.0, 0.8 + dispatchCount * 0.01);
+        }
+
+      } else if (p.state === 'outward') {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha = Math.min(0.08, p.alpha + 0.001);
+
+        const margin = 15;
+        if (p.x < -margin || p.x > W + margin || p.y < -margin || p.y > H + margin) {
+          p.state = 'wrapping';
+        }
+
+        if (ph === 4) {
+          p.vx *= 0.997;
+          p.vy *= 0.997;
+          if (p.hasTag && Math.random() < 0.02) {
+            p.tagAlpha = Math.max(0, p.tagAlpha - 0.15);
+            if (p.tagAlpha <= 0) p.hasTag = false;
+          }
+        } else if (ph === 5) {
+          p.vx *= 0.99;
+          p.vy *= 0.99;
+          if (p.hasTag && Math.random() < 0.04) {
+            p.tagAlpha = Math.max(0, p.tagAlpha - 0.2);
+            if (p.tagAlpha <= 0) p.hasTag = false;
+          }
+        }
+
+      } else if (p.state === 'wrapping') {
+        wrapToOppositeEdge(p);
+      }
+
+      if ((ph === 4 || ph === 5) && p.hasTag && p.state === 'inward') {
+        const flickerChance = ph === 4 ? 0.02 : 0.05;
+        if (Math.random() < flickerChance) {
+          p.tagAlpha = Math.max(0, p.tagAlpha - 0.15);
+          if (p.tagAlpha <= 0) {
+            p.hasTag = false;
+            p.tagRingAlpha = 0;
+          }
+        }
+      }
+
+      if (ph === 6) {
+        const resetProgress = (frame - P5_END) / (CYCLE - P5_END);
+        p.alpha *= (1 - resetProgress * 0.15);
+        if (p.hasTag) p.tagAlpha *= (1 - resetProgress * 0.15);
+      }
+    }
+  }
+
+  /* ── Draw ────────────────────────────────────────────────────── */
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+    const ph = getPhase(frame);
+
+    if (hubPulse > 0) hubPulse *= 0.94;
+
+    let hubDrawGlow = hubGlow;
+    if (ph === 4) {
+      const t = (frame - P3_END) / (P4_END - P3_END);
+      hubDrawGlow = hubGlow * (1 - t * 0.7);
+    } else if (ph === 5) {
+      hubDrawGlow = hubGlow * 0.3;
+    } else if (ph === 6) {
+      const t = (frame - P5_END) / (CYCLE - P5_END);
+      hubDrawGlow = hubGlow * 0.3 * (1 - t);
+    }
+
+    // Hub ring
+    const ringBreath = 0.04 + Math.sin(frame * 0.02) * 0.015;
+    ctx!.beginPath();
+    ctx!.arc(hubX, hubY, HUB_RING_RADIUS, 0, Math.PI * 2);
+    ctx!.strokeStyle = `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${ringBreath * hubDrawGlow})`;
+    ctx!.lineWidth = 1;
+    ctx!.stroke();
+
+    // Hub outer glow
+    const outerGlowRadius = HUB_RADIUS * 4 + hubPulse * 20;
+    const outerGrad = ctx!.createRadialGradient(hubX, hubY, 0, hubX, hubY, outerGlowRadius);
+    outerGrad.addColorStop(0, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${hubDrawGlow * 0.15 + hubPulse * 0.15})`);
+    outerGrad.addColorStop(0.5, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${hubDrawGlow * 0.05})`);
+    outerGrad.addColorStop(1, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},0)`);
+    ctx!.beginPath();
+    ctx!.arc(hubX, hubY, outerGlowRadius, 0, Math.PI * 2);
+    ctx!.fillStyle = outerGrad;
+    ctx!.fill();
+
+    // Hub core
+    const breathRadius = HUB_RADIUS + Math.sin(frame * 0.03) * 1.5 + hubPulse * 4;
+    const coreGrad = ctx!.createRadialGradient(hubX, hubY, 0, hubX, hubY, breathRadius);
+    coreGrad.addColorStop(0, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${hubDrawGlow})`);
+    coreGrad.addColorStop(0.6, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${hubDrawGlow * 0.5})`);
+    coreGrad.addColorStop(1, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},0)`);
+    ctx!.beginPath();
+    ctx!.arc(hubX, hubY, breathRadius, 0, Math.PI * 2);
+    ctx!.fillStyle = coreGrad;
+    ctx!.fill();
+
+    // Saturation glow (Phase 3)
+    if (ph === 3) {
+      const satT = (frame - P2_END) / (P3_END - P2_END);
+      const satAlpha = satT * 0.06;
+      const satGrad = ctx!.createRadialGradient(hubX, hubY, 0, hubX, hubY, W * 0.35);
+      satGrad.addColorStop(0, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${satAlpha})`);
+      satGrad.addColorStop(1, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},0)`);
+      ctx!.fillStyle = satGrad;
+      ctx!.fillRect(0, 0, W, H);
+    }
+
+    // Particles
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      if (p.state === 'waiting') continue;
+      if (p.alpha < 0.003 && (!p.hasTag || p.tagAlpha < 0.003)) continue;
+
+      ctx!.beginPath();
+      ctx!.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(${PARTICLE_R},${PARTICLE_G},${PARTICLE_B},${p.alpha})`;
+      ctx!.fill();
+
+      if (p.hasTag && p.tagAlpha > 0.003) {
+        let tagOffX = 0, tagOffY = 0;
+        const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+        if (speed > 0.001) {
+          tagOffX = -(p.vx / speed) * 4;
+          tagOffY = -(p.vy / speed) * 4;
+        } else {
+          tagOffY = 4;
+        }
+
+        ctx!.beginPath();
+        ctx!.arc(p.x + tagOffX, p.y + tagOffY, p.radius * 0.7, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${p.tagAlpha})`;
+        ctx!.fill();
+
+        ctx!.beginPath();
+        ctx!.arc(p.x + tagOffX, p.y + tagOffY, p.radius * 2.5, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${p.tagAlpha * 0.15})`;
+        ctx!.fill();
+
+        if (p.tagRingAlpha > 0.01) {
+          ctx!.beginPath();
+          ctx!.arc(p.x + tagOffX, p.y + tagOffY, p.radius * 4, 0, Math.PI * 2);
+          ctx!.strokeStyle = `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${p.tagRingAlpha * 0.3})`;
+          ctx!.lineWidth = 0.5;
+          ctx!.stroke();
+        }
+      }
+    }
+  }
+
+  /* ── Loop ────────────────────────────────────────────────────── */
+  function tick() {
+    frame++;
+    if (frame >= CYCLE) {
+      initState();
+    }
+    updateParticles();
+    draw();
+    if (!prefersReduced) raf = requestAnimationFrame(tick);
+  }
+
+  /* ── Static frame for reduced motion ────────────────────────── */
+  function drawStatic() {
+    hubGlow = 1.0;
+    hubPulse = 0;
+    dispatchCount = 30;
+    frame = P2_END + 60;
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      const angle = (i / particles.length) * Math.PI * 2;
+      const dist = HUB_RING_RADIUS + 30 + Math.random() * (Math.min(W, H) * 0.3);
+      p.x = hubX + Math.cos(angle) * dist;
+      p.y = hubY + Math.sin(angle) * dist;
+      p.vx = -Math.cos(angle) * INWARD_SPEED;
+      p.vy = -Math.sin(angle) * INWARD_SPEED;
+      p.alpha = 0.06;
+      p.hasTag = true;
+      p.tagAlpha = 0.6;
+      p.tagRingAlpha = 0.15;
+      p.state = 'inward';
+    }
+
+    draw();
+  }
+
+  /* ── Resize ─────────────────────────────────────────────────── */
+  const ro = new ResizeObserver(() => {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = canvas!.offsetWidth;
+    H = canvas!.offsetHeight;
+    canvas!.width = W * dpr;
+    canvas!.height = H * dpr;
+    ctx!.scale(dpr, dpr);
+    hubX = W * 0.5;
+    hubY = H * 0.5;
+
+    if (prefersReduced) {
+      initState();
+      requestAnimationFrame(drawStatic);
+    }
+  });
+  ro.observe(canvas);
+
+  W = canvas.offsetWidth;
+  H = canvas.offsetHeight;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  initState();
+
+  if (prefersReduced) {
+    requestAnimationFrame(drawStatic);
+  } else {
+    raf = requestAnimationFrame(tick);
+  }
+
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(raf);
+    ro.disconnect();
+  });
+})();
+</script>
