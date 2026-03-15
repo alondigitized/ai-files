@@ -11,6 +11,7 @@ interface Props {
   tags?: string[];
   story?: string;
   storyDark?: string;
+  side?: 'dark' | 'light';
 }
 
 const {
@@ -23,6 +24,7 @@ const {
   tags,
   story,
   storyDark,
+  side = 'dark',
 } = Astro.props;
 
 const siteURL = Astro.site ?? new URL('https://theaifiles.app');
@@ -35,7 +37,7 @@ const storyVars = story && storyDark
   : '';
 ---
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme={side}>
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

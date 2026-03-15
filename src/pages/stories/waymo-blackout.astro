@@ -288,6 +288,7 @@ const story = stories.find(s => s.slug === 'waymo-blackout')!;
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
+  const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
 
   const YELLOW = '#facc15';
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -422,7 +423,7 @@ const story = stories.find(s => s.slug === 'waymo-blackout')!;
 
   function draw() {
     ctx!.clearRect(0, 0, W, H);
-    ctx!.fillStyle = '#0d0d0d';
+    ctx!.fillStyle = bgColor;
     ctx!.fillRect(0, 0, W, H);
 
     // Faint grid lines
@@ -527,7 +528,7 @@ const story = stories.find(s => s.slug === 'waymo-blackout')!;
 
   function drawStatic() {
     ctx!.clearRect(0, 0, W, H);
-    ctx!.fillStyle = '#0d0d0d';
+    ctx!.fillStyle = bgColor;
     ctx!.fillRect(0, 0, W, H);
 
     // Half moving, half frozen

@@ -225,6 +225,7 @@ const story = stories.find(s => s.slug === 'captcha')!;
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
+  const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
 
   const ACCENT = '#f97316';
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -287,7 +288,7 @@ const story = stories.find(s => s.slug === 'captcha')!;
 
   function draw(f: number) {
     ctx!.clearRect(0, 0, W, H);
-    ctx!.fillStyle = '#0d0d0d';
+    ctx!.fillStyle = bgColor;
     ctx!.fillRect(0, 0, W, H);
 
     const t = (f % CYCLE) / CYCLE; // 0..1 within one cycle
@@ -405,7 +406,7 @@ const story = stories.find(s => s.slug === 'captcha')!;
 
   function drawStatic() {
     ctx!.clearRect(0, 0, W, H);
-    ctx!.fillStyle = '#0d0d0d';
+    ctx!.fillStyle = bgColor;
     ctx!.fillRect(0, 0, W, H);
     drawBarrier(0.06);
     const bx = barrierX();
