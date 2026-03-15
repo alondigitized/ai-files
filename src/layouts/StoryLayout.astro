@@ -9,6 +9,7 @@ interface Source {
 
 interface Story {
   slug: string;
+  side?: 'dark' | 'light';
   chapter: number;
   volume: number;
   title: string;
@@ -79,11 +80,13 @@ const breadcrumbSchema = {
   ],
 };
 
-// Related stories: same volume first, then others, exclude self and WIP
+// Related stories: same-side first, then same-volume, then others, exclude self and WIP
+const storySide = story.side ?? 'dark';
 const others = stories.filter(s => s.slug !== story.slug && !s.wip);
-const sameVol = others.filter(s => s.volume === story.volume);
-const diffVol = others.filter(s => s.volume !== story.volume);
-const related = [...sameVol, ...diffVol].slice(0, 4);
+const sameSideVol = others.filter(s => (s.side ?? 'dark') === storySide && s.volume === story.volume);
+const sameSideOther = others.filter(s => (s.side ?? 'dark') === storySide && s.volume !== story.volume);
+const crossSide = others.filter(s => (s.side ?? 'dark') !== storySide);
+const related = [...sameSideVol, ...sameSideOther, ...crossSide].slice(0, 4);
 ---
 <BaseLayout
   title={`${story.title} — The AI Files`}
@@ -95,6 +98,7 @@ const related = [...sameVol, ...diffVol].slice(0, 4);
   tags={story.tags}
   story={story.story}
   storyDark={story.storyDark}
+  side={storySide}
 >
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />

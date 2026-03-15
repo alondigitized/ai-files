@@ -34,7 +34,7 @@ const itemListSchema = {
   /* ── Nav ── */
   .site-nav {
     position: sticky; top: 0; z-index: 100;
-    background: rgba(13,13,13,0.95);
+    background: var(--nav-bg);
     backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--border);
     padding: 0.85rem 2rem;
@@ -47,7 +47,7 @@ const itemListSchema = {
   .masthead {
     position: relative; overflow: hidden;
     padding: 6rem 2rem 5rem;
-    background: radial-gradient(ellipse at 30% 50%, #1a0000 0%, var(--bg) 65%);
+    background: radial-gradient(ellipse at 30% 50%, var(--bg-deep) 0%, var(--bg) 65%);
     border-bottom: 1px solid var(--border);
     text-align: center;
   }
@@ -88,6 +88,23 @@ const itemListSchema = {
     border-radius: 2rem; padding: 0.3rem 0.9rem;
     font-size: 0.78rem; color: var(--accent);
   }
+
+  /* ── Side Filter ── */
+  .side-filter {
+    display: flex; align-items: center; justify-content: center;
+    gap: 0.5rem; padding: 1.25rem 0 0;
+  }
+  .side-btn {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 2rem; padding: 0.35rem 1rem;
+    font-family: inherit; font-size: 0.75rem; font-weight: 600;
+    color: var(--muted); cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    letter-spacing: 0.04em;
+  }
+  .side-btn:hover { border-color: var(--border-hover); color: var(--text); }
+  .side-btn.active { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  .vol-section.hidden-by-filter { display: none; }
 
   /* ── Container ── */
   .idx-container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
@@ -155,7 +172,7 @@ const itemListSchema = {
     font-size: 0.95rem; line-height: 1;
     transition: border-color 0.2s, color 0.2s;
   }
-  .ep-btn:hover { border-color: #3a3a3a; color: var(--text); }
+  .ep-btn:hover { border-color: var(--border-hover); color: var(--text); }
   .ep-dots { display: flex; align-items: center; gap: 0.5rem; }
   .ep-dot {
     height: 6px; width: 6px; border-radius: 3px; border: none; padding: 0;
@@ -174,7 +191,7 @@ const itemListSchema = {
   .featured-title { font-size: 1.9rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 1rem; color: var(--text); }
   .featured-title span { color: var(--ep-color, #e879f9); }
   .featured-deck { font-size: 0.92rem; color: var(--muted); line-height: 1.6; margin-bottom: 1.5rem; }
-  .featured-meta { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; font-size: 0.75rem; color: #555; border-top: 1px solid var(--border); padding-top: 1rem; }
+  .featured-meta { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; font-size: 0.75rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 1rem; }
   .story-tag { background: var(--surface2); border: 1px solid var(--border); border-radius: 0.35rem; padding: 0.2rem 0.55rem; font-size: 0.72rem; color: var(--muted); }
   .read-link { margin-left: auto; font-size: 0.8rem; color: #e879f9; letter-spacing: 0.05em; }
 
@@ -206,7 +223,7 @@ const itemListSchema = {
     text-decoration: none; display: flex; flex-direction: column;
     transition: border-color 0.2s, transform 0.2s;
   }
-  .story-card:hover { border-color: #3a3a3a; transform: translateY(-3px); }
+  .story-card:hover { border-color: var(--border-hover); transform: translateY(-3px); }
   .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.25rem; }
   .card-icon { font-size: 2.5rem; }
 
@@ -249,7 +266,7 @@ const itemListSchema = {
   .card-chapter { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
   .card-title { font-size: 1.15rem; font-weight: 700; color: var(--text); margin-bottom: 0.6rem; line-height: 1.3; letter-spacing: -0.01em; }
   .card-deck { font-size: 0.85rem; color: var(--muted); line-height: 1.55; flex: 1; margin-bottom: 1.25rem; }
-  .card-footer { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; font-size: 0.72rem; color: #555; border-top: 1px solid var(--border); padding-top: 1rem; }
+  .card-footer { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; font-size: 0.72rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 1rem; }
   .card-tag { background: var(--surface2); border: 1px solid var(--border); border-radius: 0.3rem; padding: 0.15rem 0.5rem; color: var(--muted); }
   .card-footer .read-link { margin-left: auto; color: var(--muted); letter-spacing: 0.05em; }
 
@@ -280,7 +297,7 @@ const itemListSchema = {
     border-radius: 0 0.5rem 0.5rem 0; padding: 0.75rem 1rem;
     font-size: 0.85rem; color: var(--muted);
   }
-  .cs-item span { display: block; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: #444; margin-bottom: 0.2rem; }
+  .cs-item span { display: block; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.2rem; }
 
   footer { text-align: center; padding: 3rem 2rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.82rem; }
   footer a { color: var(--blue); text-decoration: none; }
@@ -336,7 +353,7 @@ const itemListSchema = {
 
 <BaseLayout
   title="The AI Files — True Stories from the Age of Artificial Intelligence"
-  description="True stories from the age of artificial intelligence — documented incidents, landmark moments, and cautionary tales. 26 stories across 4 volumes."
+  description="True stories from the age of artificial intelligence — documented incidents, landmark moments, and cautionary tales. 27 stories across 5 volumes."
   ogImage="https://theaifiles.app/og/default.png"
 >
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
@@ -357,9 +374,14 @@ const itemListSchema = {
       </h1>
       <p class="masthead-tagline">True stories from the age of artificial intelligence — the blunders, the exploits, and the moments that changed everything.</p>
       <div class="masthead-meta">
-        <span class="masthead-count">● 26 Stories</span>
+        <span class="masthead-count">● 27 Stories</span>
         <span class="divider">·</span>
-        <span>4 Volumes</span>
+        <span>5 Volumes</span>
+      </div>
+      <div class="side-filter" id="side-filter">
+        <button class="side-btn active" data-filter="all">● All</button>
+        <button class="side-btn" data-filter="dark">◐ Dark Side</button>
+        <button class="side-btn" data-filter="light">○ Light Side</button>
       </div>
     </div>
   </header>
@@ -462,7 +484,7 @@ const itemListSchema = {
     </div>
 
     <!-- VOLUME I -->
-    <div class="vol-section">
+    <div class="vol-section" data-side="dark">
       <div class="vol-header">
         <div class="vol-eyebrow" style="color:#fbbf24;">Volume I</div>
         <div class="vol-title">What Could Go Wrong</div>
@@ -564,7 +586,7 @@ const itemListSchema = {
     </div>
 
     <!-- VOLUME II -->
-    <div class="vol-section">
+    <div class="vol-section" data-side="dark">
       <div class="vol-header">
         <div class="vol-eyebrow" style="color:#f97316;">Volume II</div>
         <div class="vol-title">What It Cost</div>
@@ -666,7 +688,7 @@ const itemListSchema = {
     </div>
 
     <!-- VOLUME III -->
-    <div class="vol-section">
+    <div class="vol-section" data-side="dark">
       <div class="vol-header">
         <div class="vol-eyebrow" style="color:#ff4d4d;">Volume III</div>
         <div class="vol-title">What It Means</div>
@@ -768,7 +790,7 @@ const itemListSchema = {
     </div>
 
     <!-- VOLUME IV -->
-    <div class="vol-section">
+    <div class="vol-section" data-side="dark">
       <div class="vol-header">
         <div class="vol-eyebrow" style="color:#00ff88;">Volume IV</div>
         <div class="vol-title">What We're Left With</div>
@@ -884,6 +906,33 @@ const itemListSchema = {
       </div>
     </div>
 
+    <!-- VOLUME V -->
+    <div class="vol-section" data-side="light">
+      <div class="vol-header">
+        <div class="vol-eyebrow" style="color:#c8963e;">Volume V</div>
+        <div class="vol-title">What Went Right</div>
+        <div class="vol-tagline">The stories that gave us hope.</div>
+        <div class="vol-pill">Chapter 26</div>
+      </div>
+
+      <div class="story-grid">
+        <a class="story-card" href="/stories/rosie-vaccine" style="border-color: rgba(200,150,62,0.2);">
+          <div class="card-top">
+            <div class="card-icon">🐕</div>
+            <span class="card-chapter" style="color:#c8963e;">Chapter 26</span>
+          </div>
+          <div class="card-title">The Dog That Beat Cancer</div>
+          <div class="card-deck">A Sydney tech entrepreneur used ChatGPT, AlphaFold, and custom ML to design a personalized mRNA cancer vaccine for his dying dog. The tumor shrank 75%. It was the first of its kind.</div>
+          <div class="card-footer">
+            <span>December 2025</span>
+            <span class="card-tag">🧬 mRNA Vaccine</span>
+            <span class="card-tag">🔬 AlphaFold</span>
+            <span class="read-link">→</span>
+          </div>
+        </a>
+      </div>
+    </div>
+
     <!-- Subscribe -->
     <div class="subscribe-section">
       <div class="subscribe-inner">
@@ -929,7 +978,7 @@ const itemListSchema = {
         <h3>About This Archive</h3>
         <p>The AI Files documents true stories from the first era of large language models — the surprising failures, unexpected behaviors, and legal and social consequences that defined AI's emergence into everyday life.</p>
         <p>These aren't cautionary tales invented to scare. They're documented events: court rulings, published research, and viral moments that changed how companies, governments, and individuals think about artificial intelligence.</p>
-        <p>Four volumes. Twenty-six stories. More coming.</p>
+        <p>Five volumes. Twenty-seven stories. More coming.</p>
       </div>
       <div>
         <h3>In The Workshop</h3>
@@ -1000,6 +1049,29 @@ const itemListSchema = {
 
   <script>
     (function () {
+      const filter = document.getElementById('side-filter');
+      if (!filter) return;
+      const btns = filter.querySelectorAll<HTMLButtonElement>('.side-btn');
+      const sections = document.querySelectorAll<HTMLElement>('.vol-section[data-side]');
+
+      btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const f = btn.dataset.filter;
+          btns.forEach(b => b.classList.toggle('active', b === btn));
+          sections.forEach(sec => {
+            if (f === 'all' || sec.dataset.side === f) {
+              sec.classList.remove('hidden-by-filter');
+            } else {
+              sec.classList.add('hidden-by-filter');
+            }
+          });
+        });
+      });
+    })();
+  </script>
+
+  <script>
+    (function () {
       const SUBMITTED_KEY = 'submitted-idea';
       const form = document.getElementById('ideas-form-home');
       const input = document.getElementById('ideas-input-home') as HTMLTextAreaElement | null;
@@ -1065,9 +1137,9 @@ const itemListSchema = {
   </script>
 
   <footer>
-    <p>The AI Files · 4 Volumes · 26 Stories · True stories from the age of artificial intelligence</p>
-    <p style="margin-top:0.5rem; color:#444;">All stories are based on documented public events, court records, and published research.</p>
-    <p style="margin-top:0.75rem; color:#444;">
+    <p>The AI Files · 5 Volumes · 27 Stories · True stories from the age of artificial intelligence</p>
+    <p style="margin-top:0.5rem; color:var(--muted);">All stories are based on documented public events, court records, and published research.</p>
+    <p style="margin-top:0.75rem; color:var(--muted);">
       &copy; {new Date().getFullYear()} &middot;
       Built by Alon with <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a> &middot;
       <a href="/feed.xml">RSS</a> &middot;

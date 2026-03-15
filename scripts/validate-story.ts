@@ -138,9 +138,19 @@ function checkStoriesJson(slug: string): ValidationResult[] {
     results.push(warn('stories.json:deck', `Deck is ${entry.deck.length} chars (recommended ≤ 160)`));
   }
 
+  // Side
+  const side = (entry as any).side;
+  if (!side) {
+    results.push(fail('stories.json:side', 'Field "side" is missing'));
+  } else if (!['dark', 'light'].includes(side)) {
+    results.push(fail('stories.json:side', `"side" must be "dark" or "light", got "${side}"`));
+  } else {
+    results.push(pass('stories.json:side', `Side is "${side}"`));
+  }
+
   // Volume
-  if (![1, 2, 3, 4].includes(entry.volume)) {
-    results.push(fail('stories.json:volume', `Volume ${entry.volume} is not 1, 2, 3, or 4`));
+  if (![1, 2, 3, 4, 5].includes(entry.volume)) {
+    results.push(fail('stories.json:volume', `Volume ${entry.volume} is not 1, 2, 3, 4, or 5`));
   }
 
   // Chapter uniqueness

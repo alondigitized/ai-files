@@ -14,10 +14,12 @@ LAYOUT_STORY = os.path.join(ROOT, 'src', 'layouts', 'StoryLayout.astro')
 LAYOUT_BASE  = os.path.join(ROOT, 'src', 'layouts', 'BaseLayout.astro')
 
 REQUIRED_STORY_FIELDS = [
-    'slug', 'chapter', 'volume', 'title', 'deck',
+    'slug', 'side', 'chapter', 'volume', 'title', 'deck',
     'date', 'readTime', 'emoji', 'tags',
     'story', 'storyDark', 'verifyText', 'sources', 'whatIf',
 ]
+
+VALID_SIDES = {'dark', 'light'}
 
 REQUIRED_IN_INDEX = [
     'BaseLayout',
@@ -39,6 +41,8 @@ for story in stories_data:
     for field in REQUIRED_STORY_FIELDS:
         if field not in story or story[field] is None:
             errors.append(f'stories.json [{slug}]: missing field — {field}')
+    if 'side' in story and story['side'] not in VALID_SIDES:
+        errors.append(f'stories.json [{slug}]: side must be "dark" or "light", got "{story["side"]}"')
     if 'sources' in story:
         if not isinstance(story['sources'], list) or len(story['sources']) == 0:
             errors.append(f'stories.json [{slug}]: sources must be a non-empty list')

@@ -225,6 +225,7 @@ const story = stories.find(s => s.slug === 'alexa-laughs')!;
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
+  const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
 
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -438,7 +439,7 @@ const story = stories.find(s => s.slug === 'alexa-laughs')!;
   // ── Draw ──────────────────────────────────────────────────────────────────
   function drawScene() {
     ctx!.clearRect(0, 0, W, H);
-    ctx!.fillStyle = '#0d0d0d';
+    ctx!.fillStyle = bgColor;
     ctx!.fillRect(0, 0, W, H);
 
     const cx = W / 2, cy = H / 2;
@@ -497,7 +498,7 @@ const story = stories.find(s => s.slug === 'alexa-laughs')!;
   // ── Static frame (reduced motion) ─────────────────────────────────────────
   function drawStatic() {
     ctx!.clearRect(0, 0, W, H);
-    ctx!.fillStyle = '#0d0d0d';
+    ctx!.fillStyle = bgColor;
     ctx!.fillRect(0, 0, W, H);
     const cx = W / 2, cy = H / 2;
 
