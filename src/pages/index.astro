@@ -54,8 +54,8 @@ const itemListSchema = {
   .masthead::before {
     content: ''; position: absolute; inset: 0;
     background-image:
-      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,77,77,0.04) 40px),
-      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,77,77,0.04) 40px);
+      repeating-linear-gradient(0deg, transparent, transparent 39px, color-mix(in srgb, var(--accent) 4%, transparent) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, color-mix(in srgb, var(--accent) 4%, transparent) 40px);
     pointer-events: none;
   }
   .masthead-inner { max-width: 700px; margin: 0 auto; position: relative; }
@@ -84,7 +84,7 @@ const itemListSchema = {
   .masthead-meta .divider { color: var(--border); }
   .masthead-count {
     display: inline-flex; align-items: center; gap: 0.4rem;
-    background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.3);
+    background: color-mix(in srgb, var(--accent) 10%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
     border-radius: 2rem; padding: 0.3rem 0.9rem;
     font-size: 0.78rem; color: var(--accent);
   }
@@ -193,7 +193,7 @@ const itemListSchema = {
   .featured-deck { font-size: 0.92rem; color: var(--muted); line-height: 1.6; margin-bottom: 1.5rem; }
   .featured-meta { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; font-size: 0.75rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 1rem; }
   .story-tag { background: var(--surface2); border: 1px solid var(--border); border-radius: 0.35rem; padding: 0.2rem 0.55rem; font-size: 0.72rem; color: var(--muted); }
-  .read-link { margin-left: auto; font-size: 0.8rem; color: #e879f9; letter-spacing: 0.05em; }
+  .read-link { margin-left: auto; font-size: 0.8rem; color: var(--ep-color, var(--accent)); letter-spacing: 0.05em; }
 
   /* ── Volume sections ── */
   .vol-section { padding: 4rem 0 0; }
@@ -372,15 +372,15 @@ const itemListSchema = {
         <span class="the">The</span>
         <span class="ai">AI</span> Files
       </h1>
-      <p class="masthead-tagline">True stories from the age of artificial intelligence — the blunders, the exploits, and the moments that changed everything.</p>
+      <p class="masthead-tagline" data-side="dark">True stories from the age of artificial intelligence — the blunders, the exploits, and the moments that changed everything.</p>
+      <p class="masthead-tagline" data-side="light" style="display:none;">True stories from the age of artificial intelligence — the breakthroughs, the cures, and the moments that gave us hope.</p>
       <div class="masthead-meta">
         <span class="masthead-count">● 27 Stories</span>
         <span class="divider">·</span>
         <span>5 Volumes</span>
       </div>
       <div class="side-filter" id="side-filter">
-        <button class="side-btn active" data-filter="all">● All</button>
-        <button class="side-btn" data-filter="dark">◐ Dark Side</button>
+        <button class="side-btn active" data-filter="dark">◐ Dark Side</button>
         <button class="side-btn" data-filter="light">○ Light Side</button>
       </div>
     </div>
@@ -388,12 +388,12 @@ const itemListSchema = {
 
   <div class="idx-container">
 
-    <div class="section-header">
+    <div class="section-header" data-ep="dark">
       <h2>Editor's Pick</h2>
       <div class="section-rule"></div>
     </div>
 
-    <div class="ep-carousel" id="ep-carousel">
+    <div class="ep-carousel" id="ep-carousel" data-ep="dark">
       <div class="ep-outer-border">
         <div class="ep-track" id="ep-track">
 
@@ -482,6 +482,33 @@ const itemListSchema = {
         <button class="ep-btn" id="ep-next" aria-label="Next">›</button>
       </div>
     </div>
+
+    <div class="section-header" data-ep="light" style="display:none;">
+      <h2>Editor's Pick</h2>
+      <div class="section-rule"></div>
+    </div>
+
+    <a class="featured" href="/stories/rosie-vaccine" data-ep="light" style="display:none; --ep-color:#c8963e; --ep-bg-from:#e8dcc8; --ep-bg-to:#f5f0e8; --ep-grid:rgba(200,150,62,0.06); --ep-hover:rgba(200,150,62,0.4); margin-top:2rem; border-radius:1rem;">
+      <div class="featured-visual">
+        <div class="featured-icon">🐕</div>
+      </div>
+      <div class="featured-content">
+        <div class="featured-eyebrow">
+          <span class="featured-badge">Chapter 26</span>
+          <span>December 2025</span>
+          <span>·</span>
+          <span>8 min read</span>
+        </div>
+        <h2 class="featured-title">The Dog That <span>Beat Cancer</span></h2>
+        <p class="featured-deck">A Sydney engineer with no biomedical degree used ChatGPT and AlphaFold to design a personalized mRNA cancer vaccine for his dying dog. One tumor shrank 75%. It was the first of its kind — and it started with a conversation with an AI.</p>
+        <div class="featured-meta">
+          <span class="story-tag">🧬 mRNA Vaccine</span>
+          <span class="story-tag">🔬 AlphaFold</span>
+          <span class="story-tag">🐕 Cancer Research</span>
+          <span class="read-link">Read story →</span>
+        </div>
+      </div>
+    </a>
 
     <!-- VOLUME I -->
     <div class="vol-section" data-side="dark">
@@ -907,7 +934,7 @@ const itemListSchema = {
     </div>
 
     <!-- VOLUME V -->
-    <div class="vol-section" data-side="light">
+    <div class="vol-section hidden-by-filter" data-side="light">
       <div class="vol-header">
         <div class="vol-eyebrow" style="color:#c8963e;">Volume V</div>
         <div class="vol-title">What Went Right</div>
@@ -1053,19 +1080,25 @@ const itemListSchema = {
       if (!filter) return;
       const btns = filter.querySelectorAll<HTMLButtonElement>('.side-btn');
       const sections = document.querySelectorAll<HTMLElement>('.vol-section[data-side]');
+      const taglines = document.querySelectorAll<HTMLElement>('.masthead-tagline[data-side]');
+      const epBlocks = document.querySelectorAll<HTMLElement>('[data-ep]');
+
+      function switchTo(side: string) {
+        document.documentElement.dataset.theme = side;
+        btns.forEach(b => b.classList.toggle('active', b.dataset.filter === side));
+        sections.forEach(sec => {
+          sec.classList.toggle('hidden-by-filter', sec.dataset.side !== side);
+        });
+        taglines.forEach(tl => {
+          tl.style.display = tl.dataset.side === side ? '' : 'none';
+        });
+        epBlocks.forEach(ep => {
+          ep.style.display = ep.dataset.ep === side ? '' : 'none';
+        });
+      }
 
       btns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const f = btn.dataset.filter;
-          btns.forEach(b => b.classList.toggle('active', b === btn));
-          sections.forEach(sec => {
-            if (f === 'all' || sec.dataset.side === f) {
-              sec.classList.remove('hidden-by-filter');
-            } else {
-              sec.classList.add('hidden-by-filter');
-            }
-          });
-        });
+        btn.addEventListener('click', () => switchTo(btn.dataset.filter!));
       });
     })();
   </script>
