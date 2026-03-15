@@ -113,6 +113,17 @@ const story = stories.find(s => s.slug === 'move-37')!;
   }
   .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
   .move-37-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* ── Light-theme overrides ── */
+  :root[data-theme="light"] .board-wrap { background: #f0e8d4; border-color: rgba(200,150,62,0.3); }
+  :root[data-theme="light"] .board { color: #b8a878; }
+  :root[data-theme="light"] .board .stone-b { color: #4a4a42; }
+  :root[data-theme="light"] .board .stone-w { color: #f5f0e0; }
+  :root[data-theme="light"] .board .move-37 { text-shadow: 0 0 8px rgba(200,150,62,0.6); }
+  :root[data-theme="light"] .game-tile.featured { background: rgba(245,235,210,0.8); border-color: rgba(200,150,62,0.5); }
+  :root[data-theme="light"] .move37-highlight { background: rgba(200,150,62,0.1); color: #5a4a2a; }
+  :root[data-theme="light"] .info-box { background: rgba(200,150,62,0.08); border-color: rgba(200,150,62,0.25); }
+  :root[data-theme="light"] .info-box .info-text { color: #4a4535; }
 </style>
 
 <StoryLayout story={story}>
@@ -337,7 +348,8 @@ const story = stories.find(s => s.slug === 'move-37')!;
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
 
-  const ACCENT = '#f59e0b';
+  const ACCENT = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#f59e0b';
+  const isLight = document.documentElement.dataset.theme === 'light';
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   let W = 0, H = 0, dpr = 1;
@@ -398,7 +410,7 @@ const story = stories.find(s => s.slug === 'move-37')!;
         const i = r * GRID + c;
         ctx.beginPath();
         ctx.arc(pts[i].x, pts[i].y, 1.5, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(232,232,232,0.06)';
+        ctx.fillStyle = isLight ? 'rgba(30,30,30,0.08)' : 'rgba(232,232,232,0.06)';
         ctx.fill();
       }
     }
@@ -409,7 +421,9 @@ const story = stories.find(s => s.slug === 'move-37')!;
       const p = pts[idx];
       ctx.beginPath();
       ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
-      ctx.fillStyle = i % 2 === 0 ? 'rgba(232,232,232,0.22)' : 'rgba(40,40,40,0.9)';
+      ctx.fillStyle = i % 2 === 0
+        ? (isLight ? 'rgba(40,40,40,0.15)' : 'rgba(232,232,232,0.22)')
+        : (isLight ? 'rgba(80,70,50,0.7)' : 'rgba(40,40,40,0.9)');
       ctx.fill();
     }
 
@@ -478,7 +492,7 @@ const story = stories.find(s => s.slug === 'move-37')!;
         const i = r * GRID + c;
         ctx.beginPath();
         ctx.arc(pts[i].x, pts[i].y, 1.5, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(232,232,232,0.06)';
+        ctx.fillStyle = isLight ? 'rgba(30,30,30,0.08)' : 'rgba(232,232,232,0.06)';
         ctx.fill();
       }
     }
@@ -549,7 +563,9 @@ const story = stories.find(s => s.slug === 'move-37')!;
 
       ctx.beginPath();
       ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
-      ctx.fillStyle = s.color === 'white' ? 'rgba(232,232,232,0.22)' : 'rgba(30,30,30,0.9)';
+      ctx.fillStyle = s.color === 'white'
+        ? (isLight ? 'rgba(40,40,40,0.15)' : 'rgba(232,232,232,0.22)')
+        : (isLight ? 'rgba(80,70,50,0.7)' : 'rgba(30,30,30,0.9)');
       ctx.globalAlpha = alpha;
       ctx.fill();
       ctx.globalAlpha = 1;
