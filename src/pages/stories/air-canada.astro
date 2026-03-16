@@ -71,6 +71,27 @@ const story = stories.find(s => s.slug === 'air-canada')!;
     .verdict-label { flex: 0 0 120px; }
   }
 
+  /* ── Light-theme overrides ── */
+  :root[data-theme="light"] .chat-wrap { background: #ebe5d9; border-color: rgba(200,150,62,0.3); }
+  :root[data-theme="light"] .chat-wrap-header { background: linear-gradient(135deg, #e8e0d0, #ddd5c5); border-color: rgba(200,150,62,0.25); }
+  :root[data-theme="light"] .chat-wrap-header span { color: #6b6558; }
+  :root[data-theme="light"] .avatar-user { background: #ddd5c5; }
+  :root[data-theme="light"] .avatar-bot { background: #e8dcc8; }
+  :root[data-theme="light"] .bubble-user { background: #e0d9cc; border-color: rgba(44,111,170,0.25); color: #2c5a8a; }
+  :root[data-theme="light"] .bubble-bot { background: #f0e8d8; border-color: rgba(212,160,74,0.35); color: #6b4a1a; }
+  :root[data-theme="light"] .bubble-bot.confident { background: #e8f0e0; border-color: rgba(45,138,78,0.3); color: #1a5a2a; }
+  :root[data-theme="light"] .highlight-box { background: rgba(200,150,62,0.1); border-color: var(--accent); color: #5a4a2a; }
+  :root[data-theme="light"] .warn { background: rgba(200,150,62,0.08); border-color: rgba(200,150,62,0.3); }
+  :root[data-theme="light"] .warn-text { color: #5a4a2a; }
+  :root[data-theme="light"] .warn-text strong { color: #8b6914; }
+  :root[data-theme="light"] .info-box { background: rgba(45,138,78,0.08); border-color: rgba(45,138,78,0.25); }
+  :root[data-theme="light"] .info-box .info-text { color: #2a4a35; }
+  :root[data-theme="light"] .info-box .info-text strong { color: #1a6a3a; }
+  :root[data-theme="light"] .verdict-card { background: #ebe5d9; border-color: rgba(200,150,62,0.25); }
+  :root[data-theme="light"] .verdict-ruling { color: #4a4535; }
+  :root[data-theme="light"] .verdict-ruling strong { color: #2d8a4e; }
+  :root[data-theme="light"] .verdict-value.loss { color: #8b4513; }
+
   .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
   .air-canada-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
   .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.75rem 0 0; font-style: italic; }
@@ -271,9 +292,22 @@ const story = stories.find(s => s.slug === 'air-canada')!;
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
 
-  const ACCENT = '#cc0000';
+  const cs = getComputedStyle(document.documentElement);
+  const ACCENT = cs.getPropertyValue('--story').trim() || '#d4a04a';
+  const BG_COLOR = cs.getPropertyValue('--bg').trim() || '#0d0d0d';
   const STREAM_SPEED = 0.6;
   const CYCLE = 300;
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const [AR, AG, AB] = hexToRgb(ACCENT);
+  const [BR, BG_R, BB] = hexToRgb(BG_COLOR);
+  // Stream particle color: slightly visible against background
+  const SP_R = BG_R < 128 ? 232 : 60;
+  const SP_G = BG_R < 128 ? 232 : 60;
+  const SP_B = BG_R < 128 ? 232 : 60;
 
   let W = 0, H = 0, rafId = 0, frame = 0;
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -330,7 +364,7 @@ const story = stories.find(s => s.slug === 'air-canada')!;
       for (let i = 0; i < 25; i++) {
         ctx.beginPath();
         ctx.arc(i * W / 24, sy, 2.5 * devicePixelRatio, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(232,232,232,0.2)';
+        ctx.fillStyle = `rgba(${SP_R},${SP_G},${SP_B},0.2)`;
         ctx.fill();
       }
     });
@@ -338,7 +372,7 @@ const story = stories.find(s => s.slug === 'air-canada')!;
     // Chatbot
     ctx.beginPath();
     ctx.arc(W / 2, H / 2, 5 * devicePixelRatio, 0, Math.PI * 2);
-    ctx.fillStyle = ACCENT;
+    ctx.fillStyle = `rgb(${AR},${AG},${AB})`;
     ctx.fill();
   }
 
@@ -357,7 +391,7 @@ const story = stories.find(s => s.slug === 'air-canada')!;
       p.y = topY;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(232,232,232,${p.alpha})`;
+      ctx.fillStyle = `rgba(${SP_R},${SP_G},${SP_B},${p.alpha})`;
       ctx.fill();
     });
     botStream.forEach(p => {
@@ -366,7 +400,7 @@ const story = stories.find(s => s.slug === 'air-canada')!;
       p.y = botY;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(232,232,232,${p.alpha})`;
+      ctx.fillStyle = `rgba(${SP_R},${SP_G},${SP_B},${p.alpha})`;
       ctx.fill();
     });
 
@@ -376,7 +410,7 @@ const story = stories.find(s => s.slug === 'air-canada')!;
       ctx.beginPath();
       ctx.moveTo(chatbotX, topY);
       ctx.quadraticCurveTo(chatbotX + 30 * devicePixelRatio, H / 2, chatbotX, botY);
-      ctx.strokeStyle = `rgba(204,0,0,${arcAlpha})`;
+      ctx.strokeStyle = `rgba(${AR},${AG},${AB},${arcAlpha})`;
       ctx.lineWidth = 1.5 * devicePixelRatio;
       ctx.stroke();
     }
@@ -403,7 +437,7 @@ const story = stories.find(s => s.slug === 'air-canada')!;
       if (c.life > c.maxLife) { confusions.splice(i, 1); continue; }
       ctx.beginPath();
       ctx.arc(c.x, c.y, 2.5 * devicePixelRatio, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(204,0,0,${c.alpha})`;
+      ctx.fillStyle = `rgba(${AR},${AG},${AB},${c.alpha})`;
       ctx.fill();
     }
 
@@ -413,15 +447,15 @@ const story = stories.find(s => s.slug === 'air-canada')!;
     // Chatbot orb
     const chatbotAlpha = cyclePos > 250 ? 1 - (cyclePos - 250) / 50 : 1;
     const grd = ctx.createRadialGradient(chatbotX, chatbotY, 0, chatbotX, chatbotY, 10 * devicePixelRatio);
-    grd.addColorStop(0, `rgba(204,0,0,${0.5 * chatbotAlpha})`);
-    grd.addColorStop(1, 'rgba(204,0,0,0)');
+    grd.addColorStop(0, `rgba(${AR},${AG},${AB},${0.5 * chatbotAlpha})`);
+    grd.addColorStop(1, `rgba(${AR},${AG},${AB},0)`);
     ctx.beginPath();
     ctx.arc(chatbotX, chatbotY, 10 * devicePixelRatio, 0, Math.PI * 2);
     ctx.fillStyle = grd;
     ctx.fill();
     ctx.beginPath();
     ctx.arc(chatbotX, chatbotY, 4 * devicePixelRatio, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(204,0,0,${chatbotAlpha})`;
+    ctx.fillStyle = `rgba(${AR},${AG},${AB},${chatbotAlpha})`;
     ctx.fill();
 
     rafId = requestAnimationFrame(tick);
