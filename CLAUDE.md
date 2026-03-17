@@ -225,6 +225,7 @@ Every story includes a **full-width canvas animation** placed at a dramatically 
 <div class="phantom-wrap">
   <canvas class="[slug]-canvas" aria-hidden="true"></canvas>
 </div>
+<p class="canvas-note"><strong>[Art Name]</strong> — [Description of what the viewer sees.]</p>
 ```
 ```css
 /* CSS (in <style is:global>) */
@@ -267,6 +268,12 @@ Every story includes a **full-width canvas animation** placed at a dramatically 
 | waymo-blackout | `waymo-blackout.astro` | **Grid Lock** — 18 yellow cars in grid-lane paths; blackout flash; all freeze; hazard lights pulse for 240 frames; one by one manually overridden and removed |
 | grok-deepfake-crisis | `grok-deepfake-crisis.astro` | **The Flood** — fuchsia droplets fall from above, each a generated image; they accelerate over time; a thin barrier line attempts to block them but fractures under volume; droplets pool and spread below; barrier rebuilds, breaks again; the flood never stops |
 | rosie-vaccine | `rosie-vaccine.astro` | **The Sequence** — a warm gold double helix rotates on cream; it contracts around two dim masses; one absorbs the gold and dissolves into warm light; the other deflects the particles, unchanged; the helix reforms and the cycle restarts |
+| halicin | `halicin.astro` | **The Sieve** — 80 molecules drift downward; a teal scan beam sweeps across; one catches the light, glows, and rises — hiding in plain sight, now visible |
+| alphafold | `alphafold.astro` | **The Fold** — an amino acid chain drifts loosely, searching; then contracts rapidly into a compact structure; cross-bonds appear; holds shape; unfolds and begins again |
+| graphcast | `graphcast.astro` | **The Forecast** — a storm spiral rotates slowly; one blue prediction line traces a path to the target days before the others; scattered lines converge; target pulses when they arrive |
+| chipotle-pepper | `chipotle-pepper.astro` | **The Detour** — order particles stream toward a counter node; one drops below the line and reverses arrows between four linked nodes; rejoins the food line; others never notice |
+| rentahuman | `rentahuman.astro` | **The Loop** — particles drift inward toward a central hub; each is absorbed and dispatched outward carrying a promotional tag; tagged particles wrap around and re-enter; no particle ever leaves |
+| zillow-offers | `zillow-offers.astro` | **The Drift** — price particles rise steadily, confident; a faint market-signal line bends downward beneath them; particles overshoot, stall, and fall; the line was right all along |
 
 ### Adding a New Story
 
