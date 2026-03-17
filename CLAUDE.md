@@ -359,11 +359,14 @@ Every published story must produce:
 | `angle-strategist` | Propose 2–4 angles, select strongest, define reader value |
 | `story-architect` | Section outline, evidence mapping, hook and ending |
 | `writer` | Draft in markdown, label interpretations, surface uncertainty |
+| `copy-editor` | Review prose quality, structure, style compliance, "What If" depth — parallel with fact-checker |
 | `fact-checker` | Verify claims against sources, issue pass/fail with corrections |
 | `art-director` | Convert thesis and tone into abstract visual brief |
 | `canvas-artist` | Generate performant, responsive HTML canvas animation |
 | `security-scanner` | Scan story pages, canvas code, and data for XSS, injection, dependency, and exposure vulnerabilities |
+| `accessibility-auditor` | Audit pages for WCAG 2.2 AA — headings, contrast, keyboard, landmarks, reduced-motion — parallel with security-scanner |
 | `seo-geo-specialist` | Audit and optimize SEO/GEO discoverability — meta tags, structured data, OG images, llms.txt, RSS |
+| `ai-citation-strategist` | Quarterly audit of AI citation visibility across ChatGPT, Claude, Gemini, Perplexity |
 
 ### Skills
 

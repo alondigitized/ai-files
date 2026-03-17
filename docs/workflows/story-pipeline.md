@@ -28,7 +28,9 @@ This document specifies the end-to-end editorial workflow for producing a new st
 [6. Draft]           writer
    |                 → draft-[slug].md
    v
-[7. Fact Check]      fact-checker
+[7a. Copy Edit]      copy-editor          ← parallel with 7b
+[7b. Fact Check]     fact-checker          ← parallel with 7a
+   |                 → editorial-review-[slug].md (pass/needs-revision)
    |                 → factcheck-[slug].md (pass/fail + corrections)
    v
 [8. Art Brief]       art-director
@@ -37,11 +39,16 @@ This document specifies the end-to-end editorial workflow for producing a new st
 [9. Canvas]          canvas-artist
    |                 → canvas JS block (inline script)
    v
-[10. Security]       security-scanner
+[10a. Security]      security-scanner      ← parallel with 10b
+[10b. Accessibility] accessibility-auditor  ← parallel with 10a
    |                 → security-scan-[slug].md (pass/fail + findings)
+   |                 → a11y-audit-[slug].md (pass/fail + findings)
    v
 [11. Publish]        publish-story skill
                      → article-package.json + all site files updated
+
+[Quarterly]          ai-citation-strategist
+                     → citation-audit-[date].md (site-wide)
 ```
 
 ---
@@ -181,7 +188,31 @@ This document specifies the end-to-end editorial workflow for producing a new st
 
 ---
 
-## Stage 7 — Fact Check
+## Stage 7a — Copy Edit (parallel with 7b)
+
+**Agent**: `copy-editor`
+**Trigger**: `draft-[slug].md` from Stage 6.
+
+**Inputs**:
+- Draft markdown
+- Editorial style guide (`docs/editorial-style.md`)
+
+**Process**:
+- Evaluate opening hook, section flow, controlling idea, prose quality
+- Check style guide compliance (hype language, vague consequence, attribution precision)
+- Assess "What If" section against all five depth criteria (goes to infinity, single deep cut, specificity, technical plausibility, open question)
+- Issue PASS or NEEDS-REVISION
+
+**Outputs**:
+- `editorial-review-[slug].md` with section-by-section assessment and "What If" verdict
+- Overall verdict: `PASS` or `NEEDS-REVISION`
+- If `NEEDS-REVISION`: list of required revisions before re-review
+
+**Gate**: Do not proceed to art until copy edit verdict is `PASS`. Runs in parallel with fact-checker — they evaluate different dimensions (prose quality vs. factual accuracy).
+
+---
+
+## Stage 7b — Fact Check (parallel with 7a)
 
 **Agent**: `fact-checker`
 **Trigger**: `draft-[slug].md` from Stage 6 + annotated research bundle.
@@ -247,7 +278,7 @@ This document specifies the end-to-end editorial workflow for producing a new st
 
 ---
 
-## Stage 10 — Security Scan
+## Stage 10a — Security Scan (parallel with 10b)
 
 **Agent**: `security-scanner`
 **Trigger**: Assembled Astro page with canvas code inserted, stories.json entry drafted.
@@ -273,6 +304,35 @@ This document specifies the end-to-end editorial workflow for producing a new st
 - If `FAIL`: required fixes before re-scan
 
 **Gate**: Do not proceed to publish unless security scan verdict is `PASS`. No CRITICAL or HIGH severity findings allowed.
+
+---
+
+## Stage 10b — Accessibility Audit (parallel with 10a)
+
+**Agent**: `accessibility-auditor`
+**Trigger**: Assembled Astro page with canvas code inserted.
+
+**Inputs**:
+- `src/pages/stories/[slug].astro` (with canvas script block)
+- `src/layouts/StoryLayout.astro` and `src/layouts/BaseLayout.astro` (shared structure)
+- `src/styles/global.css` (shared styles and theme variables)
+
+**Process**:
+- Verify heading hierarchy (one h1, no skipped levels)
+- Calculate color contrast ratios for theme combinations (dark and light)
+- Audit keyboard navigation of interactive elements (index toggle, carousel, nav)
+- Verify landmark regions (nav, main, footer)
+- Check canvas animations for `aria-hidden="true"` and `prefers-reduced-motion` compliance
+- Verify image alt text and link labeling
+
+**Outputs**:
+- `a11y-audit-[slug].md` with WCAG criterion references, severity levels, and code-level fixes
+- Overall verdict: `PASS` or `FAIL`
+- If `FAIL`: required fixes before re-audit
+
+**Gate**: Do not proceed to publish unless accessibility audit verdict is `PASS`. No Critical or Serious findings allowed. Runs in parallel with security-scanner.
+
+**Frequency**: Per-story for new stories. Periodic site-wide audit (`a11y-audit-site.md`) for shared layout changes.
 
 ---
 
@@ -302,8 +362,32 @@ Working files are produced during the pipeline and should not be committed to th
 | `story-brief.json` | 1 | Approved pitch brief |
 | `research-bundle.json` | 2–3 | Raw and annotated research |
 | `draft-[slug].md` | 6 | Article draft in markdown |
-| `factcheck-[slug].md` | 7 | Fact-check report |
+| `editorial-review-[slug].md` | 7a | Copy edit / editorial review |
+| `factcheck-[slug].md` | 7b | Fact-check report |
 | `canvas-brief.json` | 8 | Art direction brief |
-| `security-scan-[slug].md` | 10 | Security scan report |
+| `security-scan-[slug].md` | 10a | Security scan report |
+| `a11y-audit-[slug].md` | 10b | Accessibility audit report |
+| `citation-audit-[date].md` | quarterly | AI citation audit (site-wide) |
 
 Only the final Astro page, stories.json entry, and llms.txt update get committed.
+
+---
+
+## Periodic Audits (Non-Pipeline)
+
+### AI Citation Audit — Quarterly
+
+**Agent**: `ai-citation-strategist`
+**Trigger**: Manual, approximately quarterly or after significant content additions.
+
+**Process**:
+- Inventory all stories from `stories.json`
+- Generate prompts a user might ask AI assistants about each incident
+- Test citation visibility across ChatGPT, Claude, Gemini, Perplexity
+- Analyze competitor coverage and structural gaps
+- Produce prioritized fix pack
+
+**Outputs**:
+- `citation-audit-[date].md` with per-story citation rates and fix pack
+
+This is not a gate — it produces recommendations, not pass/fail verdicts.

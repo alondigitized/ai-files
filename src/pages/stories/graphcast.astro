@@ -1,0 +1,570 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'graphcast')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .graphcast-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  .forecast-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-top: 2rem;
+    overflow: hidden;
+  }
+  .forecast-header {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--story);
+    margin-bottom: 1.5rem;
+  }
+  .forecast-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .forecast-col h4 {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .forecast-col.ai h4 { color: var(--story); }
+  .forecast-col.trad h4 { color: var(--muted); }
+  .forecast-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.4rem 0;
+    font-size: 0.88rem;
+  }
+  .forecast-item .label { color: var(--muted); }
+  .forecast-item .value { font-weight: 700; color: var(--text); }
+  .forecast-col.ai .forecast-item .value { color: var(--story); }
+
+  .comparison-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .comp-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    text-align: center;
+  }
+  .comp-card .comp-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .comp-card .comp-vs {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+  .comp-val { font-size: 1.3rem; font-weight: 900; }
+  .comp-val.ai { color: var(--story); }
+  .comp-val.trad { color: var(--muted); }
+  .comp-vs-sep { color: var(--muted); font-size: 0.78rem; }
+
+  @media (max-width: 600px) {
+    .forecast-grid { grid-template-columns: 1fr; }
+    .comparison-strip { grid-template-columns: 1fr; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="storm">
+      <h2><span class="num">01 — The Storm</span>Category 5</h2>
+      <p>On September 5, 2023, a low-pressure system organized into Tropical Depression Thirteen in the Atlantic Ocean. Within 24 hours it was a hurricane. Within 48 hours it was a major hurricane. By September 7, Hurricane Lee had reached Category 5 — the maximum — with sustained winds of 165 miles per hour after intensifying by 85 mph in a single day over record-warm Atlantic waters.</p>
+      <p>The forecast problem at that range was not the storm's strength. It was its path. At nine or more days out, traditional weather models showed significant disagreement about where Lee would make landfall. The scenarios ranged from a direct New England hit to a curve out to sea to a track into the Canadian Maritimes. For emergency managers in any of those regions, the difference between preparing and not preparing is measured in days.</p>
+      <p>A model built by Google DeepMind in London — running on a single computer chip — had already made its call.</p>
+
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-num">Cat 5</div>
+          <div class="stat-label">165 mph sustained winds at peak intensity</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">9 days</div>
+          <div class="stat-label">GraphCast predicted Nova Scotia landfall before it happened</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">&lt;1 min</div>
+          <div class="stat-label">to produce a 10-day global forecast on a single chip</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">90%+</div>
+          <div class="stat-label">of weather variables where GraphCast outperformed the gold standard</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="graphcast-canvas" aria-hidden="true"></canvas>
+    </div>
+
+    <section class="section" id="prediction">
+      <h2><span class="num">02 — The Prediction</span>Nine Days Out</h2>
+      <p>On approximately September 7, a live version of GraphCast deployed on the European Centre for Medium-Range Weather Forecasts website predicted that Hurricane Lee would make landfall in Nova Scotia. Nine days before it happened.</p>
+      <p>At that point, traditional physics-based forecast models — the systems that run on supercomputers and have defined meteorology for decades — still showed substantial uncertainty about the track. The cone of possible landfalls included much of the eastern seaboard. GraphCast was specific. Nova Scotia.</p>
+      <p>It was not alone. Two other AI weather models — NVIDIA's FourCastNet and Huawei's Pangu-Weather — converged on similar predictions. Three independently developed AI systems, none using physics equations, agreed on the same answer.</p>
+      <p>Three days later, around September 10, the traditional models converged. Nova Scotia.</p>
+      <p>On September 16, Hurricane Lee — by then weakened to a post-tropical cyclone with 70 mph winds — made landfall on Long Island, Nova Scotia. Exactly where the AI had said it would, nine days earlier.</p>
+
+      <div class="forecast-box">
+        <div class="forecast-header">Hurricane Lee — Forecast Convergence</div>
+        <div class="forecast-grid">
+          <div class="forecast-col ai">
+            <h4>GraphCast (AI)</h4>
+            <div class="forecast-item">
+              <span class="label">Called Nova Scotia</span>
+              <span class="value">~Sept 7</span>
+            </div>
+            <div class="forecast-item">
+              <span class="label">Lead time</span>
+              <span class="value">9 days</span>
+            </div>
+            <div class="forecast-item">
+              <span class="label">Computation</span>
+              <span class="value">&lt;1 min</span>
+            </div>
+            <div class="forecast-item">
+              <span class="label">Hardware</span>
+              <span class="value">1 TPU chip</span>
+            </div>
+          </div>
+          <div class="forecast-col trad">
+            <h4>Traditional (HRES)</h4>
+            <div class="forecast-item">
+              <span class="label">Called Nova Scotia</span>
+              <span class="value">~Sept 10</span>
+            </div>
+            <div class="forecast-item">
+              <span class="label">Lead time</span>
+              <span class="value">6 days</span>
+            </div>
+            <div class="forecast-item">
+              <span class="label">Computation</span>
+              <span class="value">Hours</span>
+            </div>
+            <div class="forecast-item">
+              <span class="label">Hardware</span>
+              <span class="value">Supercomputer</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p>The three-day lead matters. Hurricane preparation — evacuation orders, supply positioning, infrastructure reinforcement — runs on a calendar of days, not hours. Three additional days of confidence in a forecast track is not an incremental improvement. It is the difference between a plan that works and one that is still being debated when the storm arrives.</p>
+    </section>
+
+    <section class="section" id="machine">
+      <h2><span class="num">03 — The Machine</span>Data, Not Physics</h2>
+      <p>GraphCast is a neural network trained to predict the weather. Not by simulating the physics of the atmosphere — the approach that has defined numerical weather prediction since the 1950s — but by learning patterns from four decades of what the weather has actually done.</p>
+      <p>The training data came from ECMWF's ERA5 reanalysis archive: 38 years of global weather observations (1979 to 2017) derived from satellite imagery, radar, weather stations, and atmospheric measurements, processed into a consistent dataset. From that, GraphCast learned a model of cause and effect — given the current state of the atmosphere, what comes next.</p>
+      <p>The architecture is a graph neural network operating on a multi-scale mesh of over one million grid points at 0.25-degree resolution, roughly 28 kilometers at the equator. It predicts five surface variables and six atmospheric variables at 37 vertical pressure levels. A 10-day global forecast takes under one minute on a single Google TPU v4 chip.</p>
+      <p>For comparison: ECMWF's High Resolution Forecast system, the gold standard in operational meteorology, requires hours of computation on a supercomputer with hundreds of machines to produce a comparable forecast.</p>
+
+      <div class="comparison-strip">
+        <div class="comp-card">
+          <div class="comp-label">Forecast Time</div>
+          <div class="comp-vs">
+            <span class="comp-val ai">&lt;1 min</span>
+            <span class="comp-vs-sep">vs</span>
+            <span class="comp-val trad">hours</span>
+          </div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-label">Hardware</div>
+          <div class="comp-vs">
+            <span class="comp-val ai">1 chip</span>
+            <span class="comp-vs-sep">vs</span>
+            <span class="comp-val trad">100s</span>
+          </div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-label">Accuracy</div>
+          <div class="comp-vs">
+            <span class="comp-val ai">90%+</span>
+            <span class="comp-vs-sep">wins</span>
+            <span class="comp-val trad"></span>
+          </div>
+        </div>
+      </div>
+
+      <p>The results, published in the journal <em>Science</em> on November 14, 2023, by lead author Remi Lam and 17 co-authors: GraphCast outperformed HRES on more than 90 percent of 1,380 verification targets — combinations of weather variables and forecast lead times. In the troposphere, the 6-to-20-kilometer-high layer where most weather occurs, that number was 99.7 percent.</p>
+      <p>DeepMind open-sourced the code and trained model weights on GitHub the same day.</p>
+    </section>
+
+    <section class="section" id="limits">
+      <h2><span class="num">04 — The Limits</span>What It Cannot Do</h2>
+      <p>GraphCast has specific, acknowledged limitations that explain why it supplements rather than replaces traditional forecasting — at least for now.</p>
+      <p>It produces deterministic forecasts only. A single prediction, not a probability distribution. Traditional ensemble systems run dozens of slightly varied simulations to map the range of possible outcomes. Meteorologists use those ranges to communicate uncertainty — the familiar "cone" in hurricane forecasts. GraphCast has no cone. It has a dot.</p>
+      <p>Its resolution, 28 kilometers per grid cell, is too coarse for neighborhood-scale weather. Localized rainfall, individual thunderstorms, micro-terrain effects — these happen at scales smaller than GraphCast's grid. Remi Lam, the lead author, acknowledged this limitation.</p>
+
+      <div class="pull-quote">
+        "When a model gets something wrong, I want to be able to look at the details and figure out why."
+        <cite>— Aaron Kennedy, meteorologist, University of North Dakota</cite>
+      </div>
+
+      <p>The interpretability problem is fundamental. Physics-based models have traceable reasoning — if the forecast is wrong, you can identify which physical process was modeled incorrectly. GraphCast is a black box. It produces answers. It does not explain them.</p>
+      <p>And there is the climate change question. GraphCast learned weather from 1979 to 2017. Peter Dueben at ECMWF warned that climate change could erode that foundation — the atmosphere of 2030 may behave differently enough from the atmosphere of 1979&ndash;2017 that historical patterns lose predictive power. Kim Wood, a hurricane researcher at the University of Arizona, noted that AI models excel at the events they see most often in training data but may struggle with unprecedented ones — storms like Hurricane Otis, which in October 2023 intensified from a tropical storm to a Category 5 hurricane in 24 hours, defying historical norms.</p>
+      <p>These are real constraints. They are also, notably, constraints that the institutions running the world's best physics models considered manageable enough to adopt the technology anyway.</p>
+    </section>
+
+    <section class="section" id="adoption">
+      <h2><span class="num">05 — The Adoption</span>The Institution Follows</h2>
+      <p>ECMWF — the institution whose forecasts GraphCast was benchmarked against and outperformed — did not dispute the results. It began running GraphCast experimentally on its public charts website in November 2023, alongside its traditional forecasts.</p>
+      <p>Then it went further. ECMWF built its own AI forecasting system, called AIFS, using the same graph neural network approach that GraphCast had demonstrated. On February 25, 2025, AIFS went operational — running side by side with ECMWF's traditional Integrated Forecasting System as a full production weather forecast.</p>
+      <p>The performance gains were substantial. AIFS improved tropical cyclone track predictions by up to 20 percent over physics-based models. It achieved approximately a 1,000-fold reduction in the energy required to produce a forecast. On July 1, 2025, ECMWF made its ensemble AI forecasts operational as well — addressing the probabilistic gap that had been GraphCast's most significant limitation.</p>
+
+      <div class="pull-quote">
+        "This milestone will transform weather science and predictions."
+        <cite>— Florence Rabier, Director-General, ECMWF · February 2025</cite>
+      </div>
+
+      <p>The structural point is not that GraphCast was accurate. It is that the institution which built the most respected physics-based weather prediction system on Earth looked at a data-trained model from an AI lab and concluded that the approach was worth adopting. Not as a supplement. As a parallel operational system.</p>
+      <p>Weather forecasting — the field defined by physics simulation, the field where supercomputers running fluid dynamics equations were supposed to reign indefinitely — became the first major computational domain where the paradigm was not supplemented by machine learning, but matched by it. Under a minute. On a single chip. Trained on data alone.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.graphcast-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f5f0e8';
+  const ACCENT = '#0ea5e9';
+  const ACC_R = 14, ACC_G = 165, ACC_B = 233;
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const [bgR, bgG, bgB] = hexToRgb(BG_COLOR.startsWith('#') ? BG_COLOR : '#f5f0e8');
+  const isLight = document.documentElement.dataset.theme === 'light';
+  const DIM = isLight ? 'rgba(26,26,23,' : 'rgba(232,232,232,';
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  });
+  ro.observe(canvas);
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // --- Storm center and target ---
+  function stormX() { return W * 0.28; }
+  function stormY() { return H * 0.55; }
+  function targetX() { return W * 0.78; }
+  function targetY() { return H * 0.25; }
+
+  // --- Ambient particles ---
+  const NUM_AMB = 12;
+  interface Amb { x: number; y: number; vx: number; vy: number; r: number; a: number; }
+  const ambs: Amb[] = [];
+
+  function initAmb() {
+    ambs.length = 0;
+    for (let i = 0; i < NUM_AMB; i++) {
+      ambs.push({
+        x: Math.random() * (W || 800),
+        y: Math.random() * (H || 380),
+        vx: (Math.random() - 0.5) * 0.25,
+        vy: (Math.random() - 0.5) * 0.25,
+        r: 1 + Math.random() * 1.5,
+        a: 0.03 + Math.random() * 0.04,
+      });
+    }
+  }
+
+  // --- Storm particles (rotating spiral) ---
+  const NUM_STORM = 20;
+  interface SP { angle: number; dist: number; speed: number; r: number; }
+  const storms: SP[] = [];
+
+  function initStorm() {
+    storms.length = 0;
+    for (let i = 0; i < NUM_STORM; i++) {
+      storms.push({
+        angle: (i / NUM_STORM) * Math.PI * 2 + Math.random() * 0.3,
+        dist: 8 + Math.random() * 40,
+        speed: 0.008 + Math.random() * 0.006,
+        r: 1.2 + Math.random() * 1.5,
+      });
+    }
+  }
+
+  // --- Prediction lines (scattered, then converging) ---
+  const NUM_PRED = 8;
+  interface PredLine {
+    startAngle: number; // initial scatter angle from storm
+    endAngle: number;   // will converge to target angle
+    len: number;
+    isAI: boolean;
+  }
+  const preds: PredLine[] = [];
+
+  function initPreds() {
+    preds.length = 0;
+    const targetAngle = Math.atan2(targetY() - stormY(), targetX() - stormX());
+    // AI prediction (first one, always correct)
+    preds.push({
+      startAngle: targetAngle,
+      endAngle: targetAngle,
+      len: 0,
+      isAI: true,
+    });
+    // Traditional predictions (scattered)
+    for (let i = 1; i < NUM_PRED; i++) {
+      const scatter = (Math.random() - 0.5) * 1.4;
+      preds.push({
+        startAngle: targetAngle + scatter,
+        endAngle: targetAngle,
+        len: 0,
+        isAI: false,
+      });
+    }
+  }
+
+  // --- Phase timing ---
+  const P_ROTATE = 180;    // Storm rotates, nothing else
+  const P_AI_DRAW = 300;   // AI line draws out (120 frames)
+  const P_PAUSE = 380;     // Pause after AI line
+  const P_CONVERGE = 560;  // Traditional lines draw and converge (180 frames)
+  const P_HOLD = 660;      // Hold aligned (100 frames)
+  const P_FADE = 750;      // Fade out (90 frames)
+  const CYCLE = 810;       // Total cycle
+
+  // --- Ring pulse on target ---
+  let ringAlpha = 0;
+  let ringR = 0;
+
+  function update() {
+    const cf = frame % CYCLE;
+
+    // Ambient
+    for (const a of ambs) {
+      a.x += a.vx; a.y += a.vy;
+      if (a.x < -10) a.x = W + 10;
+      if (a.x > W + 10) a.x = -10;
+      if (a.y < -10) a.y = H + 10;
+      if (a.y > H + 10) a.y = -10;
+    }
+
+    // Storm rotation
+    const stormAlpha = cf < P_HOLD ? 1 : cf < P_FADE ? 1 - (cf - P_HOLD) / (P_FADE - P_HOLD) : 0;
+    for (const s of storms) {
+      s.angle += s.speed;
+    }
+
+    // AI prediction line (draws between P_ROTATE and P_AI_DRAW)
+    if (cf >= P_ROTATE && cf < P_AI_DRAW) {
+      const t = (cf - P_ROTATE) / (P_AI_DRAW - P_ROTATE);
+      preds[0].len = t;
+    } else if (cf >= P_AI_DRAW) {
+      preds[0].len = 1;
+    } else {
+      preds[0].len = 0;
+    }
+
+    // Target ring pulse when AI line arrives
+    if (cf >= P_AI_DRAW && cf < P_AI_DRAW + 40) {
+      const rt = (cf - P_AI_DRAW) / 40;
+      ringAlpha = Math.sin(rt * Math.PI) * 0.5;
+      ringR = 8 + rt * 30;
+    } else if (cf >= P_CONVERGE - 10 && cf < P_CONVERGE + 20) {
+      const rt = (cf - (P_CONVERGE - 10)) / 30;
+      ringAlpha = Math.sin(rt * Math.PI) * 0.3;
+      ringR = 8 + rt * 25;
+    } else {
+      ringAlpha = 0;
+    }
+
+    // Traditional prediction lines (draw and converge between P_PAUSE and P_CONVERGE)
+    if (cf >= P_PAUSE && cf < P_CONVERGE) {
+      const t = (cf - P_PAUSE) / (P_CONVERGE - P_PAUSE);
+      const targetAngle = Math.atan2(targetY() - stormY(), targetX() - stormX());
+      for (let i = 1; i < preds.length; i++) {
+        const drawT = Math.min(1, t * 1.8);
+        preds[i].len = drawT;
+        // Converge angle toward target
+        const convT = Math.max(0, (t - 0.3) / 0.7);
+        const ease = convT * convT * (3 - 2 * convT);
+        const cur = preds[i].startAngle + (targetAngle - preds[i].startAngle) * ease;
+        preds[i].endAngle = cur;
+      }
+    } else if (cf >= P_CONVERGE && cf < P_FADE) {
+      const targetAngle = Math.atan2(targetY() - stormY(), targetX() - stormX());
+      for (let i = 1; i < preds.length; i++) {
+        preds[i].len = 1;
+        preds[i].endAngle = targetAngle;
+      }
+    }
+
+    // Fade
+    if (cf >= P_FADE || cf < 10) {
+      for (let i = 0; i < preds.length; i++) {
+        if (cf >= P_FADE) {
+          const fadeT = (cf - P_FADE) / (CYCLE - P_FADE);
+          preds[i].len = Math.max(0, 1 - fadeT);
+        } else {
+          preds[i].len = 0;
+        }
+      }
+    }
+  }
+
+  function draw() {
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+
+    const cf = frame % CYCLE;
+    const globalFade = cf >= P_HOLD ? Math.max(0, 1 - (cf - P_HOLD) / (CYCLE - P_HOLD)) : 1;
+
+    // Ambient particles
+    for (const a of ambs) {
+      ctx.globalAlpha = a.a;
+      ctx.fillStyle = DIM + '0.06)';
+      ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    const sx = stormX(), sy = stormY();
+    const tx = targetX(), ty = targetY();
+
+    // Storm spiral
+    const stormA = globalFade * 0.8;
+    for (const s of storms) {
+      const px = sx + Math.cos(s.angle) * s.dist;
+      const py = sy + Math.sin(s.angle) * s.dist;
+      ctx.globalAlpha = stormA * (0.15 + 0.1 * Math.sin(s.angle * 2));
+      ctx.fillStyle = DIM + '0.5)';
+      ctx.beginPath(); ctx.arc(px, py, s.r, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Storm center glow
+    ctx.globalAlpha = stormA * 0.12;
+    const sg = ctx.createRadialGradient(sx, sy, 0, sx, sy, 50);
+    sg.addColorStop(0, DIM + '0.15)');
+    sg.addColorStop(1, DIM + '0)');
+    ctx.fillStyle = sg;
+    ctx.beginPath(); ctx.arc(sx, sy, 50, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // Target point (dim before prediction arrives, glows after)
+    const targetGlow = preds[0].len >= 0.95 ? 0.6 : 0.1;
+    ctx.globalAlpha = targetGlow * globalFade;
+    ctx.fillStyle = ACCENT;
+    ctx.beginPath(); ctx.arc(tx, ty, 3, 0, Math.PI * 2); ctx.fill();
+
+    // Target ring pulse
+    if (ringAlpha > 0.01) {
+      ctx.globalAlpha = ringAlpha * globalFade;
+      ctx.strokeStyle = ACCENT;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(tx, ty, ringR, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+
+    // Prediction lines
+    const dist = Math.sqrt((tx - sx) ** 2 + (ty - sy) ** 2);
+
+    for (let i = preds.length - 1; i >= 0; i--) {
+      const p = preds[i];
+      if (p.len <= 0.005) continue;
+
+      const angle = i === 0 ? p.startAngle : p.endAngle;
+      const lineLen = dist * p.len;
+      const ex = sx + Math.cos(angle) * lineLen;
+      const ey = sy + Math.sin(angle) * lineLen;
+
+      if (p.isAI) {
+        // AI prediction line — storm blue, brighter
+        ctx.globalAlpha = 0.7 * globalFade;
+        ctx.strokeStyle = ACCENT;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+
+        // Slight curve via quadratic bezier
+        const mx = (sx + ex) / 2 - (ey - sy) * 0.08;
+        const my = (sy + ey) / 2 + (ex - sx) * 0.08;
+        ctx.quadraticCurveTo(mx, my, ex, ey);
+        ctx.stroke();
+
+        // Glow
+        ctx.globalAlpha = 0.15 * globalFade;
+        ctx.lineWidth = 6;
+        ctx.stroke();
+
+        // Tip dot
+        ctx.globalAlpha = 0.9 * globalFade;
+        ctx.fillStyle = ACCENT;
+        ctx.beginPath(); ctx.arc(ex, ey, 3, 0, Math.PI * 2); ctx.fill();
+      } else {
+        // Traditional prediction lines — dim
+        ctx.globalAlpha = 0.2 * globalFade;
+        ctx.strokeStyle = DIM + '0.4)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+        const mx = (sx + ex) / 2 - (ey - sy) * 0.05;
+        const my = (sy + ey) / 2 + (ex - sx) * 0.05;
+        ctx.quadraticCurveTo(mx, my, ex, ey);
+        ctx.stroke();
+
+        // Tip
+        ctx.globalAlpha = 0.3 * globalFade;
+        ctx.fillStyle = DIM + '0.5)';
+        ctx.beginPath(); ctx.arc(ex, ey, 2, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function tick() { frame++; update(); draw(); raf = requestAnimationFrame(tick); }
+
+  function init() { initAmb(); initStorm(); initPreds(); }
+
+  requestAnimationFrame(() => {
+    init();
+    if (prefersReduced) {
+      // Static frame: storm + AI line fully drawn + all lines converged
+      frame = Math.floor(CYCLE * 0.82);
+      update();
+      draw();
+    } else {
+      raf = requestAnimationFrame(tick);
+    }
+  });
+
+  window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); ro.disconnect(); });
+})();
+</script>

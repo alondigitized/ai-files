@@ -1,0 +1,549 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'halicin')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .halicin-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  .void-stat {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .void-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .void-num {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--story);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+  .void-label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .mech-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--story);
+    border-radius: 0 0.75rem 0.75rem 0;
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+  }
+  .mech-box strong {
+    display: block;
+    margin-bottom: 0.3rem;
+    color: var(--story);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .mech-box p {
+    font-size: 0.92rem;
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .resistance-compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .rc-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    text-align: center;
+  }
+  .rc-card.halicin-card { border-top: 3px solid var(--story); }
+  .rc-card.cipro-card { border-top: 3px solid var(--accent); }
+  .rc-drug {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .rc-result {
+    font-size: 1.8rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .rc-card.halicin-card .rc-result { color: var(--story); }
+  .rc-card.cipro-card .rc-result { color: var(--accent); }
+  .rc-note {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .scale-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .scale-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+  }
+  .scale-card h4 {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--story);
+    margin-bottom: 0.5rem;
+  }
+  .scale-num {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .scale-note {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  @media (max-width: 600px) {
+    .void-stat { grid-template-columns: 1fr; }
+    .resistance-compare { grid-template-columns: 1fr; }
+    .scale-row { grid-template-columns: 1fr; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="void">
+      <h2><span class="num">01 — The Void</span>The Empty Pipeline</h2>
+      <p>Since 1987, no genuinely new class of antibiotic has been discovered. Every antibiotic brought to market in the past three decades is a variation of a drug class that already existed. The pipeline did not slow down. It stopped.</p>
+      <p>The bacteria did not stop. In 2019, drug-resistant infections directly killed 1.27 million people worldwide — more than HIV/AIDS, more than malaria. The WHO classifies antimicrobial resistance as one of the top ten global public health threats. A 2024 Lancet study projected that without intervention, resistant infections will kill more than 39 million people by 2050.</p>
+
+      <div class="void-stat">
+        <div class="void-card">
+          <div class="void-num">37 yr</div>
+          <div class="void-label">since the last new antibiotic class was discovered</div>
+        </div>
+        <div class="void-card">
+          <div class="void-num">1.27M</div>
+          <div class="void-label">annual deaths from drug-resistant infections (2019)</div>
+        </div>
+        <div class="void-card">
+          <div class="void-num">18 → 6</div>
+          <div class="void-label">pharma companies with active antibiotic programs</div>
+        </div>
+      </div>
+
+      <p>The pharmaceutical industry, meanwhile, has been walking away. Over the past two decades, the number of multinational companies with active antibiotic research programs fell from eighteen to six. Antibiotics are expensive to develop — over a billion dollars and ten to fifteen years per drug — and cheap to sell. The economics do not reward the investment.</p>
+      <p>The traditional approach to finding new antibiotics — synthesize a molecule, test it against bacteria, iterate — works, but it is slow, expensive, and constrained by what chemists already know how to make. The problem was not that the molecules did not exist. It was that no one could search fast enough to find them.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="halicin-canvas" aria-hidden="true"></canvas>
+    </div>
+
+    <section class="section" id="search">
+      <h2><span class="num">02 — The Search</span>2,335 Molecules</h2>
+      <p>In early 2020, three researchers at MIT set out to change how antibiotics are found. James Collins, a professor of medical engineering and biological engineering, and Regina Barzilay, a professor of computer science and co-director of the Abdul Latif Jameel Clinic for Machine Learning in Health, had been collaborating on applying machine learning to drug discovery. Jonathan Stokes, a postdoctoral researcher working with both, led the experimental work.</p>
+      <p>Their approach was structurally different from traditional virtual screening. Conventional methods search for molecules that look like known antibiotics — similar scaffolds, similar functional groups. The MIT team trained a deep neural network on approximately 2,335 molecules — 1,700 FDA-approved drugs and 800 natural products — for which antibacterial activity data existed. The model learned which molecular features correlated with killing bacteria. Crucially, it did not learn what an antibiotic was supposed to look like. It learned what worked.</p>
+
+      <div class="pull-quote">
+        "We wanted to develop a platform that would allow us to harness the power of artificial intelligence to usher in a new age of antibiotic drug discovery."
+        <cite>— James Collins, MIT</cite>
+      </div>
+
+      <p>They pointed the model at the Broad Institute's Drug Repurposing Hub — a library of approximately 6,000 compounds that had been studied for various medical conditions but were not currently in use as antibiotics.</p>
+    </section>
+
+    <section class="section" id="find">
+      <h2><span class="num">03 — The Find</span>A Failed Diabetes Drug</h2>
+      <p>The model flagged a compound called SU3327.</p>
+      <p>SU3327 was a c-Jun N-terminal kinase inhibitor, originally synthesized in 2009 at the Burnham Institute for Medical Research as a candidate treatment for type 2 diabetes. It had been tested, found lacking, and shelved. It had been sitting in a database for over a decade. The model predicted it would kill bacteria. No one had thought to ask.</p>
+      <p>The researchers named it halicin, after HAL 9000, the artificial intelligence in Stanley Kubrick's <em>2001: A Space Odyssey</em>.</p>
+      <p>In lab tests, halicin killed many of the most dangerous drug-resistant bacterial strains on the planet: <em>Clostridioides difficile</em>, <em>Mycobacterium tuberculosis</em>, and <em>Acinetobacter baumannii</em> — a WHO critical-priority pathogen that haunts hospital wards and military field hospitals. The strain of <em>A. baumannii</em> used in testing was resistant to all known antibiotics.</p>
+      <p>In a mouse model, the results were blunt. Mice infected with pan-resistant <em>A. baumannii</em> were treated with a halicin-containing ointment. Within 24 hours, the infections were completely cleared.</p>
+
+      <div class="resistance-compare">
+        <div class="rc-card halicin-card">
+          <div class="rc-drug">Halicin</div>
+          <div class="rc-result">0</div>
+          <div class="rc-note">resistance mutations after 30 days of E. coli exposure</div>
+        </div>
+        <div class="rc-card cipro-card">
+          <div class="rc-drug">Ciprofloxacin</div>
+          <div class="rc-result">200×</div>
+          <div class="rc-note">resistance increase by day 30 — appeared within 1–3 days</div>
+        </div>
+      </div>
+
+      <div class="mech-box">
+        <strong>Mechanism of Action</strong>
+        <p>Halicin kills bacteria by disrupting the electrochemical gradient across the cell membrane — the proton motive force that drives ATP production. As Stokes explained, "a cell can't necessarily acquire a single mutation or a couple of mutations to change" the fundamental chemistry of its outer membrane. The target is not a single protein. It is the membrane itself.</p>
+      </div>
+
+      <p>Halicin was structurally unlike any existing antibiotic. That was the point. The model had found it precisely because it did not look like what humans expected an antibiotic to look like.</p>
+    </section>
+
+    <section class="section" id="scale">
+      <h2><span class="num">04 — The Scale</span>107 Million Molecules in Three Days</h2>
+      <p>Halicin was found in a library of 6,000 compounds. The researchers wanted to know what a larger search would yield.</p>
+      <p>They pointed the trained model at the ZINC15 database — a collection of more than 107 million chemical compounds. The screen took three days. It identified 23 candidates that were structurally distant from all known antibiotics. Eight showed antibacterial activity in laboratory tests. Two were described as particularly powerful.</p>
+
+      <div class="scale-row">
+        <div class="scale-card">
+          <h4>Halicin (2020)</h4>
+          <div class="scale-num">6,000 → 1</div>
+          <div class="scale-note">Drug Repurposing Hub screened. Halicin flagged and validated.</div>
+        </div>
+        <div class="scale-card">
+          <h4>Abaucin (2023)</h4>
+          <div class="scale-num">6,680 → 9</div>
+          <div class="scale-note">Compounds screened in under 2 hours. Nine antibiotics found.</div>
+        </div>
+      </div>
+
+      <p>Three years later, the methodology proved it was not a one-off. In May 2023, Stokes — now leading his own lab at McMaster University — published a follow-up discovery with Collins and Barzilay in <em>Nature Chemical Biology</em>. The team trained a new model on approximately 7,500 compounds tested against <em>A. baumannii</em> specifically. They screened 6,680 unseen compounds in under two hours and identified 240 candidates for lab testing, of which nine showed antibiotic properties.</p>
+      <p>The most promising compound was named abaucin. It kills <em>A. baumannii</em> by disrupting lipoprotein trafficking — a different mechanism from halicin. Abaucin is narrow-spectrum: it targets <em>A. baumannii</em> specifically, leaving beneficial gut bacteria unharmed. That selectivity is not just a feature. Narrow-spectrum antibiotics exert less evolutionary pressure across the bacterial population, which means resistance develops more slowly.</p>
+      <p>Halicin showed the approach could work. Abaucin showed it could work again, on demand, against a specific target.</p>
+    </section>
+
+    <section class="section" id="gap">
+      <h2><span class="num">05 — The Gap</span>From Molecule to Patient</h2>
+      <p>Halicin has not entered human clinical trials. As of 2024, preclinical studies indicate that the molecule is poorly absorbed into the bloodstream and rapidly eliminated from the body — pharmacokinetic challenges that are solvable in principle but expensive in practice.</p>
+      <p>Finding the molecule was the fast part. A neural network screened a database in three days. The slow part is everything that comes after: reformulation to improve bioavailability, toxicology studies, Phase I/II/III trials, regulatory approval. That pipeline takes a decade and costs over a billion dollars. It is the same pipeline that emptied the antibiotic market in the first place.</p>
+      <p>The structural shift, though, is real. The methodology that found halicin and abaucin is reusable. The models can be retrained on new data, pointed at new chemical libraries, optimized for new pathogens. The discovery phase — the part that stalled for three decades — has been compressed from years to days. What remains is the translation phase. It is slower, more expensive, and institutionally harder. But the constraint has moved.</p>
+      <p>For thirty-seven years, the world had a discovery problem. Now it has a delivery problem. That is progress.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.halicin-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f5f0e8';
+  const STORY_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#2dd4bf';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+
+  const [stR, stG, stB] = hexToRgb(STORY_COLOR.startsWith('#') ? STORY_COLOR : '#2dd4bf');
+  const isLight = document.documentElement.dataset.theme === 'light';
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  });
+  ro.observe(canvas);
+
+  // --- Molecule particles (the vast chemical library) ---
+  const NUM_MOLS = 80;
+  interface Mol {
+    x: number; y: number; r: number; vy: number; vx: number;
+    alpha: number; found: boolean;
+  }
+  const mols: Mol[] = [];
+
+  function spawnMol(y?: number): Mol {
+    return {
+      x: Math.random() * (W || 800),
+      y: y !== undefined ? y : Math.random() * (H || 380),
+      r: 1.5 + Math.random() * 2.5,
+      vy: 0.15 + Math.random() * 0.2,
+      vx: (Math.random() - 0.5) * 0.15,
+      alpha: isLight ? 0.06 + Math.random() * 0.06 : 0.04 + Math.random() * 0.05,
+      found: false,
+    };
+  }
+
+  function initMols() {
+    mols.length = 0;
+    for (let i = 0; i < NUM_MOLS; i++) mols.push(spawnMol());
+  }
+
+  // --- The halicin molecule (the one that gets found) ---
+  let hIdx = -1; // index of the "found" molecule
+  let hState: 'dormant' | 'illuminated' | 'rising' | 'pulsing' | 'fading' = 'dormant';
+  let hx = 0, hy = 0, hAlpha = 0, hGlow = 0;
+  let hPulseFrame = 0;
+
+  // --- Scan beam ---
+  let beamY = -20;
+  let beamActive = false;
+  let beamAlpha = 0;
+
+  // --- Phase timing ---
+  const BEAM_START = 60;
+  const BEAM_DURATION = 220;
+  const RISE_DURATION = 80;
+  const PULSE_DURATION = 160;
+  const FADE_DURATION = 60;
+  const REST = 80;
+  const CYCLE = BEAM_START + BEAM_DURATION + RISE_DURATION + PULSE_DURATION + FADE_DURATION + REST;
+
+  function pickHalicin() {
+    // Pick a molecule near middle-ish area
+    let bestIdx = 0;
+    let bestDist = Infinity;
+    const cx = (W || 800) / 2;
+    const cy = (H || 380) * 0.5;
+    for (let i = 0; i < mols.length; i++) {
+      const dx = mols[i].x - cx;
+      const dy = mols[i].y - cy;
+      const d = dx * dx + dy * dy;
+      if (d < bestDist) { bestDist = d; bestIdx = i; }
+    }
+    hIdx = bestIdx;
+    mols[hIdx].found = false;
+  }
+
+  function resetCycle() {
+    hState = 'dormant';
+    hAlpha = 0;
+    hGlow = 0;
+    hPulseFrame = 0;
+    beamY = -20;
+    beamActive = false;
+    beamAlpha = 0;
+    for (const m of mols) m.found = false;
+    pickHalicin();
+  }
+
+  function update() {
+    const cf = frame % CYCLE;
+
+    // Move molecules downward
+    for (let i = 0; i < mols.length; i++) {
+      const m = mols[i];
+      if (m.found && (hState === 'rising' || hState === 'pulsing')) continue;
+      m.y += m.vy;
+      m.x += m.vx;
+      if (m.y > (H || 380) + 10) {
+        m.y = -10;
+        m.x = Math.random() * (W || 800);
+      }
+      if (m.x < -10) m.x = (W || 800) + 10;
+      if (m.x > (W || 800) + 10) m.x = -10;
+    }
+
+    // Beam sweep phase
+    const beamEnd = BEAM_START + BEAM_DURATION;
+    if (cf >= BEAM_START && cf < beamEnd) {
+      beamActive = true;
+      const t = (cf - BEAM_START) / BEAM_DURATION;
+      beamY = -20 + t * ((H || 380) + 40);
+      beamAlpha = 0.12 + 0.06 * Math.sin(t * Math.PI);
+
+      // Check if beam passes halicin
+      if (hIdx >= 0 && hState === 'dormant') {
+        const m = mols[hIdx];
+        if (Math.abs(beamY - m.y) < 15) {
+          hState = 'illuminated';
+          m.found = true;
+          hx = m.x;
+          hy = m.y;
+          hAlpha = 0.3;
+        }
+      }
+    } else {
+      beamActive = false;
+      beamAlpha = Math.max(0, beamAlpha - 0.01);
+    }
+
+    // If beam passed without finding (molecule was above beam start), force find
+    if (cf === beamEnd && hState === 'dormant' && hIdx >= 0) {
+      const m = mols[hIdx];
+      hState = 'illuminated';
+      m.found = true;
+      hx = m.x;
+      hy = m.y;
+      hAlpha = 0.3;
+    }
+
+    // Illuminated → Rising
+    const riseStart = beamEnd;
+    if (cf >= riseStart && cf < riseStart + RISE_DURATION) {
+      if (hState === 'illuminated') hState = 'rising';
+      if (hState === 'rising') {
+        const t = (cf - riseStart) / RISE_DURATION;
+        const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        const targetX = (W || 800) / 2;
+        const targetY = (H || 380) / 2;
+        const m = mols[hIdx];
+        hx = m.x + (targetX - m.x) * ease;
+        hy = m.y + (targetY - m.y) * ease;
+        hAlpha = 0.3 + 0.7 * ease;
+        hGlow = ease * 25;
+      }
+    }
+
+    // Pulsing at center
+    const pulseStart = riseStart + RISE_DURATION;
+    if (cf >= pulseStart && cf < pulseStart + PULSE_DURATION) {
+      if (hState === 'rising') hState = 'pulsing';
+      if (hState === 'pulsing') {
+        hPulseFrame++;
+        hAlpha = 0.85 + 0.15 * Math.sin(hPulseFrame * 0.06);
+        hGlow = 22 + 8 * Math.sin(hPulseFrame * 0.04);
+        hx = (W || 800) / 2;
+        hy = (H || 380) / 2;
+      }
+    }
+
+    // Fading
+    const fadeStart = pulseStart + PULSE_DURATION;
+    if (cf >= fadeStart && cf < fadeStart + FADE_DURATION) {
+      if (hState === 'pulsing') hState = 'fading';
+      if (hState === 'fading') {
+        const t = (cf - fadeStart) / FADE_DURATION;
+        hAlpha = Math.max(0, (1 - t));
+        hGlow = Math.max(0, 25 * (1 - t));
+      }
+    }
+
+    // Rest / reset
+    if (cf === 0) {
+      resetCycle();
+    }
+  }
+
+  function draw() {
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+
+    // Draw molecules
+    for (let i = 0; i < mols.length; i++) {
+      const m = mols[i];
+      if (m.found && (hState !== 'dormant')) continue; // skip the found one, draw separately
+      ctx.globalAlpha = m.alpha;
+      ctx.fillStyle = isLight ? 'rgb(100,90,70)' : 'rgb(200,195,185)';
+      ctx.beginPath();
+      ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // Draw scan beam
+    if (beamActive && beamAlpha > 0.01) {
+      const grad = ctx.createLinearGradient(0, beamY - 20, 0, beamY + 20);
+      grad.addColorStop(0, `rgba(${stR},${stG},${stB},0)`);
+      grad.addColorStop(0.5, `rgba(${stR},${stG},${stB},${beamAlpha.toFixed(3)})`);
+      grad.addColorStop(1, `rgba(${stR},${stG},${stB},0)`);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, beamY - 20, W, 40);
+
+      // Thin bright line at center
+      ctx.strokeStyle = `rgba(${stR},${stG},${stB},${(beamAlpha * 1.5).toFixed(3)})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, beamY);
+      ctx.lineTo(W, beamY);
+      ctx.stroke();
+
+      // Briefly illuminate nearby molecules
+      for (const m of mols) {
+        if (Math.abs(m.y - beamY) < 12 && !m.found) {
+          ctx.globalAlpha = 0.15;
+          ctx.fillStyle = `rgb(${stR},${stG},${stB})`;
+          ctx.beginPath();
+          ctx.arc(m.x, m.y, m.r + 1, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // Draw halicin (found molecule)
+    if (hState !== 'dormant' && hAlpha > 0.01) {
+      // Glow
+      if (hGlow > 1) {
+        const grad = ctx.createRadialGradient(hx, hy, 0, hx, hy, hGlow);
+        grad.addColorStop(0, `rgba(${stR},${stG},${stB},${(hAlpha * 0.4).toFixed(3)})`);
+        grad.addColorStop(0.5, `rgba(${stR},${stG},${stB},${(hAlpha * 0.15).toFixed(3)})`);
+        grad.addColorStop(1, `rgba(${stR},${stG},${stB},0)`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(hx, hy, hGlow, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Core
+      ctx.globalAlpha = hAlpha;
+      ctx.fillStyle = `rgb(${stR},${stG},${stB})`;
+      ctx.beginPath();
+      ctx.arc(hx, hy, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Outer ring when pulsing
+      if (hState === 'pulsing' || hState === 'fading') {
+        ctx.strokeStyle = `rgba(${stR},${stG},${stB},${(hAlpha * 0.3).toFixed(3)})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(hx, hy, 10 + 4 * Math.sin(hPulseFrame * 0.05), 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function tick() { frame++; update(); draw(); raf = requestAnimationFrame(tick); }
+
+  function init() {
+    initMols();
+    resetCycle();
+  }
+
+  requestAnimationFrame(() => {
+    init();
+    if (prefersReduced) {
+      // Static frame: molecules scattered, one teal at center
+      draw();
+      hState = 'pulsing';
+      hx = (W || 400) / 2;
+      hy = (H || 190) / 2;
+      hAlpha = 0.9;
+      hGlow = 20;
+      hPulseFrame = 0;
+      draw();
+    } else {
+      raf = requestAnimationFrame(tick);
+    }
+  });
+
+  window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); ro.disconnect(); });
+})();
+</script>
