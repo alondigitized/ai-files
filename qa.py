@@ -130,6 +130,25 @@ for el in ['<link rel="icon"', '/_vercel/insights/script.js']:
     if el not in base_content:
         errors.append(f'BaseLayout.astro: missing — {el}')
 
+# ── 6. llms.txt (built output) ────────────────────────────────────────────────
+built_llms = os.path.join(ROOT, 'dist', 'llms.txt')
+if os.path.isfile(built_llms):
+    with open(built_llms) as f:
+        llms_content = f.read()
+    published_slugs = {s['slug'] for s in stories_data if s.get('isoDate') and not s.get('wip')}
+    for slug in published_slugs:
+        if f'/stories/{slug}' not in llms_content:
+            errors.append(f'llms.txt (built): missing story — {slug}')
+    for slug in wip_slugs:
+        if f'/stories/{slug}' in llms_content:
+            errors.append(f'llms.txt (built): WIP story leaked — {slug}')
+    # Check all URLs are absolute
+    for line in llms_content.splitlines():
+        if '/stories/' in line and 'https://theaifiles.app/stories/' not in line:
+            # Could be a markdown link — check for relative URLs
+            if '](/stories/' in line or 'URL: /stories/' in line:
+                errors.append(f'llms.txt (built): relative URL found — {line.strip()[:80]}')
+
 # ── Report ─────────────────────────────────────────────────────────────────────
 if errors:
     print(f'\n❌  QA FAILED — {len(errors)} issue(s) found:\n')

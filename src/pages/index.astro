@@ -696,7 +696,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
         <h3>About This Archive</h3>
         <p>The AI Files documents true stories from the first era of large language models — the surprising failures, unexpected behaviors, and legal and social consequences that defined AI's emergence into everyday life.</p>
         <p>These aren't cautionary tales invented to scare. They're documented events: court rulings, published research, and viral moments that changed how companies, governments, and individuals think about artificial intelligence.</p>
-        <p>Two editions — Demons and Angels. Twenty-six stories. More coming.</p>
+        <p>Two editions — Demons and Angels. {activeStories.length} stories. More coming.</p>
       </div>
       <div>
         <h3>In The Workshop</h3>
@@ -1135,13 +1135,14 @@ const pad = (n: number) => String(n).padStart(2, '0');
   </script>
 
   <footer>
-    <p>The AI Files · Demons & Angels · 26 Stories · True stories from the age of artificial intelligence</p>
+    <p>The AI Files · Demons & Angels · {activeStories.length} Stories · True stories from the age of artificial intelligence</p>
     <p style="margin-top:0.5rem; color:var(--muted);">All stories are based on documented public events, court records, and published research.</p>
     <p style="margin-top:0.75rem; color:var(--muted);">
       &copy; {new Date().getFullYear()} &middot;
       Built by Alon with <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a> &middot;
       <a href="/feed.xml">RSS</a> &middot;
-      <a href="/llms.txt">for AI systems</a>
+      <a href="/llms.txt">for AI systems</a> &middot;
+      <a href="/how-it-works">How it works</a>
     </p>
   </footer>
 </BaseLayout>

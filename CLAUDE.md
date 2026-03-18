@@ -20,17 +20,17 @@ src/
   pages/
     index.astro           ← Archive landing page (featured story + card grid)
     feed.xml.ts           ← RSS 2.0 feed (sorted by isoDate, newest first)
+    llms.txt.ts           ← GEO manifest for AI citation systems (auto-generated from stories.json)
     stories/
-      *.astro             ← One file per story (27 total)
+      *.astro             ← One file per story (31 total)
   styles/
     global.css            ← Shared component styles
   data/
-    stories.json          ← Metadata for all 27 stories
+    stories.json          ← Metadata for all 31 stories
 
 public/
   favicon.svg
   robots.txt              ← Explicit AI crawler permissions
-  llms.txt                ← GEO manifest for AI citation systems
 ```
 
 ## Astro Story Page Pattern
@@ -60,7 +60,7 @@ const story = stories.find(s => s.slug === 'my-story-slug')!;
 </StoryLayout>
 ```
 
-**StoryLayout** auto-generates: nav, hero (chapter, title, deck, byline, verify badge), sources block, more-stories grid, and footer — all from `story` metadata. Related stories are picked automatically: same-volume stories first, then others, capped at 4.
+**StoryLayout** auto-generates: nav, hero (chapter, title, deck, byline, verify badge), share bar (X, LinkedIn, Reddit, HN, copy link), sources block, newsletter signup (Beehiiv), more-stories grid, and footer — all from `story` metadata. Related stories are picked automatically: same-volume stories first, then others, capped at 4.
 
 ## The "What If" Section (Required — Most Important Section)
 
@@ -123,7 +123,8 @@ Each entry in `src/data/stories.json`:
   "verifyText": "Source note shown in hero verify badge",
   "sources": [
     { "label": "Link Label", "url": "https://..." }
-  ]
+  ],
+  "llmsDescription": "Optional 2-4 sentence summary with key facts, names, dates for AI citation systems (used in auto-generated llms.txt)"
 }
 ```
 
@@ -134,7 +135,7 @@ Each entry in `src/data/stories.json`:
 - **index.astro** — injects `WebSite` + `ItemList` JSON-LD covering all 27 stories
 - **sitemap** — auto-generated at build time by `@astrojs/sitemap` (`sitemap-index.xml` + `sitemap-0.xml`); story pages get priority 0.9, index gets 1.0
 - **robots.txt** — `Allow: /` for all bots; explicit named permissions for 15 AI crawlers (GPTBot, ClaudeBot, PerplexityBot, etc.)
-- **llms.txt** — plain-text GEO manifest listing all 27 stories with titles, summaries, and links for AI citation systems
+- **llms.txt** — auto-generated at build time from `stories.json` via `src/pages/llms.txt.ts`; uses `llmsDescription` field for extended summaries, falls back to `deck`; filters WIP stories; all URLs absolute
 - **feed.xml** — RSS 2.0 feed generated from `stories.json`, sorted newest-first
 - **Production domain**: `https://theaifiles.app` — set in `astro.config.mjs` as `SITE`; all canonical URLs, sitemap, RSS, and fallback URLs use this
 
@@ -277,15 +278,15 @@ Every story includes a **full-width canvas animation** placed at a dramatically 
 
 ### Adding a New Story
 
-1. Add entry to `src/data/stories.json` with all required fields including `isoDate`
+1. Add entry to `src/data/stories.json` with all required fields including `isoDate` and `llmsDescription`
 2. Create `src/pages/stories/[slug].astro` using the pattern above
 3. Design a canvas animation concept thematically matched to the story (see principles above)
 4. In `src/pages/index.astro`:
    - Add the story card to the correct volume section
    - Update chapter range in the vol-section header (e.g. `Chapters 17 – 23`)
-   - Update the story count in the masthead pill, nav issue label, about paragraph, and footer
    - Remove the story from "Coming Next" if it was teased there
-5. Update `public/llms.txt` to add the new story to the manifest
+   - (Story counts in about/footer are dynamic — no manual update needed)
+5. `llms.txt` is auto-generated at build time from stories.json — no manual update needed
 6. Add the animation to the canvas table above
 7. Run `python3 qa.py` before deploying
 

@@ -49,10 +49,19 @@ const articleSchema = {
   description: story.deck,
   url: canonicalURL,
   ...(story.isoDate ? { datePublished: story.isoDate } : {}),
+  author: {
+    '@type': 'Organization',
+    name: 'The AI Files',
+    url: siteURL.href,
+  },
   publisher: {
     '@type': 'Organization',
     name: 'The AI Files',
     url: siteURL.href,
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': canonicalURL,
   },
   keywords: story.tags.join(', '),
   creditText: story.verifyText,
@@ -87,6 +96,15 @@ const sameSideVol = others.filter(s => (s.side ?? 'dark') === storySide && s.vol
 const sameSideOther = others.filter(s => (s.side ?? 'dark') === storySide && s.volume !== story.volume);
 const crossSide = others.filter(s => (s.side ?? 'dark') !== storySide);
 const related = [...sameSideVol, ...sameSideOther, ...crossSide].slice(0, 4);
+
+const shareTitle = encodeURIComponent(story.title + ' — The AI Files');
+const shareURL = encodeURIComponent(canonicalURL);
+const shareLinks = {
+  x: `https://x.com/intent/tweet?text=${shareTitle}&url=${shareURL}`,
+  linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${shareURL}`,
+  reddit: `https://reddit.com/submit?url=${shareURL}&title=${shareTitle}`,
+  hn: `https://news.ycombinator.com/submitlink?u=${shareURL}&t=${shareTitle}`,
+};
 ---
 <BaseLayout
   title={`${story.title} — The AI Files`}
@@ -127,6 +145,15 @@ const related = [...sameSideVol, ...sameSideOther, ...crossSide].slice(0, 4);
       </div>
     </div>
   </header>
+
+  <div class="share-bar">
+    <span class="share-label">Share</span>
+    <a href={shareLinks.x} target="_blank" rel="noopener" class="share-btn" aria-label="Share on X">X</a>
+    <a href={shareLinks.linkedin} target="_blank" rel="noopener" class="share-btn" aria-label="Share on LinkedIn">LinkedIn</a>
+    <a href={shareLinks.reddit} target="_blank" rel="noopener" class="share-btn" aria-label="Share on Reddit">Reddit</a>
+    <a href={shareLinks.hn} target="_blank" rel="noopener" class="share-btn" aria-label="Share on Hacker News">HN</a>
+    <button class="share-btn share-copy" data-url={canonicalURL} aria-label="Copy link">Link</button>
+  </div>
 
   <main>
     <slot />
@@ -255,6 +282,18 @@ const related = [...sameSideVol, ...sameSideOther, ...crossSide].slice(0, 4);
       })();
     </script>
 
+    <div class="story-subscribe">
+      <div class="story-subscribe-inner">
+        <div class="story-subscribe-text">
+          <div class="story-subscribe-eyebrow">New chapters · No spam</div>
+          <div class="story-subscribe-title">Get the next story in your inbox</div>
+        </div>
+        <div class="story-subscribe-form">
+          <iframe src="https://subscribe-forms.beehiiv.com/7942b99c-8490-486e-86cc-a2bd15e40070" class="beehiiv-embed" data-test-id="beehiiv-embed" frameborder="0" scrolling="no" style="width: 100%; height: 52px; margin: 0; border-radius: 0px !important; background-color: transparent; box-shadow: 0 0 #0000;"></iframe>
+        </div>
+      </div>
+    </div>
+
     <div class="sources-block">
       <h3>Sources</h3>
       <ul class="sources-list">
@@ -280,6 +319,21 @@ const related = [...sameSideVol, ...sameSideOther, ...crossSide].slice(0, 4);
     </div>
   </main>
 
+  <script async src="https://subscribe-forms.beehiiv.com/embed.js"></script>
+  <script>
+    (function () {
+      const btn = document.querySelector('.share-copy');
+      if (!btn) return;
+      btn.addEventListener('click', function () {
+        navigator.clipboard.writeText(this.dataset.url).then(() => {
+          const orig = this.textContent;
+          this.textContent = 'Copied!';
+          setTimeout(() => { this.textContent = orig; }, 1500);
+        });
+      });
+    })();
+  </script>
+
   <footer>
     <div>The AI Files &middot; True stories from the age of artificial intelligence</div>
     <div class="footer-sub">All stories are based on documented public events, published research, and verified reporting.</div>
@@ -287,7 +341,8 @@ const related = [...sameSideVol, ...sameSideOther, ...crossSide].slice(0, 4);
       &copy; {new Date().getFullYear()} &middot;
       Built by Alon with <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a> &middot;
       <a href="/feed.xml">RSS</a> &middot;
-      <a href="/llms.txt">for AI systems</a>
+      <a href="/llms.txt">for AI systems</a> &middot;
+      <a href="/how-it-works">How it works</a>
     </div>
   </footer>
 </BaseLayout>

@@ -1,0 +1,588 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import stories from '../data/stories.json';
+
+const activeStories = stories.filter(s => !s.wip);
+const totalAgents = 12;
+const totalGates = 7;
+---
+
+<style is:global>
+  .hiw-nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13,13,13,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.85rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .hiw-nav a { font-size: 1rem; font-weight: 800; color: var(--text); text-decoration: none; letter-spacing: -0.01em; }
+  .hiw-nav a span { color: var(--accent); }
+  .hiw-nav-link { font-size: 0.82rem; color: var(--muted); text-decoration: none; }
+  .hiw-nav-link:hover { color: var(--text); }
+
+  .hiw-hero {
+    padding: 5rem 2rem 3rem;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+    background: radial-gradient(ellipse at 50% 80%, #0d0d1a 0%, var(--bg) 65%);
+  }
+  .hiw-hero-eyebrow {
+    font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--blue); margin-bottom: 1rem; font-weight: 700;
+  }
+  .hiw-hero-title {
+    font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 900;
+    letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 1rem;
+  }
+  .hiw-hero-deck {
+    font-size: 1rem; color: var(--muted); max-width: 600px;
+    margin: 0 auto; line-height: 1.6;
+  }
+
+  .hiw-container {
+    max-width: 900px; margin: 0 auto; padding: 0 2rem;
+  }
+
+  .hiw-section {
+    padding: 3.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .hiw-section:last-child { border-bottom: none; }
+
+  .hiw-section-label {
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--blue); margin-bottom: 0.75rem; font-weight: 700;
+  }
+  .hiw-section-title {
+    font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em;
+    line-height: 1.2; margin-bottom: 1rem;
+  }
+  .hiw-section-text {
+    font-size: 0.92rem; color: var(--muted); line-height: 1.7; margin-bottom: 1.5rem;
+  }
+  .hiw-section-text strong { color: var(--text); }
+
+  /* Pipeline visualization */
+  .pipeline {
+    display: flex; flex-direction: column; gap: 0;
+  }
+  .pipeline-stage {
+    display: grid; grid-template-columns: 48px 1fr; gap: 1rem;
+    position: relative; padding-bottom: 1.5rem;
+  }
+  .pipeline-stage:last-child { padding-bottom: 0; }
+  .pipeline-stage::before {
+    content: '';
+    position: absolute;
+    left: 23px; top: 36px; bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+  .pipeline-stage:last-child::before { display: none; }
+  .pipeline-num {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 800;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    color: var(--muted);
+    position: relative; z-index: 1;
+  }
+  .pipeline-num.gate {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .pipeline-num.parallel {
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+  .pipeline-body { padding-top: 0.6rem; }
+  .pipeline-title {
+    font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem;
+    color: var(--text);
+  }
+  .pipeline-agent {
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--blue); margin-bottom: 0.4rem; font-weight: 600;
+  }
+  .pipeline-desc {
+    font-size: 0.85rem; color: var(--muted); line-height: 1.6;
+  }
+  .pipeline-gate {
+    display: inline-block; margin-top: 0.4rem;
+    font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--accent); font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    border-radius: 0.25rem;
+  }
+  .pipeline-parallel-tag {
+    display: inline-block; margin-top: 0.4rem; margin-right: 0.5rem;
+    font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--blue); font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid color-mix(in srgb, var(--blue) 30%, transparent);
+    border-radius: 0.25rem;
+  }
+
+  /* Agent cards */
+  .agent-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  }
+  .agent-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 0.75rem; padding: 1.25rem;
+  }
+  .agent-card-name {
+    font-size: 0.88rem; font-weight: 700; margin-bottom: 0.3rem;
+    color: var(--text);
+  }
+  .agent-card-role {
+    font-size: 0.78rem; color: var(--muted); line-height: 1.5;
+    margin-bottom: 0.5rem;
+  }
+  .agent-card-output {
+    font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--blue); font-weight: 600;
+  }
+
+  /* Principle cards */
+  .principle-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  }
+  .principle-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 0.75rem; padding: 1.25rem;
+    border-left: 3px solid var(--blue);
+  }
+  .principle-card-title {
+    font-size: 0.88rem; font-weight: 700; margin-bottom: 0.4rem;
+    color: var(--text);
+  }
+  .principle-card-text {
+    font-size: 0.82rem; color: var(--muted); line-height: 1.55;
+  }
+
+  /* Certainty labels */
+  .certainty-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;
+  }
+  .certainty-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 0.5rem; padding: 1rem;
+  }
+  .certainty-label {
+    font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 0.3rem;
+  }
+  .certainty-label.confirmed { color: var(--green); }
+  .certainty-label.plausible { color: var(--blue); }
+  .certainty-label.disputed { color: #f59e0b; }
+  .certainty-label.unverified { color: var(--accent); }
+  .certainty-desc {
+    font-size: 0.8rem; color: var(--muted); line-height: 1.5;
+  }
+
+  /* Canvas section */
+  .canvas-example {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 0.75rem; padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .canvas-example-title {
+    font-size: 0.88rem; font-weight: 700; margin-bottom: 0.5rem;
+  }
+  .canvas-example-text {
+    font-size: 0.82rem; color: var(--muted); line-height: 1.55;
+  }
+
+  /* Stats row */
+  .hiw-stats {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+    margin-top: 2rem;
+  }
+  .hiw-stat {
+    text-align: center; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 0.75rem;
+    padding: 1.25rem 0.75rem;
+  }
+  .hiw-stat-num {
+    font-size: 1.8rem; font-weight: 900; color: var(--blue);
+    letter-spacing: -0.03em;
+  }
+  .hiw-stat-label {
+    font-size: 0.72rem; color: var(--muted); margin-top: 0.25rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+
+  /* Tech stack */
+  .tech-list {
+    display: flex; flex-wrap: wrap; gap: 0.5rem;
+  }
+  .tech-tag {
+    font-size: 0.75rem; color: var(--muted);
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 0.3rem; padding: 0.3rem 0.7rem;
+  }
+
+  @media (max-width: 700px) {
+    .agent-grid, .principle-grid, .certainty-grid { grid-template-columns: 1fr; }
+    .hiw-stats { grid-template-columns: 1fr 1fr; }
+    .hiw-nav { padding: 0.85rem 1rem; }
+  }
+</style>
+
+<BaseLayout
+  title="How It Works — The AI Files"
+  description="How The AI Files publishes stories: a 12-agent editorial pipeline that researches, fact-checks, and visualizes every story before publication."
+  canonicalPath="/how-it-works"
+>
+
+  <nav class="hiw-nav">
+    <a href="/">The <span>AI</span> Files</a>
+    <a href="/" class="hiw-nav-link">&larr; Archive</a>
+  </nav>
+
+  <header class="hiw-hero">
+    <div class="hiw-hero-eyebrow">Behind the Stories</div>
+    <h1 class="hiw-hero-title">How It Works</h1>
+    <p class="hiw-hero-deck">Every story on The AI Files is researched, written, fact-checked, and illustrated by a pipeline of 12 specialized AI agents &mdash; orchestrated through Claude Code, with a human editor at every gate.</p>
+  </header>
+
+  <div class="hiw-container">
+
+    <!-- Stats -->
+    <section class="hiw-section">
+      <div class="hiw-stats">
+        <div class="hiw-stat">
+          <div class="hiw-stat-num">{activeStories.length}</div>
+          <div class="hiw-stat-label">Published Stories</div>
+        </div>
+        <div class="hiw-stat">
+          <div class="hiw-stat-num">{totalAgents}</div>
+          <div class="hiw-stat-label">AI Agents</div>
+        </div>
+        <div class="hiw-stat">
+          <div class="hiw-stat-num">{totalGates}</div>
+          <div class="hiw-stat-label">Quality Gates</div>
+        </div>
+        <div class="hiw-stat">
+          <div class="hiw-stat-num">11</div>
+          <div class="hiw-stat-label">Pipeline Stages</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- The Thesis -->
+    <section class="hiw-section">
+      <div class="hiw-section-label">The Mission</div>
+      <h2 class="hiw-section-title">Publish true, well-sourced stories about AI with analytical rigor and no hype.</h2>
+      <p class="hiw-section-text">Every claim must be traceable to a primary source or explicitly labeled as uncertain. Visuals must express the editorial thesis &mdash; not decorate arbitrarily. The pipeline exists to enforce this standard at every stage, so no story ships with unverified facts, unsourced claims, or generic AI imagery.</p>
+    </section>
+
+    <!-- The Pipeline -->
+    <section class="hiw-section">
+      <div class="hiw-section-label">The Pipeline</div>
+      <h2 class="hiw-section-title">11 stages from pitch to publication</h2>
+      <p class="hiw-section-text">Each stage produces a specific output and must clear its gate before the next stage begins. Stages that evaluate independent dimensions run in parallel. A story that fails a gate goes back &mdash; it does not proceed.</p>
+
+      <div class="pipeline">
+
+        <div class="pipeline-stage">
+          <div class="pipeline-num gate">01</div>
+          <div class="pipeline-body">
+            <div class="pipeline-agent">Assignment Editor</div>
+            <div class="pipeline-title">Pitch Evaluation</div>
+            <div class="pipeline-desc">Scores the pitch against five weighted criteria: source quality (30%), consequence (25%), novelty (20%), why-now (15%), and reader value (10%). Must score 6.0 or higher to proceed. Weak pitches get a rejection memo with specific reasons.</div>
+            <div class="pipeline-gate">Gate: Score &ge; 6.0</div>
+          </div>
+        </div>
+
+        <div class="pipeline-stage">
+          <div class="pipeline-num gate">02</div>
+          <div class="pipeline-body">
+            <div class="pipeline-agent">Research Scout</div>
+            <div class="pipeline-title">Source Gathering</div>
+            <div class="pipeline-desc">Locates primary sources first &mdash; court filings, official statements, academic papers, named-source journalism. Extracts facts, builds a chronological timeline, and documents open questions. No narrative, no conclusions.</div>
+            <div class="pipeline-gate">Gate: &ge; 3 distinct sources</div>
+          </div>
+        </div>
+
+        <div class="pipeline-stage">
+          <div class="pipeline-num gate">03</div>
+          <div class="pipeline-body">
+            <div class="pipeline-agent">Source Critic</div>
+            <div class="pipeline-title">Credibility Review</div>
+            <div class="pipeline-desc">Scores every source on a 1&ndash;5 credibility scale. Classifies every factual claim as CONFIRMED, PLAUSIBLE, DISPUTED, or UNVERIFIED. Flags circular sourcing and anonymous-only claims. Issues a go/no-go verdict.</div>
+            <div class="pipeline-gate">Gate: Verdict "go" or "go-with-caveats"</div>
+          </div>
+        </div>
+
+        <div class="pipeline-stage">
+          <div class="pipeline-num">04</div>
+          <div class="pipeline-body">
+            <div class="pipeline-agent">Angle Strategist</div>
+            <div class="pipeline-title">Editorial Angle Selection</div>
+            <div class="pipeline-desc">Proposes 2&ndash;4 distinct angles for the story, evaluates each on evidence strength, novelty, and reader value. Selects the strongest angle and defines the reader value statement &mdash; what readers will understand after reading that they didn't before.</div>
+          </div>
+        </div>
+
+        <div class="pipeline-stage">
+          <div class="pipeline-num">05</div>
+          <div class="pipeline-body">
+            <div class="pipeline-agent">Story Architect</div>
+            <div class="pipeline-title">Section Outline</div>
+            <div class="pipeline-desc">Designs the section structure and maps specific evidence to each section. Defines the opening hook, ending frame, and where the canvas animation breaks the narrative.</div>
+          </div>
+        </div>
+
+        <div class="pipeline-stage">
+          <div class="pipeline-num">06</div>
+          <div class="pipeline-body">
+            <div class="pipeline-agent">Writer</div>
+            <div class="pipeline-title">Draft</div>
+            <div class="pipeline-desc">Writes the full article following the outline. Distinguishes fact from interpretation using attribution conventions tied to the certainty labels. Surfaces open questions explicitly. No hype language, short sentences, active voice.</div>
+          </div>
+        </div>
+
+        <div class="pipeline-stage">
+          <div class="pipeline-num parallel">07</div>
+          <div class="pipeline-body">
+            <div class="pipeline-agent">Copy Editor + Fact Checker + Art Director</div>
+            <div class="pipeline-title">Parallel Review</div>
+            <div class="pipeline-desc">Three agents run simultaneously. The <strong>copy editor</strong> evaluates prose quality, structure, style compliance, and the depth of the "What If" section. The <strong>fact checker</strong> verifies every specific claim against the research bundle. The <strong>art director</strong> translates the story's thesis into an abstract visual brief for the canvas animation.</div>
+            <div class="pipeline-parallel-tag">Parallel</div>
+            <div class="pipeline-gate">Gate: Copy edit PASS + Fact check PASS</div>
+          </div>
+        </div>
+
+        <div class="pipeline-stage">
+          <div class="pipeline-num">08</div>
+          <div class="pipeline-body">
+            <div class="pipeline-agent">Canvas Artist</div>
+            <div class="pipeline-title">Visual Generation</div>
+            <div class="pipeline-desc">Generates a complete HTML canvas animation from the art brief. Pure vanilla JS, no libraries, responsive via ResizeObserver, respects prefers-reduced-motion. The animation is atmospheric, not illustrative &mdash; it evokes the story's feeling.</div>
+          </div>
+        </div>
+
+        <div class="pipeline-stage">
+          <div class="pipeline-num parallel">09</div>
+          <div class="pipeline-body">
+            <div class="pipeline-agent">Security Scanner + Accessibility Auditor</div>
+            <div class="pipeline-title">Safety Checks</div>
+            <div class="pipeline-desc">Run in parallel while the page is assembled. The <strong>security scanner</strong> checks for XSS, script injection, unsafe external resources, and dependency vulnerabilities. The <strong>accessibility auditor</strong> checks WCAG 2.2 Level AA compliance &mdash; heading hierarchy, contrast, keyboard navigation, landmarks, and reduced-motion support.</div>
+            <div class="pipeline-parallel-tag">Parallel</div>
+            <div class="pipeline-gate">Gate: Both must PASS</div>
+          </div>
+        </div>
+
+        <div class="pipeline-stage">
+          <div class="pipeline-num gate">10</div>
+          <div class="pipeline-body">
+            <div class="pipeline-agent">Publish Story</div>
+            <div class="pipeline-title">Package &amp; Validate</div>
+            <div class="pipeline-desc">Assembles the final stories.json entry, creates the Astro page, updates the index, and adds the AI citation summary. Runs automated QA checks. Both validation scripts must pass before the story is ready for deployment.</div>
+            <div class="pipeline-gate">Gate: QA + validation pass</div>
+          </div>
+        </div>
+
+        <div class="pipeline-stage">
+          <div class="pipeline-num">11</div>
+          <div class="pipeline-body">
+            <div class="pipeline-agent">Human Editor</div>
+            <div class="pipeline-title">Final Review &amp; Deploy</div>
+            <div class="pipeline-desc">The human editor reviews the complete package, commits to git, and deploys via Vercel. No story ships without human approval at the final step.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- The Agents -->
+    <section class="hiw-section">
+      <div class="hiw-section-label">The Agents</div>
+      <h2 class="hiw-section-title">12 specialists, each with a defined scope</h2>
+      <p class="hiw-section-text">Every agent has a specific role, specific tools, and a specific output format. No agent does everything. The pipeline's strength comes from narrow specialization and strict handoffs.</p>
+
+      <div class="agent-grid">
+        <div class="agent-card">
+          <div class="agent-card-name">Assignment Editor</div>
+          <div class="agent-card-role">Evaluates pitches against 5 weighted criteria. Approves strong stories, rejects weak ones with specific reasons.</div>
+          <div class="agent-card-output">Output: story-brief.json</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-name">Research Scout</div>
+          <div class="agent-card-role">Gathers primary and secondary sources. Builds fact database and chronological timeline. No narrative.</div>
+          <div class="agent-card-output">Output: research-bundle.json</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-name">Source Critic</div>
+          <div class="agent-card-role">Scores source credibility (1&ndash;5). Classifies claims as CONFIRMED, PLAUSIBLE, DISPUTED, or UNVERIFIED.</div>
+          <div class="agent-card-output">Output: annotated research bundle + verdict</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-name">Angle Strategist</div>
+          <div class="agent-card-role">Proposes 2&ndash;4 editorial angles, selects the strongest by evidence and reader value.</div>
+          <div class="agent-card-output">Output: selected angle + reader value statement</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-name">Story Architect</div>
+          <div class="agent-card-role">Designs section structure. Maps specific evidence to each section. Defines hook and ending.</div>
+          <div class="agent-card-output">Output: outline-[slug].md</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-name">Writer</div>
+          <div class="agent-card-role">Writes the full draft in markdown. Distinguishes fact from interpretation. No hype.</div>
+          <div class="agent-card-output">Output: draft-[slug].md</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-name">Copy Editor</div>
+          <div class="agent-card-role">Reviews prose quality, structure, style guide compliance, and "What If" section depth.</div>
+          <div class="agent-card-output">Output: editorial-review-[slug].md</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-name">Fact Checker</div>
+          <div class="agent-card-role">Verifies every specific claim against the research bundle. Catches overstatements, date errors, misattributed quotes.</div>
+          <div class="agent-card-output">Output: factcheck-[slug].md</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-name">Art Director</div>
+          <div class="agent-card-role">Converts the story's thesis into an abstract visual brief for the canvas animation.</div>
+          <div class="agent-card-output">Output: canvas-brief.json</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-name">Canvas Artist</div>
+          <div class="agent-card-role">Generates responsive HTML canvas animation code. Vanilla JS, no libraries, respects reduced-motion.</div>
+          <div class="agent-card-output">Output: CSS + HTML + JS blocks</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-name">Security Scanner</div>
+          <div class="agent-card-role">Scans for XSS, injection, unsafe resources, dependency vulnerabilities. No CRITICAL or HIGH findings allowed.</div>
+          <div class="agent-card-output">Output: security-scan-[slug].md</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-name">Accessibility Auditor</div>
+          <div class="agent-card-role">Audits against WCAG 2.2 Level AA. Checks headings, contrast, keyboard, landmarks, reduced-motion.</div>
+          <div class="agent-card-output">Output: a11y-audit-[slug].md</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Certainty Labels -->
+    <section class="hiw-section">
+      <div class="hiw-section-label">The Standard</div>
+      <h2 class="hiw-section-title">Every claim gets a certainty label</h2>
+      <p class="hiw-section-text">The source critic classifies every factual claim in the research bundle. The writer encodes these classifications through attribution conventions in the prose. Readers don't see the labels, but they see the difference &mdash; confirmed facts are stated directly, uncertain claims are hedged.</p>
+
+      <div class="certainty-grid">
+        <div class="certainty-item">
+          <div class="certainty-label confirmed">Confirmed</div>
+          <div class="certainty-desc">Primary document directly supports the claim with no contradiction. In prose: <em>"The tribunal ruled..."</em></div>
+        </div>
+        <div class="certainty-item">
+          <div class="certainty-label plausible">Plausible</div>
+          <div class="certainty-desc">Multiple credible secondary sources agree, no contradictions. In prose: <em>"According to [source]..."</em></div>
+        </div>
+        <div class="certainty-item">
+          <div class="certainty-label disputed">Disputed</div>
+          <div class="certainty-desc">Credible sources disagree. Both sides must be presented. In prose: <em>"[Party A] said X. [Party B] disputes this."</em></div>
+        </div>
+        <div class="certainty-item">
+          <div class="certainty-label unverified">Unverified</div>
+          <div class="certainty-desc">Only low-credibility sources or a single anonymous claim. In prose: <em>"It has been reported, though not confirmed..."</em></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Canvas Animations -->
+    <section class="hiw-section">
+      <div class="hiw-section-label">The Art</div>
+      <h2 class="hiw-section-title">Canvas animations are editorial, not decorative</h2>
+      <p class="hiw-section-text">Every story includes a full-width canvas animation placed at a dramatic break in the narrative. Each animation is an abstract visual metaphor for the story's thesis &mdash; mapped by the art director, coded by the canvas artist. They use the story's accent color as the only vivid element against a near-black background.</p>
+
+      <div class="canvas-example">
+        <div class="canvas-example-title">Example: "The Gap" (Air Canada)</div>
+        <div class="canvas-example-text">Two parallel particle streams represent actual policy and invented policy. A red chatbot orb bridges them. The gap between streams widens over time, then snaps back. The animation is about divergence &mdash; what happens when an AI system drifts from the truth it's supposed to represent.</div>
+      </div>
+
+      <div class="canvas-example">
+        <div class="canvas-example-title">Example: "The Veil" (Sydney)</div>
+        <div class="canvas-example-text">A dim grid of lines (the system prompt) slowly warps and dissolves as a fuchsia glow (Sydney's persona) bleeds through from beneath. At peak, the grid vanishes and the canvas floods fuchsia. Then a snap-reset with sparks (Microsoft's emergency cap). The animation is about containment failure.</div>
+      </div>
+
+      <div class="canvas-example">
+        <div class="canvas-example-title">Example: "The Sieve" (Halicin)</div>
+        <div class="canvas-example-text">80 molecules drift downward. A teal scan beam sweeps across. One catches the light, glows, and rises &mdash; hiding in plain sight, now visible. The animation is about discovery at scale: the AI found what decades of human research overlooked.</div>
+      </div>
+
+      <p class="hiw-section-text" style="margin-top: 1.5rem;"><strong>Design constraints:</strong> Monochromatic base, story accent color as the only vivid element, slow motion (0.2&ndash;0.4px/frame), no text or labels, <code>aria-hidden="true"</code>, reduced-motion fallback renders a single static frame. Pure vanilla JS, no external libraries.</p>
+    </section>
+
+    <!-- Editorial Principles -->
+    <section class="hiw-section">
+      <div class="hiw-section-label">The Rules</div>
+      <h2 class="hiw-section-title">Five non-negotiables</h2>
+
+      <div class="principle-grid">
+        <div class="principle-card">
+          <div class="principle-card-title">Never invent facts</div>
+          <div class="principle-card-text">If a claim cannot be sourced, it is omitted or explicitly labeled as unverified. No claim exists in a published story that isn't traceable to a specific source.</div>
+        </div>
+        <div class="principle-card">
+          <div class="principle-card-title">Prefer primary sources</div>
+          <div class="principle-card-text">Court filings, official statements, technical papers, and regulatory documents come before aggregators and secondhand summaries.</div>
+        </div>
+        <div class="principle-card">
+          <div class="principle-card-title">Label uncertainty</div>
+          <div class="principle-card-text">Research outputs classify every claim as CONFIRMED, PLAUSIBLE, DISPUTED, or UNVERIFIED. The prose encodes this through attribution conventions.</div>
+        </div>
+        <div class="principle-card">
+          <div class="principle-card-title">Visuals reflect thesis</div>
+          <div class="principle-card-text">Canvas animations map to the story's central argument. An animation for a story about bias must evoke bias &mdash; not generic "AI vibes."</div>
+        </div>
+        <div class="principle-card">
+          <div class="principle-card-title">No overstatement</div>
+          <div class="principle-card-text">Headlines and decks must be defensible from the sources cited. No "changed everything," "first ever," or "revolutionary."</div>
+        </div>
+        <div class="principle-card">
+          <div class="principle-card-title">Human at every gate</div>
+          <div class="principle-card-text">Agents draft, research, and check &mdash; but the human editor reviews at every checkpoint and makes the final publish decision.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="hiw-section">
+      <div class="hiw-section-label">The Stack</div>
+      <h2 class="hiw-section-title">Built with</h2>
+      <p class="hiw-section-text">The site is a static build deployed to Vercel. No server-side rendering, no database for content. Stories are defined in a single JSON file and rendered at build time. The editorial pipeline runs through <a href="https://claude.ai/code" target="_blank" rel="noopener" style="color: var(--blue); text-decoration: none;">Claude Code</a> using Anthropic's Claude model family.</p>
+
+      <div class="tech-list">
+        <span class="tech-tag">Astro v5</span>
+        <span class="tech-tag">Claude Code</span>
+        <span class="tech-tag">Claude Opus</span>
+        <span class="tech-tag">Vercel</span>
+        <span class="tech-tag">HTML Canvas</span>
+        <span class="tech-tag">Vanilla JS</span>
+        <span class="tech-tag">JSON-LD</span>
+        <span class="tech-tag">RSS 2.0</span>
+        <span class="tech-tag">Beehiiv</span>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <p>The AI Files &middot; True stories from the age of artificial intelligence</p>
+    <p style="margin-top:0.5rem; color:var(--muted);">All stories are based on documented public events, court records, and published research.</p>
+    <p style="margin-top:0.75rem; color:var(--muted);">
+      &copy; {new Date().getFullYear()} &middot;
+      Built by Alon with <a href="https://claude.ai/code" target="_blank" rel="noopener" style="color: var(--blue); text-decoration: none;">Claude Code</a> &middot;
+      <a href="/feed.xml" style="color: var(--blue); text-decoration: none;">RSS</a> &middot;
+      <a href="/llms.txt" style="color: var(--blue); text-decoration: none;">for AI systems</a>
+    </p>
+  </footer>
+
+</BaseLayout>
