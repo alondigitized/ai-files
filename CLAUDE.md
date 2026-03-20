@@ -335,6 +335,7 @@ Editorial style guide: `docs/editorial-style.md`
 3. **Label uncertainty explicitly.** Research outputs use: `[CONFIRMED]`, `[PLAUSIBLE]`, `[DISPUTED]`, `[UNVERIFIED]`.
 4. **Visuals reflect thesis.** Canvas animations must map to the story's central argument. An animation for a story about bias must evoke bias — not generic "AI vibes."
 5. **No overstatement.** Headlines and decks must be defensible from the sources cited. Avoid: "changed everything," "first ever," "revolutionary."
+6. **Show, don't just tell.** Every story must include 2-3 visual reenactment moments — styled HTML mockups (chat logs, terminal displays, chain-of-events diagrams, document mockups) that dramatize key events inline with the prose. The story architect identifies reenactment opportunities in the outline; the writer produces the HTML/CSS; the copy editor verifies they exist.
 
 ### Canonical Locations
 
