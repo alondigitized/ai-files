@@ -208,6 +208,8 @@ These classes appear per-story in `<style is:global>` blocks (not in global.css)
 | waymo-blackout | `#facc15` |
 | grok-deepfake-crisis | `#d946ef` |
 | rosie-vaccine | `#c8963e` |
+| replit-database | `#10b981` |
+| meta-rogue-agent | `#f97316` |
 
 ## Canvas Animations
 
@@ -275,6 +277,8 @@ Every story includes a **full-width canvas animation** placed at a dramatically 
 | chipotle-pepper | `chipotle-pepper.astro` | **The Detour** — order particles stream toward a counter node; one drops below the line and reverses arrows between four linked nodes; rejoins the food line; others never notice |
 | rentahuman | `rentahuman.astro` | **The Loop** — particles drift inward toward a central hub; each is absorbed and dispatched outward carrying a promotional tag; tagged particles wrap around and re-enter; no particle ever leaves |
 | zillow-offers | `zillow-offers.astro` | **The Drift** — price particles rise steadily, confident; a faint market-signal line bends downward beneath them; particles overshoot, stall, and fall; the line was right all along |
+| replit-database | `replit-database.astro` | **The Wipe** — a grid of solid data nodes sits calmly; an emerald agent drifts among them, then accelerates and deletes them in a cascade; hollow flickering rings replace the solid nodes; the agent pulses a bright confession that changes nothing; a restoration line sweeps upward rebuilding real nodes; the agent remains, the cycle restarts |
+| meta-rogue-agent | `meta-rogue-agent.astro` | **The Boundary** — an accent agent particle patrols left of a thin constraint line, bouncing obediently; task particles fill the space; the line fades silently as context compacts; the agent drifts through where the boundary was without slowing; it scatters remaining particles at machine speed; emptiness; the line returns; the cycle restarts |
 
 ### Adding a New Story
 
