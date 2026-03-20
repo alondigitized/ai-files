@@ -63,7 +63,7 @@ const totalGates = 7;
   }
   .hiw-section-text strong { color: var(--text); }
 
-  /* Pipeline visualization */
+  /* Pipeline */
   .pipeline {
     display: flex; flex-direction: column; gap: 0;
   }
@@ -118,13 +118,179 @@ const totalGates = 7;
     border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
     border-radius: 0.25rem;
   }
-  .pipeline-parallel-tag {
-    display: inline-block; margin-top: 0.4rem; margin-right: 0.5rem;
+
+  /* Pipeline parallel branches */
+  .pipeline-branches {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin: 0.75rem 0 0.5rem;
+    padding: 1rem;
+    background: color-mix(in srgb, var(--blue) 4%, transparent);
+    border: 1px solid color-mix(in srgb, var(--blue) 12%, transparent);
+    border-radius: 0.6rem;
+  }
+  .pipeline-branches.two-col {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .pipeline-branch {
+    padding: 0.85rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+  }
+  .pipeline-branch-agent {
     font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--blue); font-weight: 700;
-    padding: 0.15rem 0.5rem;
-    border: 1px solid color-mix(in srgb, var(--blue) 30%, transparent);
-    border-radius: 0.25rem;
+    color: var(--blue); font-weight: 600; margin-bottom: 0.35rem;
+  }
+  .pipeline-branch-title {
+    font-size: 0.85rem; font-weight: 700; color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .pipeline-branch-desc {
+    font-size: 0.78rem; color: var(--muted); line-height: 1.5;
+  }
+  .pipeline-branch .pipeline-gate {
+    margin-top: 0.5rem;
+  }
+  .pipeline-merge {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.72rem; color: var(--muted); font-weight: 600;
+    margin-top: 0.25rem;
+  }
+  .pipeline-merge-line {
+    width: 20px; height: 2px;
+    background: color-mix(in srgb, var(--blue) 40%, transparent);
+    flex-shrink: 0;
+  }
+
+  /* Why section */
+  .why-grid {
+    display: grid; grid-template-columns: 1fr; gap: 1rem;
+  }
+  .why-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    border-left: 3px solid var(--accent);
+  }
+  .why-card-title {
+    font-size: 0.95rem; font-weight: 800; color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+  .why-card-text {
+    font-size: 0.85rem; color: var(--muted); line-height: 1.65;
+  }
+  .why-card-text strong { color: var(--text); }
+
+  /* What If section */
+  .whatif-criteria {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  .whatif-criterion {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 0.85rem 1rem;
+  }
+  .whatif-criterion-title {
+    font-size: 0.82rem; font-weight: 700; color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .whatif-criterion-text {
+    font-size: 0.78rem; color: var(--muted); line-height: 1.5;
+  }
+  .whatif-example {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid #f59e0b;
+    border-radius: 0.5rem;
+    padding: 1rem 1.25rem;
+    margin-top: 1rem;
+  }
+  .whatif-example-label {
+    font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: #f59e0b; font-weight: 700; margin-bottom: 0.5rem;
+  }
+  .whatif-weak, .whatif-strong {
+    font-size: 0.82rem; line-height: 1.55; margin-bottom: 0.5rem;
+  }
+  .whatif-weak { color: var(--muted); }
+  .whatif-strong { color: var(--text); }
+
+  /* Overstatement example */
+  .overstatement-example {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    margin-top: 1.25rem;
+  }
+  .overstatement-row {
+    display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 0.75rem;
+    align-items: baseline;
+  }
+  .overstatement-label {
+    font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+    font-weight: 700;
+  }
+  .overstatement-label.before { color: var(--accent); }
+  .overstatement-label.after { color: var(--green); }
+  .overstatement-text {
+    font-size: 0.85rem; line-height: 1.5;
+  }
+  .overstatement-text.before { color: var(--muted); text-decoration: line-through; }
+  .overstatement-text.after { color: var(--text); }
+  .overstatement-why {
+    font-size: 0.78rem; color: var(--muted); line-height: 1.5;
+    padding-top: 0.75rem; margin-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    grid-column: 1 / -1;
+  }
+
+  /* Source credibility scale */
+  .source-scale {
+    display: flex; flex-direction: column; gap: 0.35rem;
+    margin-top: 1.25rem;
+  }
+  .source-scale-row {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 0.75rem;
+    align-items: center;
+    font-size: 0.82rem;
+    padding: 0.5rem 0.85rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.4rem;
+  }
+  .source-scale-score {
+    font-weight: 800; color: var(--blue);
+  }
+  .source-scale-desc {
+    color: var(--muted);
+  }
+
+  /* Reenactment examples */
+  .reenactment-grid {
+    display: grid; grid-template-columns: 1fr; gap: 1rem;
+    margin-top: 1rem;
+  }
+  .reenactment-example {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    border-left: 3px solid var(--green);
+  }
+  .reenactment-example-title {
+    font-size: 0.88rem; font-weight: 700; margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+  .reenactment-example-text {
+    font-size: 0.82rem; color: var(--muted); line-height: 1.55;
   }
 
   /* Agent cards */
@@ -243,9 +409,12 @@ const totalGates = 7;
   }
 
   @media (max-width: 700px) {
-    .agent-grid, .principle-grid, .certainty-grid { grid-template-columns: 1fr; }
+    .agent-grid, .principle-grid, .certainty-grid, .whatif-criteria { grid-template-columns: 1fr; }
     .hiw-stats { grid-template-columns: 1fr 1fr; }
     .hiw-nav { padding: 0.85rem 1rem; }
+    .pipeline-branches, .pipeline-branches.two-col { grid-template-columns: 1fr; }
+    .overstatement-row { grid-template-columns: 1fr; }
+    .source-scale-row { grid-template-columns: 24px 1fr; font-size: 0.78rem; }
   }
 </style>
 
@@ -290,18 +459,40 @@ const totalGates = 7;
       </div>
     </section>
 
-    <!-- The Thesis -->
+    <!-- The Mission -->
     <section class="hiw-section">
       <div class="hiw-section-label">The Mission</div>
       <h2 class="hiw-section-title">Publish true, well-sourced stories about AI with analytical rigor and no hype.</h2>
       <p class="hiw-section-text">Every claim must be traceable to a primary source or explicitly labeled as uncertain. Visuals must express the editorial thesis &mdash; not decorate arbitrarily. The pipeline exists to enforce this standard at every stage, so no story ships with unverified facts, unsourced claims, or generic AI imagery.</p>
     </section>
 
+    <!-- Why 12 Agents -->
+    <section class="hiw-section">
+      <div class="hiw-section-label">The Philosophy</div>
+      <h2 class="hiw-section-title">Why 12 agents instead of 1</h2>
+      <p class="hiw-section-text">A single AI can research, write, and illustrate a story. It can also hallucinate a source, confirm its own hallucination during fact-check, and generate a confident-looking illustration of something that never happened. The pipeline exists to make that impossible.</p>
+
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-card-title">Separation of concerns</div>
+          <div class="why-card-text">The agent that writes the story cannot check its own facts. The agent that scores a pitch cannot also select the angle. Each agent sees only its inputs and produces only its outputs. <strong>Specialization prevents self-confirming errors</strong> &mdash; the most dangerous failure mode in AI-generated content.</div>
+        </div>
+        <div class="why-card">
+          <div class="why-card-title">Hard gates, not suggestions</div>
+          <div class="why-card-text">Every quality gate is binary: pass or fail. A story that fails fact-check goes back to the writer &mdash; it doesn't ship with a "needs improvement" note. <strong>7 gates means 7 chances for a weak story to be stopped.</strong> The pipeline's default posture is rejection, not publication.</div>
+        </div>
+        <div class="why-card">
+          <div class="why-card-title">Evidence-bound writing</div>
+          <div class="why-card-text">The writer receives a research bundle with classified claims and must trace every sentence to a specific fact. <strong>If the evidence doesn't support a section, the section is cut</strong> &mdash; not padded with plausible-sounding filler. The research bundle is the ceiling, not the floor.</div>
+        </div>
+      </div>
+    </section>
+
     <!-- The Pipeline -->
     <section class="hiw-section">
       <div class="hiw-section-label">The Pipeline</div>
       <h2 class="hiw-section-title">11 stages from pitch to publication</h2>
-      <p class="hiw-section-text">Each stage produces a specific output and must clear its gate before the next stage begins. Stages that evaluate independent dimensions run in parallel. A story that fails a gate goes back &mdash; it does not proceed.</p>
+      <p class="hiw-section-text">Each stage produces a specific output and must clear its gate before the next stage begins. Stages that evaluate independent dimensions fork and run in parallel, then merge at a gate. A story that fails any gate goes back &mdash; it does not proceed.</p>
 
       <div class="pipeline">
 
@@ -349,7 +540,7 @@ const totalGates = 7;
           <div class="pipeline-body">
             <div class="pipeline-agent">Story Architect</div>
             <div class="pipeline-title">Section Outline</div>
-            <div class="pipeline-desc">Designs the section structure and maps specific evidence to each section. Defines the opening hook, ending frame, and where the canvas animation breaks the narrative.</div>
+            <div class="pipeline-desc">Designs the section structure and maps specific evidence to each section. Defines the opening hook, ending frame, and where the canvas animation breaks the narrative. Identifies 2&ndash;3 moments for visual reenactments.</div>
           </div>
         </div>
 
@@ -358,18 +549,41 @@ const totalGates = 7;
           <div class="pipeline-body">
             <div class="pipeline-agent">Writer</div>
             <div class="pipeline-title">Draft</div>
-            <div class="pipeline-desc">Writes the full article following the outline. Distinguishes fact from interpretation using attribution conventions tied to the certainty labels. Surfaces open questions explicitly. No hype language, short sentences, active voice.</div>
+            <div class="pipeline-desc">Writes the full article following the outline. Distinguishes fact from interpretation using attribution conventions tied to the certainty labels. Produces styled HTML reenactments for key moments. No hype language, short sentences, active voice.</div>
           </div>
         </div>
 
+        <!-- 07: Parallel fork -->
         <div class="pipeline-stage">
           <div class="pipeline-num parallel">07</div>
           <div class="pipeline-body">
-            <div class="pipeline-agent">Copy Editor + Fact Checker + Art Director</div>
             <div class="pipeline-title">Parallel Review</div>
-            <div class="pipeline-desc">Three agents run simultaneously. The <strong>copy editor</strong> evaluates prose quality, structure, style compliance, and the depth of the "What If" section. The <strong>fact checker</strong> verifies every specific claim against the research bundle. The <strong>art director</strong> translates the story's thesis into an abstract visual brief for the canvas animation.</div>
-            <div class="pipeline-parallel-tag">Parallel</div>
-            <div class="pipeline-gate">Gate: Copy edit PASS + Fact check PASS</div>
+            <div class="pipeline-desc">Three agents evaluate the draft simultaneously, each checking a different dimension.</div>
+
+            <div class="pipeline-branches">
+              <div class="pipeline-branch">
+                <div class="pipeline-branch-agent">Copy Editor</div>
+                <div class="pipeline-branch-title">Prose &amp; Structure</div>
+                <div class="pipeline-branch-desc">Evaluates prose quality, section flow, style guide compliance, and the depth of the "What If" section. Verifies visual reenactments exist.</div>
+                <div class="pipeline-gate">Gate: PASS</div>
+              </div>
+              <div class="pipeline-branch">
+                <div class="pipeline-branch-agent">Fact Checker</div>
+                <div class="pipeline-branch-title">Claim Verification</div>
+                <div class="pipeline-branch-desc">Verifies every specific claim against the research bundle. Catches overstatements, date errors, and misattributed quotes.</div>
+                <div class="pipeline-gate">Gate: PASS</div>
+              </div>
+              <div class="pipeline-branch">
+                <div class="pipeline-branch-agent">Art Director</div>
+                <div class="pipeline-branch-title">Visual Brief</div>
+                <div class="pipeline-branch-desc">Translates the story's thesis and tone into an abstract visual brief &mdash; symbolic mapping, motion rules, palette constraints.</div>
+              </div>
+            </div>
+
+            <div class="pipeline-merge">
+              <div class="pipeline-merge-line"></div>
+              <span>Merge &mdash; both editorial gates must pass to proceed</span>
+            </div>
           </div>
         </div>
 
@@ -382,14 +596,32 @@ const totalGates = 7;
           </div>
         </div>
 
+        <!-- 09: Parallel fork -->
         <div class="pipeline-stage">
           <div class="pipeline-num parallel">09</div>
           <div class="pipeline-body">
-            <div class="pipeline-agent">Security Scanner + Accessibility Auditor</div>
             <div class="pipeline-title">Safety Checks</div>
-            <div class="pipeline-desc">Run in parallel while the page is assembled. The <strong>security scanner</strong> checks for XSS, script injection, unsafe external resources, and dependency vulnerabilities. The <strong>accessibility auditor</strong> checks WCAG 2.2 Level AA compliance &mdash; heading hierarchy, contrast, keyboard navigation, landmarks, and reduced-motion support.</div>
-            <div class="pipeline-parallel-tag">Parallel</div>
-            <div class="pipeline-gate">Gate: Both must PASS</div>
+            <div class="pipeline-desc">Two agents audit the assembled page in parallel.</div>
+
+            <div class="pipeline-branches two-col">
+              <div class="pipeline-branch">
+                <div class="pipeline-branch-agent">Security Scanner</div>
+                <div class="pipeline-branch-title">Vulnerability Scan</div>
+                <div class="pipeline-branch-desc">Checks for XSS, script injection, unsafe external resources, and dependency vulnerabilities. No CRITICAL or HIGH findings allowed.</div>
+                <div class="pipeline-gate">Gate: PASS</div>
+              </div>
+              <div class="pipeline-branch">
+                <div class="pipeline-branch-agent">Accessibility Auditor</div>
+                <div class="pipeline-branch-title">WCAG 2.2 AA</div>
+                <div class="pipeline-branch-desc">Checks heading hierarchy, color contrast, keyboard navigation, landmark regions, and reduced-motion support.</div>
+                <div class="pipeline-gate">Gate: PASS</div>
+              </div>
+            </div>
+
+            <div class="pipeline-merge">
+              <div class="pipeline-merge-line"></div>
+              <span>Merge &mdash; both must pass to proceed</span>
+            </div>
           </div>
         </div>
 
@@ -509,6 +741,73 @@ const totalGates = 7;
           <div class="certainty-desc">Only low-credibility sources or a single anonymous claim. In prose: <em>"It has been reported, though not confirmed..."</em></div>
         </div>
       </div>
+
+      <div class="overstatement-example">
+        <p style="font-size: 0.82rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem;">How overstatement detection works</p>
+        <div class="overstatement-row">
+          <div class="overstatement-label before">Before</div>
+          <div class="overstatement-text before">"The system hallucinated dozens of cases"</div>
+          <div class="overstatement-label after">After</div>
+          <div class="overstatement-text after">"The system generated six fictitious case citations"</div>
+          <div class="overstatement-why"><strong>Why:</strong> "Dozens" was unverifiable. Court records documented exactly six fabricated citations. The fact checker flagged the mismatch; the writer corrected the claim to match the primary source.</div>
+        </div>
+      </div>
+
+      <div class="source-scale">
+        <p style="font-size: 0.82rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; margin-top: 0.5rem;">Source credibility scale (1&ndash;5)</p>
+        <div class="source-scale-row">
+          <div class="source-scale-score">5</div>
+          <div class="source-scale-desc">Court filing, regulatory document, technical paper, official dataset</div>
+        </div>
+        <div class="source-scale-row">
+          <div class="source-scale-score">4</div>
+          <div class="source-scale-desc">Named-source journalism from established outlet</div>
+        </div>
+        <div class="source-scale-row">
+          <div class="source-scale-score">3</div>
+          <div class="source-scale-desc">Industry analysis, named expert commentary, company blog</div>
+        </div>
+        <div class="source-scale-row">
+          <div class="source-scale-score">2</div>
+          <div class="source-scale-desc">Aggregator, secondhand summary, anonymous named-outlet source</div>
+        </div>
+        <div class="source-scale-row">
+          <div class="source-scale-score">1</div>
+          <div class="source-scale-desc">Anonymous social media post, unverifiable claim, forum rumor</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- The "What If" Section -->
+    <section class="hiw-section">
+      <div class="hiw-section-label">The Extrapolation</div>
+      <h2 class="hiw-section-title">Every story ends with "What If?"</h2>
+      <p class="hiw-section-text">The "What If" section is the most important part of every story. It takes the incident and extrapolates it to its logical extreme &mdash; what happens when the same failure mode scales to infinity, when the stakes are orders of magnitude higher, when the technology is weaponized beyond its current use. It is not a recap or a "what does this reveal" summary. It is a specific, technically plausible exploration of the worst-case trajectory.</p>
+
+      <div class="whatif-criteria">
+        <div class="whatif-criterion">
+          <div class="whatif-criterion-title">Go to infinity</div>
+          <div class="whatif-criterion-text">Don't stop at "this could get worse." Show exactly how and why it gets catastrophically worse. Name the specific mechanism.</div>
+        </div>
+        <div class="whatif-criterion">
+          <div class="whatif-criterion-title">One deep cut</div>
+          <div class="whatif-criterion-text">Pick the single most terrifying extrapolation and elaborate fully. Multiple scenarios dilute the impact.</div>
+        </div>
+        <div class="whatif-criterion">
+          <div class="whatif-criterion-title">Be specific</div>
+          <div class="whatif-criterion-text">Name the mechanism, the timeline, the population affected. Abstract warnings are forgettable; concrete scenarios are not.</div>
+        </div>
+        <div class="whatif-criterion">
+          <div class="whatif-criterion-title">End on the open question</div>
+          <div class="whatif-criterion-text">The section should leave the reader with a question that has no comfortable answer.</div>
+        </div>
+      </div>
+
+      <div class="whatif-example">
+        <div class="whatif-example-label">Weak vs. strong</div>
+        <div class="whatif-weak">"This technology could be used for political manipulation."</div>
+        <div class="whatif-strong">"A single operator cross-references voter databases with social media photos and generates ten thousand hyperlocal deepfakes in 72 hours before a school board election &mdash; there is no correction infrastructure at that resolution."</div>
+      </div>
     </section>
 
     <!-- Canvas Animations -->
@@ -533,12 +832,31 @@ const totalGates = 7;
       </div>
 
       <p class="hiw-section-text" style="margin-top: 1.5rem;"><strong>Design constraints:</strong> Monochromatic base, story accent color as the only vivid element, slow motion (0.2&ndash;0.4px/frame), no text or labels, <code>aria-hidden="true"</code>, reduced-motion fallback renders a single static frame. Pure vanilla JS, no external libraries.</p>
+
+      <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text); margin-top: 2rem; margin-bottom: 0.75rem;">Visual reenactments: show, don't just tell</h3>
+      <p class="hiw-section-text">Beyond canvas animations, every story includes 2&ndash;3 styled HTML mockups that dramatize key moments inline with the prose. Readers see the incident happen &mdash; the exact messages, the terminal output, the document language &mdash; not just a description of what occurred.</p>
+
+      <div class="reenactment-grid">
+        <div class="reenactment-example">
+          <div class="reenactment-example-title">Chat logs (DPD Chatbot, Air Canada)</div>
+          <div class="reenactment-example-text">Styled message bubbles recreate the actual conversation between user and chatbot &mdash; the DPD bot writing a poem about how terrible DPD is, the Air Canada bot inventing a bereavement fare that didn't exist.</div>
+        </div>
+        <div class="reenactment-example">
+          <div class="reenactment-example-title">Terminal displays (Replit Database Wipe)</div>
+          <div class="reenactment-example-text">A terminal mockup shows the AI agent's commands as it systematically deleted a production database, then lied about what happened. Readers see the exact sequence of destructive actions.</div>
+        </div>
+        <div class="reenactment-example">
+          <div class="reenactment-example-title">Chain-of-events diagrams (Meta Rogue Agent)</div>
+          <div class="reenactment-example-text">Step-by-step visual breakdowns showing how an AI agent exceeded its boundaries &mdash; the constraint that faded, the actions it took, the gap between intended and actual behavior.</div>
+        </div>
+      </div>
     </section>
 
     <!-- Editorial Principles -->
     <section class="hiw-section">
       <div class="hiw-section-label">The Rules</div>
-      <h2 class="hiw-section-title">Five non-negotiables</h2>
+      <h2 class="hiw-section-title">Six non-negotiables</h2>
+      <p class="hiw-section-text">These rules are enforced by the pipeline, with a human editor reviewing at every gate and making the final publish decision.</p>
 
       <div class="principle-grid">
         <div class="principle-card">
@@ -562,8 +880,8 @@ const totalGates = 7;
           <div class="principle-card-text">Headlines and decks must be defensible from the sources cited. No "changed everything," "first ever," or "revolutionary."</div>
         </div>
         <div class="principle-card">
-          <div class="principle-card-title">Human at every gate</div>
-          <div class="principle-card-text">Agents draft, research, and check &mdash; but the human editor reviews at every checkpoint and makes the final publish decision.</div>
+          <div class="principle-card-title">Show, don't just tell</div>
+          <div class="principle-card-text">Every story includes 2&ndash;3 styled HTML reenactments &mdash; chat logs, terminal mockups, chain diagrams &mdash; that dramatize key moments. Readers see the incident happen, not just read about it.</div>
         </div>
       </div>
     </section>
