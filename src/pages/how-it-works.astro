@@ -408,6 +408,10 @@ const totalGates = 7;
     color: var(--text);
   }
 
+  /* Canvas */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .hiw-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
   @media (max-width: 700px) {
     .agent-grid, .principle-grid, .certainty-grid, .whatif-criteria { grid-template-columns: 1fr; }
     .hiw-stats { grid-template-columns: 1fr 1fr; }
@@ -487,6 +491,12 @@ const totalGates = 7;
         </div>
       </div>
     </section>
+
+    <!-- Canvas: The Gauntlet -->
+    <div class="phantom-wrap">
+      <canvas class="hiw-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Gauntlet</strong> — Blue particles drift rightward through seven gate lines. At each gate, some are rejected — turned red and scattered. The few that survive all seven pulse bright at the far edge.</p>
 
     <!-- The Pipeline -->
     <section class="hiw-section">
@@ -928,3 +938,235 @@ const totalGates = 7;
   </footer>
 
 </BaseLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.hiw-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  let W = 0, H = 0;
+  const bg = getComputedStyle(canvas).getPropertyValue('background-color').trim() || '#0d0d0d';
+
+  /* ── colours ─────────────────────────────────── */
+  const BLUE  = [77, 166, 255];   // #4da6ff
+  const RED   = [255, 77, 77];    // #ff4d4d
+
+  /* ── constants ───────────────────────────────── */
+  const GATE_COUNT    = 7;
+  const REJECT_CHANCE = 0.32;
+  const MAX_PARTICLES = 50;
+  const SPAWN_RATE    = 0.4;      // particles per frame (fractional → stochastic)
+
+  /* ── gate positions (recalculated on resize) ── */
+  let gates: number[] = [];
+  function calcGates() {
+    const margin = W * 0.08;
+    const span   = W - margin * 2;
+    gates = [];
+    for (let i = 0; i < GATE_COUNT; i++) {
+      gates.push(margin + span * ((i + 1) / (GATE_COUNT + 1)));
+    }
+  }
+
+  /* ── gate flash state ─────────────────────────── */
+  interface GateFlash { x: number; y: number; alpha: number; color: number[]; }
+  let gateFlashes: GateFlash[] = [];
+
+  /* ── particle ─────────────────────────────────── */
+  interface Particle {
+    x: number; y: number;
+    vx: number; vy: number;
+    r: number; alpha: number;
+    color: number[];
+    rejected: boolean;
+    gatesPassed: number;
+    glowR: number;
+  }
+
+  function spawnParticle(): Particle {
+    return {
+      x: -4 - Math.random() * 20,
+      y: H * 0.2 + Math.random() * H * 0.6,
+      vx: 0.25 + Math.random() * 0.35,
+      vy: (Math.random() - 0.5) * 0.15,
+      r: 1.8 + Math.random() * 1.2,
+      alpha: 0.5 + Math.random() * 0.3,
+      color: [...BLUE],
+      rejected: false,
+      gatesPassed: 0,
+      glowR: 0,
+    };
+  }
+
+  let particles: Particle[] = [];
+
+  /* ── update ───────────────────────────────────── */
+  function updateParticle(p: Particle): boolean {
+    if (p.rejected) {
+      p.vy += 0.015;
+      p.alpha -= 0.004;
+      p.x += p.vx * 0.2;
+      p.y += p.vy;
+      return p.alpha > 0.01 && p.y < H + 20;
+    }
+
+    /* check gates */
+    for (let i = p.gatesPassed; i < gates.length; i++) {
+      const gx = gates[i];
+      if (p.x >= gx - 1.5 && p.x <= gx + 1.5) {
+        if (Math.random() < REJECT_CHANCE) {
+          p.rejected = true;
+          p.color = [...RED];
+          p.vy = 0.4 + Math.random() * 0.6;
+          p.vx *= 0.15;
+          gateFlashes.push({ x: gx, y: p.y, alpha: 0.7, color: [...RED] });
+        } else {
+          gateFlashes.push({ x: gx, y: p.y, alpha: 0.5, color: [...BLUE] });
+        }
+        p.gatesPassed = i + 1;
+        break;
+      }
+    }
+
+    p.x += p.vx;
+    p.y += p.vy;
+    /* slight vertical wander */
+    p.vy += (Math.random() - 0.5) * 0.008;
+    p.vy *= 0.98;
+
+    /* brighten survivors */
+    if (p.gatesPassed >= 5) {
+      p.alpha = Math.min(1, p.alpha + 0.0015);
+      p.glowR = Math.min(p.r * 4, p.glowR + 0.06);
+    }
+    if (p.gatesPassed === GATE_COUNT) {
+      p.glowR = Math.min(p.r * 6, p.glowR + 0.1);
+    }
+
+    /* despawn off-screen right */
+    return p.x < W + 30;
+  }
+
+  /* ── draw ──────────────────────────────────────── */
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+
+    /* draw gate lines */
+    for (let i = 0; i < gates.length; i++) {
+      const gx = gates[i];
+      ctx!.beginPath();
+      ctx!.moveTo(gx, H * 0.08);
+      ctx!.lineTo(gx, H * 0.92);
+      ctx!.strokeStyle = 'rgba(232,232,232,0.04)';
+      ctx!.lineWidth = 1;
+      ctx!.stroke();
+
+      /* gate label — small number */
+      ctx!.fillStyle = 'rgba(232,232,232,0.06)';
+      ctx!.font = '600 9px system-ui, sans-serif';
+      ctx!.textAlign = 'center';
+      ctx!.fillText(`G${i + 1}`, gx, H * 0.05 + 4);
+    }
+
+    /* draw gate flashes */
+    for (const f of gateFlashes) {
+      ctx!.beginPath();
+      ctx!.arc(f.x, f.y, 6, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(${f.color[0]},${f.color[1]},${f.color[2]},${f.alpha * 0.4})`;
+      ctx!.fill();
+    }
+
+    /* draw particles */
+    for (const p of particles) {
+      /* glow ring for late-stage survivors */
+      if (!p.rejected && p.glowR > 0) {
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, p.glowR, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(${BLUE[0]},${BLUE[1]},${BLUE[2]},${p.alpha * 0.08})`;
+        ctx!.fill();
+      }
+
+      /* core dot */
+      ctx!.beginPath();
+      ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(${p.color[0]},${p.color[1]},${p.color[2]},${p.alpha})`;
+      ctx!.fill();
+    }
+  }
+
+  /* ── animation loop ───────────────────────────── */
+  let raf = 0;
+  let spawnAccum = 0;
+
+  function tick() {
+    /* spawn new particles */
+    spawnAccum += SPAWN_RATE;
+    while (spawnAccum >= 1 && particles.length < MAX_PARTICLES) {
+      particles.push(spawnParticle());
+      spawnAccum -= 1;
+    }
+    if (spawnAccum >= 1) spawnAccum = 0;
+
+    /* update particles */
+    particles = particles.filter(p => updateParticle(p));
+
+    /* update gate flashes */
+    for (const f of gateFlashes) f.alpha -= 0.02;
+    gateFlashes = gateFlashes.filter(f => f.alpha > 0.01);
+
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  /* ── reduced motion: single static frame ──────── */
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function staticFrame() {
+    calcGates();
+    /* seed some particles at various stages */
+    particles = [];
+    for (let i = 0; i < 30; i++) {
+      const p = spawnParticle();
+      p.x = W * 0.05 + Math.random() * W * 0.85;
+      p.alpha = 0.15 + Math.random() * 0.25;
+      /* some rejected */
+      if (Math.random() < 0.3) {
+        p.rejected = true;
+        p.color = [...RED];
+        p.alpha = 0.08 + Math.random() * 0.12;
+        p.y = H * 0.55 + Math.random() * H * 0.35;
+      }
+      particles.push(p);
+    }
+    draw();
+  }
+
+  /* ── resize ───────────────────────────────────── */
+  const ro = new ResizeObserver(entries => {
+    for (const e of entries) {
+      const rect = e.contentRect;
+      W = Math.round(rect.width * devicePixelRatio);
+      H = Math.round(rect.height * devicePixelRatio);
+      canvas.width = W;
+      canvas.height = H;
+      calcGates();
+    }
+    if (prefersReduced) staticFrame();
+  });
+  ro.observe(canvas);
+
+  if (prefersReduced) {
+    staticFrame();
+  } else {
+    raf = requestAnimationFrame(tick);
+  }
+
+  /* cleanup */
+  window.addEventListener('beforeunload', () => {
+    cancelAnimationFrame(raf);
+    ro.disconnect();
+  });
+})();
+</script>
