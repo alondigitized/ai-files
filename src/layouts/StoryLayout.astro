@@ -437,7 +437,14 @@ const shareLinks = {
 
         audio.addEventListener('timeupdate', updateProgress);
         audio.addEventListener('loadedmetadata', () => {
-          timeEl.textContent = `0:00 / ${fmt(audio.duration)}`;
+          if (audio.duration && isFinite(audio.duration)) {
+            timeEl.textContent = `0:00 / ${fmt(audio.duration)}`;
+          }
+        });
+        audio.addEventListener('durationchange', () => {
+          if (audio.duration && isFinite(audio.duration)) {
+            timeEl.textContent = `${fmt(audio.currentTime)} / ${fmt(audio.duration)}`;
+          }
         });
         audio.addEventListener('ended', () => {
           icon.textContent = '▶';
