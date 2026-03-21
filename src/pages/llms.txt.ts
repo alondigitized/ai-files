@@ -22,7 +22,10 @@ export async function GET(context: APIContext) {
   lines.push('');
   for (const s of published) {
     const url = new URL(`/stories/${s.slug}`, siteURL).href;
-    lines.push(`- [${s.title}](${url}) — ${s.deck.split('.')[0]}. (${s.date})`);
+    const full = (s as any).llmsDescription ?? s.deck;
+    // Use first two sentences for archive list, full text in extended section
+    const brief = full.split(/(?<=\.)\s+/).slice(0, 2).join(' ');
+    lines.push(`- [${s.title}](${url}) — ${brief} (${s.date})`);
   }
   lines.push('');
 

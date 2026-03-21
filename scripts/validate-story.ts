@@ -138,6 +138,24 @@ function checkStoriesJson(slug: string): ValidationResult[] {
     results.push(warn('stories.json:deck', `Deck is ${entry.deck.length} chars (recommended ≤ 160)`));
   }
 
+  // llmsDescription (required for AI citation discoverability)
+  const llmsDesc = (entry as any).llmsDescription;
+  if (!llmsDesc || (typeof llmsDesc === 'string' && llmsDesc.trim() === '')) {
+    results.push(fail('stories.json:llmsDescription', 'Field "llmsDescription" is missing — required for llms.txt and AI citation systems'));
+  } else if (typeof llmsDesc === 'string' && llmsDesc.length < 50) {
+    results.push(warn('stories.json:llmsDescription', `llmsDescription is only ${llmsDesc.length} chars — aim for 2-4 sentences with key facts`));
+  } else {
+    results.push(pass('stories.json:llmsDescription', `llmsDescription present (${(llmsDesc as string).length} chars)`));
+  }
+
+  // whatIf (required for every story)
+  const whatIf = (entry as any).whatIf;
+  if (!whatIf || (typeof whatIf === 'string' && whatIf.trim() === '')) {
+    results.push(fail('stories.json:whatIf', 'Field "whatIf" is missing — required for every story'));
+  } else {
+    results.push(pass('stories.json:whatIf', 'whatIf present'));
+  }
+
   // Side
   const side = (entry as any).side;
   if (!side) {
@@ -224,6 +242,11 @@ function checkAstroPage(slug: string): ValidationResult[] {
   // Check ResizeObserver
   if (content.includes('requestAnimationFrame') && !content.includes('ResizeObserver')) {
     results.push(warn('astro:resize-observer', 'Animation found but ResizeObserver not detected — canvas may not resize correctly'));
+  }
+
+  // Check IntersectionObserver (off-screen pausing)
+  if (content.includes('requestAnimationFrame') && !content.includes('IntersectionObserver')) {
+    results.push(warn('astro:intersection-observer', 'Animation found but IntersectionObserver not detected — canvas will not pause when off-screen'));
   }
 
   // Check for leftover placeholder
