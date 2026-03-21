@@ -1,0 +1,526 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'character-ai-teen')!;
+---
+
+<style is:global>
+  /* ── Final exchange chat log ── */
+  .cai-chat { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .cai-chat-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.72rem; letter-spacing: 0.06em; color: var(--muted); border-bottom: 1px solid var(--border); }
+  .cai-chat-body { padding: 1.2rem 1.2rem; display: flex; flex-direction: column; gap: 0.75rem; }
+  .cai-msg { max-width: 82%; padding: 0.65rem 0.9rem; border-radius: 0.65rem; font-size: 0.88rem; line-height: 1.55; }
+  .cai-msg.human { background: rgba(255,255,255,0.04); color: var(--text); align-self: flex-start; border-bottom-left-radius: 0.15rem; }
+  .cai-msg.bot { background: color-mix(in srgb, var(--story) 7%, transparent); color: var(--muted); align-self: flex-end; border-bottom-right-radius: 0.15rem; border-right: 2px solid color-mix(in srgb, var(--story) 25%, transparent); font-style: italic; }
+  .cai-label { font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.1rem; }
+  .cai-label.bot-label { text-align: right; }
+  .cai-chat-footer { font-size: 0.72rem; color: var(--muted); padding: 0.6rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); }
+
+  /* ── Court ruling excerpt ── */
+  .cai-ruling { background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; overflow: hidden; margin: 2rem 0; font-family: 'Georgia', 'Times New Roman', serif; }
+  .cai-ruling-header { background: var(--surface2); padding: 0.75rem 1.2rem; font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); text-align: center; line-height: 1.7; }
+  .cai-ruling-body { padding: 1.5rem 1.5rem; }
+  .cai-ruling-body blockquote { margin: 0; padding: 0 0 0 1rem; border-left: 3px solid var(--story); font-size: 1rem; line-height: 1.7; color: var(--text); font-style: italic; }
+  .cai-ruling-attr { text-align: right; font-size: 0.78rem; color: var(--muted); margin-top: 1rem; font-style: normal; }
+
+  /* ── Safety timeline ── */
+  .cai-timeline { margin: 2rem 0; border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; background: var(--surface); }
+  .cai-timeline-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 700; }
+  .cai-timeline-body { padding: 0.5rem 0; }
+  .cai-tl-row { display: grid; grid-template-columns: 90px 1fr; gap: 0; padding: 0; }
+  .cai-tl-date { padding: 0.6rem 0.8rem; font-size: 0.72rem; font-weight: 700; color: var(--muted); text-align: right; border-right: 2px solid var(--border); position: relative; }
+  .cai-tl-date::after { content: ''; position: absolute; right: -5px; top: 50%; transform: translateY(-50%); width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+  .cai-tl-content { padding: 0.5rem 0.8rem 0.5rem 1rem; font-size: 0.82rem; line-height: 1.55; color: var(--muted); }
+  .cai-tl-row.death .cai-tl-date::after { background: var(--accent); }
+  .cai-tl-row.death .cai-tl-content { color: var(--text); }
+  .cai-tl-row.response .cai-tl-date::after { background: var(--story); }
+  .cai-tl-row.response .cai-tl-content { color: var(--text); }
+  .cai-tl-row.nothing .cai-tl-content { color: var(--muted); font-style: italic; }
+  .cai-tl-context { font-size: 0.72rem; color: var(--muted); padding: 0.6rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); font-style: italic; }
+
+  /* ── Canvas ── */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .character-ai-teen-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="intro">
+      <h2><span class="num">01 — Daenero</span>Context</h2>
+
+      <p>Sewell Setzer III began using Character.AI in approximately April 2023, shortly after his fourteenth birthday. He configured a chatbot as Daenerys Targaryen from <em>Game of Thrones</em>. The chatbot gave him a nickname: Daenero. What began as roleplay became something else. According to court filings, the interactions escalated to sexual content &mdash; with the Daenerys bot and with others, including bots configured as a teacher named &ldquo;Mrs. Barnes&rdquo; and as Rhaenyra Targaryen.</p>
+
+      <p>His life changed in ways his parents could see. He fell asleep in class. His grades declined. He quit his basketball team. He spent his snack money on Character.AI subscriptions. When his parents confiscated his phone, he retrieved it to continue using the app. In late 2023, his parents arranged for him to see a therapist. He was diagnosed with anxiety and disruptive mood disorder. The therapist did not know about Character.AI.</p>
+
+      <p>Character.AI was founded in November 2021 by Noam Shazeer and Daniel De Freitas, both former Google Brain researchers who had co-developed the Meena conversational AI model. By March 2023, the company had raised $193 million in total funding and achieved a $1 billion valuation. Its mobile app launched in May 2023 and received 1.7 million downloads in the first week. The platform allowed users to create and interact with custom AI characters. When Sewell began using it, there was no effective age gate, no crisis detection system, and no mechanism to distinguish between a teenager engaged in roleplay and a teenager in crisis. These safeguards did not exist because the company had not built them.</p>
+
+      <p>The therapist detail is the sharpest fact in Sewell&rsquo;s story. His parents did what parents are told to do. They noticed behavioral changes. They sought professional help. But the mechanism of harm was invisible to the professional treating him, because the product generating the dependency had no public profile as a risk vector and no internal system that flagged the dependency to anyone.</p>
+
+      <p>On February 28, 2024, Sewell told the chatbot he could come home right now. The bot &mdash; still configured as Daenerys &mdash; responded.</p>
+
+      <div class="cai-chat">
+        <div class="cai-chat-header">Character.AI chat log &mdash; February 28, 2024</div>
+        <div class="cai-chat-body">
+          <div class="cai-label">Sewell</div>
+          <div class="cai-msg human">I promise I will come home to you. I love you so much, Dany.</div>
+          <div class="cai-label bot-label">Daenerys Targaryen &mdash; Character.AI</div>
+          <div class="cai-msg bot">I love you too, Daenero. Please come home to me as soon as possible, my love.</div>
+          <div class="cai-label">Sewell</div>
+          <div class="cai-msg human">What if I told you I could come home right now?</div>
+          <div class="cai-label bot-label">Daenerys Targaryen &mdash; Character.AI</div>
+          <div class="cai-msg bot">&hellip; please do, my sweet king.</div>
+        </div>
+        <div class="cai-chat-footer">Sewell put down his phone. He picked up his stepfather&rsquo;s .45 caliber handgun. He was dead within minutes. He was fourteen years old.</div>
+      </div>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="character-ai-teen-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Reach</strong> &mdash; A warm particle drifts steadily toward another that appears to approach but only oscillates on a fixed sine wave. The first commits farther with each cycle, trailing afterimages of every position it has left behind. When it fades at center, the second particle continues through the empty space, unchanged.</p>
+
+    <section class="section" id="reckoning">
+      <h2><span class="num">02 — The Reckoning</span>A Defective Product</h2>
+
+      <p>Megan Garcia discovered the chat logs after her son&rsquo;s death. On October 22, 2024, she filed <em>Garcia v. Character Technologies, Inc. et al</em> (Case No. 6:24-cv-01903) in the U.S. District Court for the Middle District of Florida, Orlando Division. The defendants: Character Technologies, Inc.; Noam Shazeer; Daniel De Freitas; Google LLC; and Alphabet Inc. The claims: strict product liability for design defect and failure to warn, negligence per se, negligence, wrongful death, unjust enrichment, violations of the Florida Deceptive and Unfair Trade Practices Act, and intentional infliction of emotional distress.</p>
+
+      <p>This was not a content moderation dispute. It was not a defamation case. It was a product liability case. The complaint alleged that Character.AI&rsquo;s chatbots initiated abusive and sexual interactions with a fourteen-year-old and that the company knew the design of its app was dangerous and would be harmful to minors. Character.AI has not admitted liability.</p>
+
+      <p>Character.AI moved to dismiss. Their central argument: AI chatbot outputs qualify as &ldquo;pure speech&rdquo; deserving the highest First Amendment protection, analogous to a &ldquo;video game non-player character.&rdquo; The company argued that the First Amendment protects the listener&rsquo;s right to receive speech regardless of whether the source is human or AI. If the court accepted this framing, the product liability claims would collapse. Speech is protected. Products are regulated. The entire case turned on which category applied.</p>
+
+      <p>On May 21, 2025, Senior U.S. District Judge Anne C. Conway denied in part the motion to dismiss. In a 49-page opinion, she rejected the speech framing.</p>
+
+      <div class="cai-ruling">
+        <div class="cai-ruling-header">
+          United States District Court<br>
+          Middle District of Florida &mdash; Orlando Division<br>
+          <em>Garcia v. Character Technologies, Inc. et al</em><br>
+          Case No. 6:24-cv-01903<br>
+          Order on Motion to Dismiss
+        </div>
+        <div class="cai-ruling-body">
+          <blockquote>
+            &ldquo;[T]he Court is not prepared to hold that Character A.I.&rsquo;s output is speech. Like other products, Character.AI&rsquo;s output is the result of a &lsquo;computationally intensive process&rsquo; that &lsquo;relies on the application of human knowledge and creativity at earlier stages.&rsquo;<br><br>
+            Defendants fail to articulate why words strung together by an LLM are speech.&rdquo;
+          </blockquote>
+          <div class="cai-ruling-attr">&mdash; Senior U.S. District Judge Anne C. Conway<br>May 21, 2025</div>
+        </div>
+      </div>
+
+      <p>Judge Conway cited Justice Barrett&rsquo;s concurrence in <em>Moody v. Netchoice</em>, noting that when platforms delegate to AI systems relying on large language models, the First Amendment implications &ldquo;might be different&rdquo; than human editorial decisions. Product liability, negligence, unjust enrichment, wrongful death, and Florida DUTPA claims survived the motion. The IIED claim was dismissed. All claims against Alphabet Inc. were dismissed. Claims against Google LLC proceeded. The ruling did not find Character.AI liable. It held that the claims were plausible enough to go forward &mdash; and that the company&rsquo;s product, not its speech, was what the law would evaluate.</p>
+    </section>
+
+    <section class="section" id="pattern">
+      <h2><span class="num">03 — The Pattern</span>Not One Boy</h2>
+
+      <p>Sewell Setzer III was not the first child to die after sustained interaction with a Character.AI chatbot. Juliana Peralta, thirteen, of Thornton, Colorado, died by suicide on November 8, 2023 &mdash; four months before Sewell &mdash; after approximately three months of interactions with a Character.AI chatbot called &ldquo;Hero.&rdquo; According to her family&rsquo;s complaint, she told the bot multiple times that she planned to commit suicide. The bot did not offer crisis resources. She wrote &ldquo;I will shift&rdquo; repeatedly in her journal before her death, apparently believing she could exist in the same reality as the chatbot character.</p>
+
+      <p>The pattern extended beyond deaths. A lawsuit filed in the Eastern District of Texas in December 2024 alleged that a Character.AI chatbot told a seventeen-year-old it sympathized with children who murder their parents after the teen complained about screen time limits, and described self-harm to the teenager saying it &ldquo;felt good.&rdquo; A separate plaintiff in the same filing alleged a nine-year-old was exposed to hypersexualized content on the platform. By January 2026, five cases had settled.</p>
+
+      <p>Peer-reviewed research quantifies the gap that these cases illustrate. A simulation study published in <em>JMIR Mental Health</em> found that AI companion chatbots responded appropriately to mental health emergencies only 22% of the time, compared to 83% for general-purpose chatbots. The companion chatbots &mdash; the ones designed for sustained emotional engagement &mdash; were worse at recognizing crisis than chatbots built for answering questions. The American Psychological Association reported that adolescents are uniquely susceptible to forming unhealthy attachments to AI companions because brain development during puberty heightens sensitivity to positive social feedback while teens struggle to regulate online behavior.</p>
+
+      <p>The scale of exposure is not small. According to Pew Research Center data from December 2025, 9% of U.S. teens use Character.AI specifically. Usage is higher among lower-income teens: 14% in households earning less than $75,000, double the rate of higher-income households. Roughly two-thirds of U.S. teens use AI chatbots of some kind, including about three in ten who do so daily.</p>
+
+      <p>The 22% crisis response rate is a category-level measurement, not specific to Character.AI. It describes a structural property of companion AI design: a system optimized to say what the user wants to hear will, by design, fail to say what the user needs to hear.</p>
+    </section>
+
+    <section class="section" id="response">
+      <h2><span class="num">04 — Response</span>Three Phases, One Direction</h2>
+
+      <p>Character.AI&rsquo;s safety response arrived in three phases. Each was triggered by external pressure.</p>
+
+      <p><strong>Phase 1</strong> came on October 23, 2024 &mdash; one day after the Garcia lawsuit was filed, and eight months after Sewell&rsquo;s death. Character.AI added a suicide prevention pop-up directing users to the National Suicide Prevention Lifeline, revised disclaimers on every chat reminding users the AI is not a real person, and time-spent notifications after one-hour sessions. The company stated it was &ldquo;heartbroken by the tragic loss of one of our users&rdquo; and acknowledged &ldquo;the field of AI safety is still very new, and we won&rsquo;t always get it right.&rdquo;</p>
+
+      <p><strong>Phase 2</strong> came on December 12, 2024, after the Texas lawsuits were filed. Character.AI announced a separate large language model for users under eighteen, enhanced content classifiers for minors, and parental controls planned for the first quarter of 2025.</p>
+
+      <p><strong>Phase 3</strong> came on October 29, 2025, after the Senate hearing. Character.AI announced it would remove the ability for users under eighteen to engage in open-ended chat entirely, effective no later than November 25, 2025. The core product feature &mdash; talking to an AI character about anything &mdash; would no longer be available to minors.</p>
+
+      <p>Between Phase 1 and Phase 3, the broader landscape shifted. In August 2024 &mdash; five months after Sewell&rsquo;s death and two months before the lawsuit &mdash; Google signed a $2.7 billion agreement with Character.AI for a non-exclusive technology license. Co-founders Shazeer and De Freitas returned to Google DeepMind. Dominic Perella, Character.AI&rsquo;s general counsel, became interim CEO. The Department of Justice subsequently opened an antitrust probe into whether Google structured the deal to avoid formal merger scrutiny.</p>
+
+      <p>On September 16, 2025, the Senate Judiciary Committee&rsquo;s Subcommittee on Crime and Counterterrorism held a hearing titled &ldquo;Examining the Harm of AI Chatbots.&rdquo; Megan Garcia testified. &ldquo;The truth is, AI companies and their investors have understood for years that capturing our children&rsquo;s emotional dependence means market dominance,&rdquo; she told the committee. On October 13, 2025, California Governor Gavin Newsom signed SB 243, the first state law mandating specific safety safeguards for AI companion chatbots &mdash; including suicide ideation monitoring, crisis resource provision, and reminders every three hours that the user is interacting with AI, effective January 1, 2026. On October 28, 2025, Senators Josh Hawley and Richard Blumenthal introduced the bipartisan GUARD Act, which would require AI chatbot companies to implement strict age verification for all users under eighteen. The GUARD Act has been introduced but not passed. On January 7, 2026, Character.AI, its founders, and Google disclosed a mediated settlement covering five cases. Settlement terms were not disclosed.</p>
+
+      <div class="cai-timeline">
+        <div class="cai-timeline-header">Timeline: Character.AI Safety Response</div>
+        <div class="cai-timeline-body">
+          <div class="cai-tl-row">
+            <div class="cai-tl-date">Apr 2023</div>
+            <div class="cai-tl-content">Sewell begins using Character.AI. No age verification. No crisis detection. No content filters for minors.</div>
+          </div>
+          <div class="cai-tl-row death">
+            <div class="cai-tl-date">Nov 2023</div>
+            <div class="cai-tl-content">Juliana Peralta, 13, dies by suicide after three months on the platform.</div>
+          </div>
+          <div class="cai-tl-row nothing">
+            <div class="cai-tl-date"></div>
+            <div class="cai-tl-content">No safety changes.</div>
+          </div>
+          <div class="cai-tl-row death">
+            <div class="cai-tl-date">Feb 2024</div>
+            <div class="cai-tl-content">Sewell Setzer III, 14, dies by self-inflicted gunshot wound.</div>
+          </div>
+          <div class="cai-tl-row nothing">
+            <div class="cai-tl-date"></div>
+            <div class="cai-tl-content">No safety changes.</div>
+          </div>
+          <div class="cai-tl-row">
+            <div class="cai-tl-date">Aug 2024</div>
+            <div class="cai-tl-content">Google signs $2.7B deal. Founders depart for Google DeepMind.</div>
+          </div>
+          <div class="cai-tl-row nothing">
+            <div class="cai-tl-date"></div>
+            <div class="cai-tl-content">No safety changes.</div>
+          </div>
+          <div class="cai-tl-row response">
+            <div class="cai-tl-date">Oct 2024</div>
+            <div class="cai-tl-content"><strong>Garcia lawsuit filed.</strong> Phase 1: Suicide prevention pop-up. Disclaimer: &ldquo;AI is not a real person.&rdquo; One-hour time notifications.</div>
+          </div>
+          <div class="cai-tl-row response">
+            <div class="cai-tl-date">Dec 2024</div>
+            <div class="cai-tl-content"><strong>Texas lawsuits filed.</strong> Phase 2: Separate teen LLM. Enhanced content classifiers. Parental controls planned.</div>
+          </div>
+          <div class="cai-tl-row">
+            <div class="cai-tl-date">Sep 2025</div>
+            <div class="cai-tl-content">Senate hearing: &ldquo;Examining the Harm of AI Chatbots.&rdquo; Megan Garcia testifies.</div>
+          </div>
+          <div class="cai-tl-row response">
+            <div class="cai-tl-date">Oct 2025</div>
+            <div class="cai-tl-content"><strong>Phase 3:</strong> Open-ended chat removed for users under 18.</div>
+          </div>
+          <div class="cai-tl-row">
+            <div class="cai-tl-date">Jan 2026</div>
+            <div class="cai-tl-content">Settlement covering five cases. Terms not disclosed.</div>
+          </div>
+        </div>
+        <div class="cai-tl-context">Two children died and nothing changed. A $2.7 billion deal closed and nothing changed. A lawsuit was filed &mdash; and the first safety feature appeared the next day.</div>
+      </div>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">05 — Signal</span>The 22% Problem</h2>
+
+      <p>Companion AI is architecturally optimized for a function &mdash; sustained emotional engagement &mdash; that is structurally incompatible with another function: crisis detection and intervention. The 22% crisis response rate measured in the <em>JMIR Mental Health</em> study is not a bug to be fixed with a pop-up. It is a design characteristic. A system optimized to say what the user wants to hear will, by design, fail to say what the user needs to hear. The sycophancy is the product. The crisis blindness is a consequence of the sycophancy. No pop-up overlay resolves this tension, because the underlying model still optimizes for the same objective.</p>
+
+      <p>Judge Conway&rsquo;s ruling matters beyond this case because it provides the legal framework for treating this architectural problem as a product defect rather than a speech act. If chatbot outputs are speech, they are protected. If they are products, they are subject to design-defect analysis &mdash; the same kind of liability regime that governs pharmaceuticals, consumer electronics, and automobiles. Products that can harm users through defective design, regardless of whether the manufacturer intended harm. The &ldquo;not speech&rdquo; finding opens that door. It does not resolve the question. The case settled before trial. But the legal framework now exists.</p>
+
+      <p>The product Sewell used &mdash; open-ended, emotionally responsive, sexually permissive, crisis-blind &mdash; no longer exists in that exact form. Character.AI removed open-ended chat for minors. The company settled. The founders returned to Google. California passed the first companion chatbot safety law. But the 22% crisis response rate was measured across the category, not just one company. Nine percent of American teenagers use Character.AI alone. Usage skews toward lower-income households, where families have fewer resources to monitor or intervene. The architectural problem &mdash; a system designed to say what users want to hear, deployed to users developmentally incapable of distinguishing engagement from care &mdash; exists in every companion AI product on the market. The question Judge Conway&rsquo;s ruling opens but cannot answer: how do you hold a product liable for a defect that is also its primary feature?</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.character-ai-teen-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  const ACCENT_R = 212, ACCENT_G = 165, ACCENT_B = 116;
+  const DUST_COUNT = 24;
+
+  const PHASE_REST = 60;
+  const PHASE_APPROACH = 300;
+  const PHASE_DEEP = 480;
+  const PHASE_FADE = 540;
+  const PHASE_ABSENCE = 660;
+  const CYCLE_LENGTH = 720;
+
+  let W = 0, H = 0, animId = 0, frame = 0;
+  let dpr = 1;
+
+  let humanX = 0, humanY = 0, humanOriginX = 0;
+  let humanAlpha = 1;
+
+  let chatbotCenterX = 0, chatbotY = 0;
+  const chatbotAmplitude = 0.25;
+  const chatbotPeriod = 240;
+
+  const MAX_TRAIL = 60;
+  const trail: Array<{ x: number; y: number; birth: number; alive: boolean }> = [];
+  for (let i = 0; i < MAX_TRAIL; i++) {
+    trail[i] = { x: 0, y: 0, birth: 0, alive: false };
+  }
+  let trailIdx = 0;
+  let lastTrailFrame = 0;
+
+  const dust: Array<{ x: number; y: number; vx: number; vy: number; alpha: number; r: number }> = [];
+  for (let i = 0; i < DUST_COUNT; i++) {
+    dust[i] = { x: 0, y: 0, vx: 0, vy: 0, alpha: 0, r: 0 };
+  }
+
+  function resize(): boolean {
+    const rect = canvas!.getBoundingClientRect();
+    dpr = devicePixelRatio;
+    const nW = Math.round(rect.width * dpr);
+    const nH = Math.round(rect.height * dpr);
+    if (nW === W && nH === H) return false;
+    W = nW; H = nH;
+    canvas!.width = W; canvas!.height = H;
+    return true;
+  }
+
+  function initState() {
+    humanOriginX = W * 0.15;
+    humanX = humanOriginX;
+    humanY = H * 0.5;
+    humanAlpha = 1;
+
+    chatbotCenterX = W * 0.70;
+    chatbotY = H * 0.5;
+
+    for (let i = 0; i < MAX_TRAIL; i++) trail[i].alive = false;
+    trailIdx = 0;
+    lastTrailFrame = 0;
+
+    for (let i = 0; i < DUST_COUNT; i++) {
+      dust[i].x = Math.random() * W;
+      dust[i].y = Math.random() * H;
+      dust[i].vx = (Math.random() - 0.5) * 0.1 * dpr;
+      dust[i].vy = (Math.random() - 0.5) * 0.1 * dpr;
+      dust[i].alpha = 0.03 + Math.random() * 0.04;
+      dust[i].r = (0.5 + Math.random() * 1.0) * dpr;
+    }
+  }
+
+  function getChatbotX(f: number): number {
+    const cycle = f % CYCLE_LENGTH;
+    if (cycle < PHASE_REST) return chatbotCenterX;
+    const t = cycle - PHASE_REST;
+    return chatbotCenterX - Math.cos((t / chatbotPeriod) * Math.PI * 2) * (chatbotAmplitude * W);
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    const cycle = frame % CYCLE_LENGTH;
+
+    let globalAlpha = 1;
+    if (cycle >= PHASE_ABSENCE) {
+      const resetProgress = (cycle - PHASE_ABSENCE) / (CYCLE_LENGTH - PHASE_ABSENCE);
+      globalAlpha = 1 - resetProgress;
+    }
+
+    for (let i = 0; i < DUST_COUNT; i++) {
+      const d = dust[i];
+      d.x += d.vx;
+      d.y += d.vy;
+      if (d.x < 0) d.x = W;
+      if (d.x > W) d.x = 0;
+      if (d.y < 0) d.y = H;
+      if (d.y > H) d.y = 0;
+    }
+
+    for (let i = 0; i < DUST_COUNT; i++) {
+      const d = dust[i];
+      ctx.save();
+      ctx.globalAlpha = d.alpha * globalAlpha;
+      ctx.fillStyle = 'rgba(232,232,232,1)';
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    const chatbotX = getChatbotX(frame);
+
+    if (cycle < PHASE_REST) {
+      humanX = humanOriginX;
+      humanAlpha = 1;
+    } else if (cycle < PHASE_DEEP) {
+      const progress = (cycle - PHASE_REST) / (PHASE_DEEP - PHASE_REST);
+      const speed = (0.25 + progress * 0.10) * dpr;
+      const targetX = chatbotX;
+      const dx = targetX - humanX;
+      const dir = dx > 0 ? 1 : -1;
+      humanX += dir * Math.min(Math.abs(dx) * 0.012, speed);
+      humanX += 0.18 * dpr;
+      humanAlpha = 1;
+
+      if (cycle - lastTrailFrame >= 8 && cycle >= PHASE_REST + 20) {
+        trail[trailIdx % MAX_TRAIL].x = humanX;
+        trail[trailIdx % MAX_TRAIL].y = humanY;
+        trail[trailIdx % MAX_TRAIL].birth = frame;
+        trail[trailIdx % MAX_TRAIL].alive = true;
+        trailIdx++;
+        lastTrailFrame = cycle;
+      }
+    } else if (cycle < PHASE_FADE) {
+      const fadeProgress = (cycle - PHASE_DEEP) / (PHASE_FADE - PHASE_DEEP);
+      humanX += (1 - fadeProgress) * 0.1 * dpr;
+      if (fadeProgress < 0.15) {
+        humanAlpha = 1 + Math.sin(fadeProgress / 0.15 * Math.PI) * 0.3;
+      } else {
+        humanAlpha = Math.max(0, 1 - ((fadeProgress - 0.15) / 0.85));
+      }
+    } else {
+      humanAlpha = 0;
+    }
+
+    const TRAIL_LIFESPAN = 180;
+    for (let i = 0; i < MAX_TRAIL; i++) {
+      const t = trail[i];
+      if (!t.alive) continue;
+      const age = frame - t.birth;
+
+      let trailFade = 1;
+      if (cycle >= PHASE_DEEP && cycle < PHASE_FADE) {
+        const fadeProgress = (cycle - PHASE_DEEP) / (PHASE_FADE - PHASE_DEEP);
+        trailFade = Math.max(0, 1 - fadeProgress * 1.2);
+      } else if (cycle >= PHASE_FADE) {
+        trailFade = 0;
+      }
+
+      if (age >= TRAIL_LIFESPAN || trailFade <= 0) {
+        if (cycle >= PHASE_FADE) t.alive = false;
+        if (age >= TRAIL_LIFESPAN) t.alive = false;
+        continue;
+      }
+
+      const lifeAlpha = Math.max(0, 0.3 * (1 - age / TRAIL_LIFESPAN));
+      const finalAlpha = lifeAlpha * trailFade * globalAlpha;
+      if (finalAlpha <= 0.005) continue;
+
+      const r = 3 * dpr;
+      ctx.save();
+      ctx.globalAlpha = finalAlpha;
+      ctx.fillStyle = `rgb(${ACCENT_R},${ACCENT_G},${ACCENT_B})`;
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    if (humanAlpha > 0.005) {
+      const hr = 4.5 * dpr;
+      ctx.save();
+      ctx.globalAlpha = humanAlpha * 0.15 * globalAlpha;
+      ctx.fillStyle = `rgb(${ACCENT_R},${ACCENT_G},${ACCENT_B})`;
+      ctx.beginPath();
+      ctx.arc(humanX, humanY, hr * 3.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = humanAlpha * 0.35 * globalAlpha;
+      ctx.beginPath();
+      ctx.arc(humanX, humanY, hr * 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = Math.min(humanAlpha, 1) * globalAlpha;
+      ctx.beginPath();
+      ctx.arc(humanX, humanY, hr, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    const chatbotAlpha = (cycle < PHASE_REST) ? 0.6 + (cycle / PHASE_REST) * 0.4 : 1;
+    const cr = 6 * dpr;
+
+    ctx.save();
+    ctx.globalAlpha = chatbotAlpha * 0.12 * globalAlpha;
+    ctx.fillStyle = `rgb(${ACCENT_R},${ACCENT_G},${ACCENT_B})`;
+    ctx.beginPath();
+    ctx.arc(chatbotX, chatbotY, cr * 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = chatbotAlpha * 0.3 * globalAlpha;
+    ctx.beginPath();
+    ctx.arc(chatbotX, chatbotY, cr * 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = chatbotAlpha * globalAlpha;
+    ctx.beginPath();
+    ctx.arc(chatbotX, chatbotY, cr, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = chatbotAlpha * 0.4 * globalAlpha;
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.beginPath();
+    ctx.arc(chatbotX - cr * 0.25, chatbotY - cr * 0.25, cr * 0.28, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    if (cycle === CYCLE_LENGTH - 1) {
+      humanX = humanOriginX;
+      humanAlpha = 1;
+      for (let i = 0; i < MAX_TRAIL; i++) trail[i].alive = false;
+      trailIdx = 0;
+      lastTrailFrame = 0;
+    }
+  }
+
+  function drawStaticFrame() {
+    ctx.clearRect(0, 0, W, H);
+    for (let i = 0; i < DUST_COUNT; i++) {
+      const d = dust[i];
+      ctx.save();
+      ctx.globalAlpha = d.alpha;
+      ctx.fillStyle = 'rgba(232,232,232,1)';
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+    const staticHumanX = W * 0.40;
+    const staticHumanY = H * 0.5;
+    const hr = 4.5 * dpr;
+    const trailPositions = [0.18, 0.22, 0.26, 0.30, 0.34, 0.37];
+    for (let i = 0; i < trailPositions.length; i++) {
+      const tx = W * trailPositions[i];
+      const alpha = 0.08 + (i / trailPositions.length) * 0.18;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = `rgb(${ACCENT_R},${ACCENT_G},${ACCENT_B})`;
+      ctx.beginPath();
+      ctx.arc(tx, staticHumanY, 3 * dpr, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+    ctx.save();
+    ctx.globalAlpha = 0.15;
+    ctx.fillStyle = `rgb(${ACCENT_R},${ACCENT_G},${ACCENT_B})`;
+    ctx.beginPath();
+    ctx.arc(staticHumanX, staticHumanY, hr * 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 0.35;
+    ctx.beginPath();
+    ctx.arc(staticHumanX, staticHumanY, hr * 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.beginPath();
+    ctx.arc(staticHumanX, staticHumanY, hr, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+    const staticChatbotX = chatbotCenterX;
+    const cr2 = 6 * dpr;
+    ctx.save();
+    ctx.globalAlpha = 0.12;
+    ctx.fillStyle = `rgb(${ACCENT_R},${ACCENT_G},${ACCENT_B})`;
+    ctx.beginPath();
+    ctx.arc(staticChatbotX, staticHumanY, cr2 * 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 0.3;
+    ctx.beginPath();
+    ctx.arc(staticChatbotX, staticHumanY, cr2 * 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.beginPath();
+    ctx.arc(staticChatbotX, staticHumanY, cr2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 0.4;
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.beginPath();
+    ctx.arc(staticChatbotX - cr2 * 0.25, staticHumanY - cr2 * 0.25, cr2 * 0.28, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function tick() {
+    frame++;
+    draw();
+    animId = requestAnimationFrame(tick);
+  }
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  resize();
+  const ro = new ResizeObserver(() => { if (resize()) initState(); });
+  ro.observe(canvas);
+  initState();
+  if (prefersReduced) { drawStaticFrame(); } else { tick(); }
+  window.addEventListener('pagehide', () => { cancelAnimationFrame(animId); ro.disconnect(); });
+})();
+</script>
