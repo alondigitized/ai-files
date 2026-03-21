@@ -135,10 +135,24 @@ strong { color: var(--text); }
 
 /* ── Sources ── */
 /* ── Share Bar ── */
+/* ── Reading Progress ── */
+.reading-progress {
+  position: fixed; top: 44px; left: 0; width: 100%; height: 2px;
+  z-index: 99; background: transparent;
+}
+.reading-progress-bar {
+  height: 100%; width: 0%; background: var(--story);
+  transition: width 0.05s linear;
+}
+
 .share-bar {
   max-width: 900px; margin: 0 auto; padding: 0.75rem 2rem;
   display: flex; align-items: center; gap: 0.5rem;
   border-bottom: 1px solid var(--border);
+}
+.share-bar-bottom {
+  border-bottom: none; border-top: 1px solid var(--border);
+  justify-content: center; padding: 1rem 2rem;
 }
 .share-label {
   font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase;
@@ -211,12 +225,20 @@ strong { color: var(--text); }
   transition: border-color 0.2s, transform 0.2s;
 }
 .more-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
+.mc-top {
+  display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;
+}
+.mc-emoji { font-size: 1.1rem; }
 .mc-ch {
   font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 0.5rem;
+  color: var(--muted);
 }
 .mc-title { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
 .mc-deck { font-size: 0.82rem; color: var(--muted); line-height: 1.45; }
+.mc-meta {
+  font-size: 0.7rem; color: var(--muted); margin-top: 0.75rem;
+  letter-spacing: 0.05em;
+}
 
 /* ── What If ── */
 .what-if-block {
@@ -225,20 +247,70 @@ strong { color: var(--text); }
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
 }
+.wi-divider {
+  text-align: center; margin-bottom: 2rem;
+  font-size: 1.5rem; color: var(--story); opacity: 0.6;
+  letter-spacing: 0.5em;
+}
+.wi-divider span {
+  display: inline-block;
+  animation: wi-pulse 4s ease-in-out infinite;
+}
+@keyframes wi-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wi-divider span { animation: none; opacity: 0.6; }
+}
 .wi-inner {
-  max-width: 680px; margin: 0 auto; text-align: center;
+  max-width: 680px; margin: 0 auto;
+  padding-left: 1.5rem;
+  border-left: 3px solid var(--story);
 }
 .wi-label {
-  font-size: 0.68rem; letter-spacing: 0.25em; text-transform: uppercase;
-  color: var(--story); font-weight: 700; margin-bottom: 1.5rem;
+  font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--story); font-weight: 800; margin-bottom: 1.25rem;
 }
 .wi-text {
-  font-size: 1.15rem; line-height: 1.8; color: var(--text-body);
+  font-size: 1.2rem; line-height: 1.8; color: var(--text-body);
   font-style: italic; font-weight: 400;
 }
 .wi-text strong { color: var(--text); font-style: normal; }
 @media (max-width: 640px) {
   .wi-text { font-size: 1rem; }
+  .wi-inner { padding-left: 1rem; }
+}
+
+/* ── Chapter Nav ── */
+.chapter-nav {
+  max-width: 900px; margin: 0 auto; padding: 0 2rem;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  border-top: 1px solid var(--border);
+  padding-top: 2rem; padding-bottom: 1rem;
+}
+.chapter-nav-link {
+  display: flex; flex-direction: column; gap: 0.25rem;
+  padding: 1.25rem; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 0.75rem;
+  text-decoration: none;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.chapter-nav-link:hover { border-color: var(--story); transform: translateY(-2px); }
+.chapter-nav-next { text-align: right; }
+.chapter-nav-dir {
+  font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--story); font-weight: 700;
+}
+.chapter-nav-ch {
+  font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted);
+}
+.chapter-nav-title {
+  font-size: 0.95rem; font-weight: 700; color: var(--text);
+}
+.chapter-nav-time {
+  font-size: 0.72rem; color: var(--muted);
 }
 
 /* ── Footer ── */
@@ -312,6 +384,8 @@ footer .footer-sub { margin-top: 0.5rem; font-size: 0.75rem; color: var(--muted)
   .stat-cards { grid-template-columns: repeat(2, 1fr); }
   .site-nav { padding: 0.85rem 1rem; }
   .msg { max-width: 90%; }
+  .chapter-nav { grid-template-columns: 1fr; }
+  .chapter-nav-next { text-align: left; }
   h2 { font-size: 1.4rem; }
   .story-title { font-size: 2rem; }
 }

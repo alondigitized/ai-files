@@ -97,6 +97,14 @@ const sameSideOther = others.filter(s => (s.side ?? 'dark') === storySide && s.v
 const crossSide = others.filter(s => (s.side ?? 'dark') !== storySide);
 const related = [...sameSideVol, ...sameSideOther, ...crossSide].slice(0, 4);
 
+// Sequential navigation: prev/next chapter within same side
+const sameSideAll = stories
+  .filter(s => (s.side ?? 'dark') === storySide && !s.wip)
+  .sort((a, b) => a.chapter - b.chapter);
+const currentIdx = sameSideAll.findIndex(s => s.slug === story.slug);
+const prevStory = currentIdx > 0 ? sameSideAll[currentIdx - 1] : null;
+const nextStory = currentIdx < sameSideAll.length - 1 ? sameSideAll[currentIdx + 1] : null;
+
 const shareTitle = encodeURIComponent(story.title + ' — The AI Files');
 const shareURL = encodeURIComponent(canonicalURL);
 const shareLinks = {
@@ -125,6 +133,7 @@ const shareLinks = {
     <a href="/" class="nav-logo">The <span>AI</span> Files</a>
     <a href="/" class="nav-link">← Archive</a>
   </nav>
+  <div class="reading-progress" aria-hidden="true"><div class="reading-progress-bar"></div></div>
 
   <header class="story-hero">
     <div class="story-hero-inner">
@@ -160,12 +169,22 @@ const shareLinks = {
 
     {story.whatIf && (
       <div class="what-if-block">
+        <div class="wi-divider"><span>∞</span></div>
         <div class="wi-inner">
-          <div class="wi-label">∞ &nbsp; What If?</div>
+          <div class="wi-label">What If?</div>
           <p class="wi-text">{story.whatIf}</p>
         </div>
       </div>
     )}
+
+    <div class="share-bar share-bar-bottom">
+      <span class="share-label">Share this story</span>
+      <a href={shareLinks.x} target="_blank" rel="noopener" class="share-btn" aria-label="Share on X">X</a>
+      <a href={shareLinks.linkedin} target="_blank" rel="noopener" class="share-btn" aria-label="Share on LinkedIn">LinkedIn</a>
+      <a href={shareLinks.reddit} target="_blank" rel="noopener" class="share-btn" aria-label="Share on Reddit">Reddit</a>
+      <a href={shareLinks.hn} target="_blank" rel="noopener" class="share-btn" aria-label="Share on Hacker News">HN</a>
+      <button class="share-btn share-copy-bottom" data-url={canonicalURL} aria-label="Copy link">Link</button>
+    </div>
 
     <div class="reactions-block" data-slug={story.slug}>
       <div class="reactions-label">How did this land?</div>
@@ -282,6 +301,55 @@ const shareLinks = {
       })();
     </script>
 
+    <div class="sources-block">
+      <h3>Sources</h3>
+      <ul class="sources-list">
+        {story.sources.map(src => (
+          <li><a href={src.url} target="_blank" rel="noopener">{src.label}</a></li>
+        ))}
+      </ul>
+    </div>
+
+    {(prevStory || nextStory) && (
+      <div class="chapter-nav">
+        {prevStory ? (
+          <a href={`/stories/${prevStory.slug}`} class="chapter-nav-link chapter-nav-prev">
+            <span class="chapter-nav-dir">← Previous</span>
+            <span class="chapter-nav-ch">Chapter {String(prevStory.chapter).padStart(2, '0')}</span>
+            <span class="chapter-nav-title">{prevStory.title}</span>
+            <span class="chapter-nav-time">{prevStory.readTime} read</span>
+          </a>
+        ) : <div />}
+        {nextStory ? (
+          <a href={`/stories/${nextStory.slug}`} class="chapter-nav-link chapter-nav-next">
+            <span class="chapter-nav-dir">Next →</span>
+            <span class="chapter-nav-ch">Chapter {String(nextStory.chapter).padStart(2, '0')}</span>
+            <span class="chapter-nav-title">{nextStory.title}</span>
+            <span class="chapter-nav-time">{nextStory.readTime} read</span>
+          </a>
+        ) : <div />}
+      </div>
+    )}
+
+    <div class="container">
+      <div class="more-stories">
+        <h3>More Stories</h3>
+        <div class="more-grid">
+          {related.map(s => (
+            <a href={`/stories/${s.slug}`} class="more-card" style={`border-left: 3px solid ${s.story};`}>
+              <div class="mc-top">
+                <span class="mc-emoji">{s.emoji}</span>
+                <span class="mc-ch" style={`color:${s.story};`}>{s.wip ? 'Draft' : `Ch${String(s.chapter).padStart(2, '0')}`}</span>
+              </div>
+              <div class="mc-title">{s.title}</div>
+              <div class="mc-deck">{s.deck}</div>
+              <div class="mc-meta">{s.readTime} read</div>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+
     <div class="story-subscribe">
       <div class="story-subscribe-inner">
         <div class="story-subscribe-text">
@@ -293,44 +361,37 @@ const shareLinks = {
         </div>
       </div>
     </div>
-
-    <div class="sources-block">
-      <h3>Sources</h3>
-      <ul class="sources-list">
-        {story.sources.map(src => (
-          <li><a href={src.url} target="_blank" rel="noopener">{src.label}</a></li>
-        ))}
-      </ul>
-    </div>
-
-    <div class="container">
-      <div class="more-stories">
-        <h3>More Stories</h3>
-        <div class="more-grid">
-          {related.map(s => (
-            <a href={`/stories/${s.slug}`} class="more-card">
-              <div class="mc-ch">{s.wip ? 'Draft' : `Ch${String(s.chapter).padStart(2, '0')}`}</div>
-              <div class="mc-title">{s.title}</div>
-              <div class="mc-deck">{s.deck.slice(0, 100)}{s.deck.length > 100 ? '…' : ''}</div>
-            </a>
-          ))}
-        </div>
-      </div>
-    </div>
   </main>
 
   <script async src="https://subscribe-forms.beehiiv.com/embed.js"></script>
   <script>
     (function () {
-      const btn = document.querySelector('.share-copy');
-      if (!btn) return;
-      btn.addEventListener('click', function () {
-        navigator.clipboard.writeText(this.dataset.url).then(() => {
-          const orig = this.textContent;
-          this.textContent = 'Copied!';
-          setTimeout(() => { this.textContent = orig; }, 1500);
+      // Copy link buttons (top and bottom)
+      document.querySelectorAll('.share-copy, .share-copy-bottom').forEach(btn => {
+        btn.addEventListener('click', function () {
+          navigator.clipboard.writeText(this.dataset.url).then(() => {
+            const orig = this.textContent;
+            this.textContent = 'Copied!';
+            setTimeout(() => { this.textContent = orig; }, 1500);
+          });
         });
       });
+
+      // Reading progress bar
+      const bar = document.querySelector('.reading-progress-bar') as HTMLElement;
+      if (bar) {
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+          if (!ticking) {
+            requestAnimationFrame(() => {
+              const h = document.documentElement.scrollHeight - window.innerHeight;
+              bar.style.width = h > 0 ? `${(window.scrollY / h) * 100}%` : '0%';
+              ticking = false;
+            });
+            ticking = true;
+          }
+        });
+      }
     })();
   </script>
 
