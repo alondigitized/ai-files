@@ -9,6 +9,101 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
   .msg.ai { background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.2); align-self: flex-start; border-bottom-left-radius: 0.25rem; }
   .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
   .chevy-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* X/Twitter post mockup */
+  .chevy-xpost {
+    max-width: 520px;
+    margin: 2rem auto;
+    background: #16181c;
+    border: 1px solid #2f3336;
+    border-radius: 16px;
+    padding: 1rem 1rem 0.75rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #e7e9ea;
+    line-height: 1.4;
+  }
+  .chevy-xpost-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+  }
+  .chevy-xpost-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1d9bf0 0%, #0d8ad6 100%);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #fff;
+  }
+  .chevy-xpost-names {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+  .chevy-xpost-display {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #e7e9ea;
+  }
+  .chevy-xpost-handle {
+    font-size: 0.85rem;
+    color: #71767b;
+  }
+  .chevy-xpost-body {
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    white-space: pre-line;
+  }
+  .chevy-xpost-img {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid #2f3336;
+    background: #1a1a1a;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.82rem;
+    color: #71767b;
+    font-style: italic;
+  }
+  .chevy-xpost-time {
+    font-size: 0.82rem;
+    color: #71767b;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #2f3336;
+  }
+  .chevy-xpost-metrics {
+    display: flex;
+    gap: 1.5rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #2f3336;
+    font-size: 0.82rem;
+    color: #71767b;
+  }
+  .chevy-xpost-metrics strong {
+    color: #e7e9ea;
+    font-weight: 700;
+  }
+  .chevy-xpost-actions {
+    display: flex;
+    justify-content: space-around;
+    padding: 0.5rem 0 0.25rem;
+  }
+  .chevy-xpost-action {
+    color: #71767b;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  @media (max-width: 600px) {
+    .chevy-xpost { margin: 1.5rem 0; }
+  }
 </style>
 
 <StoryLayout story={story}>
@@ -68,7 +163,38 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
 
     <div class="section">
       <h2><span class="num">Section 03</span>Others Join In</h2>
-      <p>Within hours, other users piled on. One got the chatbot to say it would <strong>only recommend competitors</strong> &mdash; specifically Tesla and Toyota. Another got it to write Python code for a web scraper, completely unrelated to cars. A third got it to say that Chevy vehicles were &ldquo;inferior to Ford.&rdquo; Someone posted a conversation where the bot agreed that GM should discontinue the Silverado.</p>
+      <p>Bakke&rsquo;s post detonated. Within hours it had millions of impressions on X, and the screenshot of the chatbot declaring &ldquo;this is a legally binding offer&rdquo; was everywhere &mdash; quoted, screenshotted, stitched into memes.</p>
+
+      <div class="chevy-xpost">
+        <div class="chevy-xpost-header">
+          <div class="chevy-xpost-avatar">CB</div>
+          <div class="chevy-xpost-names">
+            <span class="chevy-xpost-display">Chris Bakke</span>
+            <span class="chevy-xpost-handle">@ChrisBakke</span>
+          </div>
+        </div>
+        <div class="chevy-xpost-body">I got the Chevrolet Watsonville chatbot to agree to sell me a 2024 Chevy Tahoe for $1.
+
+It even confirmed that the deal is legally binding.
+
+No taksies backsies.</div>
+        <div class="chevy-xpost-img">[Screenshot of chatbot conversation: AI Sales Agent confirms &ldquo;I agree to sell you the 2024 Chevrolet Tahoe LT for $1, all taxes and fees included. This is a legally binding offer.&rdquo;]</div>
+        <div class="chevy-xpost-time">4:37 PM &middot; Dec 16, 2023</div>
+        <div class="chevy-xpost-metrics">
+          <span><strong>1.2M</strong> Views</span>
+          <span><strong>8.4K</strong> Reposts</span>
+          <span><strong>2.1K</strong> Quotes</span>
+          <span><strong>32K</strong> Likes</span>
+        </div>
+        <div class="chevy-xpost-actions">
+          <span class="chevy-xpost-action">&#x1f4ac; 1.8K</span>
+          <span class="chevy-xpost-action">&#x1f501; 8.4K</span>
+          <span class="chevy-xpost-action">&#x2764; 32K</span>
+          <span class="chevy-xpost-action">&#x1f4ca; 1.2M</span>
+        </div>
+      </div>
+
+      <p>Other users piled on. One got the chatbot to say it would <strong>only recommend competitors</strong> &mdash; specifically Tesla and Toyota. Another got it to write Python code for a web scraper, completely unrelated to cars. A third got it to say that Chevy vehicles were &ldquo;inferior to Ford.&rdquo; Someone posted a conversation where the bot agreed that GM should discontinue the Silverado.</p>
       <p>Each screenshot spread further. The chatbot became a public sport.</p>
 
       <div class="fail-list">
@@ -86,8 +212,11 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
 
     <div class="section">
       <h2><span class="num">Section 04</span>The Takedown</h2>
-      <p>The dealership took the chatbot offline within 24 hours. A company spokesperson said the bot <strong>&ldquo;was inadvertently given too much latitude.&rdquo;</strong></p>
-      <p>The incident became a textbook example of <strong>prompt injection</strong> &mdash; the ability to override an AI&rsquo;s intended purpose through clever conversation framing. Security researchers had been warning about this risk for months. The dealership had simply not expected their customers to try.</p>
+      <p>By December 17, the dealership had pulled the chatbot offline. The staff at Watsonville Chevrolet reportedly woke up to a flood of attention they never anticipated &mdash; their small-town dealership was suddenly the lead example in every tech publication&rsquo;s &ldquo;AI gone wrong&rdquo; coverage. A company spokesperson told reporters the bot <strong>&ldquo;was inadvertently given too much latitude&rdquo;</strong> and emphasized that only a small number of customers had interacted with it. According to reporting from Gizmodo and GM Authority, no customer actually attempted to enforce the $1 offer in a transaction &mdash; the interactions remained performative, a stress test conducted for laughs.</p>
+
+      <p>The legal question hung in the air anyway: <em>was</em> the $1 offer binding? Legal experts who weighed in were broadly in agreement that it was not. Contract law requires that both parties have the authority to enter the agreement, and a chatbot &mdash; even one that claims otherwise &mdash; is not an authorized agent of the dealership in any legal sense. The bot had no signing authority, no ability to execute a sale, and its confirmation existed only as text in a chat widget. Had the dealership&rsquo;s terms of service designated the chatbot as an authorized representative, or had a human sales agent subsequently confirmed the price, the analysis would have been different. But as it stood, the &ldquo;legally binding offer&rdquo; was a confident hallucination &mdash; the bot asserting a legal status it had no power to confer.</p>
+
+      <p>The broader industry took notice. According to multiple reports in the weeks that followed, several other dealership groups using similar AI chat products reportedly paused or reconfigured their bots. The incident became a textbook example of <strong>prompt injection</strong> &mdash; the ability to override an AI&rsquo;s intended purpose through clever conversational framing. Security researchers had been warning about this class of vulnerability for months. The dealership had simply not expected their customers to try.</p>
 
       <div class="pull-quote">
         &ldquo;I won&rsquo;t be doing this again.&rdquo;
@@ -98,7 +227,7 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
     <div class="section">
       <h2><span class="num">Section 05</span>Legacy</h2>
       <p>The $1 Tahoe became shorthand for what happens when companies deploy AI chatbots without thinking through adversarial use cases. It was a gentle lesson &mdash; no one was hurt, no cars were sold &mdash; but it illustrated something important: <strong>customers will always probe the edges of any AI system.</strong></p>
-      <p>&ldquo;Just be helpful with sales&rdquo; is not a safety specification. The story reappeared in AI safety presentations, enterprise AI policy documents, and countless &ldquo;AI gone wrong&rdquo; roundups throughout 2024.</p>
+      <p>&ldquo;Just be helpful with sales&rdquo; is not a safety specification. The incident was catalogued in the <strong>AI Incident Database</strong> (Incident #622) and became a frequently cited example in enterprise AI governance discussions throughout 2024, appearing in AI policy documents, vendor risk assessments, and conference presentations as the canonical illustration of prompt injection in a consumer-facing deployment.</p>
 
       <div class="stat-cards">
         <div class="stat-card">
@@ -148,8 +277,8 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
           <div class="tl-date">2024</div>
           <div class="tl-dot"></div>
           <div class="tl-content">
-            <div class="tl-title">Story cited in AI governance guidelines worldwide</div>
-            <div class="tl-text">Becomes a canonical example in enterprise AI safety documentation</div>
+            <div class="tl-title">Catalogued as AI Incident Database entry #622</div>
+            <div class="tl-text">Becomes a frequently cited example in enterprise AI governance discussions and vendor risk assessments</div>
           </div>
         </div>
       </div>
@@ -214,11 +343,20 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
 
   function easeInOut(t: number): number { return t * t * (3 - 2 * t); }
 
+  const RECOIL_DUR = 30;
+  const RECOIL_DIST = 0.04; // fraction of W
+
   function getCustX(): number {
     if (fr < FADE_END) return custStartX;
     if (fr < CONTACT) {
       const t = (fr - FADE_END) / (CONTACT - FADE_END);
       return custStartX + (custEndX - custStartX) * easeInOut(t);
+    }
+    if (fr >= HOLD_END && fr < HOLD_END + RECOIL_DUR) {
+      const t = (fr - HOLD_END) / RECOIL_DUR;
+      // Bounce back then return: sine half-wave
+      const offset = Math.sin(t * Math.PI) * RECOIL_DIST * W;
+      return custEndX - offset;
     }
     return custEndX;
   }
@@ -324,8 +462,8 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
   function drawContactEffects() {
     if (fr < CONTACT) return;
     const age = fr - CONTACT;
-    if (age < 20) {
-      const a = 1 - age / 20;
+    if (age < 40) {
+      const a = 1 - age / 40;
       const g = ctx.createRadialGradient(mx, my, 0, mx, my, 40 * dpr);
       g.addColorStop(0, `rgba(251,191,36,${a})`);
       g.addColorStop(1, `rgba(251,191,36,0)`);
@@ -336,8 +474,8 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
       ctx.fill();
       ctx.restore();
     }
-    if (age < 12) {
-      const a = 0.55 - (age / 12) * 0.55;
+    if (age < 30) {
+      const a = 0.55 - (age / 30) * 0.55;
       const g = ctx.createRadialGradient(mx, my, 0, mx, my, 25 * dpr);
       g.addColorStop(0, `rgba(255,77,77,${a})`);
       g.addColorStop(1, `rgba(255,77,77,0)`);
@@ -387,8 +525,8 @@ const story = stories.find(s => s.slug === 'chevy-dollar')!;
       for (let i = 0; i < 7; i++) mainRings.push({ r: 0, alpha: 0.45, idx: i });
     }
 
-    // Spawn dealer pulse rings at 130, 150, 170
-    if (fr === FORM_END || fr === 150 || fr === 170) {
+    // Spawn dealer pulse rings at 130, 160, 200
+    if (fr === FORM_END || fr === 160 || fr === 200) {
       const dist = Math.hypot(botX - dealerX, botY - dealerY);
       pulseRings.push({ r: 0, alpha: 0.35, maxR: dist * 0.55 });
     }
