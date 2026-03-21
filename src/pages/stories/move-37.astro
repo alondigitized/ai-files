@@ -462,7 +462,7 @@ const story = stories.find(s => s.slug === 'move-37')!;
   const TOTAL = STONES_PHASE + ARC_IN_FRAMES + HOLD_FRAMES + PULSE_FRAMES + FADE_FRAMES + 40;
 
   let frame = 0;
-  let rafId: number;
+  let rafId = 0;
   let stones: Stone[] = [];
   let m37placed = false;
   let pulseFrame = 0;
@@ -603,13 +603,19 @@ const story = stories.find(s => s.slug === 'move-37')!;
 
   resize();
   initStones();
-  rafId = requestAnimationFrame(draw);
+
+  const io = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(draw); }
+    else { cancelAnimationFrame(rafId); rafId = 0; }
+  }, { threshold: 0.01 });
+  io.observe(canvas);
 
   const ro = new ResizeObserver(() => { resize(); });
   ro.observe(canvas);
 
   window.addEventListener('pagehide', () => {
     cancelAnimationFrame(rafId);
+    io.disconnect();
     ro.disconnect();
   });
 })();

@@ -400,15 +400,21 @@ const story = stories.find(s => s.slug === 'amazon-resume-ai')!;
   ro.observe(canvas);
   initParticles();
 
+  const io = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) { if (!animId) animId = requestAnimationFrame(tick); }
+    else { cancelAnimationFrame(animId); animId = 0; }
+  }, { threshold: 0.01 });
+
   if (prefersReduced) {
     drawStaticFrame();
   } else {
-    tick();
+    io.observe(canvas);
   }
 
   window.addEventListener('unload', () => {
     if (animId) cancelAnimationFrame(animId);
     ro.disconnect();
+    io.disconnect();
   });
 })();
 </script>

@@ -389,9 +389,18 @@ const story = stories.find(s => s.slug === 'meta-rogue-agent')!;
   canvas.width = W * dpr; canvas.height = H * dpr;
   ctx.scale(dpr, dpr);
 
-  if (prefersReduced) { drawStatic(); }
-  else { resetState(); nextSpawnFrame = P_PATROL_END; rafId = requestAnimationFrame(tick); }
+  if (prefersReduced) {
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    resetState(); nextSpawnFrame = P_PATROL_END;
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(rafId); rafId = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
 
-  window.addEventListener('pagehide', () => { cancelAnimationFrame(rafId); ro.disconnect(); });
+    window.addEventListener('pagehide', () => { cancelAnimationFrame(rafId); io.disconnect(); ro.disconnect(); });
+  }
 })();
 </script>

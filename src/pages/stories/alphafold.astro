@@ -603,6 +603,11 @@ const story = stories.find(s => s.slug === 'alphafold')!;
     initAmb();
   }
 
+  const io = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+    else { cancelAnimationFrame(raf); raf = 0; }
+  }, { threshold: 0.01 });
+
   requestAnimationFrame(() => {
     init();
     if (prefersReduced) {
@@ -616,13 +621,14 @@ const story = stories.find(s => s.slug === 'alphafold')!;
       glowAlpha = 0.15;
       draw();
     } else {
-      raf = requestAnimationFrame(tick);
+      io.observe(canvas);
     }
   });
 
   window.addEventListener('pagehide', () => {
     cancelAnimationFrame(raf);
     ro.disconnect();
+    io.disconnect();
   });
 })();
 </script>

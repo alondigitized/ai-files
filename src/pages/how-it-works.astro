@@ -1160,7 +1160,19 @@ const totalGates = 7;
   if (prefersReduced) {
     staticFrame();
   } else {
-    raf = requestAnimationFrame(tick);
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(raf); raf = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+
+    /* cleanup */
+    window.addEventListener('beforeunload', () => {
+      cancelAnimationFrame(raf);
+      io.disconnect();
+      ro.disconnect();
+    });
+    return;
   }
 
   /* cleanup */

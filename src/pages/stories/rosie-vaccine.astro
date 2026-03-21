@@ -368,7 +368,16 @@ const story = stories.find(s => s.slug === 'rosie-vaccine')!;
       const rot = 1.2;
       for (const p of hps) { const [hx, hy] = helixXY(p, rot, 60); p.x = hx; p.y = hy; p.alpha = p.baseAlpha; }
       draw();
-    } else { raf = requestAnimationFrame(tick); }
+    } else {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+        else { cancelAnimationFrame(raf); raf = 0; }
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+
+      window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); io.disconnect(); ro.disconnect(); });
+      return;
+    }
   });
 
   window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); ro.disconnect(); });

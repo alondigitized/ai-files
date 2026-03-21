@@ -520,7 +520,16 @@ const story = stories.find(s => s.slug === 'character-ai-teen')!;
   const ro = new ResizeObserver(() => { if (resize()) initState(); });
   ro.observe(canvas);
   initState();
-  if (prefersReduced) { drawStaticFrame(); } else { tick(); }
-  window.addEventListener('pagehide', () => { cancelAnimationFrame(animId); ro.disconnect(); });
+  if (prefersReduced) {
+    drawStaticFrame();
+  } else {
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!animId) animId = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(animId); animId = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+
+    window.addEventListener('pagehide', () => { cancelAnimationFrame(animId); io.disconnect(); ro.disconnect(); });
+  }
 })();
 </script>

@@ -759,9 +759,16 @@ const story = stories.find(s => s.slug === 'grok-deepfake-crisis')!;
   canvas.width = W; canvas.height = H;
   barrierBaseY = H * 0.33; initState();
 
-  if (prefersReduced) requestAnimationFrame(drawStatic);
-  else raf = requestAnimationFrame(tick);
+  if (prefersReduced) {
+    requestAnimationFrame(drawStatic);
+  } else {
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(raf); raf = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
 
-  window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); ro.disconnect(); });
+    window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); });
+  }
 })();
 </script>

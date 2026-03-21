@@ -457,14 +457,20 @@ const story = stories.find(s => s.slug === 'microsoft-tay')!;
 
   if (reduced) {
     drawStatic();
+    window.addEventListener('unload', () => { ro.disconnect(); });
   } else {
     init();
-    rafId = requestAnimationFrame(tick);
-  }
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(rafId); rafId = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
 
-  window.addEventListener('unload', () => {
-    cancelAnimationFrame(rafId);
-    ro.disconnect();
-  });
+    window.addEventListener('unload', () => {
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+      ro.disconnect();
+    });
+  }
 })();
 </script>

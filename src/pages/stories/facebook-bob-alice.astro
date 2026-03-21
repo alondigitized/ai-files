@@ -348,12 +348,17 @@ const story = stories.find(s => s.slug === 'facebook-bob-alice')!;
   if (reduced) {
     drawScene(false);
   } else {
-    raf = requestAnimationFrame(loop);
-  }
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(loop); }
+      else { cancelAnimationFrame(raf); raf = 0; }
+    }, { threshold: 0.01 });
+    io.observe(cv);
 
-  window.addEventListener('unload', () => {
-    cancelAnimationFrame(raf);
-    ro.disconnect();
-  });
+    window.addEventListener('unload', () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      io.disconnect();
+    });
+  }
 })();
 </script>

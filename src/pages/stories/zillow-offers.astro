@@ -648,7 +648,18 @@ const story = stories.find(s => s.slug === 'zillow-offers')!;
   if (prefersReduced) {
     drawStatic();
   } else {
-    rafId = requestAnimationFrame(tick);
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(rafId); rafId = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+      ro.disconnect();
+    });
+    return;
   }
 
   window.addEventListener('pagehide', () => {

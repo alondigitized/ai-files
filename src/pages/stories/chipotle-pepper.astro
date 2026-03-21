@@ -570,12 +570,17 @@ const story = stories.find(s => s.slug === 'chipotle-pepper')!;
   if (reduced) {
     requestAnimationFrame(() => drawScene(false));
   } else {
-    raf = requestAnimationFrame(loop);
-  }
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(loop); }
+      else { cancelAnimationFrame(raf); raf = 0; }
+    }, { threshold: 0.01 });
+    io.observe(cv);
 
-  window.addEventListener('pagehide', () => {
-    cancelAnimationFrame(raf);
-    ro.disconnect();
-  });
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(raf);
+      io.disconnect();
+      ro.disconnect();
+    });
+  }
 })();
 </script>

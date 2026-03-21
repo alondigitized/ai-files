@@ -302,13 +302,19 @@ And they are a waste of time.</div>
   }
 
   resize();
-  rafId = requestAnimationFrame(draw);
 
   const ro = new ResizeObserver(() => { resize(); });
   ro.observe(canvas);
 
+  const io = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(draw); }
+    else { cancelAnimationFrame(rafId); rafId = 0; }
+  }, { threshold: 0.01 });
+  io.observe(canvas);
+
   window.addEventListener('pagehide', () => {
     cancelAnimationFrame(rafId);
+    io.disconnect();
     ro.disconnect();
   });
 })();

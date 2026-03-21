@@ -616,13 +616,19 @@ const story = stories.find(s => s.slug === 'moltbook')!;
     // Settle physics silently, then draw one static frame
     for (let i = 0; i < 300; i++) { frame++; updateNodes(); }
     draw();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
   } else {
-    rafId = requestAnimationFrame(tick);
-  }
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(rafId); rafId = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
 
-  window.addEventListener('pagehide', () => {
-    cancelAnimationFrame(rafId);
-    ro.disconnect();
-  });
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+      ro.disconnect();
+    });
+  }
 })();
 </script>

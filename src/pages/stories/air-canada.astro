@@ -465,15 +465,21 @@ const story = stories.find(s => s.slug === 'air-canada')!;
   ro.observe(canvas);
   resize();
 
+  const io = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(tick); }
+    else { cancelAnimationFrame(rafId); rafId = 0; }
+  }, { threshold: 0.01 });
+
   if (reduced) {
     drawStatic();
   } else {
-    rafId = requestAnimationFrame(tick);
+    io.observe(canvas);
   }
 
   window.addEventListener('unload', () => {
     cancelAnimationFrame(rafId);
     ro.disconnect();
+    io.disconnect();
   });
 })();
 </script>

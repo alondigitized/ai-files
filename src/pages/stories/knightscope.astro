@@ -259,7 +259,7 @@ const story = stories.find(s => s.slug === 'knightscope')!;
     return;
   }
 
-  let rafId: number;
+  let rafId = 0;
   let frame = 0;
 
   function draw() {
@@ -355,13 +355,19 @@ const story = stories.find(s => s.slug === 'knightscope')!;
 
   resize();
   resetCycle();
-  rafId = requestAnimationFrame(draw);
+
+  const io = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(draw); }
+    else { cancelAnimationFrame(rafId); rafId = 0; }
+  }, { threshold: 0.01 });
+  io.observe(canvas);
 
   const ro = new ResizeObserver(() => { resize(); });
   ro.observe(canvas);
 
   window.addEventListener('pagehide', () => {
     cancelAnimationFrame(rafId);
+    io.disconnect();
     ro.disconnect();
   });
 })();

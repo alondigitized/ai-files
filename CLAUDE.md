@@ -217,10 +217,12 @@ Every story includes a **full-width canvas animation** placed at a dramatically 
 
 ### Design principles
 - **Monochromatic base** — background is `var(--bg)` (`#0d0d0d`); ambient elements in near-invisible off-white (`rgba(232,232,232,0.04–0.08)`)
-- **Accent pop** — the story's `--story` color is the only vivid element; `--accent` (`#ff4d4d`) used sparingly for destructive/error moments
+- **Accent pop** — the story's `--story` color is the only vivid element; dimmed variants (`rgba(story, 0.1–0.3)`) allowed for depth. `--accent` (`#ff4d4d`) used sparingly for destructive/error moments
 - **Atmospheric, not illustrative** — the animation evokes the story's feeling; no labels or UI chrome
-- **Slow and quiet** — drift speeds ~0.2–0.4px/frame; nothing jarring
+- **Slow and quiet by default** — drift speeds ~0.2–0.4px/frame; intentional acceleration allowed for dramatic moments (impacts, rejections, collapses) that snap back to ambient pace
 - **Purely decorative** — `aria-hidden="true"` on the canvas
+- **Performance-conscious** — target 60fps; cap at ~80 active particles; use IntersectionObserver to pause when off-screen
+- **Cycle length** — animations should loop every 10–30 seconds; long enough to feel contemplative, short enough that viewers see the full arc
 
 ### Technical pattern
 ```html
@@ -239,6 +241,7 @@ Every story includes a **full-width canvas animation** placed at a dramatically 
 // Script (inline <script> after </StoryLayout>, IIFE pattern)
 // - ResizeObserver keeps canvas pixel dimensions in sync with CSS
 // - requestAnimationFrame loop; store ID, cancel on unload
+// - IntersectionObserver pauses animation when canvas is off-screen
 // - Respect prefers-reduced-motion: draw single static frame instead of animating
 // - TypeScript-safe (cast canvas as HTMLCanvasElement)
 ```

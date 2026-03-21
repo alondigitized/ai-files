@@ -659,13 +659,19 @@ const story = stories.find(s => s.slug === 'rentahuman')!;
 
   if (prefersReduced) {
     requestAnimationFrame(drawStatic);
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
   } else {
-    raf = requestAnimationFrame(tick);
-  }
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(raf); raf = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
 
-  window.addEventListener('pagehide', () => {
-    cancelAnimationFrame(raf);
-    ro.disconnect();
-  });
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(raf);
+      io.disconnect();
+      ro.disconnect();
+    });
+  }
 })();
 </script>
