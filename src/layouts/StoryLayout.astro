@@ -155,6 +155,14 @@ const shareLinks = {
     </div>
   </header>
 
+  <div class="listen-bar">
+    <button class="listen-btn" aria-label="Listen to this story">
+      <span class="listen-icon">▶</span>
+      <span class="listen-text">Listen</span>
+    </button>
+    <span class="listen-status"></span>
+  </div>
+
   <div class="share-bar">
     <span class="share-label">Share</span>
     <a href={shareLinks.x} target="_blank" rel="noopener" class="share-btn" aria-label="Share on X">X</a>
@@ -391,6 +399,102 @@ const shareLinks = {
             ticking = true;
           }
         });
+      }
+
+      // Text-to-speech
+      const listenBtn = document.querySelector('.listen-btn') as HTMLButtonElement;
+      const listenIcon = document.querySelector('.listen-icon') as HTMLElement;
+      const listenText = document.querySelector('.listen-text') as HTMLElement;
+      const listenStatus = document.querySelector('.listen-status') as HTMLElement;
+
+      if (listenBtn && 'speechSynthesis' in window) {
+        let utterance: SpeechSynthesisUtterance | null = null;
+        let state: 'idle' | 'playing' | 'paused' = 'idle';
+
+        function getStoryText(): string {
+          const main = document.querySelector('main');
+          if (!main) return '';
+          // Clone to avoid modifying DOM
+          const clone = main.cloneNode(true) as HTMLElement;
+          // Remove elements that shouldn't be read
+          clone.querySelectorAll(
+            'canvas, script, style, .canvas-note, .share-bar, .reactions-block, ' +
+            '.story-subscribe, .sources-block, .more-stories, .chapter-nav, ' +
+            '.phantom-wrap, .share-bar-bottom, [aria-hidden="true"]'
+          ).forEach(el => el.remove());
+          // Get clean text
+          return (clone.textContent || '').replace(/\s+/g, ' ').trim();
+        }
+
+        function pickVoice(): SpeechSynthesisVoice | null {
+          const voices = speechSynthesis.getVoices();
+          // Prefer high-quality English voices
+          const preferred = ['Samantha', 'Karen', 'Daniel', 'Google US English', 'Google UK English Female'];
+          for (const name of preferred) {
+            const v = voices.find(v => v.name.includes(name) && v.lang.startsWith('en'));
+            if (v) return v;
+          }
+          return voices.find(v => v.lang.startsWith('en')) || null;
+        }
+
+        function updateUI() {
+          if (state === 'playing') {
+            listenIcon.textContent = '⏸';
+            listenText.textContent = 'Pause';
+            listenBtn.classList.add('listening');
+          } else if (state === 'paused') {
+            listenIcon.textContent = '▶';
+            listenText.textContent = 'Resume';
+            listenBtn.classList.add('listening');
+          } else {
+            listenIcon.textContent = '▶';
+            listenText.textContent = 'Listen';
+            listenBtn.classList.remove('listening');
+            listenStatus.textContent = '';
+          }
+        }
+
+        function startSpeech() {
+          speechSynthesis.cancel();
+          const text = getStoryText();
+          if (!text) return;
+          utterance = new SpeechSynthesisUtterance(text);
+          utterance.rate = 0.95;
+          utterance.pitch = 1;
+          const voice = pickVoice();
+          if (voice) utterance.voice = voice;
+          utterance.onend = () => { state = 'idle'; updateUI(); };
+          utterance.onerror = () => { state = 'idle'; updateUI(); };
+          speechSynthesis.speak(utterance);
+          state = 'playing';
+          listenStatus.textContent = 'Reading aloud…';
+          updateUI();
+        }
+
+        listenBtn.addEventListener('click', () => {
+          if (state === 'idle') {
+            startSpeech();
+          } else if (state === 'playing') {
+            speechSynthesis.pause();
+            state = 'paused';
+            listenStatus.textContent = 'Paused';
+            updateUI();
+          } else if (state === 'paused') {
+            speechSynthesis.resume();
+            state = 'playing';
+            listenStatus.textContent = 'Reading aloud…';
+            updateUI();
+          }
+        });
+
+        // Load voices (some browsers load async)
+        speechSynthesis.onvoiceschanged = () => {};
+
+        // Cleanup on navigation
+        window.addEventListener('pagehide', () => { speechSynthesis.cancel(); });
+      } else if (listenBtn) {
+        // Hide if TTS not supported
+        listenBtn.style.display = 'none';
       }
     })();
   </script>
