@@ -25,6 +25,7 @@ interface Story {
   sources: Source[];
   whatIf?: string;
   wip?: boolean;
+  audio?: string;
 }
 
 interface Props {
@@ -155,13 +156,23 @@ const shareLinks = {
     </div>
   </header>
 
-  <div class="listen-bar">
-    <button class="listen-btn" aria-label="Listen to this story">
-      <span class="listen-icon">▶</span>
-      <span class="listen-text">Listen</span>
-    </button>
-    <span class="listen-status"></span>
-  </div>
+  {story.audio && (
+    <div class="listen-bar">
+      <div class="listen-player">
+        <button class="listen-btn" aria-label="Play audio" data-src={story.audio}>
+          <span class="listen-icon">▶</span>
+        </button>
+        <div class="listen-info">
+          <span class="listen-label">Listen to this story</span>
+          <span class="listen-sub">Audio Overview · NotebookLM</span>
+        </div>
+        <div class="listen-progress-wrap">
+          <div class="listen-progress-bar"><div class="listen-progress-fill"></div></div>
+          <span class="listen-time">0:00 / 0:00</span>
+        </div>
+      </div>
+    </div>
+  )}
 
   <div class="share-bar">
     <span class="share-label">Share</span>
@@ -401,100 +412,59 @@ const shareLinks = {
         });
       }
 
-      // Text-to-speech
+      // Audio player
       const listenBtn = document.querySelector('.listen-btn') as HTMLButtonElement;
-      const listenIcon = document.querySelector('.listen-icon') as HTMLElement;
-      const listenText = document.querySelector('.listen-text') as HTMLElement;
-      const listenStatus = document.querySelector('.listen-status') as HTMLElement;
+      if (listenBtn) {
+        const icon = listenBtn.querySelector('.listen-icon') as HTMLElement;
+        const fill = document.querySelector('.listen-progress-fill') as HTMLElement;
+        const timeEl = document.querySelector('.listen-time') as HTMLElement;
+        const progressWrap = document.querySelector('.listen-progress-bar') as HTMLElement;
+        const audio = new Audio(listenBtn.dataset.src);
+        audio.preload = 'metadata';
 
-      if (listenBtn && 'speechSynthesis' in window) {
-        let utterance: SpeechSynthesisUtterance | null = null;
-        let state: 'idle' | 'playing' | 'paused' = 'idle';
-
-        function getStoryText(): string {
-          const main = document.querySelector('main');
-          if (!main) return '';
-          // Clone to avoid modifying DOM
-          const clone = main.cloneNode(true) as HTMLElement;
-          // Remove elements that shouldn't be read
-          clone.querySelectorAll(
-            'canvas, script, style, .canvas-note, .share-bar, .reactions-block, ' +
-            '.story-subscribe, .sources-block, .more-stories, .chapter-nav, ' +
-            '.phantom-wrap, .share-bar-bottom, [aria-hidden="true"]'
-          ).forEach(el => el.remove());
-          // Get clean text
-          return (clone.textContent || '').replace(/\s+/g, ' ').trim();
+        function fmt(s: number): string {
+          const m = Math.floor(s / 60);
+          const sec = Math.floor(s % 60);
+          return `${m}:${sec < 10 ? '0' : ''}${sec}`;
         }
 
-        function pickVoice(): SpeechSynthesisVoice | null {
-          const voices = speechSynthesis.getVoices();
-          // Prefer high-quality English voices
-          const preferred = ['Samantha', 'Karen', 'Daniel', 'Google US English', 'Google UK English Female'];
-          for (const name of preferred) {
-            const v = voices.find(v => v.name.includes(name) && v.lang.startsWith('en'));
-            if (v) return v;
-          }
-          return voices.find(v => v.lang.startsWith('en')) || null;
+        function updateProgress() {
+          if (!audio.duration) return;
+          const pct = (audio.currentTime / audio.duration) * 100;
+          fill.style.width = `${pct}%`;
+          timeEl.textContent = `${fmt(audio.currentTime)} / ${fmt(audio.duration)}`;
         }
 
-        function updateUI() {
-          if (state === 'playing') {
-            listenIcon.textContent = '⏸';
-            listenText.textContent = 'Pause';
-            listenBtn.classList.add('listening');
-          } else if (state === 'paused') {
-            listenIcon.textContent = '▶';
-            listenText.textContent = 'Resume';
-            listenBtn.classList.add('listening');
-          } else {
-            listenIcon.textContent = '▶';
-            listenText.textContent = 'Listen';
-            listenBtn.classList.remove('listening');
-            listenStatus.textContent = '';
-          }
-        }
-
-        function startSpeech() {
-          speechSynthesis.cancel();
-          const text = getStoryText();
-          if (!text) return;
-          utterance = new SpeechSynthesisUtterance(text);
-          utterance.rate = 0.95;
-          utterance.pitch = 1;
-          const voice = pickVoice();
-          if (voice) utterance.voice = voice;
-          utterance.onend = () => { state = 'idle'; updateUI(); };
-          utterance.onerror = () => { state = 'idle'; updateUI(); };
-          speechSynthesis.speak(utterance);
-          state = 'playing';
-          listenStatus.textContent = 'Reading aloud…';
-          updateUI();
-        }
+        audio.addEventListener('timeupdate', updateProgress);
+        audio.addEventListener('loadedmetadata', () => {
+          timeEl.textContent = `0:00 / ${fmt(audio.duration)}`;
+        });
+        audio.addEventListener('ended', () => {
+          icon.textContent = '▶';
+          listenBtn.classList.remove('listening');
+          fill.style.width = '0%';
+        });
 
         listenBtn.addEventListener('click', () => {
-          if (state === 'idle') {
-            startSpeech();
-          } else if (state === 'playing') {
-            speechSynthesis.pause();
-            state = 'paused';
-            listenStatus.textContent = 'Paused';
-            updateUI();
-          } else if (state === 'paused') {
-            speechSynthesis.resume();
-            state = 'playing';
-            listenStatus.textContent = 'Reading aloud…';
-            updateUI();
+          if (audio.paused) {
+            audio.play();
+            icon.textContent = '⏸';
+            listenBtn.classList.add('listening');
+          } else {
+            audio.pause();
+            icon.textContent = '▶';
+            listenBtn.classList.remove('listening');
           }
         });
 
-        // Load voices (some browsers load async)
-        speechSynthesis.onvoiceschanged = () => {};
+        // Seek on progress bar click
+        progressWrap.addEventListener('click', (e: MouseEvent) => {
+          const rect = progressWrap.getBoundingClientRect();
+          const pct = (e.clientX - rect.left) / rect.width;
+          audio.currentTime = pct * audio.duration;
+        });
 
-        // Cleanup on navigation
-        window.addEventListener('pagehide', () => { speechSynthesis.cancel(); });
-      } else if (listenBtn) {
-        // Hide if TTS not supported
-        listenBtn.style.display = 'none';
+        window.addEventListener('pagehide', () => { audio.pause(); });
       }
     })();
   </script>

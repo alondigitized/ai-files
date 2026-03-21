@@ -147,26 +147,46 @@ strong { color: var(--text); }
 
 /* ── Listen Bar ── */
 .listen-bar {
-  max-width: 900px; margin: 0 auto; padding: 0.5rem 2rem;
-  display: flex; align-items: center; gap: 0.75rem;
+  max-width: 900px; margin: 0 auto; padding: 0.75rem 2rem;
   border-bottom: 1px solid var(--border);
 }
+.listen-player {
+  display: flex; align-items: center; gap: 0.75rem;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 0.6rem; padding: 0.6rem 1rem;
+}
 .listen-btn {
-  display: flex; align-items: center; gap: 0.4rem;
-  font-size: 0.75rem; font-weight: 600; font-family: inherit;
-  color: var(--muted); background: var(--surface);
-  border: 1px solid var(--border); border-radius: 2rem;
-  padding: 0.35rem 0.85rem; cursor: pointer;
-  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; flex-shrink: 0;
+  font-size: 0.85rem; font-family: inherit;
+  color: var(--muted); background: var(--bg);
+  border: 1px solid var(--border); border-radius: 50%;
+  cursor: pointer; transition: color 0.2s, border-color 0.2s;
 }
 .listen-btn:hover { color: var(--text); border-color: var(--text); }
-.listen-btn.listening {
-  color: var(--story); border-color: var(--story);
-  background: color-mix(in srgb, var(--story) 8%, var(--surface));
+.listen-btn.listening { color: var(--story); border-color: var(--story); }
+.listen-icon { line-height: 1; }
+.listen-info { flex-shrink: 0; }
+.listen-label { font-size: 0.78rem; font-weight: 600; color: var(--text); display: block; }
+.listen-sub { font-size: 0.65rem; color: var(--muted); display: block; }
+.listen-progress-wrap {
+  flex: 1; display: flex; align-items: center; gap: 0.5rem; min-width: 0;
 }
-.listen-icon { font-size: 0.65rem; }
-.listen-status {
-  font-size: 0.7rem; color: var(--muted); font-style: italic;
+.listen-progress-bar {
+  flex: 1; height: 4px; background: var(--border); border-radius: 2px;
+  cursor: pointer; position: relative; overflow: hidden;
+}
+.listen-progress-fill {
+  height: 100%; width: 0%; background: var(--story);
+  border-radius: 2px; transition: width 0.1s linear;
+}
+.listen-time {
+  font-size: 0.65rem; color: var(--muted); white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 600px) {
+  .listen-player { flex-wrap: wrap; }
+  .listen-progress-wrap { width: 100%; flex-basis: 100%; }
 }
 
 .share-bar {
