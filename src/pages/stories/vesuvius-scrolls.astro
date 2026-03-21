@@ -1,0 +1,664 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'vesuvius-scrolls')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .vesuvius-scrolls-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* ── Stat Cards ── */
+  .vs-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .vs-stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .vs-stat-num {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--story);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+  .vs-stat-label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* ── Timeline ── */
+  .vs-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 2rem;
+    position: relative;
+    padding-left: 2rem;
+  }
+  .vs-timeline::before {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    width: 2px;
+    background: var(--border);
+  }
+  .vs-tl-item {
+    position: relative;
+    padding: 0.75rem 0 0.75rem 1.5rem;
+  }
+  .vs-tl-item::before {
+    content: '';
+    position: absolute;
+    left: -1.55rem;
+    top: 1.1rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--story);
+    border: 2px solid var(--bg);
+  }
+  .vs-tl-date {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--story);
+    margin-bottom: 0.15rem;
+  }
+  .vs-tl-text {
+    font-size: 0.92rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ── Scroll Terminal Mockup (Reenactment 1) ── */
+  .vs-terminal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    margin: 2rem 0;
+  }
+  .vs-terminal-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .vs-terminal-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+  .vs-terminal-title {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    margin-left: 0.5rem;
+  }
+  .vs-terminal-body {
+    padding: 1.25rem 1.5rem;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--muted);
+  }
+  .vs-terminal-body .vs-line {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  .vs-terminal-body .vs-highlight {
+    color: var(--story);
+    font-weight: 700;
+  }
+  .vs-terminal-body .vs-dim {
+    color: var(--border);
+  }
+  .vs-terminal-body .vs-found {
+    color: var(--story);
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: block;
+    margin: 0.5rem 0;
+    letter-spacing: 0.15em;
+  }
+  .vs-terminal-footer {
+    padding: 0.75rem 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* ── Decoded Text Mockup (Reenactment 2) ── */
+  .vs-scroll-text {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--story);
+    border-radius: 0 0.75rem 0.75rem 0;
+    padding: 1.75rem 2rem;
+    margin: 2rem 0;
+    position: relative;
+  }
+  .vs-scroll-header {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--story);
+    margin-bottom: 1rem;
+  }
+  .vs-scroll-greek {
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+    letter-spacing: 0.03em;
+  }
+  .vs-scroll-english {
+    font-size: 0.95rem;
+    color: var(--text);
+    line-height: 1.7;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+  }
+  .vs-scroll-footer {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 1rem;
+  }
+
+  /* ── Prize Breakdown (Reenactment 3) ── */
+  .vs-prizes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  .vs-prize-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    text-align: center;
+  }
+  .vs-prize-card.vs-grand { border-top: 3px solid var(--story); }
+  .vs-prize-card.vs-first { border-top: 3px solid var(--accent); }
+  .vs-prize-name {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .vs-prize-amount {
+    font-size: 1.8rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .vs-prize-card.vs-grand .vs-prize-amount { color: var(--story); }
+  .vs-prize-card.vs-first .vs-prize-amount { color: var(--accent); }
+  .vs-prize-detail {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  @media (max-width: 600px) {
+    .vs-stats { grid-template-columns: 1fr; }
+    .vs-prizes { grid-template-columns: 1fr; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="buried">
+      <h2><span class="num">01 — The Burial</span>The Only Library</h2>
+      <p>On October 24, 79 AD, Mount Vesuvius erupted. A pyroclastic flow traveling at hundreds of kilometers per hour engulfed the Roman town of Herculaneum, burying it under twenty meters of volcanic ash and debris. The heat was so intense that organic material carbonized on contact. Wood became charcoal. Papyrus became black cylinders of compressed carbon, indistinguishable from lumps of coal.</p>
+      <p>Inside a seaside villa now known as the Villa dei Papiri, roughly 1,800 papyrus scrolls sat in shelves and cases. Some had been packed for transport — their owner may have been preparing to evacuate. The eruption was faster. The scrolls carbonized in place.</p>
+      <p>In the 1750s, workers tunneling beneath the hardened volcanic rock rediscovered the villa and extracted hundreds of scrolls. They were the only intact library surviving from the ancient Greco-Roman world. Every other library from antiquity — Alexandria, Pergamum, the great Roman collections — had been destroyed by fire, war, or decay and left nothing behind. Herculaneum's library survived because the same catastrophe that should have destroyed it also preserved it.</p>
+
+      <div class="vs-stats">
+        <div class="vs-stat-card">
+          <div class="vs-stat-num">1,800</div>
+          <div class="vs-stat-label">scrolls in the Herculaneum collection</div>
+        </div>
+        <div class="vs-stat-card">
+          <div class="vs-stat-num">275 yr</div>
+          <div class="vs-stat-label">from rediscovery to first word read inside a sealed scroll</div>
+        </div>
+        <div class="vs-stat-card">
+          <div class="vs-stat-num">0</div>
+          <div class="vs-stat-label">other intact libraries surviving from antiquity</div>
+        </div>
+      </div>
+
+      <p>The problem was reading them. Early attempts to unroll the carbonized scrolls destroyed many. An eighteenth-century machine designed by Antonio Piaggio could unwind some partially, but the process took years per scroll and shattered fragile passages. By the twentieth century, scholars had extracted text from roughly 800 partially opened fragments, mostly works by the Epicurean philosopher Philodemus. But hundreds of scrolls remained sealed — too fragile to open, too carbonized to read by any known method. The text inside was intact. It was also invisible.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="vesuvius-scrolls-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Unrolling</strong> — A tight spiral of warm particles sits at center, opaque and unreadable. A scanning line sweeps across it. Where the line passes, the spiral loosens — layers separate and flatten — and faint glyphs appear on the unfurled surface. The spiral re-tightens and the cycle begins again.</p>
+
+    <section class="section" id="unwrap">
+      <h2><span class="num">02 — The Wait</span>Twenty Years of Scanning</h2>
+      <p>Brent Seales, a computer scientist at the University of Kentucky, spent more than twenty years working on the problem. His premise was simple: if you cannot physically unroll a scroll without destroying it, perhaps you can virtually unroll it instead.</p>
+      <p>In 2009, Seales and his team traveled to the Institut de France in Paris — which holds several Herculaneum scrolls — and performed the first-ever micro-CT scans of completely sealed scrolls. The scans produced detailed 3D images of the scrolls' internal structure, revealing the tightly wound layers of papyrus. They could see the layers. They could not see the ink.</p>
+      <p>The carbon-based ink used by ancient scribes was nearly identical in density to the carbonized papyrus itself. In a CT scan, ink on carbonized papyrus was like black ink on black paper. The writing was physically present. It was radiologically invisible.</p>
+      <p>Seales' team developed software called the Volume Cartographer — a program that could map 2D surfaces within a 3D CT volume and computationally "flatten" them. In 2015, they proved the approach could work: they virtually unwrapped the En-Gedi Scroll, a badly charred Hebrew parchment from ancient Israel, revealing text from the Book of Leviticus. That scroll used metal-based ink, which showed up clearly on CT scans.</p>
+      <p>Herculaneum's carbon ink did not cooperate. The technology could unwrap the scrolls. It could not read them. That gap persisted for years.</p>
+
+      <div class="vs-timeline">
+        <div class="vs-tl-item">
+          <div class="vs-tl-date">2002</div>
+          <div class="vs-tl-text">Seales begins work on virtual unwrapping at the University of Kentucky</div>
+        </div>
+        <div class="vs-tl-item">
+          <div class="vs-tl-date">2009</div>
+          <div class="vs-tl-text">First micro-CT scans of sealed Herculaneum scrolls at the Institut de France</div>
+        </div>
+        <div class="vs-tl-item">
+          <div class="vs-tl-date">2015</div>
+          <div class="vs-tl-text">En-Gedi Scroll virtually unwrapped — proof of concept with metal-based ink</div>
+        </div>
+        <div class="vs-tl-item">
+          <div class="vs-tl-date">March 2023</div>
+          <div class="vs-tl-text">Vesuvius Challenge launched — CT scans and software released to the public</div>
+        </div>
+        <div class="vs-tl-item">
+          <div class="vs-tl-date">August 2023</div>
+          <div class="vs-tl-text">Casey Handmer identifies the "crackle pattern" — first evidence of ink in a sealed scroll</div>
+        </div>
+        <div class="vs-tl-item">
+          <div class="vs-tl-date">October 2023</div>
+          <div class="vs-tl-text">Luke Farritor reads the first word: <em>porphyras</em> (purple)</div>
+        </div>
+        <div class="vs-tl-item">
+          <div class="vs-tl-date">February 2024</div>
+          <div class="vs-tl-text">Grand Prize awarded — over 2,000 characters decoded from a sealed scroll</div>
+        </div>
+        <div class="vs-tl-item">
+          <div class="vs-tl-date">May 2025</div>
+          <div class="vs-tl-text">Title and author of scroll PHerc.172 decoded: <em>On Vices</em> by Philodemus</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="challenge">
+      <h2><span class="num">03 — The Challenge</span>Open Source, Open Data, Open Prize</h2>
+      <p>In March 2023, Seales partnered with Nat Friedman, the former CEO of GitHub, and Daniel Gross, a Silicon Valley investor and AI entrepreneur. Together they launched the Vesuvius Challenge: a machine learning competition to read the Herculaneum scrolls. Seales released his team's CT scans and Volume Cartographer software to the public. The three organizers put up prize money. Donors followed — more than thirty individuals contributed between $5,000 and $450,000, bringing the total prize pool to over $1 million.</p>
+      <p>The structure was deliberate. Rather than funding a single lab or hiring a team, they created an open competition. Anyone in the world could download the data, train a model, and submit results. The scans were enormous — terabytes of micro-CT volumes. The problem was precise: detect the ink that CT scans could not distinguish from the papyrus.</p>
+      <p>The grand prize required participants to decipher at least 85 percent of four passages from a sealed scroll, each at least 140 characters long. Smaller prizes rewarded intermediate progress. The prize structure was designed to create a ratchet: each breakthrough — a technique, a model, a labeled dataset — would be shared publicly, so the next participant started from higher ground.</p>
+    </section>
+
+    <section class="section" id="crackle">
+      <h2><span class="num">04 — The Crackle</span>Seeing What CT Could Not</h2>
+      <p>In early August 2023, five months after the competition launched, a contestant named Casey Handmer found the first crack in the problem. Handmer — an ex-JPL engineer and startup founder — had been staring at the segmented CT scans for hours. He noticed something no one had documented before: a faint, distinctive texture on the papyrus surface where ink had been applied. The carbon ink had left no density contrast detectable by the CT scanner. But it had left a physical trace — a subtle disruption in the surface structure of the papyrus fibers that he called a "crackle pattern."</p>
+      <p>The crackle was not ink in the traditional imaging sense. It was the physical deformation that ink had caused on the papyrus surface before carbonization. It was too faint for human eyes to reliably detect at scale, but it was a trainable signal. If you could label enough examples of crackle versus no-crackle, you could train a machine learning model to detect it automatically across the entire scroll.</p>
+      <p>Handmer won $10,000 for being the first person to find "substantial, convincing evidence of ink within the unopened scrolls." The Vesuvius Challenge organizers described him as the first person in 2,000 years to find ink inside a sealed scroll.</p>
+
+      <div class="vs-terminal">
+        <div class="vs-terminal-bar">
+          <div class="vs-terminal-dot"></div>
+          <div class="vs-terminal-dot"></div>
+          <div class="vs-terminal-dot"></div>
+          <div class="vs-terminal-title">ink-detection model — segment 07.tif</div>
+        </div>
+        <div class="vs-terminal-body">
+          <span class="vs-line"><span class="vs-dim">[scan]</span> loading CT volume... 14.2 GB</span>
+          <span class="vs-line"><span class="vs-dim">[map]</span> surface segmentation... 23,847 points</span>
+          <span class="vs-line"><span class="vs-dim">[ink]</span> crackle detection... scanning layer 1 of 65</span>
+          <span class="vs-line"><span class="vs-dim">[ink]</span> crackle detection... scanning layer 32 of 65</span>
+          <span class="vs-line"><span class="vs-dim">[ink]</span> crackle detection... scanning layer 65 of 65</span>
+          <span class="vs-line"><span class="vs-dim">[ink]</span> confidence map generated. <span class="vs-highlight">high-confidence regions: 4</span></span>
+          <span class="vs-line">&nbsp;</span>
+          <span class="vs-line"><span class="vs-dim">[render]</span> flattening surface...</span>
+          <span class="vs-line"><span class="vs-dim">[render]</span> applying ink prediction overlay...</span>
+          <span class="vs-line">&nbsp;</span>
+          <span class="vs-found">DETECTED: &pi;&omicron;&rho;&phi;&upsilon;&rho;&alpha;&sigmaf;</span>
+          <span class="vs-line"><span class="vs-highlight">Translation: "purple"</span></span>
+        </div>
+        <div class="vs-terminal-footer">
+          First word read inside a sealed Herculaneum scroll. August 2023.
+        </div>
+      </div>
+
+      <p>What happened next moved faster than anyone expected.</p>
+    </section>
+
+    <section class="section" id="word">
+      <h2><span class="num">05 — The Word</span>A 21-Year-Old and a Greek Word for Purple</h2>
+      <p>Luke Farritor was a 21-year-old computer science student at the University of Nebraska-Lincoln and a SpaceX intern. He heard about the Vesuvius Challenge from a podcast and started spending evenings training a machine learning model on Handmer's crackle pattern. The model learned to distinguish papyrus fibers that had been deformed by ink from those that had not.</p>
+      <p>In August 2023, Farritor became the first person in nearly two millennia to read an entire word from inside a sealed Herculaneum scroll. The word was <em>porphyras</em> — ancient Greek for "purple." He won the $40,000 First Letters Prize. Youssef Nader, an Egyptian biorobotics graduate student in Berlin, placed second in the same competition, having independently found the same word using a different modeling approach.</p>
+      <p>One word does not make a library. But it proved something fundamental: the ink was detectable by machine learning even when it was invisible to CT scanning and to the human eye. The barrier that had held for 275 years — the radiological invisibility of carbon ink on carbonized papyrus — had been bypassed not by a better scanner, but by a better algorithm.</p>
+    </section>
+
+    <section class="section" id="prize">
+      <h2><span class="num">06 — The Prize</span>2,000 Characters from a Sealed Scroll</h2>
+      <p>The three contestants who had made the individual breakthroughs joined forces. Youssef Nader led the team, with Farritor and Julian Schilliger, a robotics student from Zurich who had won three earlier progress prizes for his work improving the Volume Cartographer's segmentation pipeline. Together, they trained an ensemble of AI models — multiple neural networks whose outputs were combined to increase accuracy — on the crackle pattern signal and submitted their result in late 2023.</p>
+      <p>On February 5, 2024, the Vesuvius Challenge announced the Grand Prize winners. The team had decoded more than 2,000 characters from fifteen partial columns of text inside scroll PHerc.Paris4, which had never been opened. They split the $700,000 prize.</p>
+
+      <div class="vs-prizes">
+        <div class="vs-prize-card vs-first">
+          <div class="vs-prize-name">First Letters Prize</div>
+          <div class="vs-prize-amount">$40K</div>
+          <div class="vs-prize-detail">Luke Farritor — first word read: <em>porphyras</em></div>
+        </div>
+        <div class="vs-prize-card vs-grand">
+          <div class="vs-prize-name">Grand Prize</div>
+          <div class="vs-prize-amount">$700K</div>
+          <div class="vs-prize-detail">Nader, Farritor, Schilliger — 2,000+ characters decoded</div>
+        </div>
+      </div>
+
+      <p>The decoded text turned out to be a previously unknown philosophical work. Papyrologists identified it as a discussion of pleasure — specifically, whether the scarcity or abundance of goods affects the pleasure they provide. The author was identified as Philodemus, the Epicurean philosopher whose works dominate the Herculaneum collection. This was not a text that had been lost and rediscovered. It was a text no modern scholar had ever seen.</p>
+
+      <div class="vs-scroll-text">
+        <div class="vs-scroll-header">Scroll PHerc.Paris4 — Decoded Passage</div>
+        <div class="vs-scroll-greek">"...ou gar euthus ta spania panton hediona nomizomen ton aphthonon..."</div>
+        <div class="vs-scroll-english">"We do not right away believe things that are scarce to be absolutely more pleasant than those which are abundant."</div>
+        <div class="vs-scroll-footer">Previously unknown text by Philodemus of Gadara (c. 110 BC – c. 35 BC), Epicurean philosopher. Decoded February 2024.</div>
+      </div>
+
+      <p>In May 2025, researchers Marcel Roth and Micha Nowak from the University of Wurzburg, along with independent researcher Sean Johnson, decoded the title and author of a different scroll — PHerc.172. It was identified as <em>On Vices</em>, part of Philodemus' ethical treatise <em>On Vices and Their Opposite Virtues</em>. It was the first time a title had been read from a still-sealed Herculaneum scroll.</p>
+    </section>
+
+    <section class="section" id="scale">
+      <h2><span class="num">07 — The Scale</span>5 Percent of One Scroll</h2>
+      <p>The Grand Prize team decoded roughly 5 percent of one scroll. The Herculaneum collection contains approximately 1,800 scrolls, most of them still sealed and unscanned. The 2024 goal was to read 90 percent of four scanned scrolls. As of early 2026, that work continues — though the ink-detection models trained on PHerc.Paris4 do not generalize cleanly to all scrolls, and scanning protocols are being refined for the remaining collection held primarily at the Biblioteca Nazionale di Napoli.</p>
+      <p>The scale of what remains is difficult to overstate. The scrolls from the Villa dei Papiri represent the largest surviving collection of ancient philosophical texts. Forty-four known works by Philodemus have been identified in the partially opened fragments. But the sealed scrolls may contain works by other authors — Epicurus himself, whose original writings are almost entirely lost, or Greek tragedians and historians whose works survive only in fragments quoted by later writers.</p>
+      <p>Seales has described the ultimate goal: scan and read all 1,800 scrolls. In July 2025, his team secured a European Research Council grant to continue the work. The methodology is open-source. The CT scans are public. The competition framework has demonstrated that a global community of researchers — students, engineers, physicists, classicists — can collectively solve problems that no single lab could address alone.</p>
+      <p>The 2023 Vesuvius Challenge went from 0 percent to 5 percent of one scroll. That is a small number. It is also the largest since Piaggio's unwinding machine in the eighteenth century. The constraint is no longer whether the scrolls can be read. It is how fast, and at what resolution, the remaining 95 percent — and the remaining 1,799 scrolls — will yield their text.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.vesuvius-scrolls-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f5f0e8';
+  const STORY_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#d4a373';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+
+  const [stR, stG, stB] = hexToRgb(STORY_COLOR.startsWith('#') ? STORY_COLOR : '#d4a373');
+  const [bgR, bgG, bgB] = hexToRgb(BG_COLOR.startsWith('#') ? BG_COLOR : '#f5f0e8');
+  const isLight = document.documentElement.dataset.theme === 'light';
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  });
+  ro.observe(canvas);
+
+  // --- Spiral particles (the carbonized scroll) ---
+  const NUM_PARTICLES = 120;
+  interface Particle {
+    angle: number;      // current angle on spiral
+    baseAngle: number;  // starting angle
+    radius: number;     // current radius from center
+    baseRadius: number; // tight radius
+    openRadius: number; // unfurled radius
+    size: number;
+    alpha: number;
+    hasGlyph: boolean;
+    glyphAlpha: number;
+    glyphChar: string;
+  }
+
+  const GLYPHS = [
+    '\u03C0', '\u03BF', '\u03C1', '\u03C6', '\u03C5', '\u03B1', '\u03C2', // porphyras
+    '\u03B7', '\u03B4', '\u03BF', '\u03BD', '\u03B7', // hedone (pleasure)
+    '\u03BB', '\u03BF', '\u03B3', '\u03BF', '\u03C2', // logos
+    '\u03C8', '\u03C5', '\u03C7', '\u03B7', // psyche
+  ];
+
+  const particles: Particle[] = [];
+
+  function initParticles() {
+    particles.length = 0;
+    for (let i = 0; i < NUM_PARTICLES; i++) {
+      const t = i / NUM_PARTICLES;
+      const spiralTurns = 4;
+      const baseAngle = t * Math.PI * 2 * spiralTurns + (Math.random() - 0.5) * 0.3;
+      const baseRadius = 15 + t * 55 + (Math.random() - 0.5) * 4;
+      const openRadius = 60 + t * 140 + (Math.random() - 0.5) * 10;
+      const hasGlyph = Math.random() < 0.15;
+      particles.push({
+        angle: baseAngle,
+        baseAngle,
+        radius: baseRadius,
+        baseRadius,
+        openRadius,
+        size: 1.2 + Math.random() * 1.5,
+        alpha: isLight ? 0.08 + Math.random() * 0.08 : 0.05 + Math.random() * 0.06,
+        hasGlyph,
+        glyphAlpha: 0,
+        glyphChar: hasGlyph ? GLYPHS[Math.floor(Math.random() * GLYPHS.length)] : '',
+      });
+    }
+  }
+
+  // --- Scan line ---
+  let scanX = -50;
+  let scanActive = false;
+  let scanAlpha = 0;
+
+  // --- Phase timing ---
+  const HOLD_TIGHT = 80;
+  const SCAN_DURATION = 200;
+  const UNFURL_DURATION = 180;
+  const HOLD_OPEN = 200;
+  const REFURL_DURATION = 120;
+  const REST = 60;
+  const CYCLE = HOLD_TIGHT + SCAN_DURATION + UNFURL_DURATION + HOLD_OPEN + REFURL_DURATION + REST;
+
+  function easeInOut(t: number): number {
+    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+  }
+
+  function update() {
+    const cf = frame % CYCLE;
+    const cx = (W || 800) / 2;
+    const cy = (H || 380) / 2;
+
+    // Phase 1: Hold tight spiral
+    if (cf < HOLD_TIGHT) {
+      for (const p of particles) {
+        p.radius = p.baseRadius;
+        p.glyphAlpha = 0;
+      }
+      scanActive = false;
+      scanAlpha = 0;
+    }
+
+    // Phase 2: Scan sweeps across
+    const scanStart = HOLD_TIGHT;
+    const scanEnd = scanStart + SCAN_DURATION;
+    if (cf >= scanStart && cf < scanEnd) {
+      const t = (cf - scanStart) / SCAN_DURATION;
+      scanActive = true;
+      scanX = -50 + t * ((W || 800) + 100);
+      scanAlpha = 0.15 + 0.1 * Math.sin(t * Math.PI);
+    }
+
+    // Phase 3: Unfurl — spiral loosens, glyphs appear
+    const unfurlStart = scanEnd;
+    const unfurlEnd = unfurlStart + UNFURL_DURATION;
+    if (cf >= unfurlStart && cf < unfurlEnd) {
+      scanActive = false;
+      scanAlpha = Math.max(0, scanAlpha - 0.02);
+      const t = easeInOut((cf - unfurlStart) / UNFURL_DURATION);
+      for (const p of particles) {
+        p.radius = p.baseRadius + (p.openRadius - p.baseRadius) * t;
+        if (p.hasGlyph) {
+          p.glyphAlpha = t * 0.85;
+        }
+      }
+    }
+
+    // Phase 4: Hold open
+    const holdStart = unfurlEnd;
+    const holdEnd = holdStart + HOLD_OPEN;
+    if (cf >= holdStart && cf < holdEnd) {
+      const breathe = Math.sin((cf - holdStart) * 0.03) * 0.02;
+      for (const p of particles) {
+        p.radius = p.openRadius * (1 + breathe);
+        if (p.hasGlyph) {
+          p.glyphAlpha = 0.75 + 0.1 * Math.sin((cf - holdStart) * 0.04);
+        }
+      }
+    }
+
+    // Phase 5: Re-furl — spiral tightens, glyphs fade
+    const refurlStart = holdEnd;
+    const refurlEnd = refurlStart + REFURL_DURATION;
+    if (cf >= refurlStart && cf < refurlEnd) {
+      const t = easeInOut((cf - refurlStart) / REFURL_DURATION);
+      for (const p of particles) {
+        p.radius = p.openRadius + (p.baseRadius - p.openRadius) * t;
+        if (p.hasGlyph) {
+          p.glyphAlpha = Math.max(0, 0.85 * (1 - t));
+        }
+      }
+    }
+
+    // Phase 6: Rest
+    if (cf >= refurlEnd) {
+      for (const p of particles) {
+        p.radius = p.baseRadius;
+        p.glyphAlpha = 0;
+      }
+    }
+
+    // Slow rotation
+    for (const p of particles) {
+      p.angle = p.baseAngle + frame * 0.001;
+    }
+  }
+
+  function draw() {
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+
+    const cx = (W || 800) / 2;
+    const cy = (H || 380) / 2;
+
+    // Ambient texture — very faint concentric arcs
+    ctx.globalAlpha = isLight ? 0.03 : 0.02;
+    ctx.strokeStyle = isLight ? 'rgb(100,90,70)' : 'rgb(200,195,185)';
+    ctx.lineWidth = 0.5;
+    for (let r = 30; r < 200; r += 25) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 1.5);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+
+    // Draw scroll particles
+    for (const p of particles) {
+      const px = cx + Math.cos(p.angle) * p.radius;
+      const py = cy + Math.sin(p.angle) * p.radius;
+
+      // Particle dot
+      ctx.globalAlpha = p.alpha + (p.glyphAlpha > 0 ? p.glyphAlpha * 0.3 : 0);
+      ctx.fillStyle = p.glyphAlpha > 0
+        ? `rgb(${stR},${stG},${stB})`
+        : (isLight ? 'rgb(80,70,55)' : 'rgb(180,175,165)');
+      ctx.beginPath();
+      ctx.arc(px, py, p.size, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Draw glyph if visible
+      if (p.hasGlyph && p.glyphAlpha > 0.05) {
+        ctx.globalAlpha = p.glyphAlpha;
+        ctx.fillStyle = `rgb(${stR},${stG},${stB})`;
+        ctx.font = `${9 + p.size * 2}px serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(p.glyphChar, px, py);
+      }
+    }
+    ctx.globalAlpha = 1;
+
+    // Draw scan line
+    if (scanActive && scanAlpha > 0.01) {
+      const grad = ctx.createLinearGradient(scanX - 25, 0, scanX + 25, 0);
+      grad.addColorStop(0, `rgba(${stR},${stG},${stB},0)`);
+      grad.addColorStop(0.5, `rgba(${stR},${stG},${stB},${scanAlpha.toFixed(3)})`);
+      grad.addColorStop(1, `rgba(${stR},${stG},${stB},0)`);
+      ctx.fillStyle = grad;
+      ctx.fillRect(scanX - 25, 0, 50, H);
+
+      // Bright center line
+      ctx.strokeStyle = `rgba(${stR},${stG},${stB},${(scanAlpha * 1.5).toFixed(3)})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(scanX, 0);
+      ctx.lineTo(scanX, H);
+      ctx.stroke();
+    }
+  }
+
+  function tick() { frame++; update(); draw(); raf = requestAnimationFrame(tick); }
+
+  function init() {
+    initParticles();
+  }
+
+  requestAnimationFrame(() => {
+    init();
+    if (prefersReduced) {
+      // Static frame: show partially unfurled scroll with some glyphs
+      for (const p of particles) {
+        p.radius = p.baseRadius + (p.openRadius - p.baseRadius) * 0.6;
+        if (p.hasGlyph) p.glyphAlpha = 0.7;
+      }
+      draw();
+    } else {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+        else { cancelAnimationFrame(raf); raf = 0; }
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+
+      window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); });
+    }
+  });
+})();
+</script>

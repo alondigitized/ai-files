@@ -1,0 +1,616 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'breast-cancer-ai')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .breast-cancer-ai-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  .bca-stat {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .bca-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .bca-num {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--story);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+  .bca-label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .bca-compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .bca-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    text-align: center;
+  }
+  .bca-col.ai-col { border-top: 3px solid var(--story); }
+  .bca-col.human-col { border-top: 3px solid var(--muted); }
+  .bca-col-header {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .bca-col-num {
+    font-size: 1.8rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .bca-col.ai-col .bca-col-num { color: var(--story); }
+  .bca-col.human-col .bca-col-num { color: var(--text); }
+  .bca-col-note {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .mammo-mockup {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    font-family: monospace;
+  }
+  .mammo-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .mammo-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--story);
+    opacity: 0.7;
+  }
+  .mammo-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .mammo-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    font-size: 0.82rem;
+    color: var(--text);
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  }
+  .mammo-row:last-child { border-bottom: none; }
+  .mammo-key { color: var(--muted); }
+  .mammo-val { font-weight: 600; }
+  .mammo-val.flagged { color: var(--story); }
+  .mammo-verdict {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-align: center;
+  }
+  .mammo-verdict.recall {
+    background: color-mix(in srgb, var(--story) 12%, transparent);
+    color: var(--story);
+    border: 1px solid color-mix(in srgb, var(--story) 25%, transparent);
+  }
+
+  .trial-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .trial-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+  }
+  .trial-card h4 {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--story);
+    margin-bottom: 0.5rem;
+  }
+  .trial-num {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .trial-note {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .gap-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--story);
+    border-radius: 0 0.75rem 0.75rem 0;
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+  }
+  .gap-box strong {
+    display: block;
+    margin-bottom: 0.3rem;
+    color: var(--story);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .gap-box p {
+    font-size: 0.92rem;
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 600px) {
+    .bca-stat { grid-template-columns: 1fr; }
+    .bca-compare { grid-template-columns: 1fr; }
+    .trial-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="gap">
+      <h2><span class="num">01 — The Gap</span>The Missing Reader</h2>
+      <p>Every mammogram in the United Kingdom is read twice. Two radiologists, working independently, examine the same image. If either flags an abnormality, the case goes to assessment. This double-reading system is one of the reasons the UK breast screening program, established in 1988, catches cancers early. It is also the reason the program is running out of time.</p>
+      <p>There are not enough radiologists. The Royal College of Radiologists reported in 2023 that the UK had a shortfall of approximately 29% in its clinical radiology workforce. Breast screening radiologists are retiring faster than they are being replaced. Training a new one takes a decade. The problem is not unique to Britain. In the United States, where single-reading is the norm, radiologist burnout and workload are well-documented constraints. In low- and middle-income countries, the math is worse: sub-Saharan Africa has fewer than ten radiologists per million people. Most of the world has never had a double-reading system because it has never had enough readers for a single one.</p>
+      <p>In 2022, breast cancer was diagnosed in 2.3 million women worldwide and killed 666,000. It remains the most frequently diagnosed cancer in women and the leading cause of cancer death in women globally. The Lancet Breast Cancer Commission projected in 2024 that annual incidence will exceed three million by 2040, with the steepest increases in low- and middle-income countries. Early detection through screening is the single largest factor in survival. Five-year survival for breast cancer caught at stage one exceeds 98%. At stage four, it drops below 30%.</p>
+      <p>The constraint was always human attention. A radiologist reads a mammogram in about sixty to ninety seconds, searching for abnormalities in dense tissue that can be as small as a few millimeters. Across a full shift, that focus degrades. Across a career, it burns out. And across a population, there are simply not enough trained eyes.</p>
+
+      <div class="bca-stat">
+        <div class="bca-card">
+          <div class="bca-num">2.3M</div>
+          <div class="bca-label">new breast cancer diagnoses worldwide in 2022</div>
+        </div>
+        <div class="bca-card">
+          <div class="bca-num">666K</div>
+          <div class="bca-label">breast cancer deaths globally in 2022</div>
+        </div>
+        <div class="bca-card">
+          <div class="bca-num">29%</div>
+          <div class="bca-label">UK clinical radiology workforce shortfall (2023)</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="breast-cancer-ai-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Scan</strong> — A warm grid of faint tissue nodes sits quietly. A pink scan line sweeps across. Most nodes dim and pass. One catches the light and glows — a detection the eye alone would have missed. The line continues. Another sweep begins.</p>
+
+    <section class="section" id="nature">
+      <h2><span class="num">02 — The Study</span>Twenty-Nine Thousand Mammograms</h2>
+      <p>In January 2020, a team from Google Health, DeepMind, Cancer Research UK Imperial Centre, Northwestern University, and the Royal Surrey County Hospital published a study in <em>Nature</em>. The lead author was Scott Mayer McKinney. The study evaluated an AI system trained to detect breast cancer from mammograms.</p>
+      <p>The evaluation dataset comprised 25,856 women from two screening sites in London, with 414 cancer diagnoses confirmed by biopsy within three years, and 3,097 women from an academic medical center in the United States, with 686 confirmed cancers. The AI was not given patient history, prior images, or clinical notes. It saw only the mammogram.</p>
+
+      <div class="mammo-mockup">
+        <div class="mammo-header">
+          <div class="mammo-dot"></div>
+          <div class="mammo-title">AI Screening Output — Study Results</div>
+        </div>
+        <div class="mammo-row">
+          <span class="mammo-key">False Positive Reduction (US)</span>
+          <span class="mammo-val flagged">-5.7%</span>
+        </div>
+        <div class="mammo-row">
+          <span class="mammo-key">False Positive Reduction (UK)</span>
+          <span class="mammo-val flagged">-1.2%</span>
+        </div>
+        <div class="mammo-row">
+          <span class="mammo-key">False Negative Reduction (US)</span>
+          <span class="mammo-val flagged">-9.4%</span>
+        </div>
+        <div class="mammo-row">
+          <span class="mammo-key">False Negative Reduction (UK)</span>
+          <span class="mammo-val flagged">-2.7%</span>
+        </div>
+        <div class="mammo-row">
+          <span class="mammo-key">AI vs. Six Radiologists</span>
+          <span class="mammo-val flagged">AI outperformed all six</span>
+        </div>
+        <div class="mammo-verdict recall">RECALL WORKLOAD REDUCTION: 88% (simulated second-reader replacement)</div>
+      </div>
+
+      <p>On US data, the AI achieved an absolute reduction of 5.7% in false positives — cases where a mammogram is incorrectly flagged as abnormal, leading to unnecessary follow-up — and 9.4% in false negatives, cases where a cancer is missed entirely. On UK data, where the baseline double-reading system already performs well, the reductions were 1.2% and 2.7% respectively.</p>
+      <p>In a head-to-head comparison with six radiologists, the AI outperformed all of them. In a simulated experiment modeling the UK double-reading workflow, the AI serving as a second reader achieved non-inferior performance while eliminating 88% of the second-reader workload.</p>
+      <p>The system also demonstrated cross-population generalization. Trained exclusively on UK mammograms, it still exceeded human expert performance when tested on US data. The screening protocols, equipment, and patient demographics differed between the two countries. The AI adapted. It had learned what cancer looks like, not what a particular country's mammograms look like.</p>
+    </section>
+
+    <section class="section" id="trials">
+      <h2><span class="num">03 — The Trials</span>From Lab to Clinic</h2>
+      <p>The Nature paper was a retrospective study — it tested AI on already-collected data. The question that followed was whether the results would hold in a prospective, real-world clinical setting. Three large-scale trials answered that question.</p>
+      <p><strong>The MASAI Trial (Sweden, 2021–2022).</strong> The Mammography Screening with Artificial Intelligence trial was the first randomized controlled trial of AI in breast cancer screening. Conducted across four screening sites in Sweden, it enrolled 105,934 women. Half were assigned to AI-supported screening, where a single radiologist worked with Lunit INSIGHT MMG. The other half received standard double reading by two radiologists.</p>
+      <p>The AI group detected 29% more cancers — a cancer detection rate of 6.4 per 1,000 women versus 5.0 per 1,000 in the control group. It did so without increasing false positives. In the AI group, 81% of cancer cases were detected at screening, compared to 74% in the control group. Radiologist workload was reduced by nearly half. The full results, published in <em>The Lancet</em> in 2025, showed that AI-supported screening also reduced interval cancers — cancers diagnosed between routine screenings — by 12%. AI-screened women had fewer aggressive and advanced-stage diagnoses at the next screening round.</p>
+
+      <div class="bca-compare">
+        <div class="bca-col ai-col">
+          <div class="bca-col-header">AI + 1 Radiologist</div>
+          <div class="bca-col-num">6.4</div>
+          <div class="bca-col-note">cancers detected per 1,000 women</div>
+        </div>
+        <div class="bca-col human-col">
+          <div class="bca-col-header">2 Radiologists (Standard)</div>
+          <div class="bca-col-num">5.0</div>
+          <div class="bca-col-note">cancers detected per 1,000 women</div>
+        </div>
+      </div>
+
+      <p><strong>The ScreenTrustCAD Trial (Sweden, 2021–2022).</strong> Run at Capio Sankt Goran Hospital in Stockholm, this prospective study used the same Lunit AI system. Double reading by one radiologist plus AI detected 4% more cancers than double reading by two radiologists. At the one-year follow-up, AI-assisted screening reduced false positives from 89.6% to 78.0% and improved positive predictive value from 16.9% to 22.1%. Published in <em>The Lancet Digital Health</em> in October 2023.</p>
+      <p><strong>The PRAIM Study (Germany, 2021–2023).</strong> The largest prospective study to date. Across 12 screening sites in Germany, 461,818 women were screened. Approximately half received AI-supported double reading. The AI group achieved a 17.6% higher cancer detection rate with a higher positive predictive value (17.9% versus 14.9%), without increasing recalls or false positives. Published in <em>Nature Medicine</em> in January 2025.</p>
+
+      <div class="trial-grid">
+        <div class="trial-card">
+          <h4>MASAI (Sweden)</h4>
+          <div class="trial-num">105,934</div>
+          <div class="trial-note">women screened. 29% more cancers detected. Interval cancers reduced 12%.</div>
+        </div>
+        <div class="trial-card">
+          <h4>PRAIM (Germany)</h4>
+          <div class="trial-num">461,818</div>
+          <div class="trial-note">women screened. 17.6% more cancers detected. No increase in false positives.</div>
+        </div>
+      </div>
+
+      <p>Across all three trials, the pattern was consistent: AI found more cancer, generated fewer false alarms, and reduced the number of radiologists needed to operate a screening program. One radiologist plus AI matched or exceeded two radiologists working alone.</p>
+    </section>
+
+    <section class="section" id="invisible">
+      <h2><span class="num">04 — The Invisible Cancers</span>What the Eye Missed</h2>
+      <p>The most consequential finding may be what AI does with interval cancers — breast cancers diagnosed between scheduled screenings, typically because they were invisible or ambiguous on the prior mammogram. Interval cancers account for approximately 25–30% of all screen-detected breast cancers and tend to be more aggressive, because they grow fast enough to become symptomatic before the next scheduled screen.</p>
+      <p>A growing body of evidence shows that AI systems can retrospectively identify 20–40% of interval cancers on the prior mammograms where they were originally missed. In the Google Health study of NHS data, the AI detected 25% of interval cancers. An RSNA study found that an AI algorithm correctly localized 32.6% of previously undetected interval cancers. Another study found AI detected an additional 44.4% of interval cancers and 66.7% of cancers that had been explicitly missed by radiologists.</p>
+
+      <div class="gap-box">
+        <strong>The Interval Cancer Problem</strong>
+        <p>A woman receives a clear mammogram. The radiologist saw nothing. Two years later, she is diagnosed with advanced breast cancer that was already present — visible in retrospect — on the image that was read and cleared. AI catches one in three of these cases. The question is whether "one in three" is the ceiling, or the starting point.</p>
+      </div>
+
+      <p>These are not hypothetical improvements. Each interval cancer that AI identifies on a prior mammogram represents a real patient who could have been recalled two years earlier, when the tumor was smaller, the treatment less aggressive, and the survival odds substantially better. The MASAI trial's full results showed that AI-supported screening led to fewer aggressive and advanced-stage diagnoses at the subsequent screening round — direct evidence that earlier detection translates to better clinical outcomes.</p>
+      <p>Lunit's AI system has also demonstrated the ability to estimate future breast cancer risk up to four to six years before a cancer becomes detectable, based on subtle patterns in mammographic tissue that human readers cannot reliably perceive.</p>
+    </section>
+
+    <section class="section" id="deployment">
+      <h2><span class="num">05 — The Deployment</span>From Trial to Standard</h2>
+      <p>As of 2025, AI mammography systems are moving from clinical trials into routine deployment. The trajectory is clear. The remaining questions are regulatory and institutional, not scientific.</p>
+      <p>In the United Kingdom, NHS England launched EDITH — the largest AI breast cancer screening trial in the world — in April 2025. Five competing AI systems will be tested across 30 screening sites, covering approximately 700,000 women. The Kheiron Medical Technologies system, Mia, has already shown in a prospective NHS study that AI-augmented reading found 12% more cancers while reducing unnecessary recalls and modeling a 30% workload reduction.</p>
+      <p>In the United States, several AI mammography systems have received FDA clearance. DeepHealth's SmartMammo showed a 22.7% increase in cancer detection for women with dense breast tissue. Clairity Breast received the first De Novo FDA authorization for AI that predicts five-year breast cancer risk from a standard mammogram. Google's mammography AI system, evaluated across NHS sites, achieved a cancer detection rate of 9.33 per 1,000 women compared to 7.54 for human readers alone.</p>
+      <p>In Sweden, following the MASAI results, AI-supported screening is being integrated into regional screening programs. In Germany, the PRAIM study's results have informed discussions about national-level implementation.</p>
+
+      <div class="pull-quote">
+        AI-supported mammography screening showed consistently favourable outcomes compared with standard double reading, with a non-inferior interval cancer rate, higher sensitivity, and the same specificity, while also reducing screen reading workload.
+        <cite>— MASAI Trial, The Lancet, 2025</cite>
+      </div>
+
+      <p>The evidence base now includes a Nature publication, multiple Lancet publications, a Nature Medicine publication, and prospective data from hundreds of thousands of women across multiple countries. No other AI medical application has this depth of clinical validation. The technology is not experimental. It is proven. The remaining gap is deployment.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">06 — Signal</span>The Second Reader That Scales</h2>
+      <p>The structural insight of AI breast cancer screening is not that machines are better than doctors. In many individual comparisons, the best radiologists still match or exceed AI. The insight is that AI solves a problem that training more radiologists cannot: it scales.</p>
+      <p>One radiologist plus AI matches two radiologists. That means every screening program in the world that cannot recruit a second reader now has one. Every rural clinic with a single radiologist reading mammograms alone — the standard in the United States — now has a double-reading system. Every country that was never going to train enough radiologists to launch population-based screening now has a path to one.</p>
+      <p>The constraint on breast cancer survival has always been stage at detection. The constraint on stage at detection has always been screening coverage. The constraint on screening coverage has always been the number of trained readers. AI removes the last constraint. Not perfectly. Not yet universally. But the evidence is no longer in question.</p>
+      <p>In wealthy countries, AI makes good screening programs better — catching interval cancers that human readers miss, reducing false positives that cause unnecessary anxiety and procedures, and freeing radiologists to spend more time on complex cases. In countries without screening programs, AI makes screening programs possible.</p>
+      <p>The question is no longer whether AI can read a mammogram as well as a radiologist. The answer, across five years of evidence from three countries and nearly 600,000 women, is yes. The question is how long it takes the institutions that control screening policy to act on what the data already shows.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.breast-cancer-ai-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f5f0e8';
+  const STORY_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#e47bc0';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+
+  const [stR, stG, stB] = hexToRgb(STORY_COLOR.startsWith('#') ? STORY_COLOR : '#e47bc0');
+  const isLight = document.documentElement.dataset.theme === 'light';
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  });
+  ro.observe(canvas);
+
+  // --- Tissue nodes (the mammogram field) ---
+  const COLS = 14;
+  const ROWS = 8;
+  interface Node {
+    bx: number; by: number; x: number; y: number;
+    r: number; baseAlpha: number; alpha: number;
+    detected: boolean; glowT: number;
+  }
+  const nodes: Node[] = [];
+
+  // Which node is the "cancer" that gets detected
+  let targetIdx = -1;
+  const TARGET_COL = 9;
+  const TARGET_ROW = 4;
+
+  function initNodes() {
+    nodes.length = 0;
+    const padX = 60;
+    const padY = 50;
+    const gapX = ((W || 800) - padX * 2) / (COLS - 1);
+    const gapY = ((H || 380) - padY * 2) / (ROWS - 1);
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const jx = (Math.random() - 0.5) * gapX * 0.3;
+        const jy = (Math.random() - 0.5) * gapY * 0.3;
+        const isTarget = c === TARGET_COL && r === TARGET_ROW;
+        if (isTarget) targetIdx = nodes.length;
+        nodes.push({
+          bx: padX + c * gapX + jx,
+          by: padY + r * gapY + jy,
+          x: padX + c * gapX + jx,
+          y: padY + r * gapY + jy,
+          r: isTarget ? 4 : 2 + Math.random() * 2.5,
+          baseAlpha: isLight ? 0.06 + Math.random() * 0.05 : 0.04 + Math.random() * 0.04,
+          alpha: 0,
+          detected: false,
+          glowT: 0,
+        });
+      }
+    }
+  }
+
+  // --- Scan line state ---
+  let scanX = -40;
+  let scanAlpha = 0;
+  let scanActive = false;
+  let detectionGlow = 0;
+  let detectionPulseFrame = 0;
+
+  // --- Phase timing ---
+  const SETTLE = 60;
+  const SCAN_DUR = 280;
+  const HOLD = 160;
+  const FADE = 60;
+  const REST = 40;
+  const CYCLE = SETTLE + SCAN_DUR + HOLD + FADE + REST;
+
+  function resetCycle() {
+    scanX = -40;
+    scanActive = false;
+    scanAlpha = 0;
+    detectionGlow = 0;
+    detectionPulseFrame = 0;
+    for (const n of nodes) {
+      n.detected = false;
+      n.glowT = 0;
+      n.alpha = n.baseAlpha;
+    }
+  }
+
+  function update() {
+    const cf = frame % CYCLE;
+
+    // Gentle drift for all nodes
+    for (const n of nodes) {
+      n.x = n.bx + Math.sin(frame * 0.008 + n.bx * 0.01) * 1.5;
+      n.y = n.by + Math.cos(frame * 0.006 + n.by * 0.01) * 1.2;
+    }
+
+    if (cf < SETTLE) {
+      // Nodes fade in
+      const t = cf / SETTLE;
+      for (const n of nodes) {
+        n.alpha = n.baseAlpha * t;
+      }
+    } else if (cf < SETTLE + SCAN_DUR) {
+      // Scan sweep left to right
+      scanActive = true;
+      const t = (cf - SETTLE) / SCAN_DUR;
+      scanX = -40 + t * ((W || 800) + 80);
+      scanAlpha = 0.15 + 0.08 * Math.sin(t * Math.PI);
+
+      // Briefly illuminate nodes the scan passes
+      for (const n of nodes) {
+        if (Math.abs(n.x - scanX) < 20 && !n.detected) {
+          n.alpha = Math.min(0.35, n.baseAlpha + 0.2);
+        } else if (!n.detected) {
+          n.alpha = n.baseAlpha;
+        }
+      }
+
+      // Detect the target
+      if (targetIdx >= 0) {
+        const tNode = nodes[targetIdx];
+        if (Math.abs(scanX - tNode.x) < 15 && !tNode.detected) {
+          tNode.detected = true;
+          tNode.glowT = 0;
+        }
+      }
+
+      // Once detected, grow glow
+      if (targetIdx >= 0 && nodes[targetIdx].detected) {
+        nodes[targetIdx].glowT += 1;
+        nodes[targetIdx].alpha = Math.min(1, 0.3 + nodes[targetIdx].glowT * 0.015);
+      }
+    } else if (cf < SETTLE + SCAN_DUR + HOLD) {
+      // Hold: target pulses
+      scanActive = false;
+      scanAlpha = Math.max(0, scanAlpha - 0.02);
+      if (targetIdx >= 0 && nodes[targetIdx].detected) {
+        detectionPulseFrame++;
+        nodes[targetIdx].alpha = 0.85 + 0.15 * Math.sin(detectionPulseFrame * 0.06);
+        detectionGlow = 20 + 8 * Math.sin(detectionPulseFrame * 0.04);
+      }
+      // Dim other nodes slightly
+      for (let i = 0; i < nodes.length; i++) {
+        if (i !== targetIdx) {
+          nodes[i].alpha = nodes[i].baseAlpha * 0.6;
+        }
+      }
+    } else if (cf < SETTLE + SCAN_DUR + HOLD + FADE) {
+      // Fade out
+      const t = (cf - SETTLE - SCAN_DUR - HOLD) / FADE;
+      for (const n of nodes) {
+        n.alpha = Math.max(0, n.alpha * (1 - t * 0.05));
+      }
+      if (targetIdx >= 0) {
+        nodes[targetIdx].alpha = Math.max(0, (1 - t));
+        detectionGlow = Math.max(0, 25 * (1 - t));
+      }
+    } else {
+      // Rest
+      if (cf === SETTLE + SCAN_DUR + HOLD + FADE) {
+        resetCycle();
+      }
+    }
+  }
+
+  function draw() {
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+
+    // Draw tissue nodes
+    for (let i = 0; i < nodes.length; i++) {
+      const n = nodes[i];
+      if (n.alpha < 0.005) continue;
+
+      if (i === targetIdx && n.detected) {
+        // Glow for detected node
+        if (detectionGlow > 1) {
+          const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, detectionGlow);
+          grad.addColorStop(0, `rgba(${stR},${stG},${stB},${(n.alpha * 0.35).toFixed(3)})`);
+          grad.addColorStop(0.5, `rgba(${stR},${stG},${stB},${(n.alpha * 0.12).toFixed(3)})`);
+          grad.addColorStop(1, `rgba(${stR},${stG},${stB},0)`);
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, detectionGlow, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Core detected node
+        ctx.globalAlpha = n.alpha;
+        ctx.fillStyle = `rgb(${stR},${stG},${stB})`;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r + 1, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Ring
+        if (detectionPulseFrame > 0) {
+          ctx.strokeStyle = `rgba(${stR},${stG},${stB},${(n.alpha * 0.3).toFixed(3)})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, 10 + 4 * Math.sin(detectionPulseFrame * 0.05), 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1;
+      } else {
+        // Normal tissue node
+        ctx.globalAlpha = n.alpha;
+        ctx.fillStyle = isLight ? 'rgb(100,85,70)' : 'rgb(200,190,180)';
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    // Draw scan line
+    if (scanActive && scanAlpha > 0.01) {
+      const grad = ctx.createLinearGradient(scanX - 25, 0, scanX + 25, 0);
+      grad.addColorStop(0, `rgba(${stR},${stG},${stB},0)`);
+      grad.addColorStop(0.5, `rgba(${stR},${stG},${stB},${scanAlpha.toFixed(3)})`);
+      grad.addColorStop(1, `rgba(${stR},${stG},${stB},0)`);
+      ctx.fillStyle = grad;
+      ctx.fillRect(scanX - 25, 0, 50, H);
+
+      // Thin bright center line
+      ctx.strokeStyle = `rgba(${stR},${stG},${stB},${(scanAlpha * 1.4).toFixed(3)})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(scanX, 0);
+      ctx.lineTo(scanX, H);
+      ctx.stroke();
+    }
+  }
+
+  function tick() { frame++; update(); draw(); raf = requestAnimationFrame(tick); }
+
+  function init() {
+    initNodes();
+    resetCycle();
+  }
+
+  requestAnimationFrame(() => {
+    init();
+    if (prefersReduced) {
+      // Static frame: nodes visible, target detected and glowing
+      for (const n of nodes) n.alpha = n.baseAlpha;
+      if (targetIdx >= 0) {
+        nodes[targetIdx].detected = true;
+        nodes[targetIdx].alpha = 0.9;
+        detectionGlow = 20;
+        detectionPulseFrame = 1;
+      }
+      draw();
+    } else {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+        else { cancelAnimationFrame(raf); raf = 0; }
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+
+      window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); });
+    }
+  });
+})();
+</script>

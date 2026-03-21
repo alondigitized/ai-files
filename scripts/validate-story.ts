@@ -149,8 +149,10 @@ function checkStoriesJson(slug: string): ValidationResult[] {
   }
 
   // Volume
-  if (![1, 2, 3, 4].includes(entry.volume)) {
-    results.push(fail('stories.json:volume', `Volume ${entry.volume} is not 1, 2, 3, or 4`));
+  if (![1, 2, 3, 4, 5].includes(entry.volume)) {
+    results.push(fail('stories.json:volume', `Volume ${entry.volume} is not 1, 2, 3, 4, or 5`));
+  } else {
+    results.push(pass('stories.json:volume', `Volume ${entry.volume}`));
   }
 
   // Chapter uniqueness

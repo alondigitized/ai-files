@@ -1,0 +1,694 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'gnome-materials')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .gnome-materials-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  .gnome-scale-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .gnome-scale-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .gnome-scale-num {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--story);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+  .gnome-scale-label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .gnome-terminal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    margin: 2rem 0;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  }
+  .gnome-terminal-header {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 0.65rem 1rem;
+    font-size: 0.72rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .gnome-terminal-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--story);
+    opacity: 0.6;
+  }
+  .gnome-terminal-body {
+    padding: 1.25rem 1.5rem;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--text-body);
+  }
+  .gnome-terminal-body .t-prompt {
+    color: var(--story);
+    font-weight: 700;
+  }
+  .gnome-terminal-body .t-output {
+    color: var(--muted);
+  }
+  .gnome-terminal-body .t-highlight {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .gnome-terminal-body .t-success {
+    color: var(--green);
+  }
+
+  .gnome-yield-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .gnome-yield-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+  }
+  .gnome-yield-card h4 {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--story);
+    margin-bottom: 0.5rem;
+  }
+  .gnome-yield-num {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .gnome-yield-note {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .gnome-db-mockup {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    margin: 2rem 0;
+  }
+  .gnome-db-header {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 1.25rem;
+    font-size: 0.72rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .gnome-db-title {
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .gnome-db-count {
+    color: var(--story);
+    font-weight: 700;
+  }
+  .gnome-db-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.78rem;
+    color: var(--text-body);
+    align-items: center;
+  }
+  .gnome-db-row:last-child {
+    border-bottom: none;
+  }
+  .gnome-db-row.db-head {
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .gnome-db-row .db-stable {
+    color: var(--green);
+    font-weight: 600;
+  }
+  .gnome-db-row .db-new {
+    font-size: 0.65rem;
+    background: color-mix(in srgb, var(--story) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--story) 25%, transparent);
+    color: var(--story);
+    padding: 0.1rem 0.4rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 600px) {
+    .gnome-scale-cards { grid-template-columns: 1fr; }
+    .gnome-yield-grid { grid-template-columns: 1fr; }
+    .gnome-db-row { grid-template-columns: 1fr 1fr; gap: 0.25rem; }
+    .gnome-db-row.db-head { display: none; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="shelf">
+      <h2><span class="num">01 — The Shelf</span>48,000 Crystals in a Century</h2>
+      <p>Materials science moves at the speed of synthesis. A researcher hypothesizes a crystal structure, mixes precursors, fires a furnace, waits, analyzes the result, and records whether the material is stable. One structure at a time. One experiment at a time. For over a century, this is how humanity has built its catalog of known inorganic crystals.</p>
+      <p>By 2023, that catalog — the Inorganic Crystal Structure Database, or ICSD — contained approximately 48,000 experimentally confirmed stable materials. These are the crystals underpinning modern technology: the silicon in processors, the lithium compounds in batteries, the gallium arsenide in LEDs, the perovskites in next-generation solar cells. Every material in every device you own traces back to someone, somewhere, synthesizing a crystal and writing down what happened.</p>
+
+      <div class="gnome-scale-cards">
+        <div class="gnome-scale-card">
+          <div class="gnome-scale-num">~48K</div>
+          <div class="gnome-scale-label">known stable inorganic crystals before GNoME (ICSD)</div>
+        </div>
+        <div class="gnome-scale-card">
+          <div class="gnome-scale-num">~100 yr</div>
+          <div class="gnome-scale-label">of cumulative human effort to discover them</div>
+        </div>
+        <div class="gnome-scale-card">
+          <div class="gnome-scale-num">~480</div>
+          <div class="gnome-scale-label">new stable crystals discovered per year, on average</div>
+        </div>
+      </div>
+
+      <p>The constraint was never imagination. Materials scientists have long suspected that the space of possible stable crystals is vastly larger than what has been explored. The constraint was throughput. Testing a single candidate material — from computational prediction through synthesis and characterization — takes weeks to months. Searching exhaustively through the space of possible compositions and structures at that rate would take millennia.</p>
+      <p>The question was not whether undiscovered materials existed. It was whether anyone could search fast enough to find them.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="gnome-materials-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Lattice</strong> — Crystal nodes assemble in a warm grid, pulsing faintly. A search beam sweeps through them. Most remain dim. A few catch the light and glow with stability — rising from the grid into a growing constellation above.</p>
+
+    <section class="section" id="search">
+      <h2><span class="num">02 — The Search</span>Graph Networks for Materials Exploration</h2>
+      <p>In November 2023, a team at Google DeepMind led by Amil Merchant and Ekin Dogus Cubuk published a paper in <em>Nature</em> describing a system called GNoME — Graph Networks for Materials Exploration. The system is a graph neural network trained on data from the Materials Project, an open-access database of computed material properties maintained by Lawrence Berkeley National Laboratory.</p>
+      <p>The architecture is suited to the problem. Crystals are periodic arrangements of atoms — repeating three-dimensional lattices. A graph neural network represents each atom as a node and each bond as an edge, encoding the geometry of the crystal directly into the model's input. GNoME learned to predict whether a given crystal structure would be thermodynamically stable without running the expensive quantum-mechanical simulations (density functional theory, or DFT) that traditionally answer that question.</p>
+
+      <div class="gnome-terminal">
+        <div class="gnome-terminal-header">
+          <span class="gnome-terminal-dot"></span>
+          GNoME — Discovery Pipeline
+        </div>
+        <div class="gnome-terminal-body">
+          <div><span class="t-prompt">PIPELINE 1 ›</span> <span class="t-highlight">Structural</span></div>
+          <div><span class="t-output">→ Take known stable crystal, modify structure</span></div>
+          <div><span class="t-output">→ Predict stability of modified candidate via GNN</span></div>
+          <div><span class="t-output">→ Validate top candidates with DFT</span></div>
+          <div><span class="t-output">→ Feed validated results back into training</span></div>
+          <div style="margin-top:0.75rem;"><span class="t-prompt">PIPELINE 2 ›</span> <span class="t-highlight">Compositional</span></div>
+          <div><span class="t-output">→ Randomize chemical composition across periodic table</span></div>
+          <div><span class="t-output">→ Predict stability of novel composition via GNN</span></div>
+          <div><span class="t-output">→ Validate top candidates with DFT</span></div>
+          <div><span class="t-output">→ Feed validated results back into training</span></div>
+          <div style="margin-top:0.75rem;"><span class="t-prompt">ACTIVE LEARNING ›</span> <span class="t-success">Each cycle improves the next</span></div>
+          <div><span class="t-output">→ Discovery rate: <span class="t-highlight">~50% → 80%</span> (MatBench Discovery)</span></div>
+        </div>
+      </div>
+
+      <p>GNoME ran two complementary discovery pipelines. The first — structural — took known stable crystals and systematically modified their structures, searching for nearby compositions that might also be stable. The second — compositional — started from randomized chemical formulas and predicted whether any arrangement of those elements could form a stable crystal. Both pipelines fed their results into an active learning loop: predictions were validated against DFT calculations, and the confirmed results were folded back into the training data for the next round.</p>
+      <p>The efficiency gains compounded with each cycle. On the MatBench Discovery benchmark — a standardized test for materials stability prediction — GNoME improved the discovery rate from approximately 50 percent to 80 percent. The model's precision meant that four out of five predicted stable materials were, in fact, stable.</p>
+    </section>
+
+    <section class="section" id="yield">
+      <h2><span class="num">03 — The Yield</span>2.2 Million Structures</h2>
+      <p>The final count was 2.2 million new crystal structures. Of these, 380,000 were predicted to be thermodynamically stable — meaning they sit at energy minima that should allow them to be synthesized and to persist under real-world conditions.</p>
+      <p>To put that number in context: 380,000 stable materials is roughly eight times the total number of stable crystals discovered by all of human materials science over the past century. DeepMind described the result as "the equivalent of about 800 years of knowledge."</p>
+
+      <div class="gnome-yield-grid">
+        <div class="gnome-yield-card">
+          <h4>Layered Compounds</h4>
+          <div class="gnome-yield-num">52,000</div>
+          <div class="gnome-yield-note">new structures similar to graphene — potential superconductors and electronics</div>
+        </div>
+        <div class="gnome-yield-card">
+          <h4>Lithium Ion Conductors</h4>
+          <div class="gnome-yield-num">528</div>
+          <div class="gnome-yield-note">25x more candidates than all prior human research combined</div>
+        </div>
+      </div>
+
+      <p>Within the 380,000, specific categories stood out. GNoME identified 52,000 new layered compounds with structures analogous to graphene — the single-atom-thick carbon sheets that won the 2010 Nobel Prize in Physics and have been the subject of intense research for applications in electronics, energy storage, and quantum computing. It also identified 528 potential lithium ion conductors, a class of material critical to the development of solid-state batteries. That figure — 528 — represents 25 times more candidates than all prior studies had identified in total.</p>
+      <p>The numbers are large enough to be difficult to absorb. But they are not abstract. Each of those 380,000 stable structures is a specific arrangement of specific atoms with specific predicted properties. Each one is a candidate for a specific application. The question for each is no longer "does this material exist?" It is "is it worth synthesizing?"</p>
+    </section>
+
+    <section class="section" id="proof">
+      <h2><span class="num">04 — The Proof</span>From Prediction to Powder</h2>
+      <p>A prediction is not a material. A crystal that exists only in a neural network's output has no mass, no conductivity, no practical value. The question for GNoME was always going to be whether its predictions survived contact with reality.</p>
+      <p>By the time the paper was published, 736 of GNoME's predicted materials had been independently created in laboratories around the world. These were not DeepMind experiments. External researchers, working from the predictions, synthesized the materials and confirmed their stability. The predictions held.</p>
+
+      <div class="pull-quote">
+        "We are at the precipice of a new era of materials science."
+        <cite>— Amil Merchant, Google DeepMind</cite>
+      </div>
+
+      <p>The most striking validation came from a companion paper published in <em>Nature</em> on the same day. A team at Lawrence Berkeley National Laboratory, led by Gerbrand Ceder, had built an autonomous robotic laboratory called A-Lab. The facility could plan synthesis experiments, mix precursors, operate furnaces, and analyze results — all without human intervention. The team pointed A-Lab at a set of GNoME-predicted materials and let it run.</p>
+
+      <div class="gnome-terminal">
+        <div class="gnome-terminal-header">
+          <span class="gnome-terminal-dot"></span>
+          A-Lab — Autonomous Synthesis Log
+        </div>
+        <div class="gnome-terminal-body">
+          <div><span class="t-prompt">TARGET ›</span> <span class="t-highlight">58 GNoME-predicted compounds</span></div>
+          <div><span class="t-output">→ Recipes generated from thermodynamic data</span></div>
+          <div><span class="t-output">→ Precursors selected and dispensed by robotic arm</span></div>
+          <div><span class="t-output">→ Furnace cycles: autonomous temperature programming</span></div>
+          <div><span class="t-output">→ X-ray diffraction analysis: automated</span></div>
+          <div style="margin-top:0.75rem;"><span class="t-prompt">RESULT ›</span> <span class="t-success">41 of 58 successfully synthesized</span></div>
+          <div><span class="t-output">→ Success rate: <span class="t-highlight">71%</span></span></div>
+          <div><span class="t-output">→ Total time: <span class="t-highlight">17 days</span></span></div>
+          <div><span class="t-output">→ Human intervention: <span class="t-highlight">none</span></span></div>
+        </div>
+      </div>
+
+      <p>A-Lab attempted 58 compounds and successfully synthesized 41 — a 71 percent success rate, achieved in 17 days with no human intervention. The full loop — AI predicts a material, a robot makes it, an instrument confirms it — ran without a person touching a beaker.</p>
+      <p>This is what it looks like when the bottleneck moves. The prediction was fast. The synthesis was autonomous. The validation was automated. The rate-limiting step was no longer any of those. It was deciding which of the 380,000 candidates to try first.</p>
+    </section>
+
+    <section class="section" id="gift">
+      <h2><span class="num">05 — The Gift</span>380,000 Structures, Free to the World</h2>
+      <p>DeepMind could have kept the database proprietary. A catalog of 380,000 novel stable materials with predicted properties is commercially valuable — to battery manufacturers, semiconductor companies, pharmaceutical firms, defense contractors. The research cost real money and years of compute. There were strong incentives to monetize it.</p>
+      <p>They gave it away.</p>
+
+      <div class="gnome-db-mockup">
+        <div class="gnome-db-header">
+          <span class="gnome-db-title">Materials Project — Database</span>
+          <span class="gnome-db-count">+380,000 structures added</span>
+        </div>
+        <div class="gnome-db-row db-head">
+          <span>Compound</span>
+          <span>Stability</span>
+          <span>Source</span>
+          <span>Status</span>
+        </div>
+        <div class="gnome-db-row">
+          <span>Li₃ScCl₆</span>
+          <span class="db-stable">Stable</span>
+          <span>GNoME</span>
+          <span><span class="db-new">New</span></span>
+        </div>
+        <div class="gnome-db-row">
+          <span>Na₂ZrCl₆</span>
+          <span class="db-stable">Stable</span>
+          <span>GNoME</span>
+          <span><span class="db-new">New</span></span>
+        </div>
+        <div class="gnome-db-row">
+          <span>BaTiGe₃O₉</span>
+          <span class="db-stable">Stable</span>
+          <span>GNoME</span>
+          <span><span class="db-new">New</span></span>
+        </div>
+        <div class="gnome-db-row">
+          <span>Ca₂MnReO₆</span>
+          <span class="db-stable">Stable</span>
+          <span>GNoME</span>
+          <span><span class="db-new">New</span></span>
+        </div>
+        <div class="gnome-db-row">
+          <span style="color:var(--muted);font-style:italic;">... 379,996 more entries</span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+
+      <p>The full dataset of 380,000 predicted stable structures was released to the Materials Project — the same open-access database that GNoME was originally trained on. The code was made available on GitHub. Any researcher, at any institution, in any country, could now search the database for materials matching their application requirements.</p>
+      <p>The decision to open-source was not charity. It was strategy. Materials science is a field where progress depends on synthesis — and DeepMind does not operate synthesis labs. The predictions are valuable only if someone tests them. The more labs that have access, the more materials get synthesized, the more feedback flows back into the system, the better the next generation of models becomes. Open-sourcing was the fastest path to validation.</p>
+      <p>But the structural consequence is real regardless of the motive. Before November 29, 2023, the catalog of computationally predicted stable materials was a resource available primarily to labs with the expertise and compute to run their own DFT calculations. After November 29, 2023, a graduate student in Nairobi and a research team at MIT had access to the same 380,000 predicted structures. The information asymmetry in materials discovery did not narrow. It collapsed.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.gnome-materials-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f5f0e8';
+  const STORY_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#10b981';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+
+  const [stR, stG, stB] = hexToRgb(STORY_COLOR.startsWith('#') ? STORY_COLOR : '#10b981');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  });
+  ro.observe(canvas);
+
+  // --- Grid nodes (the crystal lattice) ---
+  const COLS = 12;
+  const ROWS = 6;
+  interface Node {
+    gx: number; gy: number;
+    x: number; y: number;
+    baseAlpha: number;
+    found: boolean;
+    riseY: number;
+    riseAlpha: number;
+    glowR: number;
+    pulseOffset: number;
+  }
+  const nodes: Node[] = [];
+
+  // Which nodes will be "found" by the beam
+  const FOUND_INDICES = [7, 15, 22, 31, 38, 44, 53, 61];
+
+  function initNodes() {
+    nodes.length = 0;
+    const spacingX = (W || 800) / (COLS + 1);
+    const spacingY = ((H || 380) * 0.65) / (ROWS + 1);
+    const offsetY = (H || 380) * 0.25;
+    let idx = 0;
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const x = spacingX * (c + 1) + (r % 2 === 1 ? spacingX * 0.5 : 0);
+        const y = offsetY + spacingY * (r + 1);
+        nodes.push({
+          gx: c, gy: r,
+          x, y,
+          baseAlpha: 0.04 + Math.random() * 0.04,
+          found: false,
+          riseY: 0,
+          riseAlpha: 0,
+          glowR: 0,
+          pulseOffset: Math.random() * Math.PI * 2,
+        });
+        idx++;
+      }
+    }
+  }
+
+  // --- Beam state ---
+  let beamX = -40;
+  let beamActive = false;
+  let beamAlpha = 0;
+
+  // --- Rising constellation ---
+  interface RisenNode {
+    x: number; targetY: number; y: number; alpha: number; r: number;
+    pulseOff: number;
+  }
+  const risen: RisenNode[] = [];
+
+  // --- Phase timing ---
+  const BEAM_START = 60;
+  const BEAM_DURATION = 300;
+  const HOLD = 200;
+  const FADE = 80;
+  const REST = 60;
+  const CYCLE = BEAM_START + BEAM_DURATION + HOLD + FADE + REST;
+
+  function resetCycle() {
+    beamX = -40;
+    beamActive = false;
+    beamAlpha = 0;
+    risen.length = 0;
+    for (const n of nodes) {
+      n.found = false;
+      n.riseY = 0;
+      n.riseAlpha = 0;
+      n.glowR = 0;
+    }
+  }
+
+  function update() {
+    const cf = frame % CYCLE;
+
+    // Ambient pulse on all nodes
+    for (const n of nodes) {
+      if (!n.found) {
+        n.glowR = 0;
+      }
+    }
+
+    // Beam sweep (left to right)
+    const beamEnd = BEAM_START + BEAM_DURATION;
+    if (cf >= BEAM_START && cf < beamEnd) {
+      beamActive = true;
+      const t = (cf - BEAM_START) / BEAM_DURATION;
+      beamX = -40 + t * ((W || 800) + 80);
+      beamAlpha = 0.1 + 0.05 * Math.sin(t * Math.PI);
+
+      // Check if beam passes nodes
+      for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i];
+        if (!n.found && FOUND_INDICES.includes(i) && Math.abs(beamX - n.x) < 25) {
+          n.found = true;
+          // Add to risen constellation
+          risen.push({
+            x: n.x + (Math.random() - 0.5) * 30,
+            targetY: (H || 380) * 0.08 + Math.random() * (H || 380) * 0.12,
+            y: n.y,
+            alpha: 0,
+            r: 2.5 + Math.random() * 1.5,
+            pulseOff: Math.random() * Math.PI * 2,
+          });
+        }
+        // Brief illumination near beam
+        if (!n.found && Math.abs(beamX - n.x) < 20) {
+          n.glowR = 4;
+        }
+      }
+    } else {
+      beamActive = false;
+      beamAlpha = Math.max(0, beamAlpha - 0.008);
+    }
+
+    // Animate risen nodes upward
+    for (const r of risen) {
+      r.y += (r.targetY - r.y) * 0.03;
+      r.alpha = Math.min(0.9, r.alpha + 0.015);
+    }
+
+    // Found nodes glow
+    for (const n of nodes) {
+      if (n.found) {
+        n.glowR = Math.min(8, n.glowR + 0.3);
+        n.riseAlpha = Math.min(0.6, n.riseAlpha + 0.01);
+      }
+    }
+
+    // Hold phase — everything just pulses
+    const holdStart = beamEnd;
+    // Fade phase
+    const fadeStart = holdStart + HOLD;
+    if (cf >= fadeStart && cf < fadeStart + FADE) {
+      const t = (cf - fadeStart) / FADE;
+      for (const r of risen) {
+        r.alpha = Math.max(0, 0.9 * (1 - t));
+      }
+      for (const n of nodes) {
+        if (n.found) {
+          n.riseAlpha = Math.max(0, 0.6 * (1 - t));
+          n.glowR = Math.max(0, 8 * (1 - t));
+        }
+      }
+    }
+
+    // Reset
+    if (cf === 0) {
+      resetCycle();
+    }
+  }
+
+  function draw() {
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+
+    const isLight = document.documentElement.dataset.theme === 'light';
+    const dimColor = isLight ? 'rgb(100,90,70)' : 'rgb(200,195,185)';
+
+    // Draw grid connections (faint)
+    ctx.strokeStyle = isLight
+      ? 'rgba(100,90,70,0.04)'
+      : 'rgba(200,195,185,0.03)';
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < nodes.length; i++) {
+      const a = nodes[i];
+      for (let j = i + 1; j < nodes.length; j++) {
+        const b = nodes[j];
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < (W || 800) / (COLS + 1) * 1.3) {
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw grid nodes
+    for (const n of nodes) {
+      const pulse = 1 + 0.15 * Math.sin(frame * 0.02 + n.pulseOffset);
+      const alpha = n.found
+        ? Math.max(n.baseAlpha, n.riseAlpha)
+        : n.baseAlpha * pulse;
+
+      // Glow for found nodes
+      if (n.found && n.glowR > 1) {
+        const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.glowR);
+        grad.addColorStop(0, `rgba(${stR},${stG},${stB},${(n.riseAlpha * 0.4).toFixed(3)})`);
+        grad.addColorStop(1, `rgba(${stR},${stG},${stB},0)`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.glowR, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = n.found ? `rgb(${stR},${stG},${stB})` : dimColor;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.found ? 3 : 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // Draw beam
+    if (beamActive && beamAlpha > 0.005) {
+      const grad = ctx.createLinearGradient(beamX - 25, 0, beamX + 25, 0);
+      grad.addColorStop(0, `rgba(${stR},${stG},${stB},0)`);
+      grad.addColorStop(0.5, `rgba(${stR},${stG},${stB},${beamAlpha.toFixed(3)})`);
+      grad.addColorStop(1, `rgba(${stR},${stG},${stB},0)`);
+      ctx.fillStyle = grad;
+      ctx.fillRect(beamX - 25, 0, 50, H);
+
+      // Thin center line
+      ctx.strokeStyle = `rgba(${stR},${stG},${stB},${(beamAlpha * 1.2).toFixed(3)})`;
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(beamX, 0);
+      ctx.lineTo(beamX, H);
+      ctx.stroke();
+    }
+
+    // Draw risen constellation
+    for (const r of risen) {
+      if (r.alpha < 0.01) continue;
+
+      // Glow
+      const glowR = r.r * 5;
+      const grad = ctx.createRadialGradient(r.x, r.y, 0, r.x, r.y, glowR);
+      grad.addColorStop(0, `rgba(${stR},${stG},${stB},${(r.alpha * 0.3).toFixed(3)})`);
+      grad.addColorStop(0.6, `rgba(${stR},${stG},${stB},${(r.alpha * 0.1).toFixed(3)})`);
+      grad.addColorStop(1, `rgba(${stR},${stG},${stB},0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(r.x, r.y, glowR, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Core
+      ctx.globalAlpha = r.alpha;
+      ctx.fillStyle = `rgb(${stR},${stG},${stB})`;
+      ctx.beginPath();
+      ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pulse ring
+      const pulseR = r.r + 3 + 2 * Math.sin(frame * 0.03 + r.pulseOff);
+      ctx.strokeStyle = `rgba(${stR},${stG},${stB},${(r.alpha * 0.25).toFixed(3)})`;
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.arc(r.x, r.y, pulseR, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+
+    // Connect risen nodes with faint lines
+    if (risen.length > 1) {
+      ctx.strokeStyle = `rgba(${stR},${stG},${stB},0.08)`;
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i < risen.length; i++) {
+        for (let j = i + 1; j < risen.length; j++) {
+          if (risen[i].alpha < 0.1 || risen[j].alpha < 0.1) continue;
+          const dx = risen[i].x - risen[j].x;
+          const dy = risen[i].y - risen[j].y;
+          if (dx * dx + dy * dy < 80000) {
+            ctx.beginPath();
+            ctx.moveTo(risen[i].x, risen[i].y);
+            ctx.lineTo(risen[j].x, risen[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+  }
+
+  function tick() { frame++; update(); draw(); raf = requestAnimationFrame(tick); }
+
+  function init() { initNodes(); resetCycle(); }
+
+  requestAnimationFrame(() => {
+    init();
+    if (prefersReduced) {
+      // Static frame: grid with a few glowing found nodes
+      for (const idx of FOUND_INDICES) {
+        if (idx < nodes.length) {
+          nodes[idx].found = true;
+          nodes[idx].glowR = 6;
+          nodes[idx].riseAlpha = 0.5;
+        }
+      }
+      draw();
+    } else {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+        else { cancelAnimationFrame(raf); raf = 0; }
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+
+      window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); });
+    }
+  });
+})();
+</script>
