@@ -106,6 +106,10 @@ const pad = (n: number) => String(n).padStart(2, '0');
     max-width: 480px; margin: 1.5rem auto 0;
     line-height: 1.6; font-style: italic;
   }
+  .masthead-cta {
+    font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--muted); margin-top: 1.75rem;
+  }
   /* ── Edition Picker ── */
   .edition-picker {
     display: grid; grid-template-columns: 1fr 1fr;
@@ -455,8 +459,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
         <span class="the">The</span>
         <span class="ai">AI</span> Files
       </h1>
-      <p class="masthead-tagline" data-side="dark">True stories from the age of artificial intelligence — the blunders, the exploits, and the moments that changed everything.</p>
-      <p class="masthead-tagline" data-side="light" style="display:none;">True stories from the age of artificial intelligence — the breakthroughs, the cures, and the moments that gave us hope.</p>
+      <p class="masthead-tagline">True stories from the age of artificial intelligence.</p>
+      <p class="masthead-cta">Choose your path</p>
       <div class="edition-picker" id="side-filter">
         <div class="edition-card active" data-edition="dark" role="button" tabindex="0" aria-label="Switch to Demons Edition">
           <canvas class="edition-canvas demons-canvas" aria-hidden="true"></canvas>
@@ -1009,7 +1013,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
       if (!filter) return;
       const cards = filter.querySelectorAll<HTMLElement>('.edition-card');
       const sections = document.querySelectorAll<HTMLElement>('.vol-section[data-side]');
-      const taglines = document.querySelectorAll<HTMLElement>('.masthead-tagline[data-side]');
       const epBlocks = document.querySelectorAll<HTMLElement>('[data-ep]');
 
       const contentTarget = document.querySelector('.idx-container') as HTMLElement | null;
@@ -1039,9 +1042,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
         cards.forEach(c => c.classList.toggle('active', c.dataset.edition === side));
         sections.forEach(sec => {
           sec.classList.toggle('hidden-by-filter', sec.dataset.side !== side);
-        });
-        taglines.forEach(tl => {
-          tl.style.display = tl.dataset.side === side ? '' : 'none';
         });
         epBlocks.forEach(ep => {
           ep.style.display = ep.dataset.ep === side ? '' : 'none';
