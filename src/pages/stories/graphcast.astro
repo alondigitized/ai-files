@@ -182,7 +182,7 @@ const story = stories.find(s => s.slug === 'graphcast')!;
       <p>GraphCast is a neural network trained to predict the weather. Not by simulating the physics of the atmosphere — the approach that has defined numerical weather prediction since the 1950s — but by learning patterns from four decades of what the weather has actually done.</p>
       <p>The training data came from ECMWF's ERA5 reanalysis archive: 38 years of global weather observations (1979 to 2017) derived from satellite imagery, radar, weather stations, and atmospheric measurements, processed into a consistent dataset. From that, GraphCast learned a model of cause and effect — given the current state of the atmosphere, what comes next.</p>
       <p>The architecture is a graph neural network operating on a multi-scale mesh of over one million grid points at 0.25-degree resolution, roughly 28 kilometers at the equator. It predicts five surface variables and six atmospheric variables at 37 vertical pressure levels. A 10-day global forecast takes under one minute on a single Google TPU v4 chip.</p>
-      <p>For comparison: ECMWF's High Resolution Forecast system, the gold standard in operational meteorology, requires hours of computation on a supercomputer with hundreds of machines to produce a comparable forecast.</p>
+      <p>ECMWF's High Resolution Forecast system, the gold standard in operational meteorology, needs hours on a supercomputer to match that output.</p>
 
       <div class="comparison-strip">
         <div class="comp-card">
@@ -227,7 +227,8 @@ const story = stories.find(s => s.slug === 'graphcast')!;
       </div>
 
       <p>The interpretability problem is fundamental. Physics-based models have traceable reasoning — if the forecast is wrong, you can identify which physical process was modeled incorrectly. GraphCast is a black box. It produces answers. It does not explain them.</p>
-      <p>And there is the climate change question. GraphCast learned weather from 1979 to 2017. Peter Dueben at ECMWF warned that climate change could erode that foundation — the atmosphere of 2030 may behave differently enough from the atmosphere of 1979&ndash;2017 that historical patterns lose predictive power. Kim Wood, a hurricane researcher at the University of Arizona, noted that AI models excel at the events they see most often in training data but may struggle with unprecedented ones — storms like Hurricane Otis, which in October 2023 intensified from a tropical storm to a Category 5 hurricane in 24 hours, defying historical norms.</p>
+      <p>And there is the climate change question. GraphCast learned weather from 1979 to 2017. Peter Dueben at ECMWF warned that climate change could erode that foundation — the atmosphere of 2030 may behave differently enough from the atmosphere of 1979&ndash;2017 that historical patterns lose predictive power.</p>
+      <p>Kim Wood, a hurricane researcher at the University of Arizona, noted that AI models excel at the events they see most often in training data but may struggle with events outside the training distribution — storms like Hurricane Otis, which in October 2023 intensified from a tropical storm to a Category 5 hurricane in 24 hours, defying historical norms.</p>
       <p>These are real constraints. They are also, notably, constraints that the institutions running the world's best physics models considered manageable enough to adopt the technology anyway.</p>
     </section>
 
@@ -243,7 +244,7 @@ const story = stories.find(s => s.slug === 'graphcast')!;
       </div>
 
       <p>The structural point is not that GraphCast was accurate. It is that the institution which built the most respected physics-based weather prediction system on Earth looked at a data-trained model from an AI lab and concluded that the approach was worth adopting. Not as a supplement. As a parallel operational system.</p>
-      <p>Weather forecasting — the field defined by physics simulation, the field where supercomputers running fluid dynamics equations were supposed to reign indefinitely — became the first major computational domain where the paradigm was not supplemented by machine learning, but matched by it. Under a minute. On a single chip. Trained on data alone.</p>
+      <p>Weather forecasting — the field defined by physics simulation, the field where supercomputers running fluid dynamics equations were supposed to reign indefinitely — became the first major computational domain where physics-first modeling was not supplemented by machine learning, but matched by it. Trained on data alone.</p>
     </section>
 
   </div>
