@@ -143,8 +143,10 @@ const pad = (n: number) => String(n).padStart(2, '0');
     background: #c8963e;
     box-shadow: 0 0 12px rgba(200,150,62,0.6);
   }
-  .edition-card:not(.active) { opacity: 0.7; }
-  .edition-card:not(.active):hover { opacity: 0.85; }
+  .edition-card:not(.active) { opacity: 0.7; transition: opacity 0.4s, border-color 0.4s, box-shadow 0.4s; }
+  .edition-card:not(.active):hover { opacity: 0.9; }
+  .edition-card[data-edition="dark"]:not(.active):hover { border-color: rgba(255,77,77,0.3); box-shadow: 0 0 16px rgba(255,77,77,0.08); }
+  .edition-card[data-edition="light"]:not(.active):hover { border-color: rgba(200,150,62,0.3); box-shadow: 0 0 16px rgba(200,150,62,0.08); }
   .edition-canvas {
     position: absolute; inset: 0; width: 100%; height: 100%;
     display: block;
@@ -1079,6 +1081,21 @@ const pad = (n: number) => String(n).padStart(2, '0');
           }
         });
       });
+
+      /* ── Intro tease: briefly highlight Angels card so users notice both editions ── */
+      if (!reduceMotion) {
+        const angelsCard = filter.querySelector<HTMLElement>('.edition-card[data-edition="light"]');
+        if (angelsCard) {
+          setTimeout(() => {
+            angelsCard.style.transition = 'opacity 0.6s ease';
+            angelsCard.style.opacity = '1';
+            setTimeout(() => {
+              angelsCard.style.opacity = '';
+              angelsCard.style.transition = '';
+            }, 1200);
+          }, 1500);
+        }
+      }
     })();
   </script>
 
