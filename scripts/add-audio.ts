@@ -83,45 +83,63 @@ function fmt(seconds: number): string {
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
-async function interactiveAuth(browser: any): Promise<any> {
-  console.log('\n  Opening browser for Google authentication...');
-  console.log('  Please log into your Google account in the browser window.\n');
+// Use a copy of the Chrome profile to avoid "already in use" lock conflicts
+const CHROME_PROFILE = join(process.env.HOME || '', 'Library/Application Support/Google/Chrome');
+const PW_PROFILE = join(ROOT, '.claude', 'pw-chrome-profile');
 
-  const context = await browser.newContext();
-  const page = await context.newPage();
-  await page.goto(NOTEBOOKLM_URL);
+async function launchWithProfile(headed: boolean): Promise<{ context: any; isNew: boolean }> {
+  const { chromium } = await import('playwright');
 
-  await prompt('  Press Enter after you have logged in and see the NotebookLM home page...');
-
-  // Verify auth worked
-  const isAuthed = await page.getByText(/create new/i).isVisible({ timeout: 5000 }).catch(() => false);
-  if (!isAuthed) {
-    console.error('  Auth verification failed — NotebookLM home page not detected.');
-    process.exit(1);
+  // Copy Chrome profile on first run so we get existing Google login session
+  if (!existsSync(PW_PROFILE)) {
+    console.log('  Copying Chrome profile for first-time setup...');
+    execSync(`cp -R "${CHROME_PROFILE}" "${PW_PROFILE}"`, { stdio: 'pipe' });
+    // Remove lock files that would conflict
+    const lockFiles = ['SingletonLock', 'SingletonCookie', 'SingletonSocket'];
+    for (const f of lockFiles) {
+      const p = join(PW_PROFILE, f);
+      if (existsSync(p)) unlinkSync(p);
+    }
   }
 
-  await context.storageState({ path: AUTH_PATH });
-  console.log(`  Auth saved to ${AUTH_PATH}\n`);
-  await page.close();
-  return context;
+  const context = await chromium.launchPersistentContext(PW_PROFILE, {
+    channel: 'chrome',
+    headless: !headed,
+    slowMo: 100,
+    args: ['--disable-blink-features=AutomationControlled'],
+  });
+
+  return { context, isNew: false };
 }
 
-async function ensureAuth(browser: any): Promise<any> {
-  if (existsSync(AUTH_PATH)) {
-    const context = await browser.newContext({ storageState: AUTH_PATH });
-    const page = await context.newPage();
-    await page.goto(NOTEBOOKLM_URL);
-    await page.waitForLoadState('networkidle');
+async function ensureAuth(context: any): Promise<void> {
+  const page = await context.newPage();
+  await page.goto(NOTEBOOKLM_URL);
+  await page.waitForLoadState('networkidle');
 
-    const isAuthed = await page.getByText(/create new/i).isVisible({ timeout: 15000 }).catch(() => false);
-    if (isAuthed) {
-      await page.close();
-      return context;
+  const isAuthed = await page.getByText(/create new/i).isVisible({ timeout: 15000 }).catch(() => false);
+  await page.close();
+
+  if (!isAuthed) {
+    console.log('\n  Not logged into Google. Please log in in the browser window.');
+    const authPage = await context.newPage();
+    await authPage.goto('https://accounts.google.com');
+    await prompt('  Press Enter after you have logged in...');
+    await authPage.close();
+
+    // Verify
+    const checkPage = await context.newPage();
+    await checkPage.goto(NOTEBOOKLM_URL);
+    await checkPage.waitForLoadState('networkidle');
+    const ok = await checkPage.getByText(/create new/i).isVisible({ timeout: 10000 }).catch(() => false);
+    await checkPage.close();
+
+    if (!ok) {
+      console.error('  Auth verification failed.');
+      process.exit(1);
     }
-    console.log('  Saved auth expired, re-authenticating...');
-    await context.close();
+    console.log('  Auth verified successfully.\n');
   }
-  return await interactiveAuth(browser);
 }
 
 // ─── NotebookLM Automation ──────────────────────────────────────────────────
@@ -385,26 +403,21 @@ async function main() {
     process.exit(0);
   }
 
-  // Launch browser — use real Chrome for auth (Google blocks bundled Chromium login)
-  const { chromium } = await import('playwright');
+  // Launch browser with Chrome profile (reuses existing Google login)
   const useHeaded = flags.headed || flags.auth;
-  const browser = await chromium.launch({
-    channel: 'chrome',          // Use real Chrome install (Google blocks Chromium for login)
-    headless: !useHeaded,
-    slowMo: 100,
-  });
+  const { context } = await launchWithProfile(useHeaded);
 
-  const context = await ensureAuth(browser);
+  await ensureAuth(context);
 
   if (flags.auth) {
-    console.log('Auth saved successfully.');
-    await browser.close();
+    console.log('Auth verified successfully.');
+    await context.close();
     process.exit(0);
   }
 
   if (slugs.length === 0) {
     console.log('\nNo stories to process.');
-    await browser.close();
+    await context.close();
     process.exit(0);
   }
 
@@ -416,9 +429,6 @@ async function main() {
   for (const slug of slugs) {
     const result = await processStory(page, slug);
     results.push(result);
-
-    // Re-save auth state in case session refreshed
-    await context.storageState({ path: AUTH_PATH }).catch(() => {});
 
     // Brief pause between stories
     if (slugs.indexOf(slug) < slugs.length - 1) {
@@ -441,7 +451,7 @@ async function main() {
     console.log('Committed and pushed.');
   }
 
-  await browser.close();
+  await context.close();
   process.exit(results.some(r => r.status === 'failed') ? 1 : 0);
 }
 
