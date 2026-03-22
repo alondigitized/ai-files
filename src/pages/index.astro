@@ -1082,18 +1082,30 @@ const pad = (n: number) => String(n).padStart(2, '0');
         });
       });
 
-      /* ── Intro tease: briefly highlight Angels card so users notice both editions ── */
+      /* ── Scroll tease: when edition picker enters viewport, pulse the Angels card ── */
       if (!reduceMotion) {
         const angelsCard = filter.querySelector<HTMLElement>('.edition-card[data-edition="light"]');
         if (angelsCard) {
-          setTimeout(() => {
-            angelsCard.style.transition = 'opacity 0.6s ease';
-            angelsCard.style.opacity = '1';
-            setTimeout(() => {
-              angelsCard.style.opacity = '';
-              angelsCard.style.transition = '';
-            }, 1200);
-          }, 1500);
+          let teased = false;
+          const obs = new IntersectionObserver((entries) => {
+            if (teased) return;
+            const entry = entries[0];
+            if (entry && entry.isIntersecting) {
+              teased = true;
+              obs.disconnect();
+              setTimeout(() => {
+                angelsCard.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                angelsCard.style.opacity = '1';
+                angelsCard.style.transform = 'scale(1.03)';
+                setTimeout(() => {
+                  angelsCard.style.opacity = '';
+                  angelsCard.style.transform = '';
+                  setTimeout(() => { angelsCard.style.transition = ''; }, 600);
+                }, 1200);
+              }, 400);
+            }
+          }, { threshold: 0.6 });
+          obs.observe(filter);
         }
       }
     })();
