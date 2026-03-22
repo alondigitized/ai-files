@@ -112,34 +112,59 @@ async function launchWithProfile(headed: boolean): Promise<{ context: any; isNew
   return { context, isNew: false };
 }
 
+async function checkAuthed(page: any): Promise<boolean> {
+  // Multiple ways to detect we're on the authenticated NotebookLM page:
+  // 1. Page URL stays on notebooklm.google.com (not redirected to accounts.google.com)
+  // 2. Page contains notebook-related content
+  const url = page.url();
+  if (url.includes('accounts.google.com')) return false;
+
+  // Check for any of these indicators that we're on the authenticated page
+  const isAuthed = await page.evaluate(() => {
+    const text = document.body?.textContent || '';
+    return text.includes('Create new') ||
+           text.includes('Recent notebooks') ||
+           text.includes('Featured notebooks') ||
+           text.includes('NotebookLM') && text.includes('notebook');
+  }).catch(() => false);
+
+  return isAuthed;
+}
+
 async function ensureAuth(context: any): Promise<void> {
   const page = await context.newPage();
   await page.goto(NOTEBOOKLM_URL);
   await page.waitForLoadState('networkidle');
+  // Extra wait for SPA to render
+  await page.waitForTimeout(5000);
 
-  const isAuthed = await page.getByText(/create new/i).isVisible({ timeout: 15000 }).catch(() => false);
+  const isAuthed = await checkAuthed(page);
   await page.close();
 
-  if (!isAuthed) {
-    console.log('\n  Not logged into Google. Please log in in the browser window.');
-    const authPage = await context.newPage();
-    await authPage.goto('https://accounts.google.com');
-    await prompt('  Press Enter after you have logged in...');
-    await authPage.close();
-
-    // Verify
-    const checkPage = await context.newPage();
-    await checkPage.goto(NOTEBOOKLM_URL);
-    await checkPage.waitForLoadState('networkidle');
-    const ok = await checkPage.getByText(/create new/i).isVisible({ timeout: 10000 }).catch(() => false);
-    await checkPage.close();
-
-    if (!ok) {
-      console.error('  Auth verification failed.');
-      process.exit(1);
-    }
-    console.log('  Auth verified successfully.\n');
+  if (isAuthed) {
+    console.log('  Auth OK — logged into NotebookLM.\n');
+    return;
   }
+
+  console.log('\n  Not logged into Google. Please log in in the browser window.');
+  const authPage = await context.newPage();
+  await authPage.goto('https://accounts.google.com');
+  await prompt('  Press Enter after you have logged in...');
+  await authPage.close();
+
+  // Verify
+  const checkPage = await context.newPage();
+  await checkPage.goto(NOTEBOOKLM_URL);
+  await checkPage.waitForLoadState('networkidle');
+  await checkPage.waitForTimeout(5000);
+  const ok = await checkAuthed(checkPage);
+  await checkPage.close();
+
+  if (!ok) {
+    console.error('  Auth verification failed. Try running with --headed to debug.');
+    process.exit(1);
+  }
+  console.log('  Auth verified successfully.\n');
 }
 
 // ─── NotebookLM Automation ──────────────────────────────────────────────────
