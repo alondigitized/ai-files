@@ -133,10 +133,9 @@ async function checkAuthed(page: any): Promise<boolean> {
 
 async function ensureAuth(context: any): Promise<void> {
   const page = await context.newPage();
-  await page.goto(NOTEBOOKLM_URL);
-  await page.waitForLoadState('networkidle');
-  // Extra wait for SPA to render
-  await page.waitForTimeout(5000);
+  await page.goto(NOTEBOOKLM_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  // SPA needs time to render after DOM loads
+  await page.waitForTimeout(8000);
 
   const isAuthed = await checkAuthed(page);
   await page.close();
@@ -146,87 +145,147 @@ async function ensureAuth(context: any): Promise<void> {
     return;
   }
 
-  console.log('\n  Not logged into Google. Please log in in the browser window.');
-  const authPage = await context.newPage();
-  await authPage.goto('https://accounts.google.com');
-  await prompt('  Press Enter after you have logged in...');
-  await authPage.close();
-
-  // Verify
-  const checkPage = await context.newPage();
-  await checkPage.goto(NOTEBOOKLM_URL);
-  await checkPage.waitForLoadState('networkidle');
-  await checkPage.waitForTimeout(5000);
-  const ok = await checkAuthed(checkPage);
-  await checkPage.close();
-
-  if (!ok) {
-    console.error('  Auth verification failed. Try running with --headed to debug.');
-    process.exit(1);
-  }
-  console.log('  Auth verified successfully.\n');
+  console.error('  Not logged into Google.');
+  console.error('  Fix: Close Chrome, then run:');
+  console.error('    ! npx tsx scripts/add-audio.ts --auth --headed');
+  console.error('  Log into Google in the browser, then re-run this command.');
+  process.exit(1);
 }
 
 // ─── NotebookLM Automation ──────────────────────────────────────────────────
 
 async function createNotebookWithSource(page: any, slug: string): Promise<void> {
   // Navigate to NotebookLM home
-  await page.goto(NOTEBOOKLM_URL);
-  await page.waitForLoadState('networkidle');
+  await page.goto(NOTEBOOKLM_URL, { waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(5000);
 
   // Click "Create new notebook"
   await page.getByText(/create new notebook/i).first().click();
   await page.waitForURL(/notebook\/.*addSource/, { timeout: 15000 });
+  await page.waitForTimeout(2000);
 
-  // Click "Websites" source option
-  await page.getByRole('button', { name: /websites/i }).click();
+  // Click "Websites" source option — it's inside the overlay dialog
+  await page.locator('.cdk-overlay-container').getByText(/websites/i).click();
+  await page.waitForTimeout(1500);
+
+  // Type the story URL — target the textarea inside the overlay (the "Paste any links" one)
+  const storyUrl = `${SITE_URL}/stories/${slug}`;
+  const urlInput = page.locator('.cdk-overlay-container textarea');
+  await urlInput.click({ force: true });
+  await urlInput.pressSequentially(storyUrl, { delay: 20 });
   await page.waitForTimeout(1000);
 
-  // Type the story URL
-  const storyUrl = `${SITE_URL}/stories/${slug}`;
-  const urlInput = page.locator('textarea, input[type="url"]').first();
-  await urlInput.fill(storyUrl);
+  // Wait for Insert button inside the overlay to become enabled, then click
+  await page.waitForFunction(() => {
+    const overlay = document.querySelector('.cdk-overlay-container');
+    if (!overlay) return false;
+    const btns = overlay.querySelectorAll('button');
+    for (const btn of btns) {
+      if (/insert/i.test(btn.textContent || '') && !btn.disabled) return true;
+    }
+    return false;
+  }, { timeout: 15000 });
+  await page.locator('.cdk-overlay-container').getByRole('button', { name: /insert/i }).click();
 
-  // Click Insert
-  await page.getByRole('button', { name: /insert/i }).click();
-
-  // Wait for source to be ingested (URL disappears from the dialog, source appears in panel)
-  await page.waitForURL(/notebook\/[^?]+$/, { timeout: 30000 });
-  await page.waitForTimeout(2000);
+  // Wait for source to be ingested
+  await page.waitForURL(/notebook\/[^?]+$/, { timeout: 60000 });
+  await page.waitForTimeout(3000);
 }
 
 async function generateBriefAudio(page: any): Promise<void> {
-  // Click Audio Overview arrow to open customization
-  await page.locator('text=Audio Overview').first().click();
-  await page.waitForTimeout(2000);
+  // First, dump the Studio panel DOM structure so we can find the right selectors
+  const domInfo = await page.evaluate(() => {
+    // Find elements containing "Audio Overview"
+    const matches: string[] = [];
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
+    while (walker.nextNode()) {
+      const el = walker.currentNode as HTMLElement;
+      if (el.textContent?.includes('Audio Overview') && el.children.length < 5) {
+        matches.push(`<${el.tagName.toLowerCase()} class="${el.className}" role="${el.getAttribute('role')}">${el.textContent?.trim().substring(0, 80)}`);
+      }
+    }
+    return matches.slice(0, 10).join('\n');
+  });
+  console.log(`    DOM matches for "Audio Overview":\n${domInfo}`);
 
-  // Use JS injection to select Brief (proven reliable — Material radio buttons)
-  await page.evaluate(() => {
+  // Click the Audio Overview tile's chevron (">") to open customization dialog.
+  // The tile is a <basic-create-artifact-button> containing "Audio Overview" + "chevron_forward".
+  // Use Playwright's native click on the chevron icon (Material Icon rendered via font).
+  // The chevron text "chevron_forward" is rendered as the > icon.
+  const chevron = page.locator('basic-create-artifact-button')
+    .filter({ hasText: 'Audio Overview' })
+    .locator('text=chevron_forward');
+  await chevron.click({ force: true });
+  console.log(`    Clicked Audio Overview chevron via Playwright`);
+
+  // Wait for customization page to load (URL should change or dialog should appear)
+  await page.waitForTimeout(3000);
+
+  // Check if we're on a customization page or if a dialog appeared
+  // Take a screenshot for debugging
+  await page.screenshot({ path: join(ROOT, 'debug-audio-step.png') });
+
+  // Select Brief format via JS injection
+  const briefResult = await page.evaluate(() => {
     for (const el of document.querySelectorAll('*')) {
       if (el.textContent?.trim() === 'Brief' &&
           (el.closest('[role="radiogroup"]') || el.closest('[role="radio"]'))) {
         (el as HTMLElement).click();
-        break;
+        return 'clicked-brief';
       }
     }
+    return 'brief-not-found';
   });
-  await page.waitForTimeout(500);
+  console.log(`    Brief selection: ${briefResult}`);
+  await page.waitForTimeout(1000);
 
-  // Click Generate
-  await page.getByRole('button', { name: /generate/i }).click();
+  // Click Generate — it's inside the Customize Audio Overview dialog (cdk-overlay)
+  // Try overlay first, then page-wide
+  const overlayGen = page.locator('.cdk-overlay-container button').filter({ hasText: /Generate/ });
+  const pageGen = page.locator('button').filter({ hasText: /Generate/ }).last();
+
+  const inOverlay = await overlayGen.count() > 0;
+  const genBtn = inOverlay ? overlayGen.last() : pageGen;
+  await genBtn.waitFor({ state: 'visible', timeout: 10000 });
+  await genBtn.click();
+  console.log(`    Generate click: done (overlay=${inOverlay})`);
 }
 
 async function waitForGeneration(page: any): Promise<void> {
-  // Wait for the audio to appear — indicated by a Play button in the Studio panel
-  await page.waitForFunction(() => {
-    // Check for play button (generation complete)
-    const playBtn = document.querySelector('button[aria-label*="Play"]');
-    if (playBtn) return true;
-    // Check for any audio element with Brief label
-    const studioText = document.querySelector('[class*="studio"], [role="complementary"]');
-    if (studioText && /Brief.*source/i.test(studioText.textContent || '')) return true;
-    return false;
-  }, { timeout: GENERATION_TIMEOUT, polling: GENERATION_POLL });
+  // Set page-level default timeout high enough for generation
+  page.setDefaultTimeout(GENERATION_TIMEOUT);
+
+  console.log(`    Waiting up to ${GENERATION_TIMEOUT / 1000}s for audio generation...`);
+
+  // Poll for completion — check for play button, audio title, or "Brief" label
+  const startTime = Date.now();
+  while (Date.now() - startTime < GENERATION_TIMEOUT) {
+    const status = await page.evaluate(() => {
+      const body = document.body?.textContent || '';
+      // Check for completed audio (has play button and Brief/source label)
+      if (body.includes('Brief') && body.includes('source') && body.includes('play_arrow')) return 'done';
+      // Check for play button aria label
+      const playBtn = document.querySelector('button[aria-label*="Play"]');
+      if (playBtn) return 'done';
+      // Check if still generating
+      if (body.includes('Generating Audio Overview')) return 'generating';
+      // Check for explicit error states
+      if (body.includes('Failed to generate') || body.includes('generation failed')) return 'error';
+      return 'waiting';
+    });
+
+    if (status === 'done') {
+      console.log(`    Generation complete (${Math.round((Date.now() - startTime) / 1000)}s)`);
+      return;
+    }
+    if (status === 'error') throw new Error('NotebookLM reported an error during generation');
+    if (status === 'generating') {
+      // Still generating — wait and check again
+    }
+
+    await page.waitForTimeout(GENERATION_POLL);
+  }
+  throw new Error(`Generation timed out after ${GENERATION_TIMEOUT / 1000}s`);
 }
 
 async function downloadAudio(page: any, slug: string): Promise<string> {
