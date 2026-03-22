@@ -26,6 +26,7 @@ interface Story {
   whatIf?: string;
   wip?: boolean;
   audio?: string;
+  video?: string;
 }
 
 interface Props {
@@ -185,6 +186,26 @@ const shareLinks = {
 
   <main>
     <slot />
+
+    {story.video && (
+      <div class="story-video-block">
+        <div class="story-video-inner">
+          <div class="story-video-label">Deep Dive</div>
+          <div class="story-video-title">Watch the full breakdown</div>
+          <div class="story-video-wrap">
+            <video
+              class="story-video"
+              src={story.video}
+              controls
+              preload="metadata"
+              playsinline
+              poster=""
+            />
+          </div>
+          <div class="story-video-credit">Audio Overview · NotebookLM</div>
+        </div>
+      </div>
+    )}
 
     {story.whatIf && (
       <div class="what-if-block">
