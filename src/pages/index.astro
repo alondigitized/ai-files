@@ -123,13 +123,25 @@ const pad = (n: number) => String(n).padStart(2, '0');
     height: 180px;
   }
   .edition-card.active { opacity: 1; }
+  .edition-card.active::after {
+    content: ''; position: absolute; bottom: 0; left: 10%; right: 10%;
+    height: 3px; border-radius: 3px 3px 0 0;
+  }
   .edition-card[data-edition="dark"].active {
     border-color: rgba(255,77,77,0.5);
     box-shadow: 0 0 24px rgba(255,77,77,0.15);
   }
+  .edition-card[data-edition="dark"].active::after {
+    background: #ff4d4d;
+    box-shadow: 0 0 12px rgba(255,77,77,0.6);
+  }
   .edition-card[data-edition="light"].active {
     border-color: rgba(200,150,62,0.5);
     box-shadow: 0 0 24px rgba(200,150,62,0.15);
+  }
+  .edition-card[data-edition="light"].active::after {
+    background: #c8963e;
+    box-shadow: 0 0 12px rgba(200,150,62,0.6);
   }
   .edition-card:not(.active) { opacity: 0.35; }
   .edition-card:not(.active):hover { opacity: 0.55; }
