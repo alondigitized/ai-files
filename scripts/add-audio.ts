@@ -385,10 +385,12 @@ async function main() {
     process.exit(0);
   }
 
-  // Launch browser
+  // Launch browser — use real Chrome for auth (Google blocks bundled Chromium login)
   const { chromium } = await import('playwright');
+  const useHeaded = flags.headed || flags.auth;
   const browser = await chromium.launch({
-    headless: !flags.headed && !flags.auth,
+    channel: 'chrome',          // Use real Chrome install (Google blocks Chromium for login)
+    headless: !useHeaded,
     slowMo: 100,
   });
 
