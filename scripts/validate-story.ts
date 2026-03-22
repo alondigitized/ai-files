@@ -281,6 +281,61 @@ function checkLlmsTxt(slug: string): ValidationResult[] {
   }
 }
 
+function checkChapterStructure(): ValidationResult[] {
+  const results: ValidationResult[] = [];
+  const jsonPath = join(ROOT, 'src/data/stories.json');
+  if (!existsSync(jsonPath)) return [];
+
+  const stories = readJSON<StoryEntry[]>(jsonPath).filter((s: any) => !s.wip);
+
+  for (const side of ['dark', 'light'] as const) {
+    const sideStories = stories
+      .filter((s: any) => (s.side ?? 'dark') === side)
+      .sort((a, b) => a.chapter - b.chapter);
+
+    if (sideStories.length === 0) continue;
+
+    // Rule 1: No gaps in chapter numbers
+    const chapters = sideStories.map(s => s.chapter);
+    const expected = Array.from({ length: chapters.length }, (_, i) => i + 1);
+    if (JSON.stringify(chapters) !== JSON.stringify(expected)) {
+      results.push(fail(`chapters:${side}:no-gaps`, `${side} chapters have gaps: [${chapters.join(',')}], expected [${expected.join(',')}]`));
+    } else {
+      results.push(pass(`chapters:${side}:no-gaps`, `${side} chapters are sequential 1–${chapters.length}`));
+    }
+
+    // Group by volume
+    const volumes = new Map<number, typeof sideStories>();
+    for (const s of sideStories) {
+      if (!volumes.has(s.volume)) volumes.set(s.volume, []);
+      volumes.get(s.volume)!.push(s);
+    }
+
+    const volNums = [...volumes.keys()].sort((a, b) => a - b);
+    const lastVol = volNums[volNums.length - 1];
+
+    for (const vol of volNums) {
+      const count = volumes.get(vol)!.length;
+
+      // Rule 2: No more than 6 chapters per volume
+      if (count > 6) {
+        results.push(fail(`chapters:${side}:vol${vol}:max`, `${side} Vol ${vol} has ${count} chapters (max 6)`));
+      }
+
+      // Rule 3: No less than 6 chapters per volume, except last volume
+      if (vol !== lastVol && count < 6) {
+        results.push(fail(`chapters:${side}:vol${vol}:min`, `${side} Vol ${vol} has only ${count} chapters (need 6, only last volume can have fewer)`));
+      }
+
+      if (count <= 6 && (vol === lastVol || count >= 6)) {
+        results.push(pass(`chapters:${side}:vol${vol}`, `${side} Vol ${vol}: ${count} chapter(s)`));
+      }
+    }
+  }
+
+  return results;
+}
+
 function checkIndexAstro(slug: string): ValidationResult[] {
   const indexPath = join(ROOT, 'src/pages/index.astro');
 
@@ -343,6 +398,7 @@ function main() {
 
   const results: ValidationResult[] = [
     ...checkStoriesJson(slug),
+    ...checkChapterStructure(),
     ...checkAstroPage(slug),
     ...checkLlmsTxt(slug),
     ...checkIndexAstro(slug),

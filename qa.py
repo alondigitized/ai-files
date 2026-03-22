@@ -51,6 +51,38 @@ for story in stories_data:
                 if 'url' not in src or 'label' not in src:
                     errors.append(f'stories.json [{slug}]: source entry missing url or label')
 
+# ── 1b. Chapter structure rules ────────────────────────────────────────────────
+for side in ('dark', 'light'):
+    side_stories = sorted(
+        [s for s in stories_data if s.get('side', 'dark') == side and not s.get('wip')],
+        key=lambda s: s['chapter']
+    )
+    if not side_stories:
+        continue
+
+    # Rule 1: No gaps in chapter numbers
+    chapters = [s['chapter'] for s in side_stories]
+    expected = list(range(1, len(side_stories) + 1))
+    if chapters != expected:
+        errors.append(f'chapters [{side}]: gaps detected — got {chapters}, expected {expected}')
+
+    # Group by volume
+    vols: dict[int, list] = {}
+    for s in side_stories:
+        vols.setdefault(s['volume'], []).append(s)
+
+    vol_nums = sorted(vols.keys())
+    last_vol = vol_nums[-1] if vol_nums else 0
+
+    for v in vol_nums:
+        count = len(vols[v])
+        # Rule 2: No more than 6 chapters per volume
+        if count > 6:
+            errors.append(f'chapters [{side}]: Vol {v} has {count} chapters (max 6)')
+        # Rule 3: No less than 6 chapters per volume, except last volume
+        if v != last_vol and count < 6:
+            errors.append(f'chapters [{side}]: Vol {v} has only {count} chapters (need 6, only last volume can have fewer)')
+
 # ── 2. .astro story pages ──────────────────────────────────────────────────────
 astro_files = sorted(f for f in os.listdir(STORIES_DIR) if f.endswith('.astro'))
 slugs_in_files = {f.replace('.astro', '') for f in astro_files}
