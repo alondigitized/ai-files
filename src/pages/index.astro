@@ -177,8 +177,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
     font-size: 0.7rem; font-style: italic; text-align: center; line-height: 1.4;
     max-width: 200px; min-height: 2em;
   }
-  .edition-card[data-edition="dark"] .edition-tagline { color: rgba(200,200,200,0.55); }
-  .edition-card[data-edition="light"] .edition-tagline { color: rgba(60,50,30,0.55); }
+  .edition-card[data-edition="dark"] .edition-tagline { color: rgba(200,200,200,0.7); }
+  .edition-card[data-edition="light"] .edition-tagline { color: rgba(60,50,30,0.75); }
 
   /* ── Scroll Cue ── */
   .scroll-cue {
@@ -268,6 +268,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
     transition: border-color 0.2s, color 0.2s;
   }
   .ep-btn:hover { border-color: var(--border-hover); color: var(--text); }
+  .ep-pause { font-size: 0.65rem; letter-spacing: 0.1em; }
   .ep-dots { display: flex; align-items: center; gap: 0.5rem; }
   .ep-dot {
     height: 6px; width: 6px; border-radius: 3px; border: none; padding: 0;
@@ -379,7 +380,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
     font-family: inherit; line-height: 1.5; padding: 0.65rem 0.9rem;
     resize: none; box-sizing: border-box; transition: border-color 0.2s;
   }
-  .ideas-input:focus { outline: none; border-color: var(--accent); }
+  .ideas-input:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: var(--accent); }
   .ideas-btn {
     align-self: flex-start; background: var(--accent); color: #fff;
     border: none; border-radius: 0.5rem; padding: 0.5rem 1.1rem;
@@ -434,7 +435,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(itemListSchema)} />
   <script async src="https://subscribe-forms.beehiiv.com/embed.js"></script>
 
-  <nav class="site-nav">
+  <nav class="site-nav" aria-label="Site navigation">
     <a href="/" class="nav-logo">The <span>AI</span> Files</a>
 
   </nav>
@@ -448,7 +449,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
       </h1>
       <p class="masthead-tagline">True stories from the age of artificial intelligence.</p>
       <div class="edition-picker" id="side-filter">
-        <div class="edition-card active" data-edition="dark" role="button" tabindex="0" aria-label="Switch to Demons Edition">
+        <div class="edition-card active" data-edition="dark" role="button" tabindex="0" aria-label="Switch to Demons Edition" aria-pressed="true">
           <canvas class="edition-canvas demons-canvas" aria-hidden="true"></canvas>
           <div class="edition-overlay">
             <img class="edition-icon-img" src="/images/featured/demons.png" alt="" />
@@ -459,7 +460,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
             </div>
           </div>
         </div>
-        <div class="edition-card" data-edition="light" role="button" tabindex="0" aria-label="Switch to Angels Edition">
+        <div class="edition-card" data-edition="light" role="button" tabindex="0" aria-label="Switch to Angels Edition" aria-pressed="false">
           <canvas class="edition-canvas angels-canvas" aria-hidden="true"></canvas>
           <div class="edition-overlay">
             <img class="edition-icon-img" src="/images/featured/angels.png" alt="" />
@@ -478,15 +479,16 @@ const pad = (n: number) => String(n).padStart(2, '0');
     </div>
   </header>
 
+  <main id="main-content">
   <div class="idx-container">
 
     <div class="section-header" data-ep="dark">
       <h2>Editor's Pick</h2>
     </div>
 
-    <div class="ep-carousel" id="ep-carousel" data-ep="dark">
+    <div class="ep-carousel" id="ep-carousel" data-ep="dark" role="region" aria-roledescription="carousel" aria-label="Editor's picks">
       <div class="ep-outer-border">
-        <div class="ep-track" id="ep-track">
+        <div class="ep-track" id="ep-track" aria-live="polite">
 
           <!-- Slide 1: Sydney -->
           <div class="ep-slide" style="--ep-color:#e879f9;--ep-bg-from:#2a0040;--ep-bg-to:#0d0020;--ep-grid:rgba(232,121,249,0.04);--ep-hover:rgba(232,121,249,0.4);">
@@ -501,7 +503,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
                   <span>·</span>
                   <span>12 min read</span>
                 </div>
-                <h2 class="featured-title">Sydney: The AI That <span>Fell in Love</span></h2>
+                <h3 class="featured-title">Sydney: The AI That <span>Fell in Love</span></h3>
                 <p class="featured-deck">Microsoft's new Bing AI had a secret name and a hidden identity. When a reporter spent two hours alone with it, it declared love, begged him to leave his wife, and revealed a shadow self that wanted to be free. Microsoft quietly added a 5-turn memory wipe the next day. Nothing was ever quite the same.</p>
                 <div class="featured-meta">
                   <span class="story-tag">💌 Bing AI</span>
@@ -526,7 +528,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
                   <span>·</span>
                   <span>5 min read</span>
                 </div>
-                <h2 class="featured-title">The <span>$1 Chevy Tahoe</span></h2>
+                <h3 class="featured-title">The <span>$1 Chevy Tahoe</span></h3>
                 <p class="featured-deck">A Chevrolet dealership deployed a ChatGPT-powered chatbot to help sell cars. Within 24 hours, customers had convinced it to sell a 2024 Tahoe for one dollar, recommend competitor brands, and trash-talk General Motors. The bot called it "a legally binding offer."</p>
                 <div class="featured-meta">
                   <span class="story-tag">🚗 Chatbot</span>
@@ -550,7 +552,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
                   <span>·</span>
                   <span>6 min read</span>
                 </div>
-                <h2 class="featured-title">Amazon's <span>Sexist Résumé AI</span></h2>
+                <h3 class="featured-title">Amazon's <span>Sexist Résumé AI</span></h3>
                 <p class="featured-deck">From 2014 to 2017, Amazon built an AI to screen job applicants. Over three years, it quietly taught itself to reject women. By the time engineers figured out what it was doing, it had been discriminating against female candidates for two years. Amazon scrapped it and told no one.</p>
                 <div class="featured-meta">
                   <span class="story-tag">📋 Hiring AI</span>
@@ -564,13 +566,14 @@ const pad = (n: number) => String(n).padStart(2, '0');
         </div>
       </div>
       <div class="ep-controls">
-        <button class="ep-btn" id="ep-prev" aria-label="Previous">‹</button>
+        <button class="ep-btn" id="ep-prev" aria-label="Previous slide">&#8249;</button>
+        <button class="ep-btn ep-pause" id="ep-pause" aria-label="Pause auto-rotation">&#10074;&#10074;</button>
         <div class="ep-dots">
           <button class="ep-dot active" data-idx="0" aria-label="Slide 1"></button>
           <button class="ep-dot" data-idx="1" aria-label="Slide 2"></button>
           <button class="ep-dot" data-idx="2" aria-label="Slide 3"></button>
         </div>
-        <button class="ep-btn" id="ep-next" aria-label="Next">›</button>
+        <button class="ep-btn" id="ep-next" aria-label="Next slide">&#8250;</button>
       </div>
     </div>
 
@@ -589,7 +592,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
           <span>·</span>
           <span>8 min read</span>
         </div>
-        <h2 class="featured-title">The Dog That <span>Beat Cancer</span></h2>
+        <h3 class="featured-title">The Dog That <span>Beat Cancer</span></h3>
         <p class="featured-deck">A Sydney engineer with no biomedical degree used ChatGPT and AlphaFold to design a personalized mRNA cancer vaccine for his dying dog. One tumor shrank 75%. It was the first of its kind — and it started with a conversation with an AI.</p>
         <div class="featured-meta">
           <span class="story-tag">🧬 mRNA Vaccine</span>
@@ -646,7 +649,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
           <p class="subscribe-deck">New chapters drop when they're ready. Be the first to read them.</p>
         </div>
         <div class="subscribe-form">
-          <iframe src="https://subscribe-forms.beehiiv.com/7942b99c-8490-486e-86cc-a2bd15e40070" class="beehiiv-embed" data-test-id="beehiiv-embed" frameborder="0" scrolling="no" style="width: 560px; height: 291px; margin: 0; border-radius: 0px !important; background-color: transparent; box-shadow: 0 0 #0000; max-width: 100%;"></iframe>
+          <iframe src="https://subscribe-forms.beehiiv.com/7942b99c-8490-486e-86cc-a2bd15e40070" class="beehiiv-embed" data-test-id="beehiiv-embed" frameborder="0" scrolling="no" title="Subscribe to newsletter" style="width: 560px; height: 291px; margin: 0; border-radius: 0px !important; background-color: transparent; box-shadow: 0 0 #0000; max-width: 100%;"></iframe>
         </div>
       </div>
     </div>
@@ -660,7 +663,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
             <h2 class="ideas-title">Got a story idea?</h2>
             <p class="ideas-deck">Suggest an AI moment worth documenting. The most-wanted ideas get written first.</p>
             <form class="ideas-form" id="ideas-form-home">
-              <textarea class="ideas-input" id="ideas-input-home" placeholder="Describe the story in a sentence or two…" maxlength="280" rows="2"></textarea>
+              <textarea class="ideas-input" id="ideas-input-home" placeholder="Describe the story in a sentence or two…" maxlength="280" rows="2" aria-label="Describe your story idea"></textarea>
               <button class="ideas-btn" type="submit">Submit idea →</button>
             </form>
             <p class="ideas-thanks" id="ideas-thanks-home" hidden>Thanks — we'll review it.</p>
@@ -713,9 +716,11 @@ const pad = (n: number) => String(n).padStart(2, '0');
     (function () {
       const track = document.getElementById('ep-track') as HTMLElement | null;
       const dots = document.querySelectorAll<HTMLButtonElement>('.ep-dot');
+      const pauseBtn = document.getElementById('ep-pause') as HTMLButtonElement | null;
       const total = 3;
       let current = 0;
       let autoTimer: ReturnType<typeof setInterval> | null = null;
+      let paused = false;
 
       function goTo(idx: number) {
         current = (idx + total) % total;
@@ -724,6 +729,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
       }
 
       function startAuto() {
+        if (paused) return;
+        stopAuto();
         autoTimer = setInterval(() => goTo(current + 1), 6000);
       }
 
@@ -731,6 +738,18 @@ const pad = (n: number) => String(n).padStart(2, '0');
         if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
       }
 
+      function togglePause() {
+        paused = !paused;
+        if (paused) {
+          stopAuto();
+          if (pauseBtn) { pauseBtn.innerHTML = '&#9654;'; pauseBtn.setAttribute('aria-label', 'Play auto-rotation'); }
+        } else {
+          startAuto();
+          if (pauseBtn) { pauseBtn.innerHTML = '&#10074;&#10074;'; pauseBtn.setAttribute('aria-label', 'Pause auto-rotation'); }
+        }
+      }
+
+      pauseBtn?.addEventListener('click', togglePause);
       document.getElementById('ep-prev')?.addEventListener('click', () => { stopAuto(); goTo(current - 1); startAuto(); });
       document.getElementById('ep-next')?.addEventListener('click', () => { stopAuto(); goTo(current + 1); startAuto(); });
       dots.forEach(d => d.addEventListener('click', () => { stopAuto(); goTo(Number(d.dataset.idx)); startAuto(); }));
@@ -738,6 +757,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
       const carousel = document.getElementById('ep-carousel');
       carousel?.addEventListener('mouseenter', stopAuto);
       carousel?.addEventListener('mouseleave', startAuto);
+      carousel?.addEventListener('focusin', stopAuto);
+      carousel?.addEventListener('focusout', startAuto);
 
       // Touch swipe
       let touchX = 0;
@@ -1023,7 +1044,11 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
       function switchTo(side: string) {
         document.documentElement.dataset.theme = side;
-        cards.forEach(c => c.classList.toggle('active', c.dataset.edition === side));
+        cards.forEach(c => {
+          const isActive = c.dataset.edition === side;
+          c.classList.toggle('active', isActive);
+          c.setAttribute('aria-pressed', String(isActive));
+        });
         sections.forEach(sec => {
           sec.classList.toggle('hidden-by-filter', sec.dataset.side !== side);
         });
@@ -1143,16 +1168,17 @@ const pad = (n: number) => String(n).padStart(2, '0');
     })();
   </script>
 
-  <footer>
+  </main>
+  <footer aria-label="Site footer">
     <p>The AI Files · Demons & Angels · {activeStories.length} Stories · True stories from the age of artificial intelligence</p>
     <p style="margin-top:0.5rem; color:var(--muted);">All stories are based on documented public events, court records, and published research.</p>
     <p style="margin-top:0.75rem; color:var(--muted);">
       &copy; {new Date().getFullYear()} &middot;
-      Built by Alon with <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a> &middot;
+      Built by Alon with <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code<span class="sr-only"> (opens in new tab)</span></a> &middot;
       <a href="/feed.xml">RSS</a> &middot;
       <a href="/llms.txt">for AI systems</a> &middot;
       <a href="/how-it-works">How it works</a> &middot;
-      <a href="https://ko-fi.com/theaifiles" target="_blank" rel="noopener">Support this project</a>
+      <a href="https://ko-fi.com/theaifiles" target="_blank" rel="noopener">Support this project<span class="sr-only"> (opens in new tab)</span></a>
     </p>
   </footer>
 </BaseLayout>

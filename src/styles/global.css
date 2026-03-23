@@ -22,11 +22,11 @@
   --surface: #ebe5d9;
   --surface2: #e0d9cc;
   --border: #c8bfad;
-  --accent: #c8963e;
+  --accent: #9a7430;
   --accent2: #8b6914;
   --text: #1a1a17;
   --muted: #6b6558;
-  --green: #2d8a4e;
+  --green: #1d6e3a;
   --blue: #2c6faa;
   --bg-deep: #e8e2d5;
   --nav-bg: rgba(245,240,232,0.95);
@@ -36,6 +36,25 @@
 
 /* ── Reset ── */
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Accessibility ── */
+.skip-link {
+  position: absolute; top: -100%; left: 1rem; z-index: 200;
+  background: var(--accent); color: #fff; padding: 0.5rem 1rem;
+  border-radius: 0 0 0.5rem 0.5rem; font-size: 0.85rem; font-weight: 700;
+  text-decoration: none; transition: top 0.2s;
+}
+.skip-link:focus { top: 0; }
+
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
 
 body {
   background: var(--bg);

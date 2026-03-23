@@ -131,7 +131,7 @@ const shareLinks = {
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
 
-  <nav class="site-nav">
+  <nav class="site-nav" aria-label="Site navigation">
     <a href="/" class="nav-logo">The <span>AI</span> Files</a>
     <a href="/" class="nav-link">← Archive</a>
   </nav>
@@ -184,7 +184,7 @@ const shareLinks = {
     <button class="share-btn share-copy" data-url={canonicalURL} aria-label="Copy link">Link</button>
   </div>
 
-  <main>
+  <main id="main-content">
     <slot />
 
     {story.video && (
@@ -497,16 +497,16 @@ const shareLinks = {
     })();
   </script>
 
-  <footer>
+  <footer aria-label="Site footer">
     <div>The AI Files &middot; True stories from the age of artificial intelligence</div>
     <div class="footer-sub">All stories are based on documented public events, published research, and verified reporting.</div>
     <div class="footer-sub" style="margin-top:0.75rem;">
       &copy; {new Date().getFullYear()} &middot;
-      Built by Alon with <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code</a> &middot;
+      Built by Alon with <a href="https://claude.ai/code" target="_blank" rel="noopener">Claude Code<span class="sr-only"> (opens in new tab)</span></a> &middot;
       <a href="/feed.xml">RSS</a> &middot;
       <a href="/llms.txt">for AI systems</a> &middot;
       <a href="/how-it-works">How it works</a> &middot;
-      <a href="https://ko-fi.com/theaifiles" target="_blank" rel="noopener">Support this project</a>
+      <a href="https://ko-fi.com/theaifiles" target="_blank" rel="noopener">Support this project<span class="sr-only"> (opens in new tab)</span></a>
     </div>
   </footer>
 </BaseLayout>
