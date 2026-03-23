@@ -134,10 +134,16 @@ async function checkAuthed(page: any): Promise<boolean> {
 async function ensureAuth(context: any): Promise<void> {
   const page = await context.newPage();
   await page.goto(NOTEBOOKLM_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
-  // SPA needs time to render after DOM loads
-  await page.waitForTimeout(8000);
 
-  const isAuthed = await checkAuthed(page);
+  // SPA can take a while to render — retry auth check for up to 30s
+  let isAuthed = false;
+  for (let i = 0; i < 6; i++) {
+    await page.waitForTimeout(5000);
+    isAuthed = await checkAuthed(page);
+    if (isAuthed) break;
+    console.log(`  Waiting for NotebookLM to load... (${(i + 1) * 5}s)`);
+  }
+
   await page.close();
 
   if (isAuthed) {
@@ -262,15 +268,22 @@ async function waitForGeneration(page: any): Promise<void> {
   while (Date.now() - startTime < GENERATION_TIMEOUT) {
     const status = await page.evaluate(() => {
       const body = document.body?.textContent || '';
-      // Check for play button aria label (most reliable indicator)
-      const playBtn = document.querySelector('button[aria-label*="Play"]');
-      if (playBtn) return 'done';
-      // Check for completed audio (has play_arrow icon text)
-      if (body.includes('play_arrow') && !body.includes('Generating Audio Overview')) return 'done';
-      // Check if still generating
+      // Check if still generating (check FIRST — takes priority over everything)
       if (body.includes('Generating Audio Overview')) return 'generating';
-      // Check for explicit error states
-      if (body.includes('Failed to generate') || body.includes('generation failed') || body.includes('Something went wrong')) return 'error';
+      // Check for play button (multiple selectors for robustness)
+      const playBtn = document.querySelector('button[aria-label*="Play"], button[aria-label*="play"]');
+      if (playBtn) return 'done';
+      // Check for play_arrow Material icon (text content of completed audio tile)
+      if (body.includes('play_arrow')) return 'done';
+      // Check for audio duration text (e.g. "1:23" or "2:45") near Audio Overview
+      const studioPanel = document.querySelector('studio-panel, .studio-panel');
+      if (studioPanel) {
+        const panelText = studioPanel.textContent || '';
+        // If panel has Audio Overview but no "Generating" and has a time stamp, it's done
+        if (panelText.includes('Audio Overview') && /\d+:\d{2}/.test(panelText)) return 'done';
+      }
+      // Check for specific audio generation error
+      if (body.includes('Failed to generate audio') || body.includes('Audio generation failed')) return 'error';
       return 'waiting';
     });
 
