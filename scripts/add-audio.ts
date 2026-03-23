@@ -45,7 +45,7 @@ const AUDIO_DIR = join(ROOT, 'public', 'audio');
 const SITE_URL = 'https://theaifiles.app';
 const NOTEBOOKLM_URL = 'https://notebooklm.google.com/';
 const FFMPEG = 'ffmpeg';
-const GENERATION_TIMEOUT = 300_000; // 5 min
+const GENERATION_TIMEOUT = 900_000; // 15 min
 const GENERATION_POLL = 5_000;      // 5s
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -262,25 +262,27 @@ async function waitForGeneration(page: any): Promise<void> {
   while (Date.now() - startTime < GENERATION_TIMEOUT) {
     const status = await page.evaluate(() => {
       const body = document.body?.textContent || '';
-      // Check for completed audio (has play button and Brief/source label)
-      if (body.includes('Brief') && body.includes('source') && body.includes('play_arrow')) return 'done';
-      // Check for play button aria label
+      // Check for play button aria label (most reliable indicator)
       const playBtn = document.querySelector('button[aria-label*="Play"]');
       if (playBtn) return 'done';
+      // Check for completed audio (has play_arrow icon text)
+      if (body.includes('play_arrow') && !body.includes('Generating Audio Overview')) return 'done';
       // Check if still generating
       if (body.includes('Generating Audio Overview')) return 'generating';
       // Check for explicit error states
-      if (body.includes('Failed to generate') || body.includes('generation failed')) return 'error';
+      if (body.includes('Failed to generate') || body.includes('generation failed') || body.includes('Something went wrong')) return 'error';
       return 'waiting';
     });
 
+    const elapsed = Math.round((Date.now() - startTime) / 1000);
     if (status === 'done') {
-      console.log(`    Generation complete (${Math.round((Date.now() - startTime) / 1000)}s)`);
+      console.log(`    Generation complete (${elapsed}s)`);
       return;
     }
     if (status === 'error') throw new Error('NotebookLM reported an error during generation');
-    if (status === 'generating') {
-      // Still generating — wait and check again
+    // Log every 30s
+    if (elapsed % 30 < (GENERATION_POLL / 1000)) {
+      console.log(`    ... ${status} (${elapsed}s)`);
     }
 
     await page.waitForTimeout(GENERATION_POLL);
@@ -291,32 +293,103 @@ async function waitForGeneration(page: any): Promise<void> {
 async function downloadAudio(page: any, slug: string): Promise<string> {
   const rawPath = join(AUDIO_DIR, `${slug}-raw.m4a`);
 
-  // Click the 3-dot menu
-  const moreBtn = page.locator('button[aria-label*="More"], button[aria-label*="more"]')
-    .filter({ has: page.locator('text=more_vert').or(page.locator('[data-icon="more_vert"]')) })
-    .first();
+  // Debug: log what we see in the audio section
+  const audioButtons = await page.evaluate(() => {
+    const btns = Array.from(document.querySelectorAll('button'));
+    return btns
+      .filter((b: any) => b.offsetParent !== null) // visible only
+      .map((b: any) => ({
+        label: b.getAttribute('aria-label') || '',
+        text: b.textContent?.trim().slice(0, 60) || '',
+        cls: b.className?.slice(0, 60) || '',
+      }))
+      .filter((b: any) => b.label.toLowerCase().includes('more') || b.text.includes('more_vert') || b.text.includes('download'));
+  });
+  console.log(`    Download: found ${audioButtons.length} menu/download buttons:`, JSON.stringify(audioButtons));
 
-  // Fallback: try finding any More button near the audio area
-  const moreBtnAlt = page.locator('button').filter({ hasText: /^$/ })
-    .locator('visible=true')
-    .last();
+  // Strategy 1: More button inside the studio panel (near the audio player)
+  let menuClicked = false;
+  const studioMoreBtn = page.locator('studio-panel button[aria-label="More"]:has-text("more_vert")').first();
+  if (await studioMoreBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+    await studioMoreBtn.click();
+    menuClicked = true;
+    console.log('    Download: clicked studio panel more_vert button');
+  }
 
-  // Try primary, then fallback
-  const btnToClick = await moreBtn.isVisible({ timeout: 3000 }).catch(() => false)
-    ? moreBtn : moreBtnAlt;
+  // Strategy 2: Last more_vert button on page (usually the audio one at bottom of studio panel)
+  if (!menuClicked) {
+    const allMoreBtns = page.locator('button:has-text("more_vert")');
+    const count = await allMoreBtns.count();
+    if (count > 0) {
+      await allMoreBtns.nth(count - 1).click();
+      menuClicked = true;
+      console.log(`    Download: clicked last more_vert button (${count} total)`);
+    }
+  }
 
-  // Set up download listener before clicking
+  // Strategy 3: Button with aria-label containing "More"
+  if (!menuClicked) {
+    const ariaMoreBtn = page.locator('button[aria-label="More"]').last();
+    if (await ariaMoreBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await ariaMoreBtn.click();
+      menuClicked = true;
+      console.log('    Download: clicked last aria-label More button');
+    }
+  }
+
+  // Strategy 3: Look for a download button/link directly (no menu needed)
+  if (!menuClicked) {
+    const directDl = page.locator('button:has-text("Download"), a:has-text("Download")').first();
+    if (await directDl.isVisible({ timeout: 2000 }).catch(() => false)) {
+      const downloadPromise = page.waitForEvent('download', { timeout: 30000 });
+      await directDl.click();
+      const download = await downloadPromise;
+      await download.saveAs(rawPath);
+      console.log('    Download: used direct download button');
+      return rawPath;
+    }
+  }
+
+  if (!menuClicked) {
+    // Take debug screenshot
+    await page.screenshot({ path: `debug-download-${slug}.png` });
+    throw new Error('Could not find more/download button — see debug-download-' + slug + '.png');
+  }
+
+  await page.waitForTimeout(1000);
+
+  // Debug: log overlay content
+  const overlayContent = await page.evaluate(() => {
+    const overlay = document.querySelector('.cdk-overlay-container');
+    return overlay?.textContent?.trim().slice(0, 200) || '(no overlay content)';
+  });
+  console.log(`    Download: overlay content = "${overlayContent}"`);
+
+  // Now click "Download" in the dropdown menu
   const downloadPromise = page.waitForEvent('download', { timeout: 30000 });
 
-  await btnToClick.click();
-  await page.waitForTimeout(500);
+  // Try multiple selectors for the Download menu item
+  const dlItem = page.locator('.cdk-overlay-container').getByText('Download').first();
+  const dlItemAlt = page.locator('.cdk-overlay-container button, .cdk-overlay-container [role="menuitem"]').filter({ hasText: 'Download' }).first();
+  const dlItemFinal = page.getByText('Download').first();
 
-  // Click Download menu item
-  await page.getByText('Download').click();
+  if (await dlItem.isVisible({ timeout: 2000 }).catch(() => false)) {
+    await dlItem.click();
+    console.log('    Download: clicked Download in overlay menu');
+  } else if (await dlItemAlt.isVisible({ timeout: 2000 }).catch(() => false)) {
+    await dlItemAlt.click();
+    console.log('    Download: clicked Download menuitem in overlay');
+  } else if (await dlItemFinal.isVisible({ timeout: 2000 }).catch(() => false)) {
+    await dlItemFinal.click();
+    console.log('    Download: clicked Download (global fallback)');
+  } else {
+    await page.screenshot({ path: `debug-download-${slug}.png` });
+    throw new Error('Menu opened but no Download option found — see debug-download-' + slug + '.png');
+  }
 
-  // Wait for and save the download
   const download = await downloadPromise;
   await download.saveAs(rawPath);
+  console.log(`    Download: saved to ${rawPath}`);
 
   return rawPath;
 }
@@ -349,25 +422,11 @@ function optimizeAudio(inputPath: string, outputPath: string): { duration: strin
 // ─── stories.json Update ────────────────────────────────────────────────────
 
 function updateStoriesJson(slug: string): void {
-  let content = readFileSync(STORIES_PATH, 'utf-8');
-
-  // Check if audio field already exists for this slug
-  const audioPattern = new RegExp(`"slug":\\s*"${slug}"[\\s\\S]*?"audio":`);
-  if (audioPattern.test(content)) {
-    // Replace existing audio value
-    content = content.replace(
-      new RegExp(`("slug":\\s*"${slug}"[\\s\\S]*?"audio":\\s*)"[^"]*"`),
-      `$1"/audio/${slug}.m4a"`
-    );
-  } else {
-    // Insert audio field after slug line
-    content = content.replace(
-      `"slug": "${slug}",`,
-      `"slug": "${slug}",\n    "audio": "/audio/${slug}.m4a",`
-    );
-  }
-
-  writeFileSync(STORIES_PATH, content, 'utf-8');
+  const stories = JSON.parse(readFileSync(STORIES_PATH, 'utf-8'));
+  const story = stories.find((s: any) => s.slug === slug);
+  if (!story) throw new Error(`Story "${slug}" not found in stories.json`);
+  story.audio = `/audio/${slug}.m4a`;
+  writeFileSync(STORIES_PATH, JSON.stringify(stories, null, 2) + '\n', 'utf-8');
 }
 
 // ─── Process a Single Story ─────────────────────────────────────────────────
