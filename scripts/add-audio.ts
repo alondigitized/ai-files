@@ -193,9 +193,20 @@ async function createNotebookWithSource(page: any, slug: string): Promise<void> 
   }, { timeout: 15000 });
   await page.locator('.cdk-overlay-container').getByRole('button', { name: /insert/i }).click();
 
-  // Wait for source to be ingested
+  // Wait for source to be ingested — the notebook needs time to process the URL
   await page.waitForURL(/notebook\/[^?]+$/, { timeout: 60000 });
-  await page.waitForTimeout(3000);
+  // Wait until the Audio Overview tile becomes interactive (not just present)
+  // The tile shows "chevron_forward" when ready; before that the studio panel says "will be saved here"
+  await page.waitForFunction(() => {
+    const panel = document.querySelector('studio-panel, .studio-panel, section.studio-panel');
+    if (!panel) return false;
+    const text = panel.textContent || '';
+    // Ready when Audio Overview tile is interactive (chevron visible, no "will be saved here")
+    return text.includes('Audio Overview') && text.includes('chevron_forward') && !text.includes('will be saved here');
+  }, { timeout: 120000 }).catch(() => {
+    console.log('    Warning: studio panel readiness check timed out, proceeding anyway');
+  });
+  await page.waitForTimeout(2000);
 }
 
 async function generateBriefAudio(page: any): Promise<void> {
@@ -227,22 +238,48 @@ async function generateBriefAudio(page: any): Promise<void> {
   // Wait for customization page to load (URL should change or dialog should appear)
   await page.waitForTimeout(3000);
 
-  // Check if we're on a customization page or if a dialog appeared
-  // Take a screenshot for debugging
+  // Take a screenshot AFTER chevron click for debugging
   await page.screenshot({ path: join(ROOT, 'debug-audio-step.png') });
 
-  // Select Brief format via JS injection
-  const briefResult = await page.evaluate(() => {
-    for (const el of document.querySelectorAll('*')) {
-      if (el.textContent?.trim() === 'Brief' &&
-          (el.closest('[role="radiogroup"]') || el.closest('[role="radio"]'))) {
-        (el as HTMLElement).click();
-        return 'clicked-brief';
-      }
-    }
-    return 'brief-not-found';
+  // Debug: log what's in the overlay after clicking chevron
+  const overlayText = await page.evaluate(() => {
+    const overlay = document.querySelector('.cdk-overlay-container');
+    return overlay?.textContent?.trim().slice(0, 300) || '(no overlay)';
   });
-  console.log(`    Brief selection: ${briefResult}`);
+  console.log(`    Overlay after chevron: "${overlayText.slice(0, 150)}"`);
+
+  // Select Brief format — try multiple strategies
+  // Strategy 1: Click the "Brief" text directly via Playwright
+  const briefLabel = page.locator('.cdk-overlay-container').getByText('Brief', { exact: true }).first();
+  const briefLabelAlt = page.getByText('Brief', { exact: true }).first();
+  let briefClicked = false;
+
+  if (await briefLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
+    await briefLabel.click();
+    briefClicked = true;
+  } else if (await briefLabelAlt.isVisible({ timeout: 2000 }).catch(() => false)) {
+    await briefLabelAlt.click();
+    briefClicked = true;
+  }
+
+  // Strategy 2: JS injection as fallback
+  if (!briefClicked) {
+    const briefResult = await page.evaluate(() => {
+      // Try clicking any element with text "Brief" near a radio or form context
+      for (const el of document.querySelectorAll('*')) {
+        const text = el.textContent?.trim();
+        if (text === 'Brief' && el.children.length === 0) {
+          (el as HTMLElement).click();
+          return 'clicked-brief-js';
+        }
+      }
+      return 'brief-not-found';
+    });
+    briefClicked = briefResult !== 'brief-not-found';
+    console.log(`    Brief selection: ${briefResult}`);
+  } else {
+    console.log('    Brief selection: clicked-brief');
+  }
   await page.waitForTimeout(1000);
 
   // Click Generate — it's inside the Customize Audio Overview dialog (cdk-overlay)
