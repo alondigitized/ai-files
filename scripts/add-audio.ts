@@ -195,21 +195,22 @@ async function createNotebookWithSource(page: any, slug: string): Promise<void> 
 
   // Wait for source to be ingested — the notebook needs time to process the URL
   await page.waitForURL(/notebook\/[^?]+$/, { timeout: 60000 });
-  // Wait until the Audio Overview tile becomes interactive (not just present)
-  // The tile shows "chevron_forward" when ready; before that the studio panel says "will be saved here"
+  // Wait until the Audio Overview tile is enabled (no disabled-tile class)
+  // Source ingestion can take 1-3 minutes; the tile starts disabled
   await page.waitForFunction(() => {
-    const panel = document.querySelector('studio-panel, .studio-panel, section.studio-panel');
-    if (!panel) return false;
-    const text = panel.textContent || '';
-    // Ready when Audio Overview tile is interactive (chevron visible, no "will be saved here")
-    return text.includes('Audio Overview') && text.includes('chevron_forward') && !text.includes('will be saved here');
-  }, { timeout: 120000 }).catch(() => {
-    console.log('    Warning: studio panel readiness check timed out, proceeding anyway');
+    const tile = document.querySelector('basic-create-artifact-button');
+    if (!tile) return false;
+    const btn = tile.querySelector('.create-artifact-button-container');
+    if (!btn) return false;
+    // Ready when the tile exists AND doesn't have the disabled-tile class
+    return !btn.classList.contains('disabled-tile');
+  }, { timeout: 180000 }).catch(() => {
+    console.log('    Warning: Audio Overview tile still disabled after 180s, proceeding anyway');
   });
   await page.waitForTimeout(2000);
 }
 
-async function generateBriefAudio(page: any): Promise<void> {
+async function generateBriefAudio(page: any, slug: string = ''): Promise<void> {
   // First, dump the Studio panel DOM structure so we can find the right selectors
   const domInfo = await page.evaluate(() => {
     // Find elements containing "Audio Overview"
@@ -282,16 +283,40 @@ async function generateBriefAudio(page: any): Promise<void> {
   }
   await page.waitForTimeout(1000);
 
-  // Click Generate — it's inside the Customize Audio Overview dialog (cdk-overlay)
-  // Try overlay first, then page-wide
+  // Click Generate — try multiple approaches
+  // The dialog might be Customize (with format options) or simple Generate
   const overlayGen = page.locator('.cdk-overlay-container button').filter({ hasText: /Generate/ });
   const pageGen = page.locator('button').filter({ hasText: /Generate/ }).last();
 
-  const inOverlay = await overlayGen.count() > 0;
-  const genBtn = inOverlay ? overlayGen.last() : pageGen;
-  await genBtn.waitFor({ state: 'visible', timeout: 10000 });
-  await genBtn.click();
-  console.log(`    Generate click: done (overlay=${inOverlay})`);
+  let genClicked = false;
+  if (await overlayGen.last().isVisible({ timeout: 5000 }).catch(() => false)) {
+    await overlayGen.last().click();
+    genClicked = true;
+    console.log('    Generate: clicked in overlay');
+  } else if (await pageGen.isVisible({ timeout: 3000 }).catch(() => false)) {
+    await pageGen.click();
+    genClicked = true;
+    console.log('    Generate: clicked on page');
+  }
+
+  if (!genClicked) {
+    // Last resort: click the Audio Overview tile body directly (starts default Deep Dive)
+    const tileBody = page.locator('basic-create-artifact-button')
+      .filter({ hasText: 'Audio Overview' })
+      .locator('.create-artifact-button-container')
+      .first();
+    if (await tileBody.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await tileBody.click();
+      genClicked = true;
+      console.log('    Generate: clicked tile body directly (default format)');
+    }
+  }
+
+  if (!genClicked) {
+    await page.screenshot({ path: join(ROOT, `debug-generate-${slug}.png`) });
+    throw new Error('Could not find Generate button');
+  }
+  console.log(`    Generate click: done`);
 }
 
 async function waitForGeneration(page: any): Promise<void> {
@@ -491,7 +516,7 @@ async function processStory(page: any, slug: string): Promise<ProcessResult> {
     await createNotebookWithSource(page, slug);
 
     console.log(`  [2/5] Selecting Brief format + generating...`);
-    await generateBriefAudio(page);
+    await generateBriefAudio(page, slug);
 
     console.log(`  [3/5] Waiting for generation (up to 5 min)...`);
     await waitForGeneration(page);
