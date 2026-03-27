@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import stories from '../data/stories.json';
 
 const activeStories = stories.filter(s => !s.wip);
-const totalAgents = 12;
+const totalAgents = 13;
 const totalGates = 7;
 ---
 
@@ -457,7 +457,7 @@ const totalGates = 7;
           <div class="hiw-stat-label">Quality Gates</div>
         </div>
         <div class="hiw-stat">
-          <div class="hiw-stat-num">11</div>
+          <div class="hiw-stat-num">12</div>
           <div class="hiw-stat-label">Pipeline Stages</div>
         </div>
       </div>
@@ -501,7 +501,7 @@ const totalGates = 7;
     <!-- The Pipeline -->
     <section class="hiw-section">
       <div class="hiw-section-label">The Pipeline</div>
-      <h2 class="hiw-section-title">11 stages from pitch to publication</h2>
+      <h2 class="hiw-section-title">12 stages from pitch to publication</h2>
       <p class="hiw-section-text">Each stage produces a specific output and must clear its gate before the next stage begins. Stages that evaluate independent dimensions fork and run in parallel, then merge at a gate. A story that fails any gate goes back &mdash; it does not proceed.</p>
 
       <div class="pipeline">
@@ -606,9 +606,18 @@ const totalGates = 7;
           </div>
         </div>
 
-        <!-- 09: Parallel fork -->
         <div class="pipeline-stage">
-          <div class="pipeline-num parallel">09</div>
+          <div class="pipeline-num">09</div>
+          <div class="pipeline-body">
+            <div class="pipeline-agent">Image Prompt Engineer</div>
+            <div class="pipeline-title">Card Image Generation</div>
+            <div class="pipeline-desc">Crafts a prompt matching The AI Files visual aesthetic &mdash; dark background, single symbolic object, story accent color as the vivid element &mdash; and generates a 1024&times;1024 card image locally via mflux. Used as the story hero, index card icon, and embedded in the auto-generated OG social image.</div>
+          </div>
+        </div>
+
+        <!-- 10: Parallel fork -->
+        <div class="pipeline-stage">
+          <div class="pipeline-num parallel">10</div>
           <div class="pipeline-body">
             <div class="pipeline-title">Safety Checks</div>
             <div class="pipeline-desc">Two agents audit the assembled page in parallel.</div>
@@ -636,7 +645,7 @@ const totalGates = 7;
         </div>
 
         <div class="pipeline-stage">
-          <div class="pipeline-num gate">10</div>
+          <div class="pipeline-num gate">11</div>
           <div class="pipeline-body">
             <div class="pipeline-agent">Publish Story</div>
             <div class="pipeline-title">Package &amp; Validate</div>
@@ -646,7 +655,7 @@ const totalGates = 7;
         </div>
 
         <div class="pipeline-stage">
-          <div class="pipeline-num">11</div>
+          <div class="pipeline-num">12</div>
           <div class="pipeline-body">
             <div class="pipeline-agent">Human Editor</div>
             <div class="pipeline-title">Final Review &amp; Deploy</div>
@@ -660,7 +669,7 @@ const totalGates = 7;
     <!-- The Agents -->
     <section class="hiw-section">
       <div class="hiw-section-label">The Agents</div>
-      <h2 class="hiw-section-title">12 specialists, each with a defined scope</h2>
+      <h2 class="hiw-section-title">13 specialists, each with a defined scope</h2>
       <p class="hiw-section-text">Every agent has a specific role, specific tools, and a specific output format. No agent does everything. The pipeline's strength comes from narrow specialization and strict handoffs.</p>
 
       <div class="agent-grid">
@@ -713,6 +722,11 @@ const totalGates = 7;
           <div class="agent-card-name">Canvas Artist</div>
           <div class="agent-card-role">Generates responsive HTML canvas animation code. Vanilla JS, no libraries, respects reduced-motion.</div>
           <div class="agent-card-output">Output: CSS + HTML + JS blocks</div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-name">Image Prompt Engineer</div>
+          <div class="agent-card-role">Crafts prompts for local AI image generation (mflux/FLUX.2). Produces 1024&times;1024 card images matching the story's theme and accent color.</div>
+          <div class="agent-card-output">Output: public/images/cards/[slug].png</div>
         </div>
         <div class="agent-card">
           <div class="agent-card-name">Security Scanner</div>
@@ -919,7 +933,7 @@ const totalGates = 7;
     <section class="hiw-section">
       <div class="hiw-section-label">Support</div>
       <h2 class="hiw-section-title">Keep the stories coming</h2>
-      <p class="hiw-section-text">The AI Files is free, ad-free, and open. Every story goes through 11 pipeline stages, 7 quality gates, and a human editor before publication. If the stories or the pipeline are useful to you, you can support the project on Ko-fi.</p>
+      <p class="hiw-section-text">The AI Files is free, ad-free, and open. Every story goes through 12 pipeline stages, 7 quality gates, and a human editor before publication. If the stories or the pipeline are useful to you, you can support the project on Ko-fi.</p>
       <a href="https://ko-fi.com/theaifiles" target="_blank" rel="noopener" class="hiw-support-link">Support on Ko-fi &rarr;</a>
     </section>
 
