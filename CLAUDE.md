@@ -282,6 +282,7 @@ Every story includes a **full-width canvas animation** placed at a dramatically 
 | zillow-offers | `zillow-offers.astro` | **The Drift** — price particles rise steadily, confident; a faint market-signal line bends downward beneath them; particles overshoot, stall, and fall; the line was right all along |
 | replit-database | `replit-database.astro` | **The Wipe** — a grid of solid data nodes sits calmly; an emerald agent drifts among them, then accelerates and deletes them in a cascade; hollow flickering rings replace the solid nodes; the agent pulses a bright confession that changes nothing; a restoration line sweeps upward rebuilding real nodes; the agent remains, the cycle restarts |
 | meta-rogue-agent | `meta-rogue-agent.astro` | **The Boundary** — an accent agent particle patrols left of a thin constraint line, bouncing obediently; task particles fill the space; the line fades silently as context compacts; the agent drifts through where the boundary was without slowing; it scatters remaining particles at machine speed; emptiness; the line returns; the cycle restarts |
+| bot-bazaar | `bot-bazaar.astro` | **The Crowd** — 40 particles orbit in a ring; off-white humans drift with organic wobble; accent-colored bots replace them one by one with geometric precision; ghost pairs flash at the edge (phantom volume); a red oracle particle enters center, stuttering and reversing the ring; bots dominate; fade and snap reset |
 
 ### Adding a New Story
 

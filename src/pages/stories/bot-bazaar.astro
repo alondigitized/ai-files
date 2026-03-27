@@ -1,0 +1,595 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'bot-bazaar')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .bot-bazaar-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* ── Scoreboard ── */
+  .bb-scoreboard { display: grid; grid-template-columns: 1fr 1fr; gap: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .bb-scoreboard-panel { padding: 1.2rem 1.4rem; }
+  .bb-scoreboard-panel:first-child { border-right: 1px solid var(--border); }
+  .bb-scoreboard-label { font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 0.9rem; }
+  .bb-scoreboard-row { display: flex; justify-content: space-between; align-items: baseline; padding: 0.3rem 0; font-size: 0.82rem; line-height: 1.6; }
+  .bb-scoreboard-row .key { color: var(--muted); }
+  .bb-scoreboard-row .val { color: var(--text); font-weight: 600; font-family: 'Courier New', monospace; }
+  .bb-scoreboard-row .val.green { color: var(--green); }
+  .bb-scoreboard-row .val.accent { color: var(--accent); }
+  .bb-scoreboard-row .val.story { color: var(--story); }
+  .bb-scoreboard-verdict { margin-top: 0.6rem; padding-top: 0.6rem; border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--green); font-weight: 600; }
+  .bb-scoreboard-note { font-size: 0.65rem; color: var(--muted); font-style: italic; padding: 0.5rem 1.4rem; border-top: 1px solid var(--border); grid-column: 1 / -1; background: var(--surface2); }
+  @media (max-width: 600px) {
+    .bb-scoreboard { grid-template-columns: 1fr; }
+    .bb-scoreboard-panel:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+
+  /* ── Terminal ── */
+  .bb-terminal { background: #0a0a0a; border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; font-family: 'Courier New', monospace; }
+  .bb-terminal-header { background: var(--surface2); padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .bb-terminal-header .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .bb-terminal-header .dot-r { background: #ff5f57; }
+  .bb-terminal-header .dot-y { background: #febc2e; }
+  .bb-terminal-header .dot-g { background: #28c840; }
+  .bb-terminal-body { padding: 1rem 1.2rem; }
+  .bb-terminal-line { font-size: 0.8rem; line-height: 1.7; color: var(--muted); }
+  .bb-terminal-line .cmd { color: var(--story); }
+  .bb-terminal-line .val { color: var(--text); font-weight: 600; }
+  .bb-terminal-line .profit { color: var(--green); font-weight: 700; font-size: 0.95rem; }
+  .bb-terminal-line .warn { color: var(--accent); }
+  .bb-terminal-divider { border: none; border-top: 1px dashed rgba(255,255,255,0.08); margin: 0.5rem 0; }
+  .bb-terminal-context { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); font-family: inherit; }
+
+  /* ── Oracle Attack ── */
+  .bb-oracle { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .bb-oracle-header { background: var(--surface2); padding: 0.5rem 1rem; font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); font-weight: 700; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
+  .bb-oracle-market { padding: 0.8rem 1.2rem; border-bottom: 1px solid var(--border); }
+  .bb-oracle-market .q { font-size: 0.85rem; color: var(--text); font-weight: 600; }
+  .bb-oracle-market .price { font-size: 0.78rem; color: var(--muted); margin-top: 0.25rem; }
+  .bb-oracle-market .price strong { color: var(--story); }
+  .bb-oracle-steps { padding: 0.75rem 1.2rem; }
+  .bb-oracle-step { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.55rem 0; }
+  .bb-oracle-step + .bb-oracle-step { border-top: 1px solid rgba(255,255,255,0.04); }
+  .bb-oracle-icon { font-size: 1.1rem; flex-shrink: 0; width: 28px; text-align: center; }
+  .bb-oracle-text { font-size: 0.82rem; line-height: 1.55; color: var(--muted); }
+  .bb-oracle-text strong { color: var(--text); }
+  .bb-oracle-step.breach .bb-oracle-text strong { color: var(--accent); }
+  .bb-oracle-result { padding: 0.75rem 1.2rem; border-top: 1px solid var(--border); background: rgba(255,77,77,0.04); }
+  .bb-oracle-result-row { display: flex; justify-content: space-between; font-size: 0.78rem; padding: 0.2rem 0; }
+  .bb-oracle-result-row .key { color: var(--muted); }
+  .bb-oracle-result-row .val { color: var(--text); font-weight: 600; }
+  .bb-oracle-result-row .val.red { color: var(--accent); }
+  .bb-oracle-response { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="intro">
+      <h2><span class="num">01 — Context</span>The Triumph</h2>
+      <p>On November 5, 2024, when every major polling average called the presidential race a toss-up, Polymarket had Donald Trump at 60 cents. Trump won. The prediction market had beaten the polls. What the victory lap obscured was that a quarter of the trading volume behind that price may have been artificial, $40 million in profit had been captured by arbitrage bots, and someone had already proved you could buy the oracle that determines what is true.</p>
+      <p>Shayne Coplan, a NYU dropout who participated in Ethereum's ICO in 2014, founded Polymarket from a Lower East Side apartment in June 2020. By 2024, the platform had reached escape velocity. Cumulative trading volume surpassed $9 billion that year. November alone hit $2.63 billion. The presidential election market generated over $3.7 billion in volume across 1.5 million trades, with 314,000 active traders on the platform.</p>
+      <p>The institutional world took notice. Nate Silver joined Polymarket's advisory board in July 2024 in a paid advisory capacity, stating that the platform's "scale and structure are providing for considerably more robust and efficient trading than we've seen in the past." Former CFTC Chairman J. Christopher Giancarlo joined alongside him. In October 2025, Intercontinental Exchange — the parent company of the New York Stock Exchange — announced a strategic investment of up to $2 billion at an $8 billion pre-money valuation.</p>
+      <p>The thesis Polymarket was selling: when you aggregate bets from a large enough crowd with real money at stake, the price becomes the most accurate available forecast. The election proved it. The price was right.</p>
+
+      <div class="bb-scoreboard">
+        <div class="bb-scoreboard-panel">
+          <div class="bb-scoreboard-label">Election Night 2024</div>
+          <div class="bb-scoreboard-row"><span class="key">Polymarket</span><span class="val story">Trump 60%</span></div>
+          <div class="bb-scoreboard-row"><span class="key">Polling average</span><span class="val">Toss-up</span></div>
+          <div class="bb-scoreboard-row"><span class="key">Result</span><span class="val green">Trump wins</span></div>
+          <div class="bb-scoreboard-verdict">✓ Market was right</div>
+        </div>
+        <div class="bb-scoreboard-panel">
+          <div class="bb-scoreboard-label">Behind the Number</div>
+          <div class="bb-scoreboard-row"><span class="key">2024 volume</span><span class="val">$9B</span></div>
+          <div class="bb-scoreboard-row"><span class="key">Active traders</span><span class="val">314,000</span></div>
+          <div class="bb-scoreboard-row"><span class="key">Wash trading*</span><span class="val accent">~25% of volume</span></div>
+          <div class="bb-scoreboard-row"><span class="key">Bot arbitrage profits</span><span class="val accent">$39.6M</span></div>
+        </div>
+        <div class="bb-scoreboard-note">*Columbia Business School working paper, not yet peer-reviewed. Arbitrage figure from IMDEA/Oxford study, peer-reviewed (AFT 2025).</div>
+      </div>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="bot-bazaar-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Crowd</strong> — Particles orbit in a ring, simulating a prediction market. Off-white human traders drift with organic wobble. One by one, accent-colored bot particles replace them, moving with geometric precision. Ghost pairs flash at the ring's edge — phantom volume, appearing and vanishing simultaneously. A red particle enters the center. The ring stutters and reverses. The bots now dominate. The crowd resets. The colonization begins again.</p>
+
+    <section class="section" id="extraction">
+      <h2><span class="num">02 — What Happened</span>The Extraction</h2>
+      <p>Three independent studies have now measured what was happening beneath Polymarket's headline numbers. Together, they describe an ecosystem where automated systems extracted tens of millions of dollars, inflated trading volume, and operated with the platform's explicit encouragement.</p>
+      <p><strong>The arbitrage machines.</strong> A peer-reviewed study by researchers at IMDEA Software Institute and the Oxford Internet Institute, published at the Conference on Advances in Financial Technologies in 2025, analyzed 86 million bids placed on Polymarket between April 2024 and April 2025. They found $39,587,585.02 in realized arbitrage profit across two strategies: market rebalancing (buying mispriced tokens within a single market) and combinatorial arbitrage (exploiting pricing gaps across dependent markets). The top account alone — wallet address 0xd218e474776403a3301422 — extracted $2,009,631.76 from 4,049 transactions. The researchers flagged "very big players with bot-like behaviour in the number of bids they participate in."</p>
+      <p>The single most absurd data point: user @Tutaaa91 simultaneously purchased both YES and NO tokens on the same condition for less than $0.02 each. One of those tokens was guaranteed to pay $1.00. Net profit from a single trade: $58,983.36.</p>
+
+      <div class="bb-terminal">
+        <div class="bb-terminal-header"><span aria-hidden="true"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></span> Polymarket — Condition Arbitrage</div>
+        <div class="bb-terminal-body">
+          <div class="bb-terminal-line"><span class="cmd">ACCOUNT</span>  <span class="val">@Tutaaa91</span></div>
+          <div class="bb-terminal-line"><span class="cmd">ACTION </span>  BUY YES token @ <span class="val">$0.01</span></div>
+          <div class="bb-terminal-line"><span class="cmd">ACTION </span>  BUY NO  token @ <span class="val">$0.01</span></div>
+          <hr class="bb-terminal-divider">
+          <div class="bb-terminal-line"><span class="cmd">COST   </span>  &lt; $0.02 per token pair</div>
+          <div class="bb-terminal-line"><span class="cmd">PAYOUT </span>  $1.00 per pair <span class="warn">(one must resolve YES)</span></div>
+          <hr class="bb-terminal-divider">
+          <div class="bb-terminal-line"><span class="cmd">PROFIT </span>  <span class="profit">$58,983.36</span></div>
+          <div class="bb-terminal-line"><span class="cmd">TRADES </span>  <span class="val">1</span></div>
+        </div>
+        <div class="bb-terminal-context">A market priced both outcomes below $0.02. This should not happen. A bot noticed before any human did.</div>
+      </div>
+
+      <p><strong>The phantom volume.</strong> A Columbia Business School working paper — not yet peer-reviewed — estimates that wash trading accounted for an average of 25% of all buying and selling on Polymarket over a three-year period. The researchers flagged 14% of the platform's 1.26 million wallets as having activity consistent with wash trading: wallets that frequently transacted with each other but seldom with other market participants. The wash trading rate peaked at nearly 60% in December 2024 — the month after the election triumph. Sports markets were worst, with 45% of activity flagged. Election markets registered 17%. According to the study, suspected wash trading wallets frequently made no real profits, suggesting motivations centered on gaming potential token airdrops and platform rankings rather than financial return.</p>
+      <p><strong>The invitation.</strong> On July 3, 2024 — four months before the election that would validate Polymarket as a forecasting instrument — the platform published an MIT-licensed AI agents framework on its official GitHub repository. The framework provides developer utilities for building autonomous trading bots with LLM integration, retrieval-augmented generation support, and direct order execution via the Polymarket API. Polymarket did not merely tolerate algorithmic trading. It built the toolkit.</p>
+      <p><strong>Who won.</strong> According to an analysis by blockchain analytics firm DeFi Oasis — whose methodology has not been independently reviewed — approximately 70% of Polymarket's 1.7 million trading addresses recorded losses. Fewer than 0.04% of addresses, roughly 668 wallets, captured over 70% of realized profits. The directional claim — most traders lose, a tiny minority wins — is consistent with known prediction market dynamics. The exact numbers carry the limitations of a single-source analysis.</p>
+    </section>
+
+    <section class="section" id="breach">
+      <h2><span class="num">03 — The Breach</span>When Truth Was for Sale</h2>
+      <p>Prediction markets rest on an assumption that goes beyond price accuracy: that the mechanism for determining what actually happened is trustworthy. On March 24–25, 2025, someone proved it was for sale.</p>
+      <p>Polymarket uses UMA's Optimistic Oracle to resolve markets. The system works by allowing anyone to propose a resolution. If no one disputes it, it stands. If disputed, UMA token holders vote on the correct answer. The security assumption: no single entity will accumulate enough tokens to control the vote.</p>
+      <p>A wallet operating as BornTooLate.eth — which, according to CoinDesk, had spent over a year accumulating UMA tokens at a cost of roughly $2 million — voted to resolve the market "Will Ukraine agree to Trump's mineral deal before April?" as YES. Ukraine had not agreed. The real-world answer was NO. The market had been priced at 9%. The attacker, holding approximately 5 million UMA tokens and commanding roughly 25% of the total vote, forced the resolution to 100%.</p>
+
+      <div class="bb-oracle">
+        <div class="bb-oracle-header"><span>Oracle Attack — March 25, 2025</span><span>UMA Optimistic Oracle</span></div>
+        <div class="bb-oracle-market">
+          <div class="q">Will Ukraine agree to Trump's mineral deal before April?</div>
+          <div class="price">Market price: <strong>9% YES</strong> / 91% NO</div>
+        </div>
+        <div class="bb-oracle-steps">
+          <div class="bb-oracle-step"><div class="bb-oracle-icon" aria-hidden="true">🪙</div><div class="bb-oracle-text"><strong>BornTooLate.eth accumulates 5M UMA tokens</strong> over 12+ months (~$2M invested, becomes top-5 staker)</div></div>
+          <div class="bb-oracle-step"><div class="bb-oracle-icon" aria-hidden="true">📤</div><div class="bb-oracle-text"><strong>Proposes resolution: YES</strong> — real-world answer is NO (no agreement reached)</div></div>
+          <div class="bb-oracle-step"><div class="bb-oracle-icon" aria-hidden="true">⚖️</div><div class="bb-oracle-text"><strong>Dispute raised</strong> by other market participants</div></div>
+          <div class="bb-oracle-step breach"><div class="bb-oracle-icon" aria-hidden="true">🗳️</div><div class="bb-oracle-text"><strong>UMA token vote: BornTooLate.eth controls ~25% of votes</strong> — resolution passes as YES</div></div>
+        </div>
+        <div class="bb-oracle-result">
+          <div class="bb-oracle-result-row"><span class="key">Resolution</span><span class="val red">YES at 100%</span></div>
+          <div class="bb-oracle-result-row"><span class="key">Largest winner</span><span class="val">~$55,000</span></div>
+          <div class="bb-oracle-result-row"><span class="key">Largest loser</span><span class="val red">~$73,000</span></div>
+          <div class="bb-oracle-result-row"><span class="key">Total affected</span><span class="val">$7M in contracts</span></div>
+        </div>
+        <div class="bb-oracle-response">Polymarket called it "unprecedented." No refunds. "Not a market failure."</div>
+      </div>
+
+      <p>Five months later, UMA passed UMIP-189 — a governance proposal known as MOOV2 — restricting resolution proposals to 37 whitelisted addresses: employees of Risk Labs and Polymarket, plus users with twenty or more proposals and 95% accuracy or better. The fix worked. Whitelisted proposers achieved 99.7% accuracy, compared to 85.8% for non-whitelisted participants. But the fix was centralization — restricting the oracle to a curated list of trusted parties — which is the opposite of the decentralized design premise that prediction markets were built to demonstrate.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">04 — Signal</span>The Machine in the Mirror</h2>
+      <p>The complexity the evidence presents is genuine. Tsang and Yang, analyzing the 2024 presidential election market at the transaction level, found that it matured over its lifecycle. Their measure of price impact — how much a single trade moves the market — declined by an order of magnitude between the market's launch and October 2024, indicating dramatically improved liquidity. Bots may have contributed to that improvement. Arbitrage narrows spreads. Market-making deepens the order book. The same agents that extracted $40 million also made the market more efficient. This is not a straightforward corruption story.</p>
+      <p>The platform's regulatory trajectory reflects the ambiguity. In January 2022, the CFTC ordered Polymarket to pay a $1.4 million penalty for operating unregistered event-based binary options markets. On November 13, 2024 — eight days after the election — FBI agents raided Coplan's Manhattan apartment and seized his phone, investigating whether the platform had illegally allowed Americans to place bets. A Polymarket spokesperson called it "obvious political retribution by the outgoing administration against Polymarket for providing a market that correctly called the 2024 presidential election." The investigation's stated basis was potential violations of the 2022 CFTC consent order. In July 2025, both the DOJ and CFTC issued declination notices, closing all federal investigations without charges. By November 2025, the CFTC approved Polymarket for regulated US market access. Whether the investigation was political or substantive remains disputed; both framings are consistent with the known timeline.</p>
+      <p>Polymarket is now being absorbed into mainstream financial infrastructure — with its bot ecosystem intact.</p>
+      <p>The approaching parity makes this absorption consequential. ForecastBench, a dynamic benchmark co-authored by Philip Tetlock and published at ICLR 2025, found that human superforecasters still significantly outperform the best large language models. Superforecasters achieved a Brier score of 0.081 versus GPT-4.5's 0.101 (p &lt; 0.001). But AI forecasting performance improves at approximately 0.016 difficulty-adjusted Brier points per year. At that rate of improvement, ForecastBench projects parity in late 2026, with a 95% confidence interval stretching from December 2025 to January 2028. That projection is an extrapolation, not a confirmed finding. But the direction is not in question.</p>
+      <p>The question prediction markets were designed to answer — what does the crowd believe? — has been replaced by a question they cannot answer: how much of the crowd is real?</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.bot-bazaar-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
+  const STORY_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#2dd4bf';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+
+  const [sR, sG, sB] = hexToRgb(STORY_COLOR.startsWith('#') ? STORY_COLOR : '#2dd4bf');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function storyA(a: number) { return `rgba(${sR},${sG},${sB},${Math.max(0, Math.min(1, a))})`; }
+  function dimA(a: number) { return `rgba(232,232,232,${Math.max(0, Math.min(1, a))})`; }
+  function redA(a: number) { return `rgba(255,77,77,${Math.max(0, Math.min(1, a))})`; }
+  function clamp(v: number, lo: number, hi: number) { return v < lo ? lo : v > hi ? hi : v; }
+
+  const P1_END = 180;
+  const P2_END = 420;
+  const P3_END = 480;
+  const P4_END = 560;
+  const P5_END = 600;
+  const CYCLE = P5_END;
+
+  const TOTAL_PARTICLES = 40;
+
+  interface RingParticle {
+    angle: number;
+    speed: number;
+    radialOffset: number;
+    wobblePhase: number;
+    wobbleAmp: number;
+    isBot: boolean;
+    alpha: number;
+    targetAlpha: number;
+    convertFrame: number;
+  }
+
+  interface GhostPair {
+    angle1: number;
+    angle2: number;
+    spawnFrame: number;
+    duration: number;
+    alpha: number;
+  }
+
+  interface OracleParticle {
+    x: number; y: number;
+    active: boolean;
+    arrived: boolean;
+    alpha: number;
+  }
+
+  let W = 0, H = 0, frame = 0, rafId = 0;
+  let ringCX = 0, ringCY = 0, ringR = 120;
+  let orbitalDirection = 1;
+  let orbitalStutter = 0;
+  let reverseFrames = 0;
+  let globalFade = 1;
+
+  const particles: RingParticle[] = [];
+  const ghosts: GhostPair[] = [];
+  const oracle: OracleParticle = { x: 0, y: 0, active: false, arrived: false, alpha: 0 };
+
+  let oracleFlashAlpha = 0;
+  let oracleFlashRadius = 0;
+
+  const conversionFrames: number[] = [];
+  for (let i = 0; i < 20; i++) { conversionFrames.push(P1_END + 12 * i); }
+
+  const ghostSchedule: number[] = [];
+  for (let f = P1_END + 30; f < P2_END; f += 30) { ghostSchedule.push(f); }
+
+  function buildParticles() {
+    particles.length = 0;
+    const botCount = Math.floor(TOTAL_PARTICLES * 0.2);
+    const humanCount = TOTAL_PARTICLES - botCount;
+    let convertIdx = 0;
+    for (let i = 0; i < TOTAL_PARTICLES; i++) {
+      const isBot = i >= humanCount;
+      const angle = (i / TOTAL_PARTICLES) * Math.PI * 2 + (Math.random() - 0.5) * 0.1;
+      const p: RingParticle = {
+        angle,
+        speed: 0.005 + Math.random() * 0.002,
+        radialOffset: (Math.random() - 0.5) * 12,
+        wobblePhase: Math.random() * Math.PI * 2,
+        wobbleAmp: isBot ? 0 : 3 + Math.random() * 4,
+        isBot,
+        alpha: 0,
+        targetAlpha: isBot ? (0.6 + Math.random() * 0.3) : (0.5 + Math.random() * 0.2),
+        convertFrame: -1,
+      };
+      if (!isBot && convertIdx < conversionFrames.length) {
+        p.convertFrame = conversionFrames[convertIdx];
+        convertIdx++;
+      }
+      particles.push(p);
+    }
+  }
+
+  function buildGhosts() {
+    ghosts.length = 0;
+    for (let i = 0; i < ghostSchedule.length; i++) {
+      const baseAngle = Math.random() * Math.PI * 2;
+      ghosts.push({
+        angle1: baseAngle,
+        angle2: baseAngle + Math.PI + (Math.random() - 0.5) * 0.3,
+        spawnFrame: ghostSchedule[i],
+        duration: 8,
+        alpha: 0,
+      });
+    }
+  }
+
+  function resetState() {
+    frame = 0;
+    orbitalDirection = 1;
+    orbitalStutter = 0;
+    reverseFrames = 0;
+    globalFade = 1;
+    oracleFlashAlpha = 0;
+    oracleFlashRadius = 0;
+    oracle.active = false;
+    oracle.arrived = false;
+    oracle.alpha = 0;
+    ringCX = W / 2;
+    ringCY = H / 2;
+    ringR = Math.min(W, H) * 0.3;
+    buildParticles();
+    buildGhosts();
+  }
+
+  function getPhase(f: number): string {
+    if (f < P1_END) return 'calm';
+    if (f < P2_END) return 'infiltrate';
+    if (f < P3_END) return 'oracle';
+    if (f < P4_END) return 'hold';
+    return 'reset';
+  }
+
+  function update() {
+    const phase = getPhase(frame);
+    ringCX = W / 2;
+    ringCY = H / 2;
+    ringR = Math.min(W, H) * 0.3;
+
+    let effectiveDir = orbitalDirection;
+    let speedMult = 1;
+    if (orbitalStutter > 0) { speedMult = 0; orbitalStutter--; }
+    else if (reverseFrames > 0) { effectiveDir = -1; speedMult = 0.8; reverseFrames--; }
+
+    for (let i = 0; i < TOTAL_PARTICLES; i++) {
+      const p = particles[i];
+      p.alpha += (p.targetAlpha - p.alpha) * 0.04;
+      if (!p.isBot && p.convertFrame > 0 && frame >= p.convertFrame && phase === 'infiltrate') {
+        p.isBot = true;
+        p.wobbleAmp = 0;
+        p.targetAlpha = 0.6 + Math.random() * 0.3;
+      }
+      p.angle += p.speed * effectiveDir * speedMult;
+      if (!p.isBot) { p.wobblePhase += 0.03; }
+    }
+
+    if (phase === 'infiltrate' || phase === 'oracle') {
+      for (let i = 0; i < ghosts.length; i++) {
+        const g = ghosts[i];
+        const elapsed = frame - g.spawnFrame;
+        if (elapsed >= 0 && elapsed < g.duration) {
+          const t = elapsed / g.duration;
+          g.alpha = t < 0.3 ? t / 0.3 : (1 - t) / 0.7;
+          g.alpha *= 0.7;
+        } else {
+          g.alpha = 0;
+        }
+      }
+    }
+
+    if (phase === 'oracle') {
+      const pf = frame - P2_END;
+      if (pf === 0) {
+        oracle.active = true;
+        oracle.arrived = false;
+        oracle.x = W + 10;
+        oracle.y = H / 2;
+        oracle.alpha = 0;
+      }
+      if (oracle.active && !oracle.arrived) {
+        oracle.alpha = Math.min(1, oracle.alpha + 0.03);
+        const dx = ringCX - oracle.x;
+        const dy = ringCY - oracle.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > 3) {
+          oracle.x += (dx / dist) * 0.8;
+          oracle.y += (dy / dist) * 0.8;
+        } else {
+          oracle.arrived = true;
+          orbitalStutter = 6;
+          reverseFrames = 12;
+          oracleFlashAlpha = 0.15;
+          oracleFlashRadius = 5;
+        }
+      }
+      if (oracleFlashAlpha > 0) {
+        oracleFlashRadius += 1.5;
+        oracleFlashAlpha *= 0.95;
+        if (oracleFlashAlpha < 0.003) oracleFlashAlpha = 0;
+      }
+    }
+
+    if (phase === 'hold') {
+      orbitalDirection = 1;
+      if (oracle.active) { oracle.alpha = Math.max(0, oracle.alpha - 0.01); }
+    }
+
+    if (phase === 'reset') {
+      const rp = (frame - P4_END) / (P5_END - P4_END);
+      globalFade = 1 - rp;
+      if (frame >= P5_END - 1) { resetState(); }
+    } else {
+      globalFade = 1;
+    }
+  }
+
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = BG_COLOR;
+    ctx!.fillRect(0, 0, W, H);
+
+    const phase = getPhase(frame);
+    const fade = globalFade;
+
+    if (phase === 'infiltrate' || phase === 'oracle' || phase === 'hold') {
+      const filamentIntensity = phase === 'infiltrate' ? clamp((frame - P1_END) / (P2_END - P1_END), 0, 1) : 1;
+      for (let i = 0; i < TOTAL_PARTICLES; i++) {
+        const p = particles[i];
+        if (!p.isBot) continue;
+        const r = ringR + p.radialOffset;
+        const px = ringCX + Math.cos(p.angle) * r;
+        const py = ringCY + Math.sin(p.angle) * r;
+        ctx!.beginPath();
+        ctx!.moveTo(ringCX, ringCY);
+        ctx!.lineTo(px, py);
+        ctx!.strokeStyle = storyA(0.04 * filamentIntensity * fade * p.alpha);
+        ctx!.lineWidth = 0.5;
+        ctx!.stroke();
+      }
+    }
+
+    for (let i = 0; i < TOTAL_PARTICLES; i++) {
+      const p = particles[i];
+      if (p.alpha < 0.003) continue;
+      const wobble = p.isBot ? 0 : Math.sin(p.wobblePhase) * p.wobbleAmp;
+      const r = ringR + p.radialOffset + wobble;
+      const px = ringCX + Math.cos(p.angle) * r;
+      const py = ringCY + Math.sin(p.angle) * r;
+      const drawAlpha = p.alpha * fade;
+
+      if (p.isBot) {
+        ctx!.beginPath();
+        ctx!.arc(px, py, 3, 0, Math.PI * 2);
+        ctx!.fillStyle = storyA(drawAlpha);
+        ctx!.fill();
+        const gr = ctx!.createRadialGradient(px, py, 0, px, py, 8);
+        gr.addColorStop(0, storyA(drawAlpha * 0.15));
+        gr.addColorStop(1, storyA(0));
+        ctx!.fillStyle = gr;
+        ctx!.beginPath();
+        ctx!.arc(px, py, 8, 0, Math.PI * 2);
+        ctx!.fill();
+      } else {
+        ctx!.beginPath();
+        ctx!.arc(px, py, 2.2, 0, Math.PI * 2);
+        ctx!.fillStyle = dimA(drawAlpha);
+        ctx!.fill();
+      }
+    }
+
+    for (let i = 0; i < ghosts.length; i++) {
+      const g = ghosts[i];
+      if (g.alpha < 0.003) continue;
+      const drawAlpha = g.alpha * fade;
+      const gx1 = ringCX + Math.cos(g.angle1) * (ringR + 18);
+      const gy1 = ringCY + Math.sin(g.angle1) * (ringR + 18);
+      const gx2 = ringCX + Math.cos(g.angle2) * (ringR + 18);
+      const gy2 = ringCY + Math.sin(g.angle2) * (ringR + 18);
+
+      ctx!.beginPath();
+      ctx!.arc(gx1, gy1, 2.5, 0, Math.PI * 2);
+      ctx!.fillStyle = storyA(drawAlpha * 0.6);
+      ctx!.fill();
+      ctx!.beginPath();
+      ctx!.arc(gx2, gy2, 2.5, 0, Math.PI * 2);
+      ctx!.fillStyle = storyA(drawAlpha * 0.6);
+      ctx!.fill();
+      ctx!.beginPath();
+      ctx!.moveTo(gx1, gy1);
+      ctx!.lineTo(gx2, gy2);
+      ctx!.strokeStyle = storyA(drawAlpha * 0.15);
+      ctx!.lineWidth = 0.5;
+      ctx!.stroke();
+    }
+
+    if (oracle.active && oracle.alpha > 0.003) {
+      const oa = oracle.alpha * fade;
+      const ogr = ctx!.createRadialGradient(oracle.x, oracle.y, 0, oracle.x, oracle.y, 14);
+      ogr.addColorStop(0, redA(oa * 0.25));
+      ogr.addColorStop(1, redA(0));
+      ctx!.fillStyle = ogr;
+      ctx!.beginPath();
+      ctx!.arc(oracle.x, oracle.y, 14, 0, Math.PI * 2);
+      ctx!.fill();
+      ctx!.beginPath();
+      ctx!.arc(oracle.x, oracle.y, 4, 0, Math.PI * 2);
+      ctx!.fillStyle = redA(oa);
+      ctx!.fill();
+    }
+
+    if (oracleFlashAlpha > 0.003) {
+      ctx!.beginPath();
+      ctx!.arc(ringCX, ringCY, oracleFlashRadius, 0, Math.PI * 2);
+      ctx!.strokeStyle = redA(oracleFlashAlpha * fade);
+      ctx!.lineWidth = 1.5;
+      ctx!.stroke();
+    }
+
+    ctx!.beginPath();
+    ctx!.arc(ringCX, ringCY, ringR, 0, Math.PI * 2);
+    ctx!.strokeStyle = dimA(0.02 * fade);
+    ctx!.lineWidth = 0.5;
+    ctx!.stroke();
+  }
+
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = BG_COLOR;
+    ctx!.fillRect(0, 0, W, H);
+    ringCX = W / 2;
+    ringCY = H / 2;
+    ringR = Math.min(W, H) * 0.3;
+    ctx!.beginPath();
+    ctx!.arc(ringCX, ringCY, ringR, 0, Math.PI * 2);
+    ctx!.strokeStyle = dimA(0.03);
+    ctx!.lineWidth = 0.5;
+    ctx!.stroke();
+    for (let i = 0; i < TOTAL_PARTICLES; i++) {
+      const angle = (i / TOTAL_PARTICLES) * Math.PI * 2;
+      const isBot = i % 3 === 0;
+      const wobble = isBot ? 0 : Math.sin(i * 2.7) * 4;
+      const r = ringR + (Math.sin(i * 3.1) * 6) + wobble;
+      const px = ringCX + Math.cos(angle) * r;
+      const py = ringCY + Math.sin(angle) * r;
+      if (isBot) {
+        ctx!.beginPath();
+        ctx!.arc(px, py, 3, 0, Math.PI * 2);
+        ctx!.fillStyle = storyA(0.7);
+        ctx!.fill();
+      } else {
+        ctx!.beginPath();
+        ctx!.arc(px, py, 2.2, 0, Math.PI * 2);
+        ctx!.fillStyle = dimA(0.55);
+        ctx!.fill();
+      }
+    }
+    for (let i = 0; i < TOTAL_PARTICLES; i++) {
+      if (i % 3 !== 0) continue;
+      const angle = (i / TOTAL_PARTICLES) * Math.PI * 2;
+      const r = ringR + Math.sin(i * 3.1) * 6;
+      const px = ringCX + Math.cos(angle) * r;
+      const py = ringCY + Math.sin(angle) * r;
+      ctx!.beginPath();
+      ctx!.moveTo(ringCX, ringCY);
+      ctx!.lineTo(px, py);
+      ctx!.strokeStyle = storyA(0.04);
+      ctx!.lineWidth = 0.5;
+      ctx!.stroke();
+    }
+  }
+
+  function tick() {
+    frame++;
+    if (frame >= CYCLE) { resetState(); }
+    update();
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth;
+    H = canvas!.offsetHeight;
+    canvas!.width = W * dpr;
+    canvas!.height = H * dpr;
+    ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ringCX = W / 2;
+    ringCY = H / 2;
+    ringR = Math.min(W, H) * 0.3;
+    if (prefersReduced) { drawStatic(); }
+  });
+  ro.observe(canvas);
+
+  const dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth;
+  H = canvas.offsetHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  if (prefersReduced) {
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    resetState();
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(rafId); rafId = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+    window.addEventListener('pagehide', () => { cancelAnimationFrame(rafId); io.disconnect(); ro.disconnect(); });
+  }
+})();
+</script>
