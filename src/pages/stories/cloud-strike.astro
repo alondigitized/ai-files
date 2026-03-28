@@ -1,0 +1,665 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'cloud-strike')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .cloud-strike-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* ── AWS Health Dashboard ── */
+  .cs-dashboard-wrap { background: #0a0a0a; border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; font-family: 'Courier New', monospace; }
+  .cs-dashboard-header { background: var(--surface2); padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+  .cs-dashboard-header .title { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .cs-dashboard-header .ts { font-size: 0.68rem; color: var(--muted); font-family: 'Courier New', monospace; }
+  .cs-dashboard-region { padding: 0.75rem 1.2rem; border-bottom: 1px solid var(--border); }
+  .cs-dashboard-region-label { font-size: 0.72rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; letter-spacing: 0.08em; }
+  .cs-dashboard-az { display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0; font-size: 0.78rem; }
+  .cs-dashboard-az .az-name { color: var(--muted); }
+  .cs-dashboard-az .az-status { font-weight: 700; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; }
+  .cs-dashboard-az .az-status.red { color: var(--accent); }
+  .cs-dashboard-az .az-status.amber { color: #f59e0b; }
+  .cs-dashboard-services { padding: 0.75rem 1.2rem; border-bottom: 1px solid var(--border); }
+  .cs-dashboard-services-label { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 0.5rem; }
+  .cs-dashboard-svc { display: flex; justify-content: space-between; align-items: center; padding: 0.2rem 0; font-size: 0.78rem; }
+  .cs-dashboard-svc .svc-name { color: var(--muted); }
+  .cs-dashboard-svc .svc-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .cs-dashboard-advisory { font-size: 0.75rem; color: var(--text); padding: 0.75rem 1.2rem; background: rgba(255,77,77,0.04); border-top: 1px solid var(--border); line-height: 1.6; }
+  .cs-dashboard-advisory strong { color: var(--accent); }
+  .cs-dashboard-context { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); font-family: inherit; }
+
+  /* ── Iran Target List ── */
+  .cs-targets-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .cs-targets-header { background: var(--surface2); padding: 0.6rem 1.2rem; font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); font-weight: 700; border-bottom: 1px solid var(--border); }
+  .cs-targets-subtitle { font-size: 0.72rem; color: var(--muted); padding: 0.5rem 1.2rem; border-bottom: 1px solid var(--border); font-style: italic; }
+  .cs-targets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0; padding: 0; }
+  .cs-targets-cell { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+  .cs-targets-cell:last-child { border-right: none; }
+  .cs-targets-company { font-size: 0.8rem; color: var(--text); font-weight: 600; }
+  .cs-targets-count { font-size: 0.72rem; color: var(--muted); }
+  .cs-targets-countries { font-size: 0.72rem; color: var(--muted); padding: 0.5rem 1.2rem; border-bottom: 1px solid var(--border); }
+  .cs-targets-countries strong { color: var(--text); }
+  .cs-targets-quote { font-size: 0.78rem; color: var(--text); padding: 0.75rem 1.2rem; line-height: 1.6; font-style: italic; border-bottom: 1px solid var(--border); }
+  .cs-targets-context { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1rem; background: var(--surface2); font-family: inherit; }
+  @media (max-width: 600px) {
+    .cs-targets-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ── Legal Decision Tree ── */
+  .cs-legal-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .cs-legal-header { background: var(--surface2); padding: 0.5rem 1rem; font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--border); }
+  .cs-legal-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .cs-legal-col { padding: 1rem 1.2rem; }
+  .cs-legal-col:first-child { border-right: 1px solid var(--border); }
+  .cs-legal-col-label { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--story, #10b981); font-weight: 700; margin-bottom: 0.75rem; }
+  .cs-legal-col:last-child .cs-legal-col-label { color: #4da6ff; }
+  .cs-legal-icon { font-size: 1.4rem; text-align: center; margin-bottom: 0.5rem; }
+  .cs-legal-condition { font-size: 0.8rem; color: var(--text); line-height: 1.5; margin-bottom: 0.5rem; }
+  .cs-legal-arrow { text-align: center; color: var(--muted); font-size: 1.2rem; margin-bottom: 0.5rem; }
+  .cs-legal-result { font-size: 0.82rem; font-weight: 700; line-height: 1.4; }
+  .cs-legal-col:first-child .cs-legal-result { color: var(--accent); }
+  .cs-legal-col:last-child .cs-legal-result { color: #4da6ff; }
+  .cs-legal-problem { padding: 1rem 1.2rem; border-top: 1px solid var(--border); background: rgba(255,77,77,0.04); }
+  .cs-legal-problem-label { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 0.5rem; }
+  .cs-legal-problem-text { font-size: 0.82rem; color: var(--text); line-height: 1.6; }
+  .cs-legal-footnote { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); font-family: inherit; }
+  @media (max-width: 600px) {
+    .cs-legal-columns { grid-template-columns: 1fr; }
+    .cs-legal-col:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="intro">
+      <h2><span class="num">01 — Context</span>The Building That Was Everything</h2>
+      <p>On March 1, 2026, at 4:30 in the morning Pacific time, a Shahed-136 drone punched through the roof of an Amazon Web Services data center in the UAE — and knocked offline banking systems, payment platforms, and government services across the UAE.</p>
+      <p>The building it struck was not a military installation. It was the backbone of civilian life in the Gulf. Bahrain adopted a Cloud First Policy in 2017, becoming the first country in the Middle East and Africa to mandate cloud over on-premise infrastructure. By 2019, approximately 85% of Bahrain's government data had migrated to AWS — 72 government entities, over 1,385 government services, 570 e-services. When AWS launched its Bahrain region, ME-SOUTH-1, it inherited a country.</p>
+      <p>The same corporate infrastructure served the Pentagon. In December 2022, the Department of Defense awarded the $9 billion Joint Warfighting Cloud Capability contract to AWS, Google, Microsoft, and Oracle, providing military cloud services at all classification levels. Data localization mandates in Gulf states required sensitive government and defense contractor data to be physically hosted within national borders — concentrating civilian and military workloads in the same facilities by regulatory design. AWS's own architecture made geographic separation impossible at a different level: Availability Zones must sit within 100 kilometers of each other to meet latency requirements. Performance demanded proximity. Proximity created a target.</p>
+      <p>Each decision made sense in isolation. A cloud-first policy modernized government services. A defense contract leveraged commercial scale. A localization mandate protected data sovereignty. An architecture constraint optimized speed. Together, they produced a building that was simultaneously a bank vault, a government filing cabinet, and a military nerve center — and no wire could be cut to separate one from the other.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="cloud-strike-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Convergence</strong> — Two particle streams, civilian and military, drift toward a shared node. Their colors merge until no distinction remains. Impact scatters them equally. The streams reform, the convergence resumes.</p>
+
+    <section class="section" id="strike">
+      <h2><span class="num">02 — What Happened</span>Three Buildings, Two Countries, Sixty Services</h2>
+      <p>Iranian Revolutionary Guard Corps drones struck three AWS facilities on March 1. Two data centers in the UAE were hit directly. A third, in Bahrain, was damaged by debris from a nearby strike. These were the first known military strikes on a hyperscale cloud provider's infrastructure.</p>
+      <p>The damage was physical. AWS stated: "These strikes have caused structural damage, disrupted power delivery to our infrastructure, and in some cases required fire suppression activities that resulted in additional water damage." At the struck UAE facility, mec1-az2, fire crews shut off power and generators to contain the blaze. Two of three Availability Zones in ME-CENTRAL-1 went offline — mec1-az2 and mec1-az3. The remaining zone, mec1-az1, experienced elevated API errors and instance launch failures. One Availability Zone in ME-SOUTH-1 (Bahrain) was impacted.</p>
+
+      <div class="cs-dashboard-wrap" role="figure" aria-label="AWS Service Health Dashboard showing impaired status across UAE and Bahrain availability zones">
+        <div class="cs-dashboard-header"><span class="title">AWS Service Health Dashboard</span><span class="ts">2026-03-01 04:30 PST</span></div>
+        <div class="cs-dashboard-region">
+          <div class="cs-dashboard-region-label">ME-CENTRAL-1 (UAE)</div>
+          <div class="cs-dashboard-az"><span class="az-name">mec1-az1</span><span class="az-status amber">DEGRADED</span></div>
+          <div class="cs-dashboard-az"><span class="az-name">mec1-az2</span><span class="az-status red">IMPAIRED</span></div>
+          <div class="cs-dashboard-az"><span class="az-name">mec1-az3</span><span class="az-status red">IMPAIRED</span></div>
+        </div>
+        <div class="cs-dashboard-region">
+          <div class="cs-dashboard-region-label">ME-SOUTH-1 (Bahrain)</div>
+          <div class="cs-dashboard-az"><span class="az-name">mes1-az1</span><span class="az-status red">IMPAIRED</span></div>
+          <div class="cs-dashboard-az"><span class="az-name">mes1-az2</span><span class="az-status" style="color:var(--green)">OPERATIONAL</span></div>
+          <div class="cs-dashboard-az"><span class="az-name">mes1-az3</span><span class="az-status" style="color:var(--green)">OPERATIONAL</span></div>
+        </div>
+        <div class="cs-dashboard-services">
+          <div class="cs-dashboard-services-label">Affected Services (60+)</div>
+          <div class="cs-dashboard-svc"><span class="svc-name">EC2</span><span class="svc-dot"></span></div>
+          <div class="cs-dashboard-svc"><span class="svc-name">S3</span><span class="svc-dot"></span></div>
+          <div class="cs-dashboard-svc"><span class="svc-name">RDS</span><span class="svc-dot"></span></div>
+          <div class="cs-dashboard-svc"><span class="svc-name">Lambda</span><span class="svc-dot"></span></div>
+          <div class="cs-dashboard-svc"><span class="svc-name">DynamoDB</span><span class="svc-dot"></span></div>
+        </div>
+        <div class="cs-dashboard-advisory"><strong>ADVISORY (March 3):</strong> "The ongoing conflict in the region means that the broader operating environment in the Middle East remains unpredictable. We continue to strongly recommend that customers with workloads running in the Middle East take action now to migrate those workloads to alternate AWS Regions."</div>
+        <div class="cs-dashboard-context">The dashboard was designed for software failures, not drone strikes.</div>
+      </div>
+
+      <p>Over 60 AWS services went down — EC2, S3, RDS, Lambda, DynamoDB, EKS, Redshift, CloudWatch. The civilian cascade was immediate. Abu Dhabi Commercial Bank, Emirates NBD, and First Abu Dhabi Bank experienced outages. Payments platforms Hubpay and Alaan went offline. Careem, the ride-hailing and delivery service, was disrupted. As of March 12, eleven days after the strikes, several services in the affected regions remained unavailable.</p>
+      <p>On March 4, Iran's IRGC claimed responsibility. Fars News Agency stated the operations aimed "to identify the role of these centres in supporting the enemy's military and intelligence activities." Iranian state media justified the targeting by asserting the US military uses AI systems hosted on AWS — including Anthropic's Claude — for intelligence analysis and war simulations. On March 11, Iran's Tasnim news agency published a list of 29 technology facilities across four countries designated as "legitimate targets."</p>
+
+      <div class="cs-targets-wrap" role="figure" aria-label="Iran's published list of 29 designated US technology facility targets across four countries">
+        <div class="cs-targets-header">Designated Legitimate Targets — Tasnim News Agency, March 11, 2026</div>
+        <div class="cs-targets-subtitle">29 US technology facilities across four countries</div>
+        <div class="cs-targets-grid">
+          <div class="cs-targets-cell"><div class="cs-targets-company">Amazon</div><div class="cs-targets-count">5 facilities</div></div>
+          <div class="cs-targets-cell"><div class="cs-targets-company">IBM</div><div class="cs-targets-count">6 facilities</div></div>
+          <div class="cs-targets-cell"><div class="cs-targets-company">Microsoft</div><div class="cs-targets-count">5 facilities</div></div>
+          <div class="cs-targets-cell"><div class="cs-targets-company">Google</div><div class="cs-targets-count">4 facilities</div></div>
+          <div class="cs-targets-cell"><div class="cs-targets-company">Nvidia</div><div class="cs-targets-count">3 facilities</div></div>
+          <div class="cs-targets-cell"><div class="cs-targets-company">Oracle</div><div class="cs-targets-count">3 facilities</div></div>
+          <div class="cs-targets-cell"><div class="cs-targets-company">Palantir</div><div class="cs-targets-count">3 facilities</div></div>
+        </div>
+        <div class="cs-targets-countries"><strong>Countries:</strong> Bahrain, Israel, Qatar, UAE</div>
+        <div class="cs-targets-quote">"As the regional conflict expands into infrastructure warfare, Iran's legitimate targets are gradually expanding."</div>
+        <div class="cs-targets-context">This is not a random act of destruction. It is a targeting doctrine that treats the commercial cloud as a theater of war.</div>
+      </div>
+
+      <p>On March 24, AWS Bahrain was disrupted a second time by drone activity. Amazon did not confirm whether the facility was directly hit. The campaign was not a one-off.</p>
+    </section>
+
+    <section class="section" id="mechanism">
+      <h2><span class="num">03 — The Mechanism</span>The Distinction That Cannot Be Drawn</h2>
+      <p>Iran's justification rests on a factual claim that no public evidence supports. The IRGC asserted that the struck data centers hosted US military and intelligence AI systems. According to a legal analysis published by Just Security on March 16 — authored by Klaudia Klonowska of Sciences Po Paris and Michael Schmitt of the University of Reading, a leading authority on international humanitarian law — "there is no publicly available information" confirming whether the struck facilities hosted US military workloads. The legality of the strikes, they concluded, "remains indeterminate."</p>
+      <p>According to The Intercept, Anthropic's Claude was used within Palantir's Maven system in connection with US military operations against Iran. This is a single-source claim from an investigative outlet and has not been independently confirmed. Whether any such workloads ran on the specific AWS facilities that were struck is unknown.</p>
+      <p>The legal framework that governs this situation offers two clear paths. Under US and Israeli doctrine, as characterized by the Just Security analysis, once any military use exists within a facility, the entire object becomes a lawful military target. Under the ICRC position, if military use is uncertain, "the object must be considered to be civilian." The law assumes that the question can be answered — that a given building is either military or civilian, or that the military component can be isolated for proportionality analysis.</p>
+
+      <div class="cs-legal-wrap" role="figure" aria-label="IHL legal decision tree comparing US-Israeli doctrine with ICRC position on dual-use infrastructure">
+        <div class="cs-legal-header">International Humanitarian Law — Two Paths</div>
+        <div class="cs-legal-columns">
+          <div class="cs-legal-col">
+            <div class="cs-legal-col-label">US / Israeli Doctrine</div>
+            <div class="cs-legal-icon" aria-hidden="true">&#x1F3E2;</div>
+            <div class="cs-legal-condition">"If any military use exists..."</div>
+            <div class="cs-legal-arrow" aria-hidden="true">&#x2193;</div>
+            <div class="cs-legal-result">Entire facility = lawful military objective</div>
+          </div>
+          <div class="cs-legal-col">
+            <div class="cs-legal-col-label">ICRC Position</div>
+            <div class="cs-legal-icon" aria-hidden="true">&#x1F3E2;</div>
+            <div class="cs-legal-condition">"If military use is uncertain..."</div>
+            <div class="cs-legal-arrow" aria-hidden="true">&#x2193;</div>
+            <div class="cs-legal-result">Object must be considered civilian</div>
+          </div>
+        </div>
+        <div class="cs-legal-problem">
+          <div class="cs-legal-problem-label">The Problem</div>
+          <div class="cs-legal-problem-text">Cloud architecture makes the determination physically impossible. Same racks. Same power. Same cooling. Every customer on every server. There is no wire you can cut that severs military from civilian.</div>
+        </div>
+        <div class="cs-legal-footnote">"No publicly available information" confirms whether the struck facilities hosted US military workloads. — Klonowska & Schmitt, Just Security, March 12, 2026</div>
+      </div>
+
+      <p>Data localization mandates made this convergence worse by requiring civilian and military workloads to co-locate within national borders — the regulatory structure actively prevented the separation that IHL assumes is possible.</p>
+      <p>The retaliation confirms the symmetry. According to Holistic Resilience, a nonprofit mapping airstrikes on Iran, the US and Israel struck at least two data centers in Tehran, including one reportedly used by the IRGC. No official US or Israeli confirmation has been issued. Both sides now treat data centers as military targets. The doctrine is bidirectional.</p>
+    </section>
+
+    <section class="section" id="consequence">
+      <h2><span class="num">04 — Consequence</span>What Broke</h2>
+      <p>Insurance will not cover the damage. Standard commercial property and business interruption policies explicitly exclude acts of war. Under the 1923 Cuba Submarine Telegraph Company arbitration precedent, private-sector claims against state belligerents for infrastructure damage during armed conflict are unlikely to succeed. According to legal analyst Mahmoud Abuwasel, cloud providers will likely be "legally required to absorb upstream sunk costs and refund their clients entirely."</p>
+      <p>The market reaction was brief. Amazon shares dropped 1.6% to $204.99 in early trading after the strikes were confirmed, then rallied approximately 3%. The stock recovered. The banking customers did not. According to Euronews, the UAE data center market had been projected to more than double from $3.29 billion to $7.7 billion by 2031. That growth trajectory is now in question.</p>
+      <p>The expert consensus on what comes next is uniform. Sam Winter-Levy of the Carnegie Endowment for International Peace called the AWS strikes "a harbinger of what's to come," stating that physical attacks on data centers "are only going to become more common." Vincent Boulanin of the Stockholm International Peace Research Institute agreed: "It's very likely that data centres will be targeted in the future." Zachary Kallenborn of King's College London described data centers as critical "choke points" for military information and warned that "basically no one is thinking about these risks in a systematic way."</p>
+      <p>The policy proposals that have followed reveal the scale of the problem. Emily Harding, CSIS Director of Intelligence, National Security, and Technology, recommended the US "declare attacks on critical U.S. company assets as attacks on the United States." Chris McGuire, a former NSC technology policy official, suggested data centers may need to "guard against aerial attacks" — potentially including missile defense. These are not metaphors. The cloud was designed so that no one could tell whose data was whose. The same architecture that made it fast, cheap, and reliable made it impossible to separate the civilian from the military at the physical layer. International humanitarian law requires a distinction that the technology has made structurally impossible to draw. No one — not AWS, not the Pentagon, not the IHL scholars, not the IRGC — can answer whether a single rack in a shared data center is civilian or military. The law demands the answer. The architecture refuses to provide one.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.cloud-strike-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
+  const STORY_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#38bdf8';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+
+  const [sR, sG, sB] = hexToRgb(STORY_COLOR.startsWith('#') ? STORY_COLOR : '#38bdf8');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function storyA(a: number) { return `rgba(${sR},${sG},${sB},${Math.max(0, Math.min(1, a))})`; }
+  function dimA(a: number) { return `rgba(232,232,232,${Math.max(0, Math.min(1, a))})`; }
+  function redA(a: number) { return `rgba(255,77,77,${Math.max(0, Math.min(1, a))})`; }
+  function mergedA(t: number, a: number) {
+    const r = Math.round(232 + (180 - 232) * t);
+    const g = Math.round(232 + (220 - 232) * t);
+    const b = Math.round(232 + (248 - 232) * t);
+    return `rgba(${r},${g},${b},${Math.max(0, Math.min(1, a))})`;
+  }
+  function mergedStoryA(t: number, a: number) {
+    const r = Math.round(sR + (180 - sR) * t);
+    const g = Math.round(sG + (220 - sG) * t);
+    const b = Math.round(sB + (248 - sB) * t);
+    return `rgba(${r},${g},${b},${Math.max(0, Math.min(1, a))})`;
+  }
+  function clamp(v: number, lo: number, hi: number) { return v < lo ? lo : v > hi ? hi : v; }
+
+  const P1_END = 180;
+  const P2_END = 480;
+  const P3_END = 510;
+  const P4_END = 720;
+  const P5_END = 900;
+  const CYCLE = P5_END;
+
+  const CIV_COUNT = 25;
+  const MIL_COUNT = 10;
+  const AMBIENT_COUNT = 40;
+  const TOTAL = CIV_COUNT + MIL_COUNT;
+
+  interface Particle {
+    x: number; y: number;
+    homeX: number; homeY: number;
+    vx: number; vy: number;
+    isMilitary: boolean;
+    alpha: number;
+    radius: number;
+    merge: number;
+    scatterVx: number;
+    scatterVy: number;
+    driftAngle: number;
+    driftSpeed: number;
+  }
+
+  interface AmbientDot {
+    x: number; y: number;
+    vx: number; vy: number;
+  }
+
+  let W = 0, H = 0, frame = 0, rafId = 0;
+  let nodeCX = 0, nodeCY = 0;
+  let nodeRadius = 4;
+  let nodeAlpha = 0.05;
+  let impactFlashAlpha = 0;
+  let impactFlashRadius = 0;
+
+  const particles: Particle[] = [];
+  const ambients: AmbientDot[] = [];
+
+  function buildParticles() {
+    particles.length = 0;
+
+    for (let i = 0; i < CIV_COUNT; i++) {
+      const homeX = W * (0.08 + Math.random() * 0.22);
+      const homeY = H * (0.15 + Math.random() * 0.7);
+      particles.push({
+        x: homeX, y: homeY,
+        homeX, homeY,
+        vx: 0, vy: 0,
+        isMilitary: false,
+        alpha: 0.5 + Math.random() * 0.15,
+        radius: 2 + Math.random() * 0.8,
+        merge: 0,
+        scatterVx: 0, scatterVy: 0,
+        driftAngle: Math.random() * Math.PI * 2,
+        driftSpeed: 0.15 + Math.random() * 0.15,
+      });
+    }
+
+    for (let i = 0; i < MIL_COUNT; i++) {
+      const homeX = W * (0.7 + Math.random() * 0.22);
+      const homeY = H * (0.15 + Math.random() * 0.7);
+      particles.push({
+        x: homeX, y: homeY,
+        homeX, homeY,
+        vx: 0, vy: 0,
+        isMilitary: true,
+        alpha: 0.6 + Math.random() * 0.15,
+        radius: 2.2 + Math.random() * 0.8,
+        merge: 0,
+        scatterVx: 0, scatterVy: 0,
+        driftAngle: Math.random() * Math.PI * 2,
+        driftSpeed: 0.15 + Math.random() * 0.15,
+      });
+    }
+  }
+
+  function buildAmbients() {
+    ambients.length = 0;
+    for (let i = 0; i < AMBIENT_COUNT; i++) {
+      ambients.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.2,
+        vy: (Math.random() - 0.5) * 0.2,
+      });
+    }
+  }
+
+  function resetState() {
+    frame = 0;
+    nodeRadius = 4;
+    nodeAlpha = 0.05;
+    impactFlashAlpha = 0;
+    impactFlashRadius = 0;
+    nodeCX = W / 2;
+    nodeCY = H / 2;
+    buildParticles();
+    if (ambients.length === 0) buildAmbients();
+  }
+
+  function getPhase(f: number): string {
+    if (f < P1_END) return 'streams';
+    if (f < P2_END) return 'converge';
+    if (f < P3_END) return 'impact';
+    if (f < P4_END) return 'scatter';
+    return 'reform';
+  }
+
+  function update() {
+    nodeCX = W / 2;
+    nodeCY = H / 2;
+    const phase = getPhase(frame);
+
+    for (let i = 0; i < ambients.length; i++) {
+      const a = ambients[i];
+      a.x += a.vx;
+      a.y += a.vy;
+      if (a.x < 0) a.x = W;
+      if (a.x > W) a.x = 0;
+      if (a.y < 0) a.y = H;
+      if (a.y > H) a.y = 0;
+    }
+
+    if (phase === 'streams') {
+      nodeRadius = 4;
+      nodeAlpha = 0.05;
+      for (let i = 0; i < TOTAL; i++) {
+        const p = particles[i];
+        p.merge = 0;
+        p.driftAngle += 0.008;
+        const dx = p.homeX + Math.cos(p.driftAngle) * 15 - p.x;
+        const dy = p.homeY + Math.sin(p.driftAngle * 0.7) * 10 - p.y;
+        p.x += dx * 0.02 + (Math.random() - 0.5) * 0.1;
+        p.y += dy * 0.02 + (Math.random() - 0.5) * 0.1;
+        if (p.isMilitary) {
+          p.x -= 0.1;
+        } else {
+          p.x += 0.1;
+        }
+      }
+    }
+
+    if (phase === 'converge') {
+      const progress = (frame - P1_END) / (P2_END - P1_END);
+      for (let i = 0; i < TOTAL; i++) {
+        const p = particles[i];
+        const dx = nodeCX - p.x;
+        const dy = nodeCY - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist > 1) {
+          const accelBase = 0.02 + progress * 0.08;
+          const accel = Math.min(accelBase * (100 / (dist + 20)), 0.5);
+          p.vx += (dx / dist) * accel;
+          p.vy += (dy / dist) * accel;
+
+          p.vx *= 0.96;
+          p.vy *= 0.96;
+
+          const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+          if (speed > 0.5) {
+            p.vx = (p.vx / speed) * 0.5;
+            p.vy = (p.vy / speed) * 0.5;
+          }
+
+          p.x += p.vx;
+          p.y += p.vy;
+        }
+
+        if (dist < 40) {
+          const orbAngle = Math.atan2(dy, dx) + Math.PI / 2;
+          p.x += Math.cos(orbAngle) * 0.2;
+          p.y += Math.sin(orbAngle) * 0.2;
+        }
+
+        const maxDist = W * 0.35;
+        const mergeT = clamp(1 - dist / maxDist, 0, 1);
+        p.merge = mergeT * progress;
+      }
+
+      nodeRadius = 4 + progress * 16;
+      nodeAlpha = 0.05 + progress * 0.35;
+    }
+
+    if (phase === 'impact') {
+      const pf = frame - P2_END;
+      if (pf === 0) {
+        impactFlashAlpha = 0.6;
+        impactFlashRadius = 5;
+        for (let i = 0; i < TOTAL; i++) {
+          const p = particles[i];
+          const dx = p.x - nodeCX;
+          const dy = p.y - nodeCY;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          const impulse = 3 + Math.random() * 2;
+          p.scatterVx = (dx / dist) * impulse;
+          p.scatterVy = (dy / dist) * impulse;
+          p.merge = 1;
+        }
+      }
+
+      if (impactFlashAlpha > 0) {
+        impactFlashRadius += 5;
+        impactFlashAlpha *= 0.88;
+        if (impactFlashAlpha < 0.003) impactFlashAlpha = 0;
+      }
+
+      for (let i = 0; i < TOTAL; i++) {
+        const p = particles[i];
+        p.x += p.scatterVx;
+        p.y += p.scatterVy;
+        p.scatterVx *= 0.92;
+        p.scatterVy *= 0.92;
+      }
+
+      nodeAlpha = (pf % 8 < 4) ? 0.15 : 0.05;
+      nodeRadius = Math.max(4, 20 - pf * 0.5);
+    }
+
+    if (phase === 'scatter') {
+      const progress = (frame - P3_END) / (P4_END - P3_END);
+      for (let i = 0; i < TOTAL; i++) {
+        const p = particles[i];
+        p.x += p.scatterVx;
+        p.y += p.scatterVy;
+        p.scatterVx *= 0.97;
+        p.scatterVy *= 0.97;
+
+        p.alpha = Math.max(0.12, (0.6 - progress * 0.48));
+        p.merge = 1;
+      }
+
+      nodeAlpha = Math.max(0.02, 0.05 - progress * 0.05);
+      nodeRadius = 4;
+
+      if (impactFlashAlpha > 0) {
+        impactFlashAlpha *= 0.95;
+        if (impactFlashAlpha < 0.003) impactFlashAlpha = 0;
+      }
+    }
+
+    if (phase === 'reform') {
+      const progress = (frame - P4_END) / (P5_END - P4_END);
+      const ease = progress * progress * (3 - 2 * progress);
+      for (let i = 0; i < TOTAL; i++) {
+        const p = particles[i];
+        p.x += (p.homeX - p.x) * 0.02;
+        p.y += (p.homeY - p.y) * 0.02;
+        p.merge = 1 - ease;
+        p.alpha += ((p.isMilitary ? 0.65 : 0.55) - p.alpha) * 0.03;
+        p.scatterVx *= 0.9;
+        p.scatterVy *= 0.9;
+        p.vx *= 0.9;
+        p.vy *= 0.9;
+      }
+
+      nodeRadius = 4;
+      nodeAlpha = 0.02 + ease * 0.03;
+    }
+  }
+
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = BG_COLOR;
+    ctx!.fillRect(0, 0, W, H);
+
+    for (let i = 0; i < ambients.length; i++) {
+      const a = ambients[i];
+      ctx!.beginPath();
+      ctx!.arc(a.x, a.y, 1, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(0.04);
+      ctx!.fill();
+    }
+
+    if (nodeAlpha > 0.003) {
+      const gr = ctx!.createRadialGradient(nodeCX, nodeCY, 0, nodeCX, nodeCY, nodeRadius * 2);
+      gr.addColorStop(0, storyA(nodeAlpha));
+      gr.addColorStop(0.5, storyA(nodeAlpha * 0.3));
+      gr.addColorStop(1, storyA(0));
+      ctx!.fillStyle = gr;
+      ctx!.beginPath();
+      ctx!.arc(nodeCX, nodeCY, nodeRadius * 2, 0, Math.PI * 2);
+      ctx!.fill();
+
+      ctx!.beginPath();
+      ctx!.arc(nodeCX, nodeCY, nodeRadius * 0.4, 0, Math.PI * 2);
+      ctx!.fillStyle = storyA(nodeAlpha * 1.5);
+      ctx!.fill();
+    }
+
+    if (impactFlashAlpha > 0.003) {
+      const fgr = ctx!.createRadialGradient(nodeCX, nodeCY, 0, nodeCX, nodeCY, impactFlashRadius);
+      fgr.addColorStop(0, redA(impactFlashAlpha));
+      fgr.addColorStop(0.4, redA(impactFlashAlpha * 0.5));
+      fgr.addColorStop(1, redA(0));
+      ctx!.fillStyle = fgr;
+      ctx!.beginPath();
+      ctx!.arc(nodeCX, nodeCY, impactFlashRadius, 0, Math.PI * 2);
+      ctx!.fill();
+    }
+
+    for (let i = 0; i < TOTAL; i++) {
+      const p = particles[i];
+      if (p.alpha < 0.003) continue;
+
+      let color: string;
+      if (p.isMilitary) {
+        color = mergedStoryA(p.merge, p.alpha);
+      } else {
+        color = mergedA(p.merge, p.alpha);
+      }
+
+      ctx!.beginPath();
+      ctx!.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx!.fillStyle = color;
+      ctx!.fill();
+
+      if (p.isMilitary && p.merge < 0.7) {
+        const glowR = p.radius * 3;
+        const ggr = ctx!.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
+        ggr.addColorStop(0, storyA(p.alpha * 0.12 * (1 - p.merge)));
+        ggr.addColorStop(1, storyA(0));
+        ctx!.fillStyle = ggr;
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, glowR, 0, Math.PI * 2);
+        ctx!.fill();
+      }
+    }
+  }
+
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = BG_COLOR;
+    ctx!.fillRect(0, 0, W, H);
+
+    nodeCX = W / 2;
+    nodeCY = H / 2;
+
+    for (let i = 0; i < 40; i++) {
+      ctx!.beginPath();
+      ctx!.arc(
+        (i * 37 + 13) % W,
+        (i * 53 + 7) % H,
+        1, 0, Math.PI * 2
+      );
+      ctx!.fillStyle = dimA(0.04);
+      ctx!.fill();
+    }
+
+    const gr = ctx!.createRadialGradient(nodeCX, nodeCY, 0, nodeCX, nodeCY, 24);
+    gr.addColorStop(0, storyA(0.15));
+    gr.addColorStop(0.5, storyA(0.05));
+    gr.addColorStop(1, storyA(0));
+    ctx!.fillStyle = gr;
+    ctx!.beginPath();
+    ctx!.arc(nodeCX, nodeCY, 24, 0, Math.PI * 2);
+    ctx!.fill();
+
+    ctx!.beginPath();
+    ctx!.arc(nodeCX, nodeCY, 3, 0, Math.PI * 2);
+    ctx!.fillStyle = storyA(0.3);
+    ctx!.fill();
+
+    for (let i = 0; i < CIV_COUNT; i++) {
+      const t = i / CIV_COUNT;
+      const homeX = W * (0.08 + t * 0.22);
+      const homeY = H * (0.18 + (Math.sin(i * 2.3) * 0.5 + 0.5) * 0.64);
+      const px = homeX + (nodeCX - homeX) * 0.3;
+      const py = homeY + (nodeCY - homeY) * 0.3;
+      const mergeT = 0.3;
+      ctx!.beginPath();
+      ctx!.arc(px, py, 2.2, 0, Math.PI * 2);
+      ctx!.fillStyle = mergedA(mergeT, 0.5);
+      ctx!.fill();
+    }
+
+    for (let i = 0; i < MIL_COUNT; i++) {
+      const t = i / MIL_COUNT;
+      const homeX = W * (0.7 + t * 0.22);
+      const homeY = H * (0.2 + (Math.sin(i * 3.1) * 0.5 + 0.5) * 0.6);
+      const px = homeX + (nodeCX - homeX) * 0.3;
+      const py = homeY + (nodeCY - homeY) * 0.3;
+      const mergeT = 0.3;
+      ctx!.beginPath();
+      ctx!.arc(px, py, 2.6, 0, Math.PI * 2);
+      ctx!.fillStyle = mergedStoryA(mergeT, 0.6);
+      ctx!.fill();
+
+      const ggr = ctx!.createRadialGradient(px, py, 0, px, py, 7);
+      ggr.addColorStop(0, storyA(0.08));
+      ggr.addColorStop(1, storyA(0));
+      ctx!.fillStyle = ggr;
+      ctx!.beginPath();
+      ctx!.arc(px, py, 7, 0, Math.PI * 2);
+      ctx!.fill();
+    }
+  }
+
+  function tick() {
+    frame++;
+    if (frame >= CYCLE) { resetState(); }
+    update();
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth;
+    H = canvas!.offsetHeight;
+    canvas!.width = W * dpr;
+    canvas!.height = H * dpr;
+    ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    nodeCX = W / 2;
+    nodeCY = H / 2;
+    if (prefersReduced) { drawStatic(); }
+  });
+  ro.observe(canvas);
+
+  const dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth;
+  H = canvas.offsetHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  if (prefersReduced) {
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    resetState();
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(rafId); rafId = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+    window.addEventListener('pagehide', () => { cancelAnimationFrame(rafId); io.disconnect(); ro.disconnect(); });
+  }
+})();
+</script>

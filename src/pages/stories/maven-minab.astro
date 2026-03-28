@@ -1,0 +1,670 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'maven-minab')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .maven-minab-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* ── Reenactment #1: Maven Interface Mockup ── */
+  .maven-target-card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; font-family: 'Courier New', monospace; }
+  .maven-target-header { background: var(--surface2); padding: 0.5rem 1rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+  .maven-target-header .maven-sys { font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--story); font-weight: 700; }
+  .maven-target-header .maven-status { font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--green); font-weight: 600; }
+  .maven-target-body { padding: 1rem 1.2rem; }
+  .maven-target-row { display: flex; justify-content: space-between; align-items: baseline; padding: 0.3rem 0; font-size: 0.8rem; line-height: 1.7; }
+  .maven-target-row .key { color: var(--muted); min-width: 140px; }
+  .maven-target-row .val { color: var(--text); font-weight: 600; text-align: right; }
+  .maven-target-row .val.warn { color: var(--accent); }
+  .maven-target-row .val.ok { color: var(--green); }
+  .maven-target-row .val.story { color: var(--story); }
+  .maven-target-divider { border: none; border-top: 1px dashed rgba(255,255,255,0.08); margin: 0.6rem 0; }
+  .maven-target-legal { padding: 0.6rem 1.2rem; border-top: 1px solid var(--border); background: rgba(0,255,136,0.03); font-size: 0.78rem; color: var(--green); font-weight: 600; font-family: 'Courier New', monospace; }
+  .maven-target-queue { padding: 0.5rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--muted); font-family: 'Courier New', monospace; }
+  .maven-target-queue .queue-pos { color: var(--text); font-weight: 600; }
+  .maven-target-context { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); font-family: inherit; }
+
+  /* ── Reenactment #2: Satellite Comparison ── */
+  .maven-satellite { display: grid; grid-template-columns: 1fr 1fr; gap: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .maven-sat-panel { padding: 1.2rem 1.4rem; }
+  .maven-sat-panel:first-child { border-right: 1px solid var(--border); }
+  .maven-sat-label { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; margin-bottom: 0.9rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
+  .maven-sat-label.old { color: var(--accent); }
+  .maven-sat-label.current { color: var(--green); }
+  .maven-sat-row { font-size: 0.78rem; line-height: 1.8; color: var(--muted); }
+  .maven-sat-row .designation { color: var(--text); font-weight: 600; display: block; font-size: 0.85rem; margin-bottom: 0.2rem; }
+  .maven-sat-row .detail { display: block; padding-left: 0.5rem; border-left: 2px solid var(--border); margin: 0.25rem 0; }
+  .maven-sat-row .detail.warn { border-left-color: var(--accent); color: var(--accent); }
+  .maven-sat-row .detail.ok { border-left-color: var(--green); color: var(--green); }
+  .maven-sat-row .status { display: inline-block; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 3px; margin-top: 0.5rem; }
+  .maven-sat-row .status.military { background: rgba(255,77,77,0.12); color: var(--accent); }
+  .maven-sat-row .status.civilian { background: rgba(0,255,136,0.1); color: var(--green); }
+  .maven-sat-footer { grid-column: 1 / -1; padding: 0.6rem 1.2rem; border-top: 1px solid var(--border); background: var(--surface2); font-size: 0.75rem; color: var(--muted); font-style: italic; text-align: center; }
+  @media (max-width: 600px) {
+    .maven-satellite { grid-template-columns: 1fr; }
+    .maven-sat-panel:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+
+  /* ── Reenactment #3: Chain of Failure ── */
+  .maven-chain { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .maven-chain-header { background: var(--surface2); padding: 0.5rem 1rem; font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); font-weight: 700; border-bottom: 1px solid var(--border); }
+  .maven-chain-steps { padding: 0.75rem 1.2rem; }
+  .maven-chain-step { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.65rem 0; }
+  .maven-chain-step + .maven-chain-step { border-top: 1px solid rgba(255,255,255,0.04); }
+  .maven-chain-icon { font-size: 1.1rem; flex-shrink: 0; width: 28px; text-align: center; }
+  .maven-chain-text { font-size: 0.82rem; line-height: 1.55; color: var(--muted); }
+  .maven-chain-text strong { color: var(--text); }
+  .maven-chain-step.fail .maven-chain-text strong { color: var(--accent); }
+  .maven-chain-step.unknown .maven-chain-text strong { color: var(--story); }
+  .maven-chain-arrow { text-align: center; font-size: 0.7rem; color: var(--border); padding: 0.1rem 0; letter-spacing: 0.3em; }
+  .maven-chain-result { padding: 0.75rem 1.2rem; border-top: 1px solid var(--border); background: rgba(255,77,77,0.04); }
+  .maven-chain-result-row { display: flex; justify-content: space-between; font-size: 0.78rem; padding: 0.2rem 0; }
+  .maven-chain-result-row .key { color: var(--muted); }
+  .maven-chain-result-row .val { color: var(--text); font-weight: 600; }
+  .maven-chain-result-row .val.red { color: var(--accent); }
+  .maven-chain-context { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="intro">
+      <h2><span class="num">01 — Context</span>The Machine That Replaced the Room</h2>
+      <p>Maven is a targeting system. Built by Palantir on a Pentagon contract that grew from $480 million to $1.3 billion, it fuses satellite imagery, drone feeds, radar data, signals intelligence, and at least 179 other data sources into a single interface. It consolidates eight or nine previously separate intelligence and targeting systems into one click-and-drag platform. It recommends specific weapons for each strike. It generates automated legal justifications under international humanitarian law. Anthropic's Claude, integrated at the secret classification level, summarizes intelligence documents and ranks targets by strategic importance.</p>
+      <p>The compression Maven achieves is extreme. A 2024 Georgetown University CSET investigation found that the U.S. Army's 18th Airborne Corps, using Maven, matched the targeting output of the 2,000-person cell used during the 2003 invasion of Iraq — with approximately 20 operators. The system does not advise. It packages: coordinates, weapon selection, legal rationale, confidence score. The human operator's role is approval.</p>
+
+      <div class="maven-target-card">
+        <div class="maven-target-header"><span class="maven-sys">Maven Smart System — Target Card</span><span class="maven-status">&#x2713; READY FOR REVIEW</span></div>
+        <div class="maven-target-body">
+          <div class="maven-target-row"><span class="key">TARGET</span><span class="val">27.1███°N, 57.0███°E</span></div>
+          <div class="maven-target-row"><span class="key">DIA CLASSIFICATION</span><span class="val">MILITARY FACILITY — IRGC COMPOUND</span></div>
+          <div class="maven-target-row"><span class="key">LAST VERIFIED</span><span class="val warn">[NOT DISPLAYED]</span></div>
+          <hr class="maven-target-divider">
+          <div class="maven-target-row"><span class="key">WEAPON</span><span class="val story">UGM-109 BLOCK IV — OPTIMAL</span></div>
+          <div class="maven-target-row"><span class="key">STOCKPILE</span><span class="val ok">AVAILABLE</span></div>
+          <div class="maven-target-row"><span class="key">NO-STRIKE CHECK</span><span class="val ok">PASS</span></div>
+        </div>
+        <div class="maven-target-legal">IHL ASSESSMENT: VALID MILITARY OBJECTIVE [AUTO-GENERATED]</div>
+        <div class="maven-target-queue"><span>QUEUE POSITION</span><span class="queue-pos">1 of 1,047 — QUEUE TIME: 00:00:43</span></div>
+        <div class="maven-target-context">The target card arrives pre-packaged: coordinates, weapon, legal justification. The operator's role is a checkbox. The system does not display when the underlying intelligence was last verified.</div>
+      </div>
+
+      <p>There was a known problem. Pentagon testing data reported by Bloomberg in February 2024 showed Maven's computer vision algorithms correctly identify objects at roughly 60% accuracy, compared with 84% for human analysts. Accuracy drops below 30% in adverse weather or poor visibility. The system is less accurate than humans. It is faster. Speed was chosen. On February 28, 2026 — Day One of Operation Epic Fury — Maven helped generate targeting for over 1,000 strikes in 24 hours, nearly double the opening salvo of the 2003 Iraq invasion.</p>
+      <p>One of those targets was Shajareh Tayyebeh elementary school in Minab, Iran.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="maven-minab-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Pipeline</strong> — Identical data particles stream through four validation gates. Each gate pulses green. One particle is catastrophically wrong but indistinguishable from the rest. It passes every checkpoint. It exits. It detonates.</p>
+
+    <section class="section" id="incident">
+      <h2><span class="num">02 — What Happened</span>22 Minutes in Minab</h2>
+      <p>The school sat 74 meters from the Seyyed al-Shohada Asif Missile Brigade compound, an IRGC Navy coastal defense unit. It had once been part of the compound. Between 2013 and 2016, it was physically separated: a boundary wall was erected, watchtowers removed, three public entrances opened, a sports field painted on the asphalt, and the walls decorated in blue and pink. According to Amnesty International's satellite imagery analysis, people were visible at the school's entrances during school hours from 2023 through 2025. The school had a website and social media accounts. Boys and girls attended on separate floors. Enrollees included children of IRGC personnel, low-income families, and members of the Baluchi minority.</p>
+
+      <div class="maven-satellite">
+        <div class="maven-sat-panel">
+          <div class="maven-sat-label old">DIA Database — Last Verified: Pre-2013</div>
+          <div class="maven-sat-row">
+            <span class="designation">IRGC COMMAND HQ — SEYYED AL-SHOHADA ASIF MISSILE BRIGADE</span>
+            <span class="detail warn">Compound boundary intact</span>
+            <span class="detail warn">Watchtowers present</span>
+            <span class="detail warn">No public entrances</span>
+            <span class="status military">Military Objective</span>
+          </div>
+        </div>
+        <div class="maven-sat-panel">
+          <div class="maven-sat-label current">Open-Source Imagery — 2017-2025</div>
+          <div class="maven-sat-row">
+            <span class="designation">SHAJAREH TAYYEBEH ELEMENTARY SCHOOL</span>
+            <span class="detail ok">Boundary wall erected, watchtowers removed</span>
+            <span class="detail ok">Three public entrances opened</span>
+            <span class="detail ok">Sports field painted on asphalt</span>
+            <span class="detail ok">Blue and pink wall decorations</span>
+            <span class="detail ok">Children visible at entrances, school hours, 2023-2025</span>
+            <span class="status civilian">Civilian Object</span>
+          </div>
+        </div>
+        <div class="maven-sat-footer">Distance between panels: 10 years. Distance the data traveled: 0.</div>
+      </div>
+
+      <p>Between 10:23 and 10:45 a.m. IRST on February 28, 2026, the school was struck in a triple-tap pattern. According to HRW and Amnesty International's independent investigations, the principal moved students to a prayer room after the first strike. The second strike hit that area, killing most who had sheltered there.</p>
+      <p>At least 175 people died. Among them: at least 120 schoolchildren — 66 boys, 54 girls. Twenty-six teachers, including the principal. Four parents. Approximately 95 were injured. Sixty-nine girls remained unidentifiable by sight and required DNA testing. A father named Rohollah told Middle East Eye: "We could only identify her from her school bag, which she was still holding."</p>
+      <p>Eight munitions experts consulting with Bellingcat and BBC Verify identified the weapon as a Tomahawk cruise missile. Debris included a satellite data link antenna traced to a September 2014 Raytheon contract. Tomahawk missiles are used exclusively by the United States. The school had not been a military facility for a decade.</p>
+    </section>
+
+    <section class="section" id="mechanism">
+      <h2><span class="num">03 — The Mechanism</span>The Laundering</h2>
+      <p>The preliminary U.S. military investigation, reported by CNN on March 11, determined that the United States was responsible for the strike and attributed it to outdated DIA targeting coordinates. The Defense Intelligence Agency had maintained a classification coding the school building as a military objective — based on its pre-2013 status as part of the IRGC compound. CENTCOM targeting officers used that coding without verifying it against current imagery. According to Just Security's legal analysis by Joseph Orenstein, the school's civilian function was visible in open-source satellite imagery and had a "years-long online presence." An internet search of Iranian business listings would have revealed it.</p>
+      <p>Whether Maven specifically processed the school as a strike target, or the stale DIA data entered the system upstream, remains undisclosed. But the analytical core of the story does not depend on resolving that question. As Orenstein wrote: "If the Maven Smart System or similar tools incorporated legacy DIA target codes without verification layers, the AI did not create the error — but it may have laundered it into the strike package with a false aura of analytical confidence."</p>
+      <p>The question of who bears responsibility is disputed. Former military officials and bombing campaign insiders told Semafor that "humans — not AI — are to blame," attributing the error to intelligence analysts who missed publicly available school information or failed to update the targeting database. These sources were unnamed. The Just Security analysis, by contrast, argues that Maven's automated pipeline compresses the targeting chain so severely that the distinction between "human error" and "system failure" collapses: when a system condensing hours into minutes packages stale data with a weapon recommendation and an auto-generated legal justification, the human operator has neither the time nor the information to catch what the machine missed.</p>
+      <p>The civilian protection infrastructure that might have caught the error had been deliberately dismantled. Defense Secretary Pete Hegseth reduced the Civilian Protection Center of Excellence workforce by approximately 90%. CENTCOM's civilian casualty assessment team was cut from 10 people to 1. Wes J. Bryant, who led the civilian harm mitigation mission before being forced out in March 2025, told ProPublica the Center "exists mostly on paper" with "no mission or mandate or budget." Hegseth fired top military lawyers responsible for IHL compliance. His stated priority: "maximum lethality, not tepid legality."</p>
+
+      <div class="maven-chain">
+        <div class="maven-chain-header">Chain of Failure — Minab, February 28, 2026</div>
+        <div class="maven-chain-steps">
+          <div class="maven-chain-step fail"><div class="maven-chain-icon" aria-hidden="true">&#x1F4BE;</div><div class="maven-chain-text"><strong>DIA Database: "IRGC Command HQ" — last verified pre-2013</strong><br>Building converted to school 2013-2016. Database not updated. Status: STALE</div></div>
+          <div class="maven-chain-arrow">&#x25BC;&#x25BC;&#x25BC;</div>
+          <div class="maven-chain-step fail"><div class="maven-chain-icon" aria-hidden="true">&#x1F916;</div><div class="maven-chain-text"><strong>Maven Smart System: ingests DIA classification, generates target card</strong><br>No-strike list check: PASS (building coded as military, not school). Legal justification: AUTO-GENERATED</div></div>
+          <div class="maven-chain-arrow">&#x25BC;&#x25BC;&#x25BC;</div>
+          <div class="maven-chain-step fail"><div class="maven-chain-icon" aria-hidden="true">&#x1F6E1;</div><div class="maven-chain-text"><strong>Civilian Protection Review: CHMR team cut from 10 to 1 person</strong><br>Center of Excellence: "exists on paper." Review requested: UNKNOWN</div></div>
+          <div class="maven-chain-arrow">&#x25BC;&#x25BC;&#x25BC;</div>
+          <div class="maven-chain-step unknown"><div class="maven-chain-icon" aria-hidden="true">&#x1F441;</div><div class="maven-chain-text"><strong>Human Operator: ~20 operators processing 1,000+ targets in 24 hours</strong><br>Time per target: UNDISCLOSED</div></div>
+          <div class="maven-chain-arrow">&#x25BC;&#x25BC;&#x25BC;</div>
+          <div class="maven-chain-step fail"><div class="maven-chain-icon" aria-hidden="true">&#x1F4A5;</div><div class="maven-chain-text"><strong>Strike authorized. 10:23 AM IRST — February 28, 2026</strong><br>Tomahawk cruise missile. Triple-tap pattern. 175 killed.</div></div>
+        </div>
+        <div class="maven-chain-result">
+          <div class="maven-chain-result-row"><span class="key">Checkpoints that should have caught the error</span><span class="val red">5</span></div>
+          <div class="maven-chain-result-row"><span class="key">Checkpoints that functioned</span><span class="val red">0</span></div>
+        </div>
+        <div class="maven-chain-context">Maven's no-strike list displays schools in blue. But the school was coded as a military objective in DIA data. The no-strike system never triggered — not because it failed, but because the upstream data told it there was no school to protect. Why the system did not cross-reference open-source imagery remains unanswered.</div>
+      </div>
+    </section>
+
+    <section class="section" id="consequence">
+      <h2><span class="num">04 — Consequence</span>Promoted, Not Investigated</h2>
+      <p>Human Rights Watch classified the strike as a potential war crime. HRW's Washington director, Sarah Yager, stated on March 12: "The findings of the US military investigation into the Minab school attack show a violation of the laws of war that cannot be boiled down to a blameless mistake." Amnesty International classified it as "unlawful" and a "serious breach of international humanitarian law." UNESCO condemned the strike on the day it occurred. The UN Secretary-General condemned it. Eight UN experts called for an independent investigation.</p>
+      <p>The congressional response was bipartisan in one direction: 120 House Democrats led by Rep. Jason Crow sent a letter on March 12 specifically asking whether "artificial intelligence, including the use of the Maven Smart System, [was] used to identify the Shajareh Tayyebeh school as a target." Forty-six Senate Democrats sent a parallel letter the day before, demanding answers on AI use, civilian harm mitigation, and IHL compliance. Both letters set response deadlines — March 18 and March 20. As of March 26, 2026, the Pentagon has not publicly responded to either.</p>
+      <p>Nine days after the strike, on March 9, Deputy Secretary of Defense Steve Feinberg signed a memo formalizing Maven as an official program of record, mandating adoption across all military branches by September 2026. Pentagon AI spending for fiscal year 2026 totals $13.4 billion. The system that processed the target was not paused. It was promoted.</p>
+      <p>Legal scholars who have analyzed the strike offer a structural observation that complicates the accountability question. The European Journal of International Law's analysis concluded that "AI will vastly multiply the number of attacks conducted while facilitating cognitive errors" — but that isolated targeting errors, whether AI-assisted or human-caused, fall below ICC prosecution thresholds because they lack the intent required under Rome Statute definitions. The Just Security analysis reached a similar conclusion: the strike violated the principle of distinction and precautionary obligations under IHL, but likely does not constitute a war crime under the Rome Statute's intentionality standard. The system creates the conditions for catastrophic error. The legal architecture is not built to hold it accountable.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">05 — Signal</span>The Speed Problem</h2>
+      <p>Admiral Brad Cooper, CENTCOM commander, confirmed on March 11 that the military uses "advanced AI tools" in operations against Iran. "These systems help us sift through vast amounts of data in seconds," he said. "Humans will always make final decisions on what to shoot and what not to shoot and when to shoot."</p>
+      <p>The math does not support the claim. One thousand targets struck in 24 hours. Approximately 20 operators. The actual review time per target during the first day of Epic Fury has not been disclosed. Jack Shanahan, a 36-year military veteran and former head of the DoD Joint Artificial Intelligence Center, warned in Semafor: "There will be a risk of becoming overly reliant on machine outputs and short-circuiting critical human review." Wes Bryant, who ran the now-gutted civilian protection mission, was blunter: "It's Groundhog Day — every day we're just killing people and making more enemies."</p>
+      <p>What Minab reveals is not that AI in warfare is dangerous — that framing is too vague to be useful. The specific mechanism is this: when a system processes errors at machine speed through a pipeline stripped of human checkpoints, every upstream mistake becomes invisible and irreversible. The data said the school was a military compound. Maven packaged that data with a weapon recommendation and an auto-generated legal justification. The civilian protection team that might have caught it had been cut by 90%. The operator saw a target card, not a school. The system worked exactly as designed.</p>
+      <p>DoD Under Secretary Emil Michael, speaking on the record to Fortune, described the Pentagon's relationship with the AI embedded in its targeting system. His fear was not that Maven would process stale data and kill civilians — it already had. His fear was that the AI might stop working. "I'm like, holy shit, what if this software went down," Michael said, "some guardrail picked up, some refusal happened for the next fight like this one and we left our people at risk?" The system that laundered a decade-old error into a strike that killed 175 people, including more than 110 children, was promoted nine days later. The only scenario the Pentagon treats as a crisis is the one where the machine says no.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.maven-minab-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
+  const STORY_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#ef4444';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+
+  const [sR, sG, sB] = hexToRgb(STORY_COLOR.startsWith('#') ? STORY_COLOR : '#ef4444');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function storyA(a: number) { return `rgba(${sR},${sG},${sB},${Math.max(0, Math.min(1, a))})`; }
+  function dimA(a: number) { return `rgba(232,232,232,${Math.max(0, Math.min(1, a))})`; }
+  function greenA(a: number) { return `rgba(0,255,136,${Math.max(0, Math.min(1, a))})`; }
+
+  // --- Dimensions ---
+  let W = 0, H = 0, rafId = 0, frame = 0;
+
+  // --- Constants ---
+  const SPEED = 0.4;
+  const SPAWN_INTERVAL = 10;
+  const MAX_PARTICLES = 75;
+  const PARTICLE_RADIUS = 2.5;
+  const NUM_GATES = 4;
+  const GATE_POSITIONS = [0.2, 0.4, 0.6, 0.8]; // fractions of W
+
+  // --- Phase timing (at 60fps) ---
+  // Stream phase: particles flow, error particle is in the stream
+  // Detonation phase: error particle reaches the end, red ripples
+  // Hold phase: ripples fade, stream continues
+  // Cycle resets when ripples fully fade and hold completes
+  const DETONATION_DURATION = 70;
+  const HOLD_AFTER_DETONATION = 50;
+
+  // --- Particle pool ---
+  interface Particle {
+    x: number;
+    y: number;
+    speed: number;
+    alpha: number;
+    lane: number;
+    active: boolean;
+    isError: boolean;
+    fadeOut: boolean;
+    fadeAlpha: number;
+  }
+
+  const particles: Particle[] = [];
+  for (let i = 0; i < MAX_PARTICLES; i++) {
+    particles.push({
+      x: 0, y: 0, speed: 0, alpha: 0,
+      lane: 0, active: false, isError: false,
+      fadeOut: false, fadeAlpha: 1,
+    });
+  }
+
+  // --- Gate state ---
+  interface Gate {
+    xFrac: number;
+    pulseAlpha: number;
+  }
+
+  const gates: Gate[] = GATE_POSITIONS.map(f => ({ xFrac: f, pulseAlpha: 0 }));
+
+  // --- Ripple state ---
+  interface Ripple {
+    x: number;
+    y: number;
+    radius: number;
+    alpha: number;
+    active: boolean;
+  }
+
+  const ripples: Ripple[] = [];
+  for (let i = 0; i < 4; i++) {
+    ripples.push({ x: 0, y: 0, radius: 0, alpha: 0, active: false });
+  }
+
+  // --- Cycle state ---
+  let errorSpawned = false;
+  let errorDetonated = false;
+  let detonationFrame = 0;
+  let detonationX = 0;
+  let detonationY = 0;
+  let radialFlashAlpha = 0;
+  let spawnCounter = 0;
+  let errorLaneOffset = 0; // which "position" in the stream the error gets
+  let cycleCount = 0;
+
+  // --- Lanes ---
+  // Particles drift in 5 horizontal lanes with slight vertical wobble
+  const NUM_LANES = 5;
+
+  function laneY(lane: number): number {
+    const margin = H * 0.2;
+    const usable = H - margin * 2;
+    return margin + (lane + 0.5) * (usable / NUM_LANES);
+  }
+
+  function spawnParticle(isError: boolean) {
+    // Find an inactive particle
+    let p: Particle | null = null;
+    for (let i = 0; i < particles.length; i++) {
+      if (!particles[i].active) { p = particles[i]; break; }
+    }
+    if (!p) return;
+
+    const lane = Math.floor(Math.random() * NUM_LANES);
+    p.x = -10;
+    p.y = laneY(lane) + (Math.random() - 0.5) * 8;
+    p.speed = SPEED + (Math.random() - 0.5) * 0.08;
+    p.alpha = 0.5 + Math.random() * 0.25;
+    p.lane = lane;
+    p.active = true;
+    p.isError = isError;
+    p.fadeOut = false;
+    p.fadeAlpha = 1;
+  }
+
+  function resetCycle() {
+    errorSpawned = false;
+    errorDetonated = false;
+    detonationFrame = 0;
+    radialFlashAlpha = 0;
+    for (let i = 0; i < ripples.length; i++) {
+      ripples[i].active = false;
+      ripples[i].alpha = 0;
+    }
+    // Vary the error position each cycle
+    cycleCount++;
+    errorLaneOffset = 20 + Math.floor(Math.random() * 30);
+    spawnCounter = 0;
+  }
+
+  function update() {
+    // --- Spawn particles ---
+    spawnCounter++;
+    if (spawnCounter >= SPAWN_INTERVAL) {
+      spawnCounter = 0;
+
+      // Spawn the error particle at a specific count in the cycle
+      if (!errorSpawned && !errorDetonated) {
+        errorLaneOffset--;
+        if (errorLaneOffset <= 0) {
+          spawnParticle(true);
+          errorSpawned = true;
+        } else {
+          spawnParticle(false);
+        }
+      } else {
+        spawnParticle(false);
+      }
+    }
+
+    // --- Update gates ---
+    for (let g = 0; g < gates.length; g++) {
+      if (gates[g].pulseAlpha > 0) {
+        gates[g].pulseAlpha *= 0.92;
+        if (gates[g].pulseAlpha < 0.005) gates[g].pulseAlpha = 0;
+      }
+    }
+
+    // --- Update particles ---
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      if (!p.active) continue;
+
+      const prevX = p.x;
+      p.x += p.speed;
+
+      // Check gate crossings
+      for (let g = 0; g < gates.length; g++) {
+        const gx = gates[g].xFrac * W;
+        if (prevX < gx && p.x >= gx) {
+          // Particle crossed this gate
+          gates[g].pulseAlpha = 0.35;
+        }
+      }
+
+      // Check if particle has exited the right edge
+      const exitX = W + 20;
+      if (p.x >= exitX - 30 && !p.isError) {
+        // Normal particle: fade out
+        p.fadeOut = true;
+      }
+
+      if (p.fadeOut) {
+        p.fadeAlpha -= 0.03;
+        if (p.fadeAlpha <= 0) {
+          p.active = false;
+          p.fadeAlpha = 1;
+          p.fadeOut = false;
+        }
+      }
+
+      // Error particle: detonate at exit zone
+      if (p.isError && p.x >= W * 0.88 && !errorDetonated) {
+        errorDetonated = true;
+        detonationFrame = 0;
+        detonationX = p.x;
+        detonationY = p.y;
+        radialFlashAlpha = 0.1;
+
+        // Spawn ripples staggered
+        for (let r = 0; r < ripples.length; r++) {
+          ripples[r].x = detonationX;
+          ripples[r].y = detonationY;
+          ripples[r].radius = 2;
+          ripples[r].alpha = 0.6 - r * 0.1;
+          ripples[r].active = true;
+        }
+
+        // Kill the error particle
+        p.active = false;
+        p.fadeAlpha = 1;
+        p.fadeOut = false;
+      }
+    }
+
+    // --- Update detonation ---
+    if (errorDetonated) {
+      detonationFrame++;
+
+      // Expand ripples with stagger
+      for (let r = 0; r < ripples.length; r++) {
+        if (!ripples[r].active) continue;
+        const staggerDelay = r * 8;
+        if (detonationFrame > staggerDelay) {
+          ripples[r].radius += 1.5;
+          ripples[r].alpha *= 0.97;
+          if (ripples[r].alpha < 0.005 || ripples[r].radius > 130) {
+            ripples[r].active = false;
+          }
+        }
+      }
+
+      // Radial flash
+      if (radialFlashAlpha > 0) {
+        radialFlashAlpha *= 0.95;
+        if (radialFlashAlpha < 0.003) radialFlashAlpha = 0;
+      }
+
+      // Check if detonation sequence is complete
+      let anyRippleActive = false;
+      for (let r = 0; r < ripples.length; r++) {
+        if (ripples[r].active) { anyRippleActive = true; break; }
+      }
+
+      if (!anyRippleActive && detonationFrame > DETONATION_DURATION + HOLD_AFTER_DETONATION) {
+        resetCycle();
+      }
+    }
+  }
+
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = BG_COLOR;
+    ctx!.fillRect(0, 0, W, H);
+
+    // --- Draw gates ---
+    for (let g = 0; g < gates.length; g++) {
+      const gx = gates[g].xFrac * W;
+      const baseAlpha = 0.06;
+      const pulseBoost = gates[g].pulseAlpha;
+
+      // Gate line (always dim)
+      ctx!.beginPath();
+      ctx!.moveTo(gx, H * 0.1);
+      ctx!.lineTo(gx, H * 0.9);
+      ctx!.strokeStyle = dimA(baseAlpha);
+      ctx!.lineWidth = 1;
+      ctx!.stroke();
+
+      // Green pulse overlay
+      if (pulseBoost > 0.005) {
+        ctx!.beginPath();
+        ctx!.moveTo(gx, H * 0.1);
+        ctx!.lineTo(gx, H * 0.9);
+        ctx!.strokeStyle = greenA(pulseBoost);
+        ctx!.lineWidth = 2;
+        ctx!.stroke();
+
+        // Green glow
+        const grad = ctx!.createLinearGradient(gx - 15, 0, gx + 15, 0);
+        grad.addColorStop(0, greenA(0));
+        grad.addColorStop(0.5, greenA(pulseBoost * 0.15));
+        grad.addColorStop(1, greenA(0));
+        ctx!.fillStyle = grad;
+        ctx!.fillRect(gx - 15, H * 0.1, 30, H * 0.8);
+      }
+    }
+
+    // --- Draw particles ---
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      if (!p.active) continue;
+
+      const drawAlpha = p.alpha * p.fadeAlpha;
+      if (drawAlpha < 0.005) continue;
+
+      // Subtle vertical wobble
+      const wobbleY = Math.sin(p.x * 0.02 + p.lane * 1.7) * 2;
+      const py = p.y + wobbleY;
+
+      // All particles look identical — off-white circles
+      ctx!.beginPath();
+      ctx!.arc(p.x, py, PARTICLE_RADIUS, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(drawAlpha);
+      ctx!.fill();
+
+      // Faint trail
+      ctx!.beginPath();
+      ctx!.moveTo(p.x, py);
+      ctx!.lineTo(p.x - 8, py);
+      ctx!.strokeStyle = dimA(drawAlpha * 0.15);
+      ctx!.lineWidth = 1;
+      ctx!.stroke();
+    }
+
+    // --- Draw detonation ---
+    if (errorDetonated) {
+      // Radial flash
+      if (radialFlashAlpha > 0.003) {
+        const grad = ctx!.createRadialGradient(
+          detonationX, detonationY, 0,
+          detonationX, detonationY, 100
+        );
+        grad.addColorStop(0, storyA(radialFlashAlpha));
+        grad.addColorStop(1, storyA(0));
+        ctx!.fillStyle = grad;
+        ctx!.beginPath();
+        ctx!.arc(detonationX, detonationY, 100, 0, Math.PI * 2);
+        ctx!.fill();
+      }
+
+      // Ripple rings
+      for (let r = 0; r < ripples.length; r++) {
+        const rp = ripples[r];
+        if (!rp.active || rp.alpha < 0.005) continue;
+
+        ctx!.beginPath();
+        ctx!.arc(rp.x, rp.y, rp.radius, 0, Math.PI * 2);
+        ctx!.strokeStyle = storyA(rp.alpha);
+        ctx!.lineWidth = 1.5 * (1 - rp.radius / 130);
+        if (ctx!.lineWidth < 0.3) ctx!.lineWidth = 0.3;
+        ctx!.stroke();
+      }
+
+      // Impact core (small bright dot that fades)
+      const coreAlpha = Math.max(0, 1 - detonationFrame / 40);
+      if (coreAlpha > 0.01) {
+        ctx!.beginPath();
+        ctx!.arc(detonationX, detonationY, 3, 0, Math.PI * 2);
+        ctx!.fillStyle = storyA(coreAlpha);
+        ctx!.fill();
+
+        const coreGlow = ctx!.createRadialGradient(
+          detonationX, detonationY, 0,
+          detonationX, detonationY, 12
+        );
+        coreGlow.addColorStop(0, storyA(coreAlpha * 0.3));
+        coreGlow.addColorStop(1, storyA(0));
+        ctx!.fillStyle = coreGlow;
+        ctx!.beginPath();
+        ctx!.arc(detonationX, detonationY, 12, 0, Math.PI * 2);
+        ctx!.fill();
+      }
+    }
+  }
+
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = BG_COLOR;
+    ctx!.fillRect(0, 0, W, H);
+
+    // Draw gates
+    for (let g = 0; g < gates.length; g++) {
+      const gx = gates[g].xFrac * W;
+      ctx!.beginPath();
+      ctx!.moveTo(gx, H * 0.1);
+      ctx!.lineTo(gx, H * 0.9);
+      ctx!.strokeStyle = dimA(0.06);
+      ctx!.lineWidth = 1;
+      ctx!.stroke();
+
+      // One gate pulsing green (static hint of validation)
+      if (g === 1) {
+        ctx!.beginPath();
+        ctx!.moveTo(gx, H * 0.1);
+        ctx!.lineTo(gx, H * 0.9);
+        ctx!.strokeStyle = greenA(0.2);
+        ctx!.lineWidth = 2;
+        ctx!.stroke();
+      }
+    }
+
+    // Draw scattered particles across the canvas, mid-stream
+    const staticCount = 18;
+    for (let i = 0; i < staticCount; i++) {
+      const t = (i + 0.5) / staticCount;
+      const px = W * 0.05 + t * W * 0.85;
+      const lane = i % NUM_LANES;
+      const py = laneY(lane) + Math.sin(i * 2.3) * 4;
+      const alpha = 0.4 + Math.sin(i * 1.7) * 0.15;
+
+      ctx!.beginPath();
+      ctx!.arc(px, py, PARTICLE_RADIUS, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(alpha);
+      ctx!.fill();
+
+      // Trail
+      ctx!.beginPath();
+      ctx!.moveTo(px, py);
+      ctx!.lineTo(px - 8, py);
+      ctx!.strokeStyle = dimA(alpha * 0.15);
+      ctx!.lineWidth = 1;
+      ctx!.stroke();
+    }
+
+    // One ripple hint at right side (the detonation echo)
+    const rippleX = W * 0.88;
+    const rippleY = laneY(2);
+    for (let r = 0; r < 3; r++) {
+      const radius = 20 + r * 25;
+      const alpha = 0.2 - r * 0.06;
+      ctx!.beginPath();
+      ctx!.arc(rippleX, rippleY, radius, 0, Math.PI * 2);
+      ctx!.strokeStyle = storyA(alpha);
+      ctx!.lineWidth = 1;
+      ctx!.stroke();
+    }
+
+    // Impact core
+    ctx!.beginPath();
+    ctx!.arc(rippleX, rippleY, 3, 0, Math.PI * 2);
+    ctx!.fillStyle = storyA(0.6);
+    ctx!.fill();
+  }
+
+  function tick() {
+    frame++;
+    update();
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  // --- Resize ---
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth;
+    H = canvas!.offsetHeight;
+    canvas!.width = W * dpr;
+    canvas!.height = H * dpr;
+    ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (prefersReduced) { drawStatic(); }
+  });
+  ro.observe(canvas);
+
+  // Initial size
+  const dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth;
+  H = canvas.offsetHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  if (prefersReduced) {
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    resetCycle();
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(rafId); rafId = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+    window.addEventListener('pagehide', () => { cancelAnimationFrame(rafId); io.disconnect(); ro.disconnect(); });
+  }
+})();
+</script>

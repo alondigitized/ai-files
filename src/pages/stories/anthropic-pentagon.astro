@@ -1,0 +1,718 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'anthropic-pentagon')!;
+---
+
+<style is:global>
+  /* ── Canvas ── */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .anthropic-pentagon-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* ── Timeline ── */
+  .ap-timeline { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .ap-timeline-header { background: var(--surface2); padding: 0.5rem 1rem; font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--border); }
+  .ap-timeline-body { padding: 0.75rem 1.2rem; }
+  .ap-timeline-node { display: flex; align-items: flex-start; gap: 0.9rem; padding: 0.65rem 0; }
+  .ap-timeline-node + .ap-timeline-node { border-top: 1px solid rgba(255,255,255,0.04); }
+  .ap-timeline-date { flex-shrink: 0; width: 56px; font-size: 0.72rem; font-weight: 700; color: var(--muted); font-family: 'Courier New', monospace; padding-top: 0.1rem; }
+  .ap-timeline-dot { flex-shrink: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--border); margin-top: 0.25rem; }
+  .ap-timeline-text { font-size: 0.82rem; line-height: 1.55; color: var(--muted); }
+  .ap-timeline-text strong { color: var(--text); }
+  .ap-timeline-node.highlight .ap-timeline-dot { background: var(--story); box-shadow: 0 0 8px var(--story); }
+  .ap-timeline-node.highlight .ap-timeline-text strong { color: var(--story); }
+  .ap-timeline-node.accent .ap-timeline-dot { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  .ap-timeline-node.accent .ap-timeline-text strong { color: var(--accent); }
+  .ap-timeline-context { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); }
+
+  /* ── Terminal ── */
+  .ap-terminal { background: #0a0a0a; border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; font-family: 'Courier New', monospace; }
+  .ap-terminal-header { background: var(--surface2); padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .ap-terminal-header .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .ap-terminal-header .dot-r { background: #ff5f57; }
+  .ap-terminal-header .dot-y { background: #febc2e; }
+  .ap-terminal-header .dot-g { background: #28c840; }
+  .ap-terminal-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .ap-terminal-panel { padding: 1rem 1.2rem; }
+  .ap-terminal-panel:first-child { border-right: 1px solid var(--border); }
+  .ap-terminal-label { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 0.7rem; }
+  .ap-terminal-line { font-size: 0.78rem; line-height: 1.8; color: var(--muted); }
+  .ap-terminal-line .key { color: var(--muted); }
+  .ap-terminal-line .val { color: var(--story); font-weight: 600; }
+  .ap-terminal-line .val.warn { color: var(--accent); }
+  .ap-terminal-line .val.dim { color: var(--muted); font-weight: 400; font-style: italic; }
+  .ap-terminal-context { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); font-family: inherit; }
+  @media (max-width: 600px) {
+    .ap-terminal-cols { grid-template-columns: 1fr; }
+    .ap-terminal-panel:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+
+  /* ── Ruling ── */
+  .ap-ruling { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .ap-ruling-header { background: var(--surface2); padding: 0.5rem 1rem; font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
+  .ap-ruling-body { padding: 1rem 1.4rem; }
+  .ap-ruling-excerpt { padding: 0.9rem 0; font-size: 0.88rem; line-height: 1.65; color: var(--text); border-bottom: 1px solid rgba(255,255,255,0.04); font-style: italic; }
+  .ap-ruling-excerpt:last-child { border-bottom: none; padding-bottom: 0.4rem; }
+  .ap-ruling-excerpt .para-num { color: var(--muted); font-size: 0.72rem; font-style: normal; font-weight: 700; margin-right: 0.5rem; }
+  .ap-ruling-killshot { padding: 1.2rem 1.4rem; font-size: 1rem; line-height: 1.65; color: var(--story); font-style: italic; font-weight: 600; border-top: 1px solid var(--border); background: rgba(255,255,255,0.02); }
+  .ap-ruling-killshot .para-num { color: var(--muted); font-size: 0.72rem; font-style: normal; font-weight: 700; margin-right: 0.5rem; }
+  .ap-ruling-context { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="intro">
+      <h2><span class="num">01 — Context</span>The Partnership</h2>
+      <p>On February 27, 2026, the Pentagon designated Anthropic a supply chain risk -- the first time the United States had ever applied that label to an American company. The designation ordered every federal agency to stop using Claude. The next day, as Operation Epic Fury launched against Iran, Claude reportedly helped identify over a thousand targets in the first twenty-four hours, according to unnamed military and intelligence sources.</p>
+      <p>Anthropic had entered the defense space deliberately. CEO Dario Amodei called the company "the most lean forward of all the AI companies in working with the U.S. government and working with the U.S. military." In November 2024, Anthropic partnered with Palantir Technologies and Amazon Web Services to bring Claude to classified government networks. In July 2025, Anthropic signed a $200 million Pentagon contract. Claude became the first frontier AI model approved for use on classified systems.</p>
+      <p>Claude was integrated into Palantir's Maven Smart System -- the military's core targeting platform, which fuses satellite imagery, drone feeds, radar data, and signals intelligence. Maven was formalized as an official program of record in March 2026, mandated across all military branches, with total investment growing from $480 million in 2024 to $13 billion. The Pentagon characterized Claude's role as "synthesizing documents" and "making logistics and supply chains more efficient." Multiple independent reports described a wider scope: target identification, strategic importance ranking, and strike package generation. No official has reconciled these characterizations.</p>
+      <p>Anthropic supported intelligence analysis, cyber operations, operational planning, and what it described as "lawful foreign intelligence and counterintelligence missions." The company accepted 98 or 99 percent of the military's use cases. It drew lines on two: no mass domestic surveillance of Americans, and no fully autonomous weapons systems capable of selecting and engaging targets without human involvement. These were the red lines.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="anthropic-pentagon-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Red Line</strong> — A thin orange line bisects the canvas. Particles drift on both sides, doing identical work. The line flares with enforcement pulses, but particles cross through it freely, unaffected. The boundary persists but divides nothing.</p>
+
+    <section class="section" id="escalation">
+      <h2><span class="num">02 — Escalation</span>The Raid and the Ultimatum</h2>
+      <p>In January 2026, U.S. special operations forces captured Venezuelan President Nicolas Maduro in a raid. According to Axios and Semafor, citing unnamed sources, Claude was deployed operationally through the Palantir integration during the operation. After the raid, according to the same sources, a senior Anthropic executive contacted a senior Palantir executive to ask whether Claude had been used. The Palantir executive reported the exchange to the Pentagon, interpreting it as indicating Anthropic might disapprove of Claude's use in kinetic operations. Anthropic denied that it had discussed the use of Claude for specific operations with the Department of War -- a denial that did not address contact with Palantir.</p>
+      <p>The machinery of government swung fast. On February 23, Elon Musk's xAI signed an agreement granting the military access to Grok in classified systems under the "all lawful use" terms Anthropic had refused. The next day, Defense Secretary Pete Hegseth issued a 72-hour ultimatum to Amodei: allow unrestricted use of Claude "for all legal purposes" by 5:01 PM on February 27, or face consequences.</p>
+      <p>Anthropic refused publicly on February 26. The company released a statement calling the Pentagon's "final offer" a sham. "The contract language we received overnight from the Department of War made virtually no progress," Amodei said. "New language framed as compromise was paired with legalese that would allow those safeguards to be disregarded at will." He characterized the Pentagon's position as "inherently contradictory: one labels us a security risk; the other labels Claude as essential to national security."</p>
+      <p>On February 27, Trump directed all federal agencies to cease using Anthropic. Hegseth designated Anthropic a supply chain risk -- the designation previously reserved for foreign adversaries like Huawei and Kaspersky. The cascade was immediate: every defense contractor, including Amazon, Microsoft, and Palantir, was required to certify that it did not use Claude in military work. Defense tech companies began dropping Claude. Amodei called the actions "retaliatory and punitive." Then, on March 4, Pentagon CTO Emil Michael emailed Amodei saying the two sides were "very close" on the disputed issues. Two days later, Michael publicly denied any active negotiation.</p>
+
+      <div class="ap-timeline" role="figure" aria-label="Timeline of the five-day sequence from February 23 to February 28, 2026">
+        <div class="ap-timeline-header">The Five-Day Sequence</div>
+        <div class="ap-timeline-body">
+          <div class="ap-timeline-node">
+            <div class="ap-timeline-date" aria-hidden="true">Feb 23</div>
+            <div class="ap-timeline-dot" aria-hidden="true"></div>
+            <div class="ap-timeline-text"><strong>xAI signs "all lawful use" deal</strong> -- Grok granted access to classified systems</div>
+          </div>
+          <div class="ap-timeline-node">
+            <div class="ap-timeline-date" aria-hidden="true">Feb 24</div>
+            <div class="ap-timeline-dot" aria-hidden="true"></div>
+            <div class="ap-timeline-text"><strong>Hegseth issues 72-hour ultimatum</strong> -- deadline: 5:01 PM, February 27</div>
+          </div>
+          <div class="ap-timeline-node accent">
+            <div class="ap-timeline-date" aria-hidden="true">Feb 26</div>
+            <div class="ap-timeline-dot" aria-hidden="true"></div>
+            <div class="ap-timeline-text"><strong>Anthropic refuses publicly</strong> -- calls the "final offer" a sham</div>
+          </div>
+          <div class="ap-timeline-node accent">
+            <div class="ap-timeline-date" aria-hidden="true">Feb 27</div>
+            <div class="ap-timeline-dot" aria-hidden="true"></div>
+            <div class="ap-timeline-text"><strong>Trump bans Anthropic</strong> -- supply chain risk designation, first for a U.S. company</div>
+          </div>
+          <div class="ap-timeline-node highlight">
+            <div class="ap-timeline-date" aria-hidden="true">Feb 28</div>
+            <div class="ap-timeline-dot" aria-hidden="true"></div>
+            <div class="ap-timeline-text"><strong>Operation Epic Fury launches</strong> -- Claude reportedly identifies 1,000+ targets in first 24 hours</div>
+          </div>
+        </div>
+        <div class="ap-timeline-context">The AI the government banned on Thursday was, according to unnamed military sources, the AI the government used to fight a war on Friday.</div>
+      </div>
+    </section>
+
+    <section class="section" id="mechanism">
+      <h2><span class="num">03 — The Mechanism</span>Too Embedded to Remove</h2>
+      <p>The ban did not remove Claude from military operations. It could not. Pentagon CTO Emil Michael described the moment leadership realized the extent of the dependency: "I'm like, holy shit, what if this software went down, some guardrail picked up, some refusal happened for the next fight like this one and we left our people at risk?" He called it "a whoa moment for the whole leadership at the Pentagon."</p>
+      <p>Replacing Claude was not a matter of swapping one vendor for another. Defense One reported the Pentagon would need "three months or longer" to replace Claude's capabilities. Military Times reported that recertification of replacement systems on classified networks could take 12 to 18 months. Trump signed an executive order giving the military six months to complete the transition. According to an anonymous DOD IT contractor quoted by Military Times, some agencies planned to "slow-roll" the phase-out, betting on a resolution before the deadline expired.</p>
+
+      <div class="ap-terminal" role="figure" aria-label="Maven Smart System dependency status showing Claude integration and replacement timeline">
+        <div class="ap-terminal-header"><span aria-hidden="true"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span></span> Maven Smart System -- Dependency Status</div>
+        <div class="ap-terminal-cols">
+          <div class="ap-terminal-panel">
+            <div class="ap-terminal-label">Active Components (Claude)</div>
+            <div class="ap-terminal-line"><span class="key">Satellite imagery fusion:</span> <span class="val">CLAUDE</span></div>
+            <div class="ap-terminal-line"><span class="key">Drone feed classification:</span> <span class="val">CLAUDE</span></div>
+            <div class="ap-terminal-line"><span class="key">Signals intelligence:</span> <span class="val">CLAUDE</span></div>
+            <div class="ap-terminal-line"><span class="key">Target identification:</span> <span class="val">CLAUDE</span></div>
+            <div class="ap-terminal-line"><span class="key">Strike package generation:</span> <span class="val">CLAUDE</span></div>
+          </div>
+          <div class="ap-terminal-panel">
+            <div class="ap-terminal-label">Replacement Status</div>
+            <div class="ap-terminal-line"><span class="key">OpenAI (GPT):</span> <span class="val warn">RUSHED</span></div>
+            <div class="ap-terminal-line"><span class="key">xAI (Grok):</span> <span class="val dim">"inconsistent answers"</span></div>
+            <div class="ap-terminal-line"><span class="key">Recertification:</span> <span class="val warn">12-18 MONTHS</span></div>
+            <div class="ap-terminal-line"><span class="key">War timeline:</span> <span class="val warn">NOW</span></div>
+          </div>
+        </div>
+        <div class="ap-terminal-context">The left column reflects Maven integration reported by Tom's Hardware, Military Times, and Semafor. The Grok characterization is from an anonymous DOD IT contractor quoted by Military Times. The Pentagon publicly describes Claude's role as logistics and document synthesis. The full scope of Claude's operational role remains contested.</div>
+      </div>
+
+      <p>The replacement dynamic compounded the problem. On the same day Operation Epic Fury launched, OpenAI announced a deal allowing military use of its technologies in classified settings. Sam Altman acknowledged the negotiations were "definitely rushed" and, after employee protests, conceded the initial agreement was "opportunistic and sloppy." OpenAI's deal stated its "two most important safety principles" were prohibitions on domestic mass surveillance and autonomous weapons -- the same restrictions Anthropic demanded. The difference: OpenAI relied on existing law rather than contractual prohibitions and agreed to the "any lawful purpose" language. The EFF called the terms "weasel words," noting that "intentionally" was load-bearing and key terms like "tracking," "surveillance," and "monitoring" were left undefined. The market punished the company that insisted on binding restrictions and rewarded the one that deferred to existing law.</p>
+    </section>
+
+    <section class="section" id="ruling">
+      <h2><span class="num">04 — Consequence</span>The Ruling</h2>
+      <p>On March 9, Anthropic filed two lawsuits -- one in the Northern District of California, one in the D.C. Circuit Court of Appeals -- alleging First Amendment retaliation, Fifth Amendment due process violations, and Administrative Procedure Act violations. The complaint called the government's actions "unprecedented and unlawful" and named the Department of Defense, Secretary Hegseth, and over a dozen other federal agencies as defendants. Anthropic alleged the Pentagon had skipped every mandatory procedural step Congress required for a supply chain risk designation: risk assessment, notification, opportunity to respond, written determination, congressional notification.</p>
+      <p>The breadth of support was unusual. Microsoft filed an amicus brief urging a "negotiated resolution." Nearly 50 Google and OpenAI employees, including DeepMind chief scientist Jeff Dean, filed a brief arguing the Pentagon had acted "recklessly." Nearly two dozen retired senior military officers, including former CIA, NSA, and DNI director Michael Hayden, filed in support. The EFF, FIRE, the Cato Institute, and the American Federation of Government Employees union all filed separately.</p>
+      <p>On March 24, Judge Rita F. Lin held a hearing in San Francisco. She called the Pentagon's actions "troubling" and said they "don't really seem to be tailored to the stated national security concern." She told the government's lawyers: "It looks like an attempt to cripple Anthropic." She noted that the government's position would allow designating any company a supply chain risk for being "stubborn" and asking "annoying questions." The government argued, through DOJ attorney Eric Hamilton, that Anthropic's negotiating stance created a sabotage risk -- that the company might deploy "kill switches" in future software updates. Anthropic's lawyer Michael Mongan countered that actual saboteurs would secretly accept terms, not argue in public.</p>
+      <p>Two days later, on March 26, Judge Lin issued a 43-page preliminary injunction blocking enforcement of the supply chain risk designation and the presidential directive. She found Anthropic was likely to succeed on the merits of its First Amendment retaliation claim, its due process claim, and its APA claim. Judge Lin cited an internal DOD memo stating the risk had escalated due to Anthropic's "increasingly hostile manner through the press." She cited Trump calling Anthropic a "radical left, woke company."</p>
+
+      <div class="ap-ruling" role="figure" aria-label="Excerpts from Judge Rita F. Lin's preliminary injunction, March 26, 2026">
+        <div class="ap-ruling-header"><span>Excerpts -- Preliminary Injunction</span><span>Judge Rita F. Lin, N.D. Cal., March 26, 2026</span></div>
+        <div class="ap-ruling-body">
+          <div class="ap-ruling-excerpt"><span class="para-num" aria-hidden="true">&#167;</span> "Nothing in the governing statute supports the Orwellian notion that an American company may be branded a potential adversary and saboteur of the U.S. for expressing disagreement with the government."</div>
+          <div class="ap-ruling-excerpt"><span class="para-num" aria-hidden="true">&#167;</span> "Punishing Anthropic for bringing public scrutiny to the government's contracting position is classic illegal First Amendment retaliation."</div>
+        </div>
+        <div class="ap-ruling-killshot"><span class="para-num" aria-hidden="true">&#167;</span> "If the concern is the integrity of the operational chain of command, the Department of War could just stop using Claude."</div>
+        <div class="ap-ruling-context">The last line names the structural impossibility at the center of the case. The government could not stop using Claude -- not during a war, not with 12-18 months of recertification ahead. The judge knew it. The Pentagon knew it.</div>
+      </div>
+
+      <p>The ruling is preliminary. Judge Lin imposed a seven-day stay on her own order, giving the government time to appeal. Hours after the ruling, Emil Michael posted on X that the order contained "dozens of factual errors" and that the Section 4713 supply chain risk designation -- the FASCSA designation, distinct from the Section 3252 designation Lin enjoined -- "is in full force and effect." A separate case pending in the D.C. Circuit addresses the FASCSA designation independently. The legal fight is not over.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">05 — Signal</span>The Precedent</h2>
+      <p>The structural trap at the center of this case is not a legal technicality. It is a design problem. Anthropic built Claude to be the best military AI available. It succeeded. That success made its ethical restrictions impossible to enforce through market leverage and impossible to abandon through operational dependency. The government could not compel compliance because Anthropic refused. It could not punish noncompliance because it needed the product. And it could not replace the product because no replacement was ready.</p>
+      <p>Anthropic's competitors stepped into the gap with weaker safeguards. OpenAI's deal was, by its own CEO's admission, "rushed" and "sloppy." The market dynamic was clear: the company that insisted on contractual prohibitions against mass surveillance and autonomous weapons was designated a national security threat, while the companies that deferred to existing law were rewarded with contracts. Amodei framed it directly: "We are patriotic Americans. Everything we have done has been for the sake of this country." And: "Disagreeing with the government is the most American thing in the world."</p>
+      <p>Judge Lin's ruling identified the contradiction the government could not resolve: if Claude is too dangerous to trust, stop using it. The government did not stop using it. The red lines held -- but only because the AI was already too embedded to remove. The preliminary injunction has a seven-day stay. The D.C. Circuit case is pending. Emil Michael insists the FASCSA designation survives. The question this case leaves open is not whether Anthropic's red lines were right. It is what happens when the next company with ethical restrictions builds something even more indispensable -- and the next administration decides those restrictions are intolerable.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.anthropic-pentagon-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
+  const STORY_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#f97316';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+
+  const [sR, sG, sB] = hexToRgb(STORY_COLOR.startsWith('#') ? STORY_COLOR : '#f97316');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function storyA(a: number) { return `rgba(${sR},${sG},${sB},${Math.max(0, Math.min(1, a))})`; }
+  function dimA(a: number) { return `rgba(232,232,232,${Math.max(0, Math.min(1, a))})`; }
+  function clamp(v: number, lo: number, hi: number) { return v < lo ? lo : v > hi ? hi : v; }
+
+  // --- Phase timing ---
+  // 3 normal flares at frames 300, 600, 900, then a 4th mega-flare at 1050
+  // Total cycle ~1200 frames = 20s at 60fps
+  const FLARE_INTERVAL = 300;
+  const FLARE_COUNT = 3;
+  const MEGA_FLARE_AT = 1050;
+  const HOLD_END = 1120;
+  const RESET_END = 1170;
+  const CYCLE = RESET_END;
+
+  // --- Particle system ---
+  const NUM_PARTICLES = 40;
+  const NUM_DUST = 18;
+
+  interface Particle {
+    x: number; y: number;
+    vx: number; vy: number;
+    side: number; // -1 = above line, 1 = below line
+    radius: number;
+    alpha: number;
+    baseAlpha: number;
+    angleOffset: number; // for gentle arc motion
+    angularSpeed: number;
+    crossing: boolean;
+    crossDir: number; // 1 = going down, -1 = going up
+    crossSpeed: number;
+  }
+
+  interface Dust {
+    x: number; y: number;
+    vx: number; vy: number;
+    alpha: number;
+  }
+
+  const particles: Particle[] = [];
+  const dust: Dust[] = [];
+
+  // --- Line state ---
+  let lineAlpha = 0.35;
+  let lineThickness = 1;
+  let lineFlareProgress = 0; // 0 = no flare, 1 = peak
+  let lineFlareDecay = 0;
+  let isMegaFlare = false;
+  let pulseWaveX = -1; // horizontal enforcement pulse position (-1 = inactive)
+  let pulseWaveAlpha = 0;
+  let pulseWaveDir = 0; // 1 = right, -1 = left
+  let pulseWaveX2 = -1;
+  let pulseWaveAlpha2 = 0;
+
+  let W = 0, H = 0, frame = 0, rafId = 0;
+  let globalFade = 1;
+  let lineY = 0;
+
+  function initParticles() {
+    particles.length = 0;
+    for (let i = 0; i < NUM_PARTICLES; i++) {
+      const side = i < NUM_PARTICLES / 2 ? -1 : 1;
+      particles.push({
+        x: Math.random() * (W || 800),
+        y: 0, // set below
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: 0,
+        side,
+        radius: 2 + Math.random() * 1.5,
+        alpha: 0,
+        baseAlpha: 0.4 + Math.random() * 0.35,
+        angleOffset: Math.random() * Math.PI * 2,
+        angularSpeed: 0.008 + Math.random() * 0.006,
+        crossing: false,
+        crossDir: 0,
+        crossSpeed: 0,
+      });
+    }
+    positionParticles();
+
+    dust.length = 0;
+    for (let i = 0; i < NUM_DUST; i++) {
+      dust.push({
+        x: Math.random() * (W || 800),
+        y: Math.random() * (H || 380),
+        vx: (Math.random() - 0.5) * 0.1,
+        vy: (Math.random() - 0.5) * 0.1,
+        alpha: 0.03 + Math.random() * 0.04,
+      });
+    }
+  }
+
+  function positionParticles() {
+    const ly = lineY || (H || 380) / 2;
+    const margin = 30;
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      if (p.crossing) continue;
+      if (p.side === -1) {
+        // above line
+        p.y = margin + Math.random() * (ly - margin * 2);
+      } else {
+        // below line
+        p.y = ly + margin + Math.random() * ((H || 380) - ly - margin * 2);
+      }
+      p.x = Math.random() * (W || 800);
+      p.alpha = 0;
+    }
+  }
+
+  // --- Crossing schedule ---
+  // Pre-compute which particles cross and when
+  interface CrossEvent {
+    frame: number;
+    particleIdx: number;
+    direction: number; // 1 = above-to-below, -1 = below-to-above
+  }
+
+  let crossEvents: CrossEvent[] = [];
+
+  function buildCrossSchedule() {
+    crossEvents = [];
+    // Normal crossings: every ~180 frames, 2-3 particles cross
+    const crossTimes = [120, 180, 360, 450, 540, 660, 780, 840, 900];
+    for (let i = 0; i < crossTimes.length; i++) {
+      const t = crossTimes[i];
+      const count = 2 + (i % 2); // alternate 2 and 3
+      for (let c = 0; c < count; c++) {
+        const dir = (c % 2 === 0) ? 1 : -1;
+        // pick a particle on the matching side
+        const candidates: number[] = [];
+        for (let pi = 0; pi < particles.length; pi++) {
+          if (particles[pi].side === (dir === 1 ? -1 : 1)) candidates.push(pi);
+        }
+        if (candidates.length > 0) {
+          const idx = candidates[Math.floor(Math.random() * candidates.length)];
+          crossEvents.push({ frame: t + c * 8, particleIdx: idx, direction: dir });
+        }
+      }
+    }
+    // Mega-flare crossing: 6 particles cross simultaneously
+    for (let c = 0; c < 6; c++) {
+      const dir = c % 2 === 0 ? 1 : -1;
+      const candidates: number[] = [];
+      for (let pi = 0; pi < particles.length; pi++) {
+        if (particles[pi].side === (dir === 1 ? -1 : 1) && !particles[pi].crossing) candidates.push(pi);
+      }
+      if (candidates.length > 0) {
+        const idx = candidates[Math.floor(Math.random() * candidates.length)];
+        crossEvents.push({ frame: MEGA_FLARE_AT + 10 + c * 5, particleIdx: idx, direction: dir });
+      }
+    }
+  }
+
+  function resetState() {
+    frame = 0;
+    globalFade = 1;
+    lineFlareProgress = 0;
+    lineFlareDecay = 0;
+    isMegaFlare = false;
+    pulseWaveX = -1;
+    pulseWaveAlpha = 0;
+    pulseWaveX2 = -1;
+    pulseWaveAlpha2 = 0;
+    lineY = (H || 380) / 2;
+    for (let i = 0; i < particles.length; i++) {
+      particles[i].crossing = false;
+      particles[i].crossDir = 0;
+      particles[i].crossSpeed = 0;
+    }
+    positionParticles();
+    buildCrossSchedule();
+  }
+
+  // --- Update ---
+  function update() {
+    lineY = H / 2;
+
+    // Ambient line pulse
+    const basePulse = 0.35 + 0.1 * Math.sin(frame * 0.015);
+
+    // Check for flare triggers
+    let flaring = false;
+    let flareIntensity = 0;
+
+    // Normal flares
+    for (let f = 1; f <= FLARE_COUNT; f++) {
+      const flareFrame = f * FLARE_INTERVAL;
+      const elapsed = frame - flareFrame;
+      if (elapsed >= 0 && elapsed < 90) {
+        flaring = true;
+        if (elapsed < 30) {
+          flareIntensity = Math.max(flareIntensity, elapsed / 30);
+        } else {
+          flareIntensity = Math.max(flareIntensity, 1 - (elapsed - 30) / 60);
+        }
+        // Trigger pulse wave at peak
+        if (elapsed === 15) {
+          pulseWaveX = W / 2;
+          pulseWaveAlpha = 0.5;
+          pulseWaveDir = 1;
+          pulseWaveX2 = W / 2;
+          pulseWaveAlpha2 = 0.5;
+        }
+      }
+    }
+
+    // Mega flare
+    const megaElapsed = frame - MEGA_FLARE_AT;
+    if (megaElapsed >= 0 && megaElapsed < 120) {
+      flaring = true;
+      isMegaFlare = true;
+      if (megaElapsed < 40) {
+        flareIntensity = Math.max(flareIntensity, megaElapsed / 40);
+      } else {
+        flareIntensity = Math.max(flareIntensity, 1 - (megaElapsed - 40) / 80);
+      }
+      if (megaElapsed === 20) {
+        pulseWaveX = W / 2;
+        pulseWaveAlpha = 0.7;
+        pulseWaveDir = 1;
+        pulseWaveX2 = W / 2;
+        pulseWaveAlpha2 = 0.7;
+      }
+    } else if (megaElapsed >= 120) {
+      isMegaFlare = false;
+    }
+
+    lineFlareProgress = flareIntensity;
+    lineAlpha = basePulse + flareIntensity * (isMegaFlare ? 0.65 : 0.5);
+    lineAlpha = clamp(lineAlpha, 0, 1);
+    lineThickness = 1 + flareIntensity * (isMegaFlare ? 3 : 2);
+
+    // Pulse wave propagation
+    if (pulseWaveAlpha > 0.005) {
+      pulseWaveX += 3; // rightward
+      pulseWaveAlpha *= 0.97;
+      if (pulseWaveX > W + 20) pulseWaveAlpha = 0;
+    }
+    if (pulseWaveAlpha2 > 0.005) {
+      pulseWaveX2 -= 3; // leftward
+      pulseWaveAlpha2 *= 0.97;
+      if (pulseWaveX2 < -20) pulseWaveAlpha2 = 0;
+    }
+
+    // Trigger crossings
+    for (let i = 0; i < crossEvents.length; i++) {
+      const ce = crossEvents[i];
+      if (frame === ce.frame) {
+        const p = particles[ce.particleIdx];
+        if (!p.crossing) {
+          p.crossing = true;
+          p.crossDir = ce.direction;
+          p.crossSpeed = 0.3 + Math.random() * 0.2;
+        }
+      }
+    }
+
+    // Update particles
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+
+      // Fade in
+      p.alpha += (p.baseAlpha - p.alpha) * 0.03;
+
+      if (p.crossing) {
+        // Move through the line
+        p.y += p.crossDir * p.crossSpeed;
+        p.x += p.vx;
+
+        // Check if crossed to other side
+        const margin = 40;
+        if (p.crossDir === 1 && p.y > lineY + margin) {
+          p.crossing = false;
+          p.side = 1;
+          p.crossDir = 0;
+        } else if (p.crossDir === -1 && p.y < lineY - margin) {
+          p.crossing = false;
+          p.side = -1;
+          p.crossDir = 0;
+        }
+      } else {
+        // Gentle arc drift
+        p.angleOffset += p.angularSpeed;
+        p.vx = Math.cos(p.angleOffset) * 0.25;
+        p.vy = Math.sin(p.angleOffset * 0.7) * 0.15;
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Keep in bounds on correct side
+        if (p.x < -10) p.x = W + 10;
+        if (p.x > W + 10) p.x = -10;
+
+        const margin = 25;
+        if (p.side === -1) {
+          if (p.y < margin) p.vy = Math.abs(p.vy);
+          if (p.y > lineY - margin) p.vy = -Math.abs(p.vy);
+          p.y = clamp(p.y, margin, lineY - margin);
+        } else {
+          if (p.y < lineY + margin) p.vy = Math.abs(p.vy);
+          if (p.y > H - margin) p.vy = -Math.abs(p.vy);
+          p.y = clamp(p.y, lineY + margin, H - margin);
+        }
+      }
+    }
+
+    // Update dust
+    for (let i = 0; i < dust.length; i++) {
+      const d = dust[i];
+      d.x += d.vx;
+      d.y += d.vy;
+      if (d.x < -5) d.x = W + 5;
+      if (d.x > W + 5) d.x = -5;
+      if (d.y < -5) d.y = H + 5;
+      if (d.y > H + 5) d.y = -5;
+    }
+
+    // Reset phase
+    if (frame >= HOLD_END && frame < RESET_END) {
+      globalFade = 1 - (frame - HOLD_END) / (RESET_END - HOLD_END);
+    } else if (frame >= RESET_END) {
+      resetState();
+    } else {
+      globalFade = 1;
+    }
+  }
+
+  // --- Draw ---
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = BG_COLOR;
+    ctx!.fillRect(0, 0, W, H);
+
+    const fade = globalFade;
+    lineY = H / 2;
+
+    // Draw ambient dust
+    for (let i = 0; i < dust.length; i++) {
+      const d = dust[i];
+      ctx!.beginPath();
+      ctx!.arc(d.x, d.y, 1, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(d.alpha * fade);
+      ctx!.fill();
+    }
+
+    // Draw the line
+    const lineGradAlpha = lineAlpha * fade;
+    if (lineGradAlpha > 0.003) {
+      // Main line
+      ctx!.save();
+      ctx!.beginPath();
+      ctx!.moveTo(0, lineY);
+      ctx!.lineTo(W, lineY);
+      ctx!.strokeStyle = storyA(lineGradAlpha);
+      ctx!.lineWidth = lineThickness;
+      ctx!.stroke();
+
+      // Glow around line during flares
+      if (lineFlareProgress > 0.05) {
+        const glowSpread = lineFlareProgress * (isMegaFlare ? 12 : 8);
+        const grad = ctx!.createLinearGradient(0, lineY - glowSpread, 0, lineY + glowSpread);
+        grad.addColorStop(0, storyA(0));
+        grad.addColorStop(0.5, storyA(lineFlareProgress * 0.2 * fade));
+        grad.addColorStop(1, storyA(0));
+        ctx!.fillStyle = grad;
+        ctx!.fillRect(0, lineY - glowSpread, W, glowSpread * 2);
+      }
+      ctx!.restore();
+
+      // Enforcement pulse waves
+      if (pulseWaveAlpha > 0.005) {
+        const pw = 40;
+        const grad = ctx!.createLinearGradient(pulseWaveX - pw, 0, pulseWaveX + pw, 0);
+        grad.addColorStop(0, storyA(0));
+        grad.addColorStop(0.5, storyA(pulseWaveAlpha * fade));
+        grad.addColorStop(1, storyA(0));
+        ctx!.fillStyle = grad;
+        ctx!.fillRect(pulseWaveX - pw, lineY - 6, pw * 2, 12);
+      }
+      if (pulseWaveAlpha2 > 0.005) {
+        const pw = 40;
+        const grad = ctx!.createLinearGradient(pulseWaveX2 - pw, 0, pulseWaveX2 + pw, 0);
+        grad.addColorStop(0, storyA(0));
+        grad.addColorStop(0.5, storyA(pulseWaveAlpha2 * fade));
+        grad.addColorStop(1, storyA(0));
+        ctx!.fillStyle = grad;
+        ctx!.fillRect(pulseWaveX2 - pw, lineY - 6, pw * 2, 12);
+      }
+    }
+
+    // Draw particles
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      const a = p.alpha * fade;
+      if (a < 0.003) continue;
+
+      // Particle body
+      ctx!.beginPath();
+      ctx!.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx!.fillStyle = storyA(a);
+      ctx!.fill();
+
+      // Soft glow
+      const gr = ctx!.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 3);
+      gr.addColorStop(0, storyA(a * 0.12));
+      gr.addColorStop(1, storyA(0));
+      ctx!.fillStyle = gr;
+      ctx!.beginPath();
+      ctx!.arc(p.x, p.y, p.radius * 3, 0, Math.PI * 2);
+      ctx!.fill();
+    }
+  }
+
+  // --- Static frame for reduced motion ---
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = BG_COLOR;
+    ctx!.fillRect(0, 0, W, H);
+
+    lineY = H / 2;
+
+    // Draw dust
+    for (let i = 0; i < NUM_DUST; i++) {
+      const dx = (i / NUM_DUST) * W + Math.sin(i * 3.7) * 40;
+      const dy = Math.sin(i * 2.3) * H * 0.4 + H / 2;
+      ctx!.beginPath();
+      ctx!.arc(dx, dy, 1, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(0.04);
+      ctx!.fill();
+    }
+
+    // Draw the line at medium intensity
+    ctx!.beginPath();
+    ctx!.moveTo(0, lineY);
+    ctx!.lineTo(W, lineY);
+    ctx!.strokeStyle = storyA(0.4);
+    ctx!.lineWidth = 1;
+    ctx!.stroke();
+
+    // Subtle glow
+    const grad = ctx!.createLinearGradient(0, lineY - 6, 0, lineY + 6);
+    grad.addColorStop(0, storyA(0));
+    grad.addColorStop(0.5, storyA(0.08));
+    grad.addColorStop(1, storyA(0));
+    ctx!.fillStyle = grad;
+    ctx!.fillRect(0, lineY - 6, W, 12);
+
+    // Draw particles distributed on both sides
+    for (let i = 0; i < NUM_PARTICLES; i++) {
+      const side = i < NUM_PARTICLES / 2 ? -1 : 1;
+      const spread = H * 0.35;
+      const px = (i / NUM_PARTICLES) * W * 0.85 + W * 0.075 + Math.sin(i * 2.1) * 30;
+      const py = lineY + side * (30 + Math.abs(Math.sin(i * 1.7)) * spread * 0.7);
+      const r = 2 + (i % 3) * 0.5;
+
+      ctx!.beginPath();
+      ctx!.arc(px, py, r, 0, Math.PI * 2);
+      ctx!.fillStyle = storyA(0.45 + (i % 5) * 0.06);
+      ctx!.fill();
+
+      const gr = ctx!.createRadialGradient(px, py, 0, px, py, r * 3);
+      gr.addColorStop(0, storyA(0.06));
+      gr.addColorStop(1, storyA(0));
+      ctx!.fillStyle = gr;
+      ctx!.beginPath();
+      ctx!.arc(px, py, r * 3, 0, Math.PI * 2);
+      ctx!.fill();
+    }
+
+    // Draw 2 particles mid-crossing (on the line) to show permeability
+    const cx1 = W * 0.35;
+    const cx2 = W * 0.68;
+    for (const cx of [cx1, cx2]) {
+      ctx!.beginPath();
+      ctx!.arc(cx, lineY, 2.5, 0, Math.PI * 2);
+      ctx!.fillStyle = storyA(0.55);
+      ctx!.fill();
+    }
+  }
+
+  // --- Loop ---
+  function tick() {
+    frame++;
+    update();
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  // --- Resize ---
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth;
+    H = canvas!.offsetHeight;
+    canvas!.width = W * dpr;
+    canvas!.height = H * dpr;
+    ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    lineY = H / 2;
+    if (prefersReduced) { drawStatic(); }
+  });
+  ro.observe(canvas);
+
+  // Initial sizing
+  const dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth;
+  H = canvas.offsetHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  lineY = H / 2;
+
+  if (prefersReduced) {
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    initParticles();
+    buildCrossSchedule();
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(rafId); rafId = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+    window.addEventListener('pagehide', () => { cancelAnimationFrame(rafId); io.disconnect(); ro.disconnect(); });
+  }
+})();
+</script>
