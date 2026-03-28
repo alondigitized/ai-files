@@ -1,0 +1,931 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'whale-language')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .whale-language-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* ── Timeline ── */
+  .wl-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 2rem;
+    position: relative;
+    padding-left: 2rem;
+  }
+  .wl-timeline::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: color-mix(in srgb, var(--story) 30%, transparent);
+  }
+  .wl-tl-item {
+    display: flex;
+    gap: 1.25rem;
+    padding: 0.75rem 0;
+    position: relative;
+  }
+  .wl-tl-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--story);
+    flex-shrink: 0;
+    margin-top: 3px;
+    margin-left: -2rem;
+    position: relative;
+    z-index: 1;
+    opacity: 0.6;
+  }
+  .wl-tl-item.highlight .wl-tl-dot {
+    opacity: 1;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--story) 50%, transparent);
+  }
+  .wl-tl-date {
+    font-size: 0.78rem;
+    color: var(--muted);
+    min-width: 80px;
+    flex-shrink: 0;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+  .wl-tl-text {
+    font-size: 0.88rem;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .wl-tl-item.highlight .wl-tl-text {
+    color: var(--story);
+    font-weight: 600;
+  }
+
+  /* ── Coda Structure Diagram ── */
+  .wl-coda {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.5rem 2rem;
+    margin-top: 2rem;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  .wl-coda-title {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+    font-family: inherit;
+  }
+  .wl-coda-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  }
+  .wl-coda-row:last-of-type {
+    border-bottom: none;
+  }
+  .wl-coda-label {
+    font-size: 0.76rem;
+    color: var(--story);
+    font-weight: 700;
+    min-width: 110px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-family: inherit;
+  }
+  .wl-coda-viz {
+    font-size: 0.9rem;
+    color: var(--text);
+    letter-spacing: 0.15em;
+    flex: 1;
+  }
+  .wl-coda-note {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+    font-family: inherit;
+  }
+  .wl-coda-footer {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .wl-coda-stat {
+    text-align: center;
+  }
+  .wl-coda-stat-num {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--story);
+    line-height: 1;
+  }
+  .wl-coda-stat-label {
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-top: 0.25rem;
+    font-family: inherit;
+  }
+  .wl-coda-old {
+    text-align: center;
+  }
+  .wl-coda-old .wl-coda-stat-num {
+    color: var(--muted);
+    font-size: 1rem;
+    text-decoration: line-through;
+  }
+
+  /* ── Vowel Comparison ── */
+  .wl-vowel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .wl-vowel-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .wl-vowel-panel.wl-new {
+    border-color: color-mix(in srgb, var(--story) 40%, transparent);
+  }
+  .wl-vowel-heading {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  .wl-vowel-panel.wl-new .wl-vowel-heading {
+    color: var(--story);
+  }
+  .wl-vowel-dots {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 1.4rem;
+    letter-spacing: 0.2em;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+    line-height: 1.8;
+  }
+  .wl-vowel-dots .wl-v-a {
+    color: var(--story);
+    font-weight: 700;
+  }
+  .wl-vowel-dots .wl-v-i {
+    color: #c8963e;
+    font-weight: 700;
+  }
+  .wl-vowel-dots .wl-v-sweep {
+    color: var(--story);
+    font-size: 1rem;
+  }
+  .wl-vowel-stat {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .wl-vowel-panel.wl-new .wl-vowel-stat {
+    color: var(--story);
+  }
+  .wl-vowel-caption {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.5;
+  }
+  .wl-vowel-context {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+    padding-top: 0.25rem;
+  }
+
+  @media (max-width: 600px) {
+    .wl-vowel { grid-template-columns: 1fr; }
+    .wl-coda-footer { flex-direction: column; align-items: center; }
+    .wl-coda-label { min-width: 80px; font-size: 0.68rem; }
+  }
+
+  /* ── Light-theme overrides ── */
+  :root[data-theme="light"] .wl-coda { background: #ebe5d9; border-color: #d5cfc3; }
+  :root[data-theme="light"] .wl-vowel-panel { background: #ebe5d9; border-color: #d5cfc3; }
+  :root[data-theme="light"] .wl-vowel-panel.wl-new { border-color: color-mix(in srgb, var(--story) 40%, transparent); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="context">
+      <h2><span class="num">01 — The Longest Listen</span>Context</h2>
+      <p>In Andy Weir's <em>Project Hail Mary</em>, the alien Rocky communicates through musical chords -- tonal clusters produced by five air bladders, carrying meaning in rhythm and pitch and timing. The protagonist has no Rosetta Stone. He builds a translator anyway, note by note, pattern by pattern, until two species separated by biology and light-years are arguing about fuel ratios. In 2024, a team at MIT fed 8,719 sperm whale recordings into a machine learning model and heard something that would have made Grace drop his whiteboard marker: clicks arranged in combinatorial patterns with rhythm, tempo, rubato, and ornamentation -- a phonetic system hiding in the ocean, inaudible to the human ear for sixty years of listening.</p>
+      <p>This is not fiction. The alphabet is real. The dictionary is not.</p>
+      <p>Humans have known whales vocalize since 1967, when Roger Payne and Scott McVay discovered humpback whale song. Payne released the 1970 LP <em>Songs of the Humpback Whale</em>, which sold over 100,000 copies and helped catalyze the Save the Whales movement. For decades, whale researchers could hear pattern but could not parse structure. In 2005, Shane Gero, a Canadian whale biologist now at Carleton University, began recording sperm whale families off the western coast of Dominica. He documented over twenty social units across generations -- a longitudinal dataset stretching nearly two decades that would become the foundation for everything that followed.</p>
+      <p>In 2020, David Gruber, a marine biologist and National Geographic Explorer, founded Project CETI (Cetacean Translation Initiative) with $33 million in TED Audacious Prize funding. The team grew to over seventy members across thirteen institutions -- MIT CSAIL, UC Berkeley, Harvard, Google Research, Oxford, and others. The mission was direct: use AI to decode sperm whale communication. A 2022 roadmap paper in <em>iScience</em> laid out the approach: massive dataset collection, communication unit detection, playback validation. Roger Payne, the man who had first heard whale song, was among the advisors.</p>
+      <p>Payne died on June 10, 2023, at age 88. He is listed posthumously as co-author on the 2024 <em>Nature Communications</em> paper that proposed the first sperm whale phonetic alphabet. The man who heard the song never lived to see the alphabet decoded from it.</p>
+
+      <div class="wl-timeline" aria-hidden="true">
+        <div class="wl-tl-item">
+          <div class="wl-tl-dot"></div>
+          <div class="wl-tl-date">1967</div>
+          <div class="wl-tl-text">Roger Payne discovers humpback whale song</div>
+        </div>
+        <div class="wl-tl-item">
+          <div class="wl-tl-dot"></div>
+          <div class="wl-tl-date">2005</div>
+          <div class="wl-tl-text">Shane Gero begins recording sperm whale families off Dominica</div>
+        </div>
+        <div class="wl-tl-item">
+          <div class="wl-tl-dot"></div>
+          <div class="wl-tl-date">2020</div>
+          <div class="wl-tl-text">Project CETI founded; $33M raised; 13 institutional partners</div>
+        </div>
+        <div class="wl-tl-item">
+          <div class="wl-tl-dot"></div>
+          <div class="wl-tl-date">2022</div>
+          <div class="wl-tl-text">Scientific roadmap published in <em>iScience</em></div>
+        </div>
+        <div class="wl-tl-item highlight">
+          <div class="wl-tl-dot"></div>
+          <div class="wl-tl-date">2023</div>
+          <div class="wl-tl-text">Roger Payne dies; listed posthumously on the breakthrough paper</div>
+        </div>
+        <div class="wl-tl-item highlight">
+          <div class="wl-tl-dot"></div>
+          <div class="wl-tl-date">2024</div>
+          <div class="wl-tl-text"><em>Nature Communications</em>: the phonetic alphabet</div>
+        </div>
+        <div class="wl-tl-item highlight">
+          <div class="wl-tl-dot"></div>
+          <div class="wl-tl-date">2025</div>
+          <div class="wl-tl-text">Vowels, Zipf's law, behavioral prediction</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="discovery">
+      <h2><span class="num">02 — The Alphabet in the Click</span>Discovery</h2>
+      <p>The 2024 <em>Nature Communications</em> paper, authored by Pratyusha Sharma, Gero, Payne, Gruber, Daniela Rus, Antonio Torralba, and Jacob Andreas, analyzed 8,719 codas from the EC-1 clan of sperm whales -- recordings collected between 2005 and 2018, covering at least sixty individuals across eleven social units. What the machine learning models found was not a simple repertoire of call types. It was a combinatorial system.</p>
+      <p>The researchers identified four structural features operating independently within each coda. <strong>Rhythm</strong>: the pattern of inter-click intervals, with eighteen distinct types. <strong>Tempo</strong>: the overall duration of the coda, falling into five discrete categories. <strong>Rubato</strong>: a gradual drift in coda duration across consecutive calls -- approximately 0.05 seconds between adjacent codas, compared to 0.08 seconds for random same-type pairs. And <strong>ornamentation</strong>: an extra click appended to the end of a coda, appearing in 4% of exchanges, significantly more common at the beginning and end of call sequences.</p>
+
+      <div class="wl-coda" aria-hidden="true">
+        <div class="wl-coda-title">Anatomy of a Sperm Whale Coda</div>
+        <div class="wl-coda-row">
+          <div class="wl-coda-label">Rhythm</div>
+          <div class="wl-coda-viz">* * * &ensp; * &ensp; *</div>
+          <div class="wl-coda-note">18 distinct types</div>
+        </div>
+        <div class="wl-coda-row">
+          <div class="wl-coda-label">Tempo</div>
+          <div class="wl-coda-viz">|----&middot;&middot;&middot;&middot;&middot;&middot;----|</div>
+          <div class="wl-coda-note">5 discrete categories</div>
+        </div>
+        <div class="wl-coda-row">
+          <div class="wl-coda-label">Rubato</div>
+          <div class="wl-coda-viz">~ 0.05s drift &rarr;</div>
+          <div class="wl-coda-note">Gradual tempo shift across consecutive calls</div>
+        </div>
+        <div class="wl-coda-row">
+          <div class="wl-coda-label">Ornament</div>
+          <div class="wl-coda-viz">* * * &ensp; * &ensp; * <strong style="color:var(--story);">+</strong></div>
+          <div class="wl-coda-note">Extra click -- 4% of exchanges; marks sequence edges</div>
+        </div>
+        <div class="wl-coda-footer">
+          <div class="wl-coda-old">
+            <div class="wl-coda-stat-num">~21 types / ~5 bits</div>
+            <div class="wl-coda-stat-label">Previous inventory</div>
+          </div>
+          <div class="wl-coda-stat">
+            <div class="wl-coda-stat-num">143+</div>
+            <div class="wl-coda-stat-label">Realized combinations</div>
+          </div>
+          <div class="wl-coda-stat">
+            <div class="wl-coda-stat-num">~10 bits</div>
+            <div class="wl-coda-stat-label">Information per coda</div>
+          </div>
+        </div>
+      </div>
+
+      <p>Combined, these features yield at least 143 distinct coda types -- up from approximately 21 in the previous inventory. The information capacity roughly doubled, from about 5 bits per coda to approximately 10 bits. The researchers describe this as "duality of patterning": individually meaningless elements combining into larger meaningful units, a property previously documented only in human language. Linguists at Penn's Language Log disputed that framing, noting that no linguists appear on the author list and that "alphabet" is technically a categorical error -- alphabets are written phenomena. The structural finding itself, however, stands on peer-reviewed ground.</p>
+      <p>No human analyst could have parsed tempo gradations or rubato drift across thousands of calls. The machine learning models detected what biologists could not. "The expressivity of sperm whale calls is much larger than previously thought," said lead author Pratyusha Sharma. Jacob Andreas, an MIT CSAIL co-author, described the system as having "some of the same structural features as the most sophisticated communication systems in the animal kingdom."</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="whale-language-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Coda</strong> — Scattered teal click-pulses drift through warm stillness. They slow and self-organize into rhythmic clusters connected by faint arcs. The pattern holds in a moment of almost-recognition. Then the connections dissolve and the clicks scatter back into solitary pulses. The alphabet appeared. The words did not.</p>
+
+    <section class="section" id="mechanism">
+      <h2><span class="num">03 — What the Machine Heard</span>The Mechanism</h2>
+      <p>Gasper Begus, a linguistics professor at UC Berkeley and the linguistics lead at Project CETI, trained a generative adversarial network to imitate sperm whale codas. The GAN was a hypothesis engine: it learned on its own to treat certain spectral cues as meaningful, narrowing the search space for human analysts. When researchers sped up the audio -- removing the long silences between clicks -- vowel-like patterns emerged. Two recurring spectral shapes corresponded closely to the human vowels "a" and "i." Several diphthong-like sweeps appeared across individual codas.</p>
+      <p>"In the past, researchers thought of whale communication as a kind of morse code," Begus said. "However, this paper shows that their calls are more like very, very slow vowels."</p>
+
+      <div class="wl-vowel" aria-hidden="true">
+        <div class="wl-vowel-panel">
+          <div class="wl-vowel-heading">Old Model: Morse Code</div>
+          <div class="wl-vowel-dots">&bull; &bull; &bull; &ensp; &bull; &ensp; &bull;</div>
+          <div class="wl-vowel-stat">~21 coda types / ~5 bits</div>
+          <div class="wl-vowel-caption">Every click sounds the same. Meaning comes only from timing.</div>
+        </div>
+        <div class="wl-vowel-panel wl-new">
+          <div class="wl-vowel-heading">New Model: Slow Vowels</div>
+          <div class="wl-vowel-dots"><span class="wl-v-a">a</span> &bull; <span class="wl-v-i">i</span> &ensp; <span class="wl-v-a">a</span> <span class="wl-v-sweep">&rarr;</span> <span class="wl-v-i">i</span></div>
+          <div class="wl-vowel-stat">143+ combinations / ~10 bits / vowels + diphthongs</div>
+          <div class="wl-vowel-caption">Each click carries spectral information. The silence between them was hiding vowels.</div>
+        </div>
+        <div class="wl-vowel-context">The vowel interpretation is disputed. Luke Rendell (St Andrews) calls the comparison "completely nonsense" and argues recording artifacts could produce similar patterns. Stephanie King (Bristol) suggests the patterns may reflect arousal states rather than intentional production. The debate is unresolved.</div>
+      </div>
+
+      <p>A separate line of evidence arrived in February 2025. A team including Jenny Allen, Ellen Garland, Inbal Arnon, and Simon Kirby published in <em>Science</em> that humpback whale songs follow Zipf's law -- the same statistical distribution found universally across human languages. This was the first time Zipf's law had been documented in another species. The songs contained "statistically coherent parts" where transitions between elements were more predictable within units than between them -- the same structural signature found in human speech.</p>
+      <p>In a preprint posted to bioRxiv in October 2024, Sharma and colleagues introduced WhaleLM, a neural sequence model trained on sperm whale coda sequences. It predicted future diving behavior with 86.4% accuracy -- far above the 50% random-chance baseline. This has not been peer-reviewed. But if it holds, it represents the first evidence that codas may coordinate behavior -- that they carry operational, not just social, information.</p>
+      <p>The broader field is accelerating. Google Research published a bioacoustics model in September 2024 that classifies whale species from spectrograms, identifying eight species across over 200,000 hours of underwater recordings. Earth Species Project, co-founded by Aza Raskin and Britt Selvitelle, secured $17 million in new funding (self-reported) and released AVES, a self-supervised foundation model for animal vocalizations. These are distinct research programs. Google classifies who is speaking. CETI decodes what they might be saying. But the underlying capability -- AI models trained on massive bioacoustic datasets -- is converging from multiple directions.</p>
+    </section>
+
+    <section class="section" id="debate">
+      <h2><span class="num">04 — Structure Is Not Meaning</span>The Debate</h2>
+      <p>The most important sentence in the 2024 <em>Nature Communications</em> paper is not about combinatorics or information theory. It is: "We do not know yet what they are saying."</p>
+      <p>The researchers found structure. They did not find meaning. That gap is where every honest interpretation of this work must begin. Steven Pinker, the Harvard linguist, argued that sperm whale codas are likely "signature calls whose semantics is pretty much restricted to who they are, perhaps together with emotional calls." His logic is functional: "If whales could communicate complex messages, we should observe them collaborating on sophisticated tasks as humans do."</p>
+
+      <div class="pull-quote">
+        "We understand that one of our greatest risks is that the whales could be incredibly boring."
+        <cite>— David Gruber, Project CETI founder</cite>
+      </div>
+
+      <p>The CETI team's restraint is their strongest credential. Diana Reiss, a cognitive researcher, offered the counterpoint to dismissal: "I think we can safely say we're in a state of ignorance at this point." The honest position is that we do not know enough to dismiss or confirm. Combinatorial structure is not language. But it is not nothing. The question is what lies between.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">05 — The Question Before the Answer</span>Signal</h2>
+      <p>In March 2026, Project CETI published two studies documenting the first comprehensive recording of a sperm whale birth. On July 8, 2023, off the coast of Dominica, all eleven members of Unit A participated as the whale known as Rounder gave birth. Non-kin whales helped lift the newborn to the surface. Three generations were present: Lady Oracle, her daughter Rounder, and Rounder's daughter Accra. The cooperation was not restricted to relatives. This, published in <em>Science</em>, is the first quantitative evidence of non-kin cooperative birth assistance outside primates.</p>
+      <p>The legal thread is nascent but moving. In March 2024, Indigenous leaders from six Polynesian nations signed He Whakaputanga Moana, the first Indigenous-led declaration recognizing whales as legal persons, according to NPR. In February 2026, New Zealand Green Party MP Teanau Tuiono introduced the Tohora Oranga Bill in Parliament, seeking to enshrine whale personhood in statute. That bill has entered parliamentary ballot; its passage is uncertain. Whether AI-decoded communication evidence will factor into legal arguments remains to be seen. These are early signals, not established legal developments.</p>
+      <p>What has changed is the question itself. For fifty-seven years -- from Roger Payne's first recording of humpback song to the 2024 <em>Nature Communications</em> paper -- humans knew whales made patterned sounds. Now we know those sounds contain combinatorial, phonetic, and statistical structure that mirrors properties of human language. AI did not decode the meaning. It revealed that there is something to decode. In <em>Project Hail Mary</em>, Grace builds a translator and talks to Rocky. In the Caribbean, the alphabet has been found, the vowels are disputed, and the first word has not been read. The researchers who uncovered the structure said it themselves: "We do not know yet what they are saying." The question is no longer whether whales have something to say. The question is whether we will understand it when they do.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.whale-language-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  // --- Palette (light theme, read from computed style) ---
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f5f0e8';
+  const STORY_COLOR = getComputedStyle(canvas).getPropertyValue('--story').trim() || '#2a9d8f';
+  const GOLD = '#c8963e';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const [bgR, bgG, bgB] = hexToRgb(BG_COLOR.startsWith('#') ? BG_COLOR : '#f5f0e8');
+  const [stR, stG, stB] = hexToRgb(STORY_COLOR.startsWith('#') ? STORY_COLOR : '#2a9d8f');
+  const [glR, glG, glB] = hexToRgb(GOLD);
+
+  // --- State ---
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  // --- Resize ---
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  });
+  ro.observe(canvas);
+
+  // --- Reduced motion ---
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // --- Phase thresholds (~960 frames = ~16s at 60fps) ---
+  const P_SCATTER = 180;    // Phase 1: scattered clicks (0-180)
+  const P_ORGANIZE = 420;   // Phase 2: self-organize (180-420)
+  const P_COHERENT = 660;   // Phase 3: peak coherence (420-660)
+  const P_DISSOLVE = 840;   // Phase 4: dissolve (660-840)
+  const CYCLE = 960;         // Phase 5: silence + reset (840-960)
+
+  // --- Cluster centers (recomputed on init) ---
+  const NUM_CLUSTERS = 6;
+  interface Cluster {
+    cx: number; cy: number;
+    baseX: number; baseY: number;
+    glowAlpha: number;
+    pingRadius: number;
+    pingAlpha: number;
+    pingActive: boolean;
+  }
+  const clusters: Cluster[] = [];
+
+  function initClusters() {
+    clusters.length = 0;
+    const cw = W || 800;
+    const ch = H || 380;
+    const padX = cw * 0.15;
+    const padY = ch * 0.2;
+    // Distribute clusters in a loose 3x2 grid with jitter
+    const cols = 3;
+    const rows = 2;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const bx = padX + (c + 0.5) * ((cw - padX * 2) / cols) + (Math.random() - 0.5) * 40;
+        const by = padY + (r + 0.5) * ((ch - padY * 2) / rows) + (Math.random() - 0.5) * 30;
+        clusters.push({
+          cx: bx, cy: by,
+          baseX: bx, baseY: by,
+          glowAlpha: 0,
+          pingRadius: 0, pingAlpha: 0, pingActive: false,
+        });
+      }
+    }
+  }
+
+  // --- Click-pulse particles ---
+  const NUM_CLICKS = 48;
+  interface Click {
+    x: number; y: number;
+    vx: number; vy: number;
+    r: number;
+    alpha: number;
+    targetAlpha: number;
+    cluster: number;  // assigned cluster index
+    angleInCluster: number;
+    distInCluster: number;
+    flashTimer: number;
+    flashInterval: number;
+    burstDelay: number; // stagger within burst group
+  }
+  const clicks: Click[] = [];
+
+  function initClicks() {
+    clicks.length = 0;
+    const cw = W || 800;
+    const ch = H || 380;
+    for (let i = 0; i < NUM_CLICKS; i++) {
+      const ci = i % NUM_CLUSTERS;
+      clicks.push({
+        x: Math.random() * cw,
+        y: Math.random() * ch,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r: 2 + Math.random() * 2,
+        alpha: 0.15,
+        targetAlpha: 0.15,
+        cluster: ci,
+        angleInCluster: (i / (NUM_CLICKS / NUM_CLUSTERS)) * Math.PI * 2 + Math.random() * 0.5,
+        distInCluster: 12 + Math.random() * 22,
+        flashTimer: Math.floor(Math.random() * 120),
+        flashInterval: 60 + Math.floor(Math.random() * 100),
+        burstDelay: (i % 4) * 10, // stagger within groups of ~4
+      });
+    }
+  }
+
+  // --- Ambient particles (deep-water feel) ---
+  const NUM_AMB = 16;
+  interface Amb { x: number; y: number; vx: number; vy: number; r: number; a: number; }
+  const ambs: Amb[] = [];
+
+  function initAmb() {
+    ambs.length = 0;
+    const cw = W || 800;
+    const ch = H || 380;
+    for (let i = 0; i < NUM_AMB; i++) {
+      ambs.push({
+        x: Math.random() * cw,
+        y: Math.random() * ch,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15,
+        r: 1 + Math.random() * 1.5,
+        a: 0.04 + Math.random() * 0.04,
+      });
+    }
+  }
+
+  // --- Arc connections (pre-allocated) ---
+  const MAX_ARCS = 15;
+  interface Arc { c1: number; c2: number; alpha: number; }
+  const arcs: Arc[] = [];
+
+  function initArcs() {
+    arcs.length = 0;
+    // Connect each cluster to its 2 nearest neighbors
+    for (let i = 0; i < NUM_CLUSTERS; i++) {
+      const dists: { idx: number; d: number }[] = [];
+      for (let j = 0; j < NUM_CLUSTERS; j++) {
+        if (i === j) continue;
+        const dx = clusters[i].baseX - clusters[j].baseX;
+        const dy = clusters[i].baseY - clusters[j].baseY;
+        dists.push({ idx: j, d: dx * dx + dy * dy });
+      }
+      dists.sort((a, b) => a.d - b.d);
+      for (let k = 0; k < 2 && k < dists.length; k++) {
+        const j = dists[k].idx;
+        // Avoid duplicate arcs
+        const exists = arcs.some(a => (a.c1 === i && a.c2 === j) || (a.c1 === j && a.c2 === i));
+        if (!exists && arcs.length < MAX_ARCS) {
+          arcs.push({ c1: i, c2: j, alpha: 0 });
+        }
+      }
+    }
+  }
+
+  // --- Utility ---
+  function easeInOut(t: number): number {
+    return t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) * (-2 * t + 2) / 2;
+  }
+
+  // --- Update ---
+  function update() {
+    const cf = frame % CYCLE;
+
+    // Update ambient particles
+    for (const a of ambs) {
+      a.x += a.vx;
+      a.y += a.vy;
+      if (a.x < -10) a.x = W + 10;
+      if (a.x > W + 10) a.x = -10;
+      if (a.y < -10) a.y = H + 10;
+      if (a.y > H + 10) a.y = -10;
+    }
+
+    // Phase 1: Scattered clicks — random drift with rhythmic flashing
+    if (cf < P_SCATTER) {
+      for (const c of clicks) {
+        // Gentle drift
+        c.x += c.vx;
+        c.y += c.vy;
+        // Wrap
+        if (c.x < -10) c.x = W + 10;
+        if (c.x > W + 10) c.x = -10;
+        if (c.y < -10) c.y = H + 10;
+        if (c.y > H + 10) c.y = -10;
+
+        // Rhythmic flash: quick ramp up, hold, dim
+        c.flashTimer++;
+        if (c.flashTimer >= c.flashInterval + c.burstDelay) {
+          c.targetAlpha = 0.7;
+          if (c.flashTimer >= c.flashInterval + c.burstDelay + 20) {
+            c.targetAlpha = 0.15;
+            c.flashTimer = 0;
+            c.flashInterval = 60 + Math.floor(Math.random() * 100);
+          }
+        } else {
+          c.targetAlpha = 0.15;
+        }
+        c.alpha += (c.targetAlpha - c.alpha) * 0.15;
+      }
+
+      // Reset cluster glow and arcs
+      for (const cl of clusters) { cl.glowAlpha = 0; cl.pingActive = false; cl.pingAlpha = 0; }
+      for (const a of arcs) { a.alpha = 0; }
+    }
+
+    // Phase 2: Self-organize into clusters
+    else if (cf < P_ORGANIZE) {
+      const t = (cf - P_SCATTER) / (P_ORGANIZE - P_SCATTER);
+      const pull = easeInOut(Math.min(1, t * 1.2));
+
+      for (const c of clicks) {
+        const cl = clusters[c.cluster];
+        // Target position: arranged in a ring around cluster center
+        const tx = cl.cx + Math.cos(c.angleInCluster) * c.distInCluster;
+        const ty = cl.cy + Math.sin(c.angleInCluster) * c.distInCluster;
+
+        // Soft spring toward target
+        const dx = tx - c.x;
+        const dy = ty - c.y;
+        c.vx = c.vx * 0.95 + dx * 0.008 * pull;
+        c.vy = c.vy * 0.95 + dy * 0.008 * pull;
+        // Clamp velocity
+        const speed = Math.sqrt(c.vx * c.vx + c.vy * c.vy);
+        if (speed > 1.5) { c.vx *= 1.5 / speed; c.vy *= 1.5 / speed; }
+        c.x += c.vx;
+        c.y += c.vy;
+
+        // Clicks pulse slower as they settle
+        c.flashTimer++;
+        const slowFactor = 1 + t * 3; // flash less frequently as organizing
+        if (c.flashTimer >= (c.flashInterval * slowFactor + c.burstDelay)) {
+          c.targetAlpha = 0.6;
+          if (c.flashTimer >= (c.flashInterval * slowFactor + c.burstDelay + 15)) {
+            c.targetAlpha = 0.35 + t * 0.15;
+            c.flashTimer = 0;
+          }
+        } else {
+          c.targetAlpha = 0.25 + t * 0.25;
+        }
+        c.alpha += (c.targetAlpha - c.alpha) * 0.12;
+      }
+
+      // Arcs fade in during second half of organization
+      const arcT = Math.max(0, (t - 0.4) / 0.6);
+      for (const a of arcs) {
+        a.alpha = arcT * 0.2;
+      }
+
+      // No glow yet
+      for (const cl of clusters) { cl.glowAlpha = 0; }
+    }
+
+    // Phase 3: Peak coherence — clusters pulse, golden glow, sonar pings
+    else if (cf < P_COHERENT) {
+      const t = (cf - P_ORGANIZE) / (P_COHERENT - P_ORGANIZE);
+
+      for (const c of clicks) {
+        const cl = clusters[c.cluster];
+        // Gentle unified pulse
+        const pulse = Math.sin(cf * 0.04) * 1.2;
+        const tx = cl.cx + Math.cos(c.angleInCluster) * (c.distInCluster + pulse);
+        const ty = cl.cy + Math.sin(c.angleInCluster) * (c.distInCluster + pulse);
+
+        c.vx = c.vx * 0.9 + (tx - c.x) * 0.06;
+        c.vy = c.vy * 0.9 + (ty - c.y) * 0.06;
+        const speed = Math.sqrt(c.vx * c.vx + c.vy * c.vy);
+        if (speed > 1) { c.vx *= 1 / speed; c.vy *= 1 / speed; }
+        c.x += c.vx;
+        c.y += c.vy;
+
+        // Steady brightness with gentle pulse
+        c.targetAlpha = 0.55 + Math.sin(cf * 0.04 + c.cluster) * 0.15;
+        c.alpha += (c.targetAlpha - c.alpha) * 0.1;
+      }
+
+      // Arcs fully visible
+      for (const a of arcs) {
+        a.alpha = 0.25 + Math.sin(cf * 0.03) * 0.05;
+      }
+
+      // Golden glow on clusters
+      const glowRamp = Math.min(1, t * 3);
+      for (const cl of clusters) {
+        cl.glowAlpha = 0.06 * glowRamp;
+      }
+
+      // Sonar pings from 1-2 clusters
+      if (cf % 120 === 0) {
+        const pingIdx = Math.floor(cf / 120) % NUM_CLUSTERS;
+        const cl = clusters[pingIdx];
+        cl.pingActive = true;
+        cl.pingRadius = 0;
+        cl.pingAlpha = 0.2;
+      }
+      for (const cl of clusters) {
+        if (cl.pingActive) {
+          cl.pingRadius += 0.8;
+          cl.pingAlpha *= 0.98;
+          if (cl.pingAlpha < 0.01) { cl.pingActive = false; }
+        }
+      }
+    }
+
+    // Phase 4: Dissolution — connections fade, clusters loosen
+    else if (cf < P_DISSOLVE) {
+      const t = (cf - P_COHERENT) / (P_DISSOLVE - P_COHERENT);
+
+      for (const c of clicks) {
+        // Weaken attraction, add gentle repulsion
+        const cl = clusters[c.cluster];
+        const dx = c.x - cl.cx;
+        const dy = c.y - cl.cy;
+        const repulsion = t * 0.003;
+        c.vx = c.vx * 0.98 + dx * repulsion + (Math.random() - 0.5) * t * 0.15;
+        c.vy = c.vy * 0.98 + dy * repulsion + (Math.random() - 0.5) * t * 0.15;
+        const speed = Math.sqrt(c.vx * c.vx + c.vy * c.vy);
+        if (speed > 0.8) { c.vx *= 0.8 / speed; c.vy *= 0.8 / speed; }
+        c.x += c.vx;
+        c.y += c.vy;
+
+        // Dim back to solitary flickers
+        c.targetAlpha = 0.5 * (1 - t) + 0.1;
+        c.alpha += (c.targetAlpha - c.alpha) * 0.08;
+      }
+
+      // Arcs fade out
+      for (const a of arcs) {
+        a.alpha = Math.max(0, 0.25 * (1 - t));
+      }
+
+      // Glow fades
+      for (const cl of clusters) {
+        cl.glowAlpha = Math.max(0, 0.06 * (1 - t));
+        if (cl.pingActive) {
+          cl.pingRadius += 0.5;
+          cl.pingAlpha *= 0.95;
+          if (cl.pingAlpha < 0.01) cl.pingActive = false;
+        }
+      }
+    }
+
+    // Phase 5: Scattered silence, fade, and reset
+    else {
+      const t = (cf - P_DISSOLVE) / (CYCLE - P_DISSOLVE);
+
+      for (const c of clicks) {
+        // Gentle random drift
+        c.vx += (Math.random() - 0.5) * 0.02;
+        c.vy += (Math.random() - 0.5) * 0.02;
+        c.vx *= 0.98;
+        c.vy *= 0.98;
+        c.x += c.vx;
+        c.y += c.vy;
+
+        // Occasional lonely flash, then fade to zero for reset
+        if (t < 0.5) {
+          c.flashTimer++;
+          if (c.flashTimer >= c.flashInterval * 2) {
+            c.alpha = 0.4;
+            c.flashTimer = 0;
+          } else {
+            c.alpha = Math.max(0.08, c.alpha - 0.005);
+          }
+        } else {
+          // Fade everything out for clean reset
+          c.alpha = Math.max(0, c.alpha - 0.015);
+        }
+      }
+
+      // All structure gone
+      for (const a of arcs) { a.alpha = 0; }
+      for (const cl of clusters) { cl.glowAlpha = 0; cl.pingActive = false; }
+
+      // At cycle end, reset positions
+      if (cf >= CYCLE - 1) {
+        const cw = W || 800;
+        const ch = H || 380;
+        for (const c of clicks) {
+          c.x = Math.random() * cw;
+          c.y = Math.random() * ch;
+          c.vx = (Math.random() - 0.5) * 0.4;
+          c.vy = (Math.random() - 0.5) * 0.4;
+          c.alpha = 0;
+          c.flashTimer = Math.floor(Math.random() * 120);
+          c.flashInterval = 60 + Math.floor(Math.random() * 100);
+        }
+        // Recompute cluster positions with fresh jitter
+        const padX = cw * 0.15;
+        const padY = ch * 0.2;
+        let idx = 0;
+        for (let r = 0; r < 2; r++) {
+          for (let c = 0; c < 3; c++) {
+            const bx = padX + (c + 0.5) * ((cw - padX * 2) / 3) + (Math.random() - 0.5) * 40;
+            const by = padY + (r + 0.5) * ((ch - padY * 2) / 2) + (Math.random() - 0.5) * 30;
+            clusters[idx].cx = bx;
+            clusters[idx].cy = by;
+            clusters[idx].baseX = bx;
+            clusters[idx].baseY = by;
+            idx++;
+          }
+        }
+        initArcs();
+      }
+    }
+  }
+
+  // --- Draw ---
+  function draw() {
+    // Fill background
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+
+    // Ambient particles
+    for (const a of ambs) {
+      ctx.globalAlpha = a.a;
+      ctx.fillStyle = `rgb(${Math.round(bgR * 0.7 + stR * 0.3)},${Math.round(bgG * 0.7 + stG * 0.3)},${Math.round(bgB * 0.7 + stB * 0.3)})`;
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // Cluster golden glow
+    for (const cl of clusters) {
+      if (cl.glowAlpha > 0.002) {
+        const grad = ctx.createRadialGradient(cl.cx, cl.cy, 0, cl.cx, cl.cy, 60);
+        grad.addColorStop(0, `rgba(${glR},${glG},${glB},${cl.glowAlpha.toFixed(3)})`);
+        grad.addColorStop(0.5, `rgba(${glR},${glG},${glB},${(cl.glowAlpha * 0.4).toFixed(3)})`);
+        grad.addColorStop(1, `rgba(${glR},${glG},${glB},0)`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(cl.cx, cl.cy, 60, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Sonar ping rings
+      if (cl.pingActive && cl.pingAlpha > 0.005) {
+        ctx.strokeStyle = `rgba(${stR},${stG},${stB},${cl.pingAlpha.toFixed(3)})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(cl.cx, cl.cy, cl.pingRadius, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+
+    // Arc connections between clusters
+    ctx.lineWidth = 1;
+    for (const a of arcs) {
+      if (a.alpha < 0.005) continue;
+      const c1 = clusters[a.c1];
+      const c2 = clusters[a.c2];
+      ctx.strokeStyle = `rgba(${stR},${stG},${stB},${a.alpha.toFixed(3)})`;
+      // Draw a gentle arc (quadratic curve with midpoint offset)
+      const mx = (c1.cx + c2.cx) / 2;
+      const my = (c1.cy + c2.cy) / 2;
+      const dx = c2.cx - c1.cx;
+      const dy = c2.cy - c1.cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      // Perpendicular offset for arc curvature
+      const nx = -dy / dist * dist * 0.08;
+      const ny = dx / dist * dist * 0.08;
+      ctx.beginPath();
+      ctx.moveTo(c1.cx, c1.cy);
+      ctx.quadraticCurveTo(mx + nx, my + ny, c2.cx, c2.cy);
+      ctx.stroke();
+    }
+
+    // Click-pulse particles
+    for (const c of clicks) {
+      if (c.alpha < 0.02) continue;
+
+      // Outer glow
+      ctx.globalAlpha = c.alpha * 0.2;
+      ctx.fillStyle = `rgb(${stR},${stG},${stB})`;
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, c.r * 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Core
+      ctx.globalAlpha = c.alpha;
+      ctx.fillStyle = `rgb(${stR},${stG},${stB})`;
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.globalAlpha = 1;
+  }
+
+  // --- Loop ---
+  function tick() {
+    frame++;
+    update();
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  function init() {
+    initAmb();
+    initClusters();
+    initClicks();
+    initArcs();
+  }
+
+  requestAnimationFrame(() => {
+    init();
+    if (prefersReduced) {
+      // Static frame: show organized clusters at peak coherence
+      frame = P_ORGANIZE + 60;
+      // Position clicks at cluster targets
+      for (const c of clicks) {
+        const cl = clusters[c.cluster];
+        c.x = cl.cx + Math.cos(c.angleInCluster) * c.distInCluster;
+        c.y = cl.cy + Math.sin(c.angleInCluster) * c.distInCluster;
+        c.alpha = 0.55;
+      }
+      for (const a of arcs) { a.alpha = 0.22; }
+      for (const cl of clusters) { cl.glowAlpha = 0.05; }
+      draw();
+    } else {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+        else { cancelAnimationFrame(raf); raf = 0; }
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+
+      window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); io.disconnect(); ro.disconnect(); });
+      return;
+    }
+  });
+
+  window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); ro.disconnect(); });
+})();
+</script>

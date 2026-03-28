@@ -286,6 +286,7 @@ Every story includes a **full-width canvas animation** placed at a dramatically 
 | maven-minab | `maven-minab.astro` | **The Pipeline** — identical data particles stream left-to-right through green gate lines; one is the error, visually indistinguishable; every gate pulses green as it passes; at the end, the error detonates in a red ripple; particles continue streaming uninterrupted |
 | anthropic-pentagon | `anthropic-pentagon.astro` | **The Line** — a horizontal line divides the canvas; orange particles drift freely across it; the line flares bright periodically (enforcement attempts) but particles keep crossing; a mega-flare sends 6 particles through simultaneously; the line persists, accomplishes nothing |
 | cloud-strike | `cloud-strike.astro` | **The Convergence** — off-white civilian and accent-colored military particles drift toward a central node; colors merge as they approach until indistinguishable; a red impact hits the node; both types scatter equally; streams reform and converge again |
+| whale-language | `whale-language.astro` | **The Coda** — scattered teal click-pulses drift randomly; they self-organize into rhythmic clusters with connecting arc-lines; clusters glow warm gold at peak coherence; structure dissolves back to scattered pulses; the cycle of recognizing and losing the pattern repeats |
 
 ### Adding a New Story
 
