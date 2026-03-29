@@ -1,0 +1,661 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'founder-mode-cancer')!;
+---
+
+<style is:global>
+  :root[data-theme="light"] .founder-mode-cancer-canvas,
+  :root[data-theme="light"] .fmc-stat,
+  :root[data-theme="light"] .fmc-terminal,
+  :root[data-theme="light"] .fmc-pipeline {
+    --story: #0f766e;
+  }
+  .fmc-num { color: var(--story); }
+  .fmc-terminal-module { color: var(--story); }
+
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .founder-mode-cancer-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  .fmc-stat {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .fmc-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .fmc-num {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--story);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+  .fmc-label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .fmc-terminal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    margin: 2rem 0;
+    font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  }
+  .fmc-terminal-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--surface2, var(--surface));
+    border-bottom: 1px solid var(--border);
+  }
+  .fmc-terminal-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--story);
+  }
+  .fmc-terminal-title {
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .fmc-terminal-body {
+    padding: 1.25rem;
+  }
+  .fmc-terminal-row {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 0.15rem;
+  }
+  .fmc-terminal-num {
+    font-size: 0.7rem;
+    color: var(--muted);
+    min-width: 1.5rem;
+  }
+  .fmc-terminal-module {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--story);
+    letter-spacing: 0.06em;
+  }
+  .fmc-terminal-detail {
+    font-size: 0.75rem;
+    color: var(--muted);
+    padding-left: 2.5rem;
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
+  }
+  .fmc-terminal-status {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 0.1em;
+    text-align: right;
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .fmc-pipeline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+    padding: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    position: relative;
+  }
+  .fmc-pipe-step {
+    text-align: center;
+    padding: 1rem 0.75rem;
+    min-width: 100px;
+  }
+  .fmc-pipe-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.4rem;
+  }
+  .fmc-pipe-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 0.2rem;
+  }
+  .fmc-pipe-detail {
+    font-size: 0.68rem;
+    color: var(--muted);
+  }
+  .fmc-pipe-arrow {
+    font-size: 1.2rem;
+    color: var(--muted);
+    padding: 0 0.25rem;
+  }
+  .fmc-pipe-highlight {
+    background: color-mix(in srgb, var(--story) 10%, transparent);
+    border-radius: 0.5rem;
+    border: 1px solid color-mix(in srgb, var(--story) 25%, transparent);
+  }
+  .fmc-pipe-footer {
+    width: 100%;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 600px) {
+    .fmc-stat { grid-template-columns: 1fr; }
+    .fmc-pipeline { flex-direction: column; gap: 0.5rem; }
+    .fmc-pipe-arrow { transform: rotate(90deg); }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="intro">
+      <h2><span class="num">01 &mdash; The Odds</span>The Odds</h2>
+
+      <p>In June 2024, Sid Sijbrandij's oncologists told him he had exhausted the standard of care. There were no clinical trials for recurrent spinal osteosarcoma. He was a billionaire, and out of options &mdash; so he built his own.</p>
+
+      <p>Sijbrandij co-founded GitLab, the DevOps platform that went public on NASDAQ in October 2021 at a valuation that made him a billionaire with a net worth of approximately $2.6 billion. In November 2022, at forty-five, he felt a sharp pain in his chest during a workout. It worsened over two weeks. He was awake at 4 AM, still in pain. On November 18, 2022, he was diagnosed with osteosarcoma &mdash; a 6-centimeter mass growing from the T5 vertebra of his upper spine.</p>
+
+      <p>The location mattered. Most people who hear "osteosarcoma" think of the cancer that strikes adolescents in the long bones of the arms and legs. The American Cancer Society puts the overall cure rate for osteosarcoma at 60 to 70 percent. Spinal osteosarcoma is a different disease. According to a 2023 SEER database analysis of 668 patients published in Frontiers in Oncology, spinal osteosarcoma has a five-year survival rate of 16.8 percent and a median overall survival of 15 months. Spinal osteosarcoma accounts for 3 to 5 percent of all spinal malignancies.</p>
+
+      <div class="fmc-stat">
+        <div class="fmc-card">
+          <div class="fmc-num">16.8%</div>
+          <div class="fmc-label">5-year survival, spinal osteosarcoma<br>(SEER database, 668 patients)</div>
+        </div>
+        <div class="fmc-card">
+          <div class="fmc-num">15 mo</div>
+          <div class="fmc-label">median overall survival, spinal osteosarcoma</div>
+        </div>
+        <div class="fmc-card">
+          <div class="fmc-num">60&ndash;70%</div>
+          <div class="fmc-label">overall cure rate, osteosarcoma<br>(American Cancer Society)</div>
+        </div>
+      </div>
+
+      <p>Sijbrandij's first-round treatment was aggressive. A surgeon removed the cancerous vertebra and fused his spine with a titanium frame. He received stereotactic body radiotherapy, proton beam therapy, and multiple rounds of intensive chemotherapy requiring four blood transfusions. He also received an experimental click-chemistry targeted therapy developed by Shasqi &mdash; a treatment administered under an FDA Investigational New Drug application in which, according to Century of Biology, he was the sole patient. On March 13, 2023, Sijbrandij publicly disclosed his diagnosis on GitLab's Q4 FY2023 earnings call, stating the cancer had not metastasized.</p>
+
+      <p>Two years of clear scans followed. Then, during a routine scan in 2024, imaging showed local recurrence. On June 3, 2024, Sijbrandij announced the recurrence on X. His doctors said there was nothing left to try.</p>
+    </section>
+
+    <section class="section" id="the-build">
+      <h2><span class="num">02 &mdash; The Build</span>The Build</h2>
+
+      <p>Sijbrandij called it his "only option." After exhausting standard care, he decided to treat his cancer the way he had built GitLab &mdash; from first principles, with maximal information, and by assembling a team purpose-built for the problem.</p>
+
+      <p>He recruited Jacob Stern, a former director at 10x Genomics who had led the company's spatial transcriptomics product line, to serve as what he called "CEO of care" &mdash; managing diagnostics and therapeutic coordination full-time. According to Century of Biology, the broader infrastructure included concierge medical services (Private Medical, Private Health Management, Pathfinder Oncology) and a scientific advisory board of academic researchers and industry experts. The team compiled a Google Doc titled "Sid Health Notes" &mdash; over 1,000 pages for 2025 alone, according to Sijbrandij's account, tracking every medical interaction.</p>
+
+      <p>On December 5, 2024, Sijbrandij stepped down as GitLab CEO and transitioned to Executive Chair. Bill Staples, formerly CEO of New Relic, replaced him effective immediately. GitLab stock rose more than 7 percent in after-hours trading. The company's Q3 FY2025 revenue was $196 million, a 31 percent year-over-year increase. The business was healthy. Its founder had other work to do.</p>
+
+      <div class="fmc-terminal">
+        <div class="fmc-terminal-header">
+          <div class="fmc-terminal-dot"></div>
+          <div class="fmc-terminal-title">Diagnostic Protocol &mdash; Patient: S. Sijbrandij</div>
+        </div>
+        <div class="fmc-terminal-body">
+          <div class="fmc-terminal-row">
+            <span class="fmc-terminal-num">01</span>
+            <span class="fmc-terminal-module">GENOMIC SEQUENCING</span>
+          </div>
+          <div class="fmc-terminal-detail">Single-cell RNA-seq (10x Genomics) / Bulk DNA + RNA / Long-read (Oxford Nanopore) / CNV analysis</div>
+          <div class="fmc-terminal-row">
+            <span class="fmc-terminal-num">02</span>
+            <span class="fmc-terminal-module">MINIMAL RESIDUAL DISEASE</span>
+          </div>
+          <div class="fmc-terminal-detail">Circulating tumor DNA monitoring</div>
+          <div class="fmc-terminal-row">
+            <span class="fmc-terminal-num">03</span>
+            <span class="fmc-terminal-module">ORGANOID MODELING</span>
+          </div>
+          <div class="fmc-terminal-detail">Patient-derived tumor organoids / Drug response testing</div>
+          <div class="fmc-terminal-row">
+            <span class="fmc-terminal-num">04</span>
+            <span class="fmc-terminal-module">PATHOLOGY</span>
+          </div>
+          <div class="fmc-terminal-detail">H&E + IHC tissue staining / Spatial transcriptomics</div>
+          <div class="fmc-terminal-row">
+            <span class="fmc-terminal-num">05</span>
+            <span class="fmc-terminal-module">THERANOSTIC IMAGING</span>
+          </div>
+          <div class="fmc-terminal-detail">Diagnostic + therapeutic radionuclide scans</div>
+          <div class="fmc-terminal-status">STATUS: ALL ACTIVE</div>
+        </div>
+      </div>
+
+      <p>Sijbrandij also used ChatGPT throughout the process. According to his account at the OpenAI Forum event in March 2026, he used it to analyze RNA test spreadsheets, review literature, generate hypotheses, and learn about complex therapies &mdash; such as the differences between T-cell receptor therapy and CAR-T therapy. He described ChatGPT as helping him "interpret complex data, explore new options, and ask better questions." His own Substack post about the founder mode approach does not mention ChatGPT. No source in the record documents a specific treatment decision driven by the tool. The OpenAI Forum event title &mdash; "From Terminal to Turnaround: How GitLab's Co-Founder Leveraged ChatGPT in His Cancer Fight" &mdash; is the platform's framing, not a claim the evidence supports at that specificity. ChatGPT was a research companion. The treatment decisions were driven by sequencing data and clinical evidence.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="founder-mode-cancer-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Assembly</strong> &mdash; Scattered teal particles drift independently across warm cream, each an existing medical tool. A central node brightens and draws them inward. Connecting lines form a diagnostic constellation. A gold pulse marks the moment the signal emerges. Then gravity fades, connections dissolve, and the tools scatter back to isolation.</p>
+
+    <section class="section" id="the-discovery">
+      <h2><span class="num">03 &mdash; The Discovery</span>The Discovery</h2>
+
+      <p>The pivotal finding came from the most granular layer of the diagnostic stack. Single-cell RNA sequencing &mdash; performed using 10x Genomics technology on tumor biopsy samples &mdash; revealed that tumor fibroblasts were overexpressing fibroblast activation protein (FAP), along with the genes KERA, LUM, and EPYC. This was not a generic "your cancer has mutations" report. It was a map of what the tumor's stromal cells were producing at single-cell resolution &mdash; and FAP overexpression pointed directly to a specific class of therapy.</p>
+
+      <p>FAP-targeting radioligand therapy combines a ligand that binds to fibroblast activation protein with a radioactive payload &mdash; Lutetium-177, the same radioisotope used in the FDA-approved prostate cancer drug Pluvicto. The therapy includes a theranostic component: a diagnostic imaging scan confirms the ligand reaches the tumor before the therapeutic dose is delivered. According to a 2023 review published in Springer, FAP-targeted radioligand therapy has been administered to more than 100 patients with different labeled compounds, demonstrating objective responses in difficult-to-treat, end-stage cancers with manageable side effects &mdash; primarily mild fatigue, nausea, and low-grade blood toxicity.</p>
+
+      <div class="fmc-pipeline">
+        <div class="fmc-pipe-step">
+          <div class="fmc-pipe-icon" aria-hidden="true">&#x1F9EC;</div>
+          <div class="fmc-pipe-label">Single-Cell<br>RNA-Seq</div>
+          <div class="fmc-pipe-detail">10x Genomics</div>
+        </div>
+        <div class="fmc-pipe-arrow" aria-hidden="true">&#x2192;</div>
+        <div class="fmc-pipe-step">
+          <div class="fmc-pipe-icon" aria-hidden="true">&#x1F50D;</div>
+          <div class="fmc-pipe-label">FAP Over-<br>expression</div>
+          <div class="fmc-pipe-detail">+ KERA, LUM, EPYC</div>
+        </div>
+        <div class="fmc-pipe-arrow" aria-hidden="true">&#x2192;</div>
+        <div class="fmc-pipe-step fmc-pipe-highlight">
+          <div class="fmc-pipe-icon" aria-hidden="true">&#x2622;&#xFE0F;</div>
+          <div class="fmc-pipe-label">FAP-Targeted<br>Radioligand</div>
+          <div class="fmc-pipe-detail">Lu-177 / Germany</div>
+        </div>
+        <div class="fmc-pipe-arrow" aria-hidden="true">&#x2192;</div>
+        <div class="fmc-pipe-step">
+          <div class="fmc-pipe-icon" aria-hidden="true">&#x2705;</div>
+          <div class="fmc-pipe-label">Tumor<br>Resectable</div>
+          <div class="fmc-pipe-detail">Surgery enabled</div>
+        </div>
+        <div class="fmc-pipe-footer">The diagnostic that unlocked this therapy &mdash; single-cell RNA sequencing &mdash; is not part of standard oncology care.</div>
+      </div>
+
+      <p>The therapy was not available in the United States through standard channels. Sijbrandij traveled to Germany to receive it. According to Century of Biology, the radioligand therapy shrank the tumor sufficiently to make it surgically resectable again. Alongside it, Sijbrandij received a checkpoint inhibitor, a neoantigen peptide vaccine, and oncolytic virus therapy in parallel. He also obtained FDA Form 3926 &mdash; the Individual Patient Investigational New Drug application &mdash; for five experimental medicines. According to Century of Biology, the FDA accepted the applications within 48 hours.</p>
+
+      <p>The immune response data reported is notable, though it carries significant caveats. According to single-cell analysis performed by Sijbrandij's team and reported in Century of Biology, T-cell infiltration among immune cells changed from 19 percent before treatment to 89 percent after radiotherapy and adjuvant immunotherapy. This figure has not been published in a peer-reviewed paper. It has not been independently verified by researchers outside Sijbrandij's team. The underlying single-cell data may exist on osteosarc.com and could theoretically be validated, but no independent confirmation has been published.</p>
+
+      <p>In January 2026, Sijbrandij reported "no evidence of disease." This is his own characterization. No named oncologist makes this claim in any source reviewed. "No evidence of disease" is a specific clinical designation, and the distinction between self-reported NED and physician-confirmed NED matters &mdash; particularly for a cancer with a high recurrence rate.</p>
+    </section>
+
+    <section class="section" id="the-gap">
+      <h2><span class="num">04 &mdash; The Gap</span>The Gap</h2>
+
+      <p>The technologies that drove Sijbrandij's outcome are not proprietary. They are not secret. Single-cell RNA sequencing is commercially available. FAP-targeted radioligand therapy has peer-reviewed evidence from more than 100 patients. Organoid modeling, circulating tumor DNA monitoring, and theranostic imaging all exist as deployed research and clinical tools. The innovation was not any single technology. It was assembling them outside the standard oncology workflow &mdash; and the cost of that assembly is where the story turns.</p>
+
+      <p>Sijbrandij had resources available to almost no patient on earth. He had the wealth to hire a full-time care coordinator with genomics industry experience. He had concierge medical services to navigate regulatory pathways. He had a scientific advisory board. He could travel internationally for treatment unavailable in his home country. He could obtain FDA Individual Patient INDs for five experimental medicines. Sijbrandij himself characterized the cost disparity as "$1 billion to get a drug approved versus $1 million to dose a single person." This is his own rhetorical framing &mdash; not a sourced figure &mdash; but the scale of the asymmetry it describes is real.</p>
+
+      <p>The institutional barriers he navigated are documented. Hospitals prefer formalin-fixed paraffin-embedded tissue samples over cryopreserved tissue, which limits the quality of downstream genomic analysis. Patient access to their own tissue samples is complicated by liability concerns. Hospital institutional review boards were, in Sijbrandij's characterization, more restrictive than the FDA itself &mdash; what he called a "vetocracy where one member can block treatment." Ruxandra Teslo, who holds a PhD in genomics from Cambridge's Sanger Institute, argues that current regulations effectively reserve survival chances for those who possess the means to assemble expert teams capable of navigating the system's procedures. The system was designed to protect patients. In cases like Sijbrandij's, it created barriers for a patient willing to assume risks that the system would not allow.</p>
+
+      <p>Jacob Stern, Sijbrandij's care coordinator, characterized the approach as living "thirty years in the future" relative to current clinical practice. The characterization may be generous &mdash; the technologies are available now. What is thirty years in the future, if anything, is the expectation that a cancer patient would have access to all of them simultaneously, coordinated by a dedicated team, without the patient bearing the full cost of navigation.</p>
+
+      <p>Sijbrandij has taken steps to make his case useful beyond himself. The data portal osteosarc.com contains approximately 25 terabytes of publicly accessible data: whole genome sequencing, whole exome sequencing, bulk RNA-seq, single-cell RNA-seq from tumor biopsies and immune cells across multiple timepoints, long-read sequencing, copy number variation analysis, minimal residual disease measurements, HLA typing, neoantigen data, spatial transcriptomics, and H&E and IHC imaging. The data is stored in publicly readable Google Cloud buckets. Anyone can download it. According to the Osteosarcoma Institute, Sid and Karen Sijbrandij established a family fund to support osteosarcoma research. Sijbrandij's personal website links to Even One Ventures, a biotech investment firm with a "Patient First" tagline, as part of efforts to scale his approach &mdash; though Even One's own website does not name Sijbrandij, and the exact relationship has not been independently confirmed.</p>
+
+      <p>The open-sourcing is genuine &mdash; the data is real, inspectable, and freely available. But no published papers or external research projects citing the osteosarc.com dataset were found. The scaling effort is aspirational. The question of whether the infrastructure Sijbrandij built can be abstracted into a system that works for patients without his resources has no answer yet.</p>
+
+      <p>One perspective is notably absent from the available record. No oncologist in the sources reviewed questions Sijbrandij's methodology. No bioethicist raises survivorship bias &mdash; the possibility that publicizing a single positive outcome from an approach available only to the ultra-wealthy may distort expectations for patients who cannot replicate it. This does not mean the concerns are invalid. It means the story cannot present them as addressed.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">05 &mdash; Signal</span>The Patient Zero Problem</h2>
+
+      <p>The story people heard about Sid Sijbrandij's cancer fight is a story about ChatGPT. The OpenAI Forum event, held on March 18, 2026, was titled "From Terminal to Turnaround: How GitLab's Co-Founder Leveraged ChatGPT in His Cancer Fight." That framing is not wrong &mdash; Sijbrandij did use ChatGPT &mdash; but it is not the story the evidence tells.</p>
+
+      <p>The treatment that shrank the tumor was FAP-targeted radioligand therapy, identified because single-cell RNA sequencing revealed FAP overexpression in tumor fibroblasts. The sequencing was performed by 10x Genomics technology. The radioligand therapy had peer-reviewed evidence in more than 100 patients. The diagnostic-to-therapy pipeline was built on commercially available tools and published science. ChatGPT helped Sijbrandij learn, analyze data, and ask better questions. It did not identify the treatment. The AI story is a footnote to the access story.</p>
+
+      <p>What the case reveals is not that AI cured cancer. It reveals that existing diagnostic and therapeutic technologies are trapped behind institutional barriers &mdash; hospital tissue handling practices, IRB gatekeeping, the absence of clinical trials for rare cancer subtypes, the cost of international treatment, the inability of standard oncology to coordinate multiple cutting-edge modalities for a single patient. Every tool Sijbrandij used exists. The barrier is not invention. It is access.</p>
+
+      <p>Sijbrandij's guiding principle for the future is "Stay Paranoid." He continues monthly blood monitoring. He is pursuing personalized mRNA neoantigen vaccine therapy. He has backup plans in development: personalized cell-based therapies with genetic logic gates, created in collaboration with academic labs. "No evidence of disease" is not "cured." Spinal osteosarcoma has high recurrence rates. The story is not over.</p>
+
+      <p>The tools that may have saved Sijbrandij's life are published, peer-reviewed, and commercially available. They were not assembled for him by the healthcare system. He assembled them himself, at a cost that almost no one can pay, through a network almost no one has. Whether a billionaire building his own medical infrastructure can create a path that anyone else can walk &mdash; or whether the infrastructure is the point and cannot be separated from the resources that built it &mdash; remains the open question his case cannot answer.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.founder-mode-cancer-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f5f0e8';
+  const ACCENT = '#2dd4bf';
+  const AC_R = 45, AC_G = 212, AC_B = 191;
+  const GOLD = '#c8963e';
+  const GOLD_R = 200, GOLD_G = 150, GOLD_B = 62;
+  const AMB_R = 30, AMB_G = 30, AMB_B = 25;
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  });
+  ro.observe(canvas);
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const PHASE_SCATTER = 180;
+  const PHASE_ATTRACT = 480;
+  const PHASE_SIGNAL = 600;
+  const PHASE_DISSOLVE = 840;
+  const CYCLE = 960;
+
+  const NUM_TOOLS = 45;
+  const tools: { x: number; y: number; homeX: number; homeY: number; vx: number; vy: number; ellipseA: number; ellipseB: number; ellipsePhase: number; ellipseSpeed: number; r: number; alpha: number; baseAlpha: number; flickerFrame: number; flickerDuration: number; ring: number; ringAngle: number; ringSpeed: number; goldShift: number; }[] = [];
+
+  const NUM_AMB = 14;
+  const ambs: { x: number; y: number; vx: number; vy: number; r: number; a: number; }[] = [];
+
+  let nodeAlpha = 0.15;
+  let nodeGradR = 40;
+  const nodeBaseR = 6;
+
+  const pulseRings: { r: number; alpha: number; speed: number; }[] = [];
+  let goldPulseFired = false;
+
+  const connections: { a: number; b: number; alpha: number; }[] = [];
+
+  function initTools() {
+    tools.length = 0;
+    const ringRadii = [60, 110, 160];
+    for (let i = 0; i < NUM_TOOLS; i++) {
+      const hx = Math.random() * (W || 800);
+      const hy = Math.random() * (H || 380);
+      const ring = i % 3;
+      const ringAngle = (i / NUM_TOOLS) * Math.PI * 2 + (Math.random() - 0.5) * 0.8;
+      tools.push({
+        x: hx, y: hy, homeX: hx, homeY: hy,
+        vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5,
+        ellipseA: 30 + Math.random() * 60, ellipseB: 20 + Math.random() * 40,
+        ellipsePhase: Math.random() * Math.PI * 2, ellipseSpeed: 0.002 + Math.random() * 0.003,
+        r: 2.5 + Math.random() * 2, alpha: 0.3 + Math.random() * 0.2,
+        baseAlpha: 0.3 + Math.random() * 0.2,
+        flickerFrame: Math.floor(Math.random() * CYCLE), flickerDuration: 10,
+        ring, ringAngle, ringSpeed: 0.008 + Math.random() * 0.006, goldShift: 0,
+      });
+    }
+  }
+
+  function initAmbs() {
+    ambs.length = 0;
+    for (let i = 0; i < NUM_AMB; i++) {
+      ambs.push({
+        x: Math.random() * (W || 800), y: Math.random() * (H || 380),
+        vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.2,
+        r: 1.5 + Math.random() * 2, a: 0.04 + Math.random() * 0.03,
+      });
+    }
+  }
+
+  function resetState() {
+    nodeAlpha = 0.15; nodeGradR = 40; goldPulseFired = false;
+    pulseRings.length = 0; connections.length = 0;
+    for (const t of tools) {
+      t.homeX = Math.random() * (W || 800); t.homeY = Math.random() * (H || 380);
+      t.x = t.homeX; t.y = t.homeY;
+      t.ellipsePhase = Math.random() * Math.PI * 2;
+      t.alpha = t.baseAlpha; t.goldShift = 0;
+      t.flickerFrame = Math.floor(Math.random() * CYCLE);
+    }
+  }
+
+  const ringRadii = [60, 110, 160];
+
+  function update() {
+    const cf = frame % CYCLE;
+    const cx = W / 2, cy = H / 2;
+
+    for (const a of ambs) {
+      a.x += a.vx; a.y += a.vy;
+      if (a.x < -10) a.x = W + 10; if (a.x > W + 10) a.x = -10;
+      if (a.y < -10) a.y = H + 10; if (a.y > H + 10) a.y = -10;
+    }
+
+    if (cf < PHASE_SCATTER) {
+      nodeAlpha = 0.15; nodeGradR = 40;
+      for (const t of tools) {
+        t.ellipsePhase += t.ellipseSpeed;
+        t.x = t.homeX + Math.cos(t.ellipsePhase) * t.ellipseA * 0.3;
+        t.y = t.homeY + Math.sin(t.ellipsePhase) * t.ellipseB * 0.3;
+        t.alpha = t.baseAlpha; t.goldShift = 0;
+        if (cf === t.flickerFrame) t.alpha = 0.7;
+        else if (cf > t.flickerFrame && cf < t.flickerFrame + t.flickerDuration)
+          t.alpha = 0.7 - (cf - t.flickerFrame) / t.flickerDuration * (0.7 - t.baseAlpha);
+        if (t.x < -20) t.x += W + 40; if (t.x > W + 20) t.x -= W + 40;
+        if (t.y < -20) t.y += H + 40; if (t.y > H + 20) t.y -= H + 40;
+      }
+      connections.length = 0;
+
+    } else if (cf < PHASE_ATTRACT) {
+      const t = (cf - PHASE_SCATTER) / (PHASE_ATTRACT - PHASE_SCATTER);
+      nodeAlpha = 0.15 + t * 0.65; nodeGradR = 40 + t * 80;
+      const force = 0.003 + t * 0.009;
+      for (const tool of tools) {
+        tool.ellipsePhase += tool.ellipseSpeed;
+        const targetR = ringRadii[tool.ring];
+        tool.ringAngle += tool.ringSpeed * 0.15;
+        const targetX = cx + Math.cos(tool.ringAngle) * targetR;
+        const targetY = cy + Math.sin(tool.ringAngle) * targetR;
+        const distToCenter = Math.sqrt((tool.x - cx) ** 2 + (tool.y - cy) ** 2);
+        const responsiveness = Math.min(1, force * 200 / (1 + distToCenter * 0.01));
+        const pull = Math.min(1, t * responsiveness * 1.5);
+        const scatterX = tool.homeX + Math.cos(tool.ellipsePhase) * tool.ellipseA * 0.3;
+        const scatterY = tool.homeY + Math.sin(tool.ellipsePhase) * tool.ellipseB * 0.3;
+        tool.x = scatterX + (targetX - scatterX) * pull;
+        tool.y = scatterY + (targetY - scatterY) * pull;
+        tool.alpha = tool.baseAlpha + t * (0.5 - tool.baseAlpha); tool.goldShift = 0;
+      }
+      connections.length = 0;
+      if (t > 0.3) {
+        const connAlphaBase = (t - 0.3) / 0.7;
+        for (let i = 0; i < NUM_TOOLS; i++) {
+          for (let j = i + 1; j < NUM_TOOLS; j++) {
+            const dx = tools[i].x - tools[j].x, dy = tools[i].y - tools[j].y;
+            const dist = dx * dx + dy * dy;
+            if (dist < 10000) {
+              const proximity = 1 - Math.sqrt(dist) / 100;
+              const alpha = connAlphaBase * proximity * 0.18;
+              if (alpha > 0.01) connections.push({ a: i, b: j, alpha });
+            }
+          }
+        }
+      }
+
+    } else if (cf < PHASE_SIGNAL) {
+      const t = (cf - PHASE_ATTRACT) / (PHASE_SIGNAL - PHASE_ATTRACT);
+      nodeAlpha = 0.8; nodeGradR = 120;
+      if (!goldPulseFired) {
+        goldPulseFired = true;
+        pulseRings.push({ r: 0, alpha: 0.12, speed: 1.5 });
+        pulseRings.push({ r: 0, alpha: 0.08, speed: 1.2 });
+        pulseRings.push({ r: 0, alpha: 0.06, speed: 0.9 });
+      }
+      for (const pr of pulseRings) { pr.r += pr.speed; if (pr.r > 30) pr.alpha = Math.max(0, pr.alpha - 0.0008); }
+      for (const c of connections) c.alpha = Math.min(0.3, c.alpha + 0.005);
+      for (const tool of tools) {
+        tool.ringAngle += tool.ringSpeed * 0.15;
+        const targetR = ringRadii[tool.ring];
+        const targetX = cx + Math.cos(tool.ringAngle) * targetR;
+        const targetY = cy + Math.sin(tool.ringAngle) * targetR;
+        tool.x += (targetX - tool.x) * 0.05; tool.y += (targetY - tool.y) * 0.05;
+        if (tool.ring === 0) {
+          const shiftIn = Math.min(1, t * 3);
+          tool.goldShift = t < 0.5 ? shiftIn : Math.max(0, 1 - (t - 0.5) / 0.5);
+        }
+        tool.alpha = 0.5 + 0.1 * Math.sin(cf * 0.04 + tool.ringAngle);
+      }
+
+    } else if (cf < PHASE_DISSOLVE) {
+      const t = (cf - PHASE_SIGNAL) / (PHASE_DISSOLVE - PHASE_SIGNAL);
+      nodeAlpha = 0.8 - t * 0.65; nodeGradR = 120 - t * 80;
+      for (const pr of pulseRings) pr.alpha = Math.max(0, pr.alpha - 0.001);
+      for (const c of connections) c.alpha = Math.max(0, c.alpha - 0.003);
+      if (t > 0.4) connections.length = 0;
+      for (const tool of tools) {
+        const dx = tool.x - cx, dy = tool.y - cy;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        tool.x += (dx / dist) * 0.004 * t * 60; tool.y += (dy / dist) * 0.004 * t * 60;
+        tool.ellipsePhase += tool.ellipseSpeed;
+        tool.x += Math.cos(tool.ellipsePhase) * 0.2; tool.y += Math.sin(tool.ellipsePhase) * 0.2;
+        tool.goldShift = Math.max(0, tool.goldShift - 0.01);
+        tool.alpha = tool.baseAlpha + (0.5 - tool.baseAlpha) * (1 - t);
+        if (t > 0.5 && Math.random() < 0.001) tool.alpha = 0.7;
+      }
+
+    } else {
+      const t = (cf - PHASE_DISSOLVE) / (CYCLE - PHASE_DISSOLVE);
+      nodeAlpha = 0.15; nodeGradR = 40; connections.length = 0; pulseRings.length = 0;
+      for (const tool of tools) {
+        tool.ellipsePhase += tool.ellipseSpeed;
+        tool.x += Math.cos(tool.ellipsePhase) * 0.2; tool.y += Math.sin(tool.ellipsePhase) * 0.15;
+        tool.alpha = tool.baseAlpha; tool.goldShift = 0;
+      }
+      if (cf >= CYCLE - 30) {
+        const fadeT = (cf - (CYCLE - 30)) / 30;
+        for (const tool of tools) tool.alpha = tool.baseAlpha * (1 - fadeT * 0.3);
+      }
+      if (cf >= CYCLE - 1) resetState();
+    }
+  }
+
+  function toolColor(tool: { goldShift: number; alpha: number }): string {
+    const g = tool.goldShift;
+    if (g < 0.01) return `rgba(${AC_R},${AC_G},${AC_B},${tool.alpha.toFixed(3)})`;
+    if (g > 0.99) return `rgba(${GOLD_R},${GOLD_G},${GOLD_B},${tool.alpha.toFixed(3)})`;
+    const r = Math.round(AC_R + (GOLD_R - AC_R) * g);
+    const gv = Math.round(AC_G + (GOLD_G - AC_G) * g);
+    const b = Math.round(AC_B + (GOLD_B - AC_B) * g);
+    return `rgba(${r},${gv},${b},${tool.alpha.toFixed(3)})`;
+  }
+
+  function draw() {
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+    const cx = W / 2, cy = H / 2;
+
+    for (const a of ambs) {
+      ctx.globalAlpha = a.a;
+      ctx.fillStyle = `rgb(${AMB_R},${AMB_G},${AMB_B})`;
+      ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    if (nodeAlpha > 0.01) {
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, nodeGradR);
+      grad.addColorStop(0, `rgba(${AC_R},${AC_G},${AC_B},${(nodeAlpha * 0.12).toFixed(3)})`);
+      grad.addColorStop(0.5, `rgba(${AC_R},${AC_G},${AC_B},${(nodeAlpha * 0.04).toFixed(3)})`);
+      grad.addColorStop(1, `rgba(${AC_R},${AC_G},${AC_B},0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath(); ctx.arc(cx, cy, nodeGradR, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = nodeAlpha;
+      ctx.fillStyle = ACCENT;
+      ctx.beginPath(); ctx.arc(cx, cy, nodeBaseR, 0, Math.PI * 2); ctx.fill();
+      if (nodeAlpha > 0.3) {
+        ctx.globalAlpha = nodeAlpha * 0.2;
+        ctx.strokeStyle = ACCENT; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(cx, cy, nodeBaseR + 8 + Math.sin(frame * 0.03) * 2, 0, Math.PI * 2); ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    for (const pr of pulseRings) {
+      if (pr.alpha < 0.002 || pr.r < 1) continue;
+      ctx.globalAlpha = pr.alpha;
+      ctx.strokeStyle = `rgb(${GOLD_R},${GOLD_G},${GOLD_B})`;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(cx, cy, pr.r, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+
+    for (const c of connections) {
+      if (c.alpha < 0.005) continue;
+      const ta = tools[c.a], tb = tools[c.b];
+      const midX = (ta.x + tb.x) / 2, midY = (ta.y + tb.y) / 2;
+      const dx = tb.x - ta.x, dy = tb.y - ta.y;
+      const len = Math.sqrt(dx * dx + dy * dy) || 1;
+      const offsetScale = 8 + (c.a % 5);
+      const cpX = midX + (-dy / len) * offsetScale, cpY = midY + (dx / len) * offsetScale;
+      ctx.globalAlpha = c.alpha;
+      ctx.strokeStyle = `rgb(${AC_R},${AC_G},${AC_B})`;
+      ctx.lineWidth = 0.6;
+      ctx.beginPath(); ctx.moveTo(ta.x, ta.y); ctx.quadraticCurveTo(cpX, cpY, tb.x, tb.y); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+
+    for (const t of tools) {
+      if (t.alpha < 0.01) continue;
+      const glowA = t.alpha * 0.15;
+      if (glowA > 0.005) {
+        const g = t.goldShift;
+        const gr = Math.round(AC_R + (GOLD_R - AC_R) * g);
+        const gg = Math.round(AC_G + (GOLD_G - AC_G) * g);
+        const gb = Math.round(AC_B + (GOLD_B - AC_B) * g);
+        ctx.globalAlpha = glowA;
+        ctx.fillStyle = `rgb(${gr},${gg},${gb})`;
+        ctx.beginPath(); ctx.arc(t.x, t.y, t.r * 3, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = toolColor(t);
+      ctx.beginPath(); ctx.arc(t.x, t.y, t.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function tick() { frame++; update(); draw(); raf = requestAnimationFrame(tick); }
+
+  requestAnimationFrame(() => {
+    initTools(); initAmbs(); resetState();
+    if (prefersReduced) {
+      nodeAlpha = 0.7; nodeGradR = 100;
+      const cx = W / 2, cy = H / 2;
+      for (const t of tools) {
+        t.x = cx + Math.cos(t.ringAngle) * ringRadii[t.ring];
+        t.y = cy + Math.sin(t.ringAngle) * ringRadii[t.ring];
+        t.alpha = 0.5; t.goldShift = t.ring === 0 ? 0.6 : 0;
+      }
+      connections.length = 0;
+      for (let i = 0; i < NUM_TOOLS; i++) {
+        for (let j = i + 1; j < NUM_TOOLS; j++) {
+          const dx = tools[i].x - tools[j].x, dy = tools[i].y - tools[j].y;
+          const dist = dx * dx + dy * dy;
+          if (dist < 10000) {
+            const proximity = 1 - Math.sqrt(dist) / 100;
+            if (proximity * 0.18 > 0.02) connections.push({ a: i, b: j, alpha: proximity * 0.18 });
+          }
+        }
+      }
+      draw();
+    } else {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+        else { cancelAnimationFrame(raf); raf = 0; }
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+      window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); });
+    }
+  });
+})();
+</script>
