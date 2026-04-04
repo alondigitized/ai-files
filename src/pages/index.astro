@@ -100,8 +100,25 @@ const pad = (n: number) => String(n).padStart(2, '0');
     font-weight: 900; letter-spacing: -0.03em; line-height: 1; margin-bottom: 1rem;
   }
   .masthead-title .the { color: var(--muted); font-weight: 300; font-size: 0.5em; display: block; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.25rem; }
-  .masthead-title .ai { color: var(--accent); cursor: pointer; transition: text-shadow 0.3s; }
+  .masthead-title .ai {
+    color: var(--accent); cursor: pointer; transition: text-shadow 0.3s;
+    position: relative; display: inline-block;
+  }
   .masthead-title .ai:hover { text-shadow: 0 0 20px rgba(255,77,77,0.4); }
+  @keyframes ai-glitch {
+    0%   { transform: translate(0); opacity: 1; }
+    4%   { transform: translate(3px, -2px) skewX(-4deg); opacity: 0.8; text-shadow: -3px 0 #0ff, 3px 0 #f0f; }
+    8%   { transform: translate(-3px, 1px) skewX(3deg); opacity: 0.9; text-shadow: 2px 0 #f0f, -2px 0 #0ff; }
+    10%  { transform: translate(2px, 1px); opacity: 0.7; text-shadow: -1px 0 #0ff, 1px 0 #f0f; }
+    12%  { transform: translate(0); opacity: 1; text-shadow: none; }
+    100% { transform: translate(0); opacity: 1; text-shadow: none; }
+  }
+  .masthead-title .ai.glitching {
+    animation: ai-glitch 0.4s ease-out;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .masthead-title .ai.glitching { animation: none; }
+  }
   .masthead-tagline {
     font-size: 1.1rem; color: var(--muted);
     max-width: 480px; margin: 1.5rem auto 0;
@@ -915,12 +932,25 @@ const pad = (n: number) => String(n).padStart(2, '0');
       </h1>
       <p class="masthead-tagline">True stories from the age of artificial intelligence.</p>
       <script is:inline>
-        document.getElementById('masthead-ai').addEventListener('click', function() {
+        var aiEl = document.getElementById('masthead-ai');
+        aiEl.addEventListener('click', function() {
           if (window.__replaySplash) window.__replaySplash();
         });
-        document.getElementById('masthead-ai').addEventListener('keydown', function(e) {
+        aiEl.addEventListener('keydown', function(e) {
           if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (window.__replaySplash) window.__replaySplash(); }
         });
+        /* Periodic glitch to hint at the easter egg */
+        function glitch() {
+          aiEl.classList.add('glitching');
+          aiEl.addEventListener('animationend', function handler() {
+            aiEl.classList.remove('glitching');
+            aiEl.removeEventListener('animationend', handler);
+          });
+        }
+        setTimeout(glitch, 5000);
+        setInterval(function() {
+          setTimeout(glitch, Math.random() * 4000);
+        }, 8000 + Math.random() * 7000);
       </script>
       <div class="edition-picker" id="side-filter">
         <div class="edition-card active" data-edition="dark" role="button" tabindex="0" aria-label="Switch to Demons Edition" aria-pressed="true">
