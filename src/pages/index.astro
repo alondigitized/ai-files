@@ -424,6 +424,49 @@ const pad = (n: number) => String(n).padStart(2, '0');
     .edition-info { flex-direction: row; gap: 0.5rem; }
     .edition-tagline { display: none; }
   }
+
+  /* ── Intro Splash ── */
+  .splash-overlay {
+    position: fixed; inset: 0; z-index: 300;
+    background: #0d0d0d;
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.8s cubic-bezier(0.4,0,0.2,1), transform 0.8s cubic-bezier(0.4,0,0.2,1), visibility 0.8s;
+  }
+  .splash-overlay.dismissed {
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transform: scale(1.03);
+  }
+  .splash-overlay.hidden { display: none; }
+  .splash-canvas {
+    position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+  }
+  .splash-skip {
+    position: absolute; bottom: 2rem; right: 2rem; z-index: 301;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 2rem; padding: 0.45rem 1.4rem;
+    font-family: inherit; font-size: 0.7rem;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(255,255,255,0.35); cursor: pointer;
+    transition: color 0.25s, border-color 0.25s;
+  }
+  .splash-skip:hover, .splash-skip:focus-visible {
+    color: rgba(255,255,255,0.75); border-color: rgba(255,255,255,0.4);
+    outline: none;
+  }
+  .splash-progress {
+    position: absolute; bottom: 0; left: 0; width: 100%; height: 2px;
+    background: rgba(255,255,255,0.04);
+  }
+  .splash-progress-bar {
+    height: 100%; width: 0%;
+    background: #ff4d4d;
+    transition: width 0.15s linear;
+  }
+  body.splash-active { overflow: hidden; }
+  @media (max-width: 600px) {
+    .splash-skip { bottom: 1.5rem; right: 1.5rem; padding: 0.4rem 1rem; font-size: 0.65rem; }
+  }
 </style>
 
 <BaseLayout
@@ -434,6 +477,440 @@ const pad = (n: number) => String(n).padStart(2, '0');
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(itemListSchema)} />
   <script async src="https://subscribe-forms.beehiiv.com/embed.js"></script>
+
+  <!-- Intro Splash Overlay -->
+  <div id="intro-splash" class="splash-overlay" aria-hidden="true">
+    <canvas class="splash-canvas" aria-hidden="true"></canvas>
+    <button class="splash-skip" aria-label="Skip intro">Skip</button>
+    <div class="splash-progress">
+      <div class="splash-progress-bar"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const SPLASH_KEY = 'splashSeen';
+      const overlay = document.getElementById('intro-splash') as HTMLDivElement | null;
+      if (!overlay) return;
+
+      /* ── Session guard ── */
+      if (sessionStorage.getItem(SPLASH_KEY)) {
+        overlay.classList.add('hidden');
+        return;
+      }
+
+      /* ── Reduced motion guard ── */
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduced) {
+        overlay.classList.add('hidden');
+        sessionStorage.setItem(SPLASH_KEY, '1');
+        return;
+      }
+
+      /* ── Lock scroll ── */
+      document.body.classList.add('splash-active');
+
+      const canvas = overlay.querySelector('.splash-canvas') as HTMLCanvasElement;
+      const progressBar = overlay.querySelector('.splash-progress-bar') as HTMLDivElement;
+      const ctx = canvas.getContext('2d')!;
+      const dpr = window.devicePixelRatio || 1;
+      let W = 0, H = 0;
+
+      function resize() {
+        const r = canvas.getBoundingClientRect();
+        W = r.width;
+        H = r.height;
+        canvas.width = W * dpr;
+        canvas.height = H * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      const ro = new ResizeObserver(resize);
+      ro.observe(canvas);
+      resize();
+
+      /* ── Logo sequence config ── */
+      interface LogoEntry {
+        src: string;
+        label: string;
+        color: string;
+        points?: { x: number; y: number }[];
+      }
+
+      const logos: LogoEntry[] = [
+        { src: '/images/splash/chatgpt.svg', label: 'ChatGPT', color: '#10a37f' },
+        { src: '/images/splash/claude.svg', label: 'Claude', color: '#cc785c' },
+        { src: '/images/splash/gemini.svg', label: 'Gemini', color: '#4285f4' },
+        { src: '/images/splash/perplexity.svg', label: 'Perplexity', color: '#20b2aa' },
+        { src: '/images/splash/grok.svg', label: 'Grok', color: '#e0e0e0' },
+        { src: '/images/splash/character-ai.svg', label: 'Character AI', color: '#9b59b6' },
+        { src: '/images/splash/midjourney.svg', label: 'Midjourney', color: '#e0e0e0' },
+      ];
+
+      /* ── Finale: "AI" text sampled from canvas ── */
+      const finaleColor = '#ff4d4d';
+      const finaleLabel = 'The AI Files';
+
+      /* ── Particle system ── */
+      const PARTICLE_COUNT = 500;
+      interface Particle {
+        x: number; y: number;
+        tx: number; ty: number;
+        vx: number; vy: number;
+        r: number; g: number; b: number;
+        tr: number; tg: number; tb: number;
+        size: number;
+        alpha: number;
+      }
+      const particles: Particle[] = [];
+
+      function hexToRgb(hex: string) {
+        const n = parseInt(hex.slice(1), 16);
+        return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+      }
+
+      function initParticles() {
+        particles.length = 0;
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          particles.push({
+            x: Math.random() * W,
+            y: Math.random() * H,
+            tx: Math.random() * W,
+            ty: Math.random() * H,
+            vx: 0, vy: 0,
+            r: 255, g: 255, b: 255,
+            tr: 255, tg: 255, tb: 255,
+            size: 1.5 + Math.random() * 1.5,
+            alpha: 0,
+          });
+        }
+      }
+
+      /* ── Sample pixel positions from an image ── */
+      function sampleImage(img: HTMLImageElement, targetW: number, targetH: number, offsetX: number, offsetY: number): { x: number; y: number }[] {
+        const off = document.createElement('canvas');
+        off.width = img.naturalWidth || img.width;
+        off.height = img.naturalHeight || img.height;
+        const c = off.getContext('2d')!;
+        c.drawImage(img, 0, 0, off.width, off.height);
+        const data = c.getImageData(0, 0, off.width, off.height).data;
+
+        const points: { x: number; y: number }[] = [];
+        const step = 2;
+        for (let y = 0; y < off.height; y += step) {
+          for (let x = 0; x < off.width; x += step) {
+            const i = (y * off.width + x) * 4;
+            const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
+            if (brightness > 60 && data[i + 3] > 80) {
+              points.push({
+                x: (x / off.width) * targetW + offsetX,
+                y: (y / off.height) * targetH + offsetY,
+              });
+            }
+          }
+        }
+        return points;
+      }
+
+      /* ── Sample text from canvas ── */
+      function sampleText(text: string, fontSize: number): { x: number; y: number }[] {
+        const off = document.createElement('canvas');
+        off.width = Math.ceil(W);
+        off.height = Math.ceil(H);
+        const c = off.getContext('2d')!;
+        c.fillStyle = '#ffffff';
+        c.font = `900 ${fontSize}px system-ui, -apple-system, "Segoe UI", sans-serif`;
+        c.textAlign = 'center';
+        c.textBaseline = 'middle';
+        c.fillText(text, off.width / 2, off.height / 2);
+
+        const data = c.getImageData(0, 0, off.width, off.height).data;
+        const points: { x: number; y: number }[] = [];
+        const step = Math.max(2, Math.floor(Math.min(off.width, off.height) / 200));
+        for (let y = 0; y < off.height; y += step) {
+          for (let x = 0; x < off.width; x += step) {
+            const i = (y * off.width + x) * 4;
+            if (data[i + 3] > 80) {
+              points.push({ x, y });
+            }
+          }
+        }
+        return points;
+      }
+
+      /* ── Subsample points to N count ── */
+      function subsample(points: { x: number; y: number }[], count: number): { x: number; y: number }[] {
+        if (points.length <= count) {
+          const result = [...points];
+          while (result.length < count) {
+            result.push(points[Math.floor(Math.random() * points.length)]);
+          }
+          return result;
+        }
+        const step = points.length / count;
+        const result: { x: number; y: number }[] = [];
+        for (let i = 0; i < count; i++) {
+          result.push(points[Math.floor(i * step)]);
+        }
+        return result;
+      }
+
+      /* ── Preload all images then start ── */
+      function loadImage(src: string): Promise<HTMLImageElement> {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(img);
+          img.onerror = reject;
+          img.src = src;
+        });
+      }
+
+      let rafId = 0;
+      let dismissed = false;
+
+      function dismiss() {
+        if (dismissed) return;
+        dismissed = true;
+        cancelAnimationFrame(rafId);
+        ro.disconnect();
+        overlay.classList.add('dismissed');
+        document.body.classList.remove('splash-active');
+        sessionStorage.setItem(SPLASH_KEY, '1');
+        setTimeout(() => overlay.classList.add('hidden'), 850);
+      }
+
+      overlay.querySelector('.splash-skip')!.addEventListener('click', dismiss);
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !dismissed) dismiss();
+      });
+
+      /* ── Main sequence ── */
+      Promise.all(logos.map(l => loadImage(l.src))).then((images) => {
+        if (dismissed) return;
+        initParticles();
+
+        /* Sample all logos at display size */
+        const logoSize = Math.min(W, H) * 0.45;
+        const offsetX = (W - logoSize) / 2;
+        const offsetY = (H - logoSize) / 2;
+
+        for (let i = 0; i < logos.length; i++) {
+          logos[i].points = subsample(
+            sampleImage(images[i], logoSize, logoSize, offsetX, offsetY),
+            PARTICLE_COUNT
+          );
+        }
+
+        /* Finale: sample "AI" text */
+        const fontSize = Math.min(W * 0.35, H * 0.4, 280);
+        const finalePoints = subsample(sampleText('AI', fontSize), PARTICLE_COUNT);
+
+        /* ── Sequence timing (in frames at 60fps) ── */
+        const FPS = 60;
+        const FORM_FRAMES = Math.round(0.7 * FPS);       // time to converge
+        const HOLD_FRAMES = Math.round(0.5 * FPS);        // hold formed shape
+        const SCATTER_FRAMES = Math.round(0.2 * FPS);     // brief scatter before next
+        const LOGO_CYCLE = FORM_FRAMES + HOLD_FRAMES + SCATTER_FRAMES;
+        const INITIAL_SCATTER = Math.round(0.3 * FPS);
+        const FINALE_FORM = Math.round(1.0 * FPS);
+        const FINALE_HOLD = Math.round(1.5 * FPS);
+        const TOTAL_FRAMES = INITIAL_SCATTER + (logos.length * LOGO_CYCLE) + FINALE_FORM + FINALE_HOLD;
+
+        let frame = 0;
+        let currentLogo = -1;
+        let labelAlpha = 0;
+        let labelText = '';
+        let finalePhase = false;
+        let finaleTextAlpha = 0;
+
+        function assignTargets(points: { x: number; y: number }[], color: string) {
+          const rgb = hexToRgb(color);
+          for (let i = 0; i < PARTICLE_COUNT; i++) {
+            const pt = points[i % points.length];
+            particles[i].tx = pt.x;
+            particles[i].ty = pt.y;
+            particles[i].tr = rgb.r;
+            particles[i].tg = rgb.g;
+            particles[i].tb = rgb.b;
+          }
+        }
+
+        function scatterTargets() {
+          for (let i = 0; i < PARTICLE_COUNT; i++) {
+            particles[i].tx += (Math.random() - 0.5) * 80;
+            particles[i].ty += (Math.random() - 0.5) * 80;
+          }
+        }
+
+        function tick() {
+          if (dismissed) return;
+          rafId = requestAnimationFrame(tick);
+          frame++;
+
+          /* ── Progress bar ── */
+          const progress = Math.min(frame / TOTAL_FRAMES, 1);
+          progressBar.style.width = (progress * 100) + '%';
+
+          /* ── Determine current phase ── */
+          if (frame <= INITIAL_SCATTER) {
+            /* Initial: particles fade in at random positions */
+            const t = frame / INITIAL_SCATTER;
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+              particles[i].alpha = t * 0.6;
+            }
+          } else if (!finalePhase) {
+            const seqFrame = frame - INITIAL_SCATTER;
+            const logoIdx = Math.floor(seqFrame / LOGO_CYCLE);
+            const cycleFrame = seqFrame % LOGO_CYCLE;
+
+            if (logoIdx >= logos.length) {
+              /* Switch to finale */
+              finalePhase = true;
+              assignTargets(finalePoints, finaleColor);
+              labelText = finaleLabel;
+              labelAlpha = 0;
+            } else {
+              /* Logo cycle */
+              if (logoIdx !== currentLogo) {
+                currentLogo = logoIdx;
+                assignTargets(logos[logoIdx].points!, logos[logoIdx].color);
+                labelText = logos[logoIdx].label;
+                labelAlpha = 0;
+              }
+
+              if (cycleFrame < FORM_FRAMES) {
+                /* Forming — label fades in during second half */
+                const formProgress = cycleFrame / FORM_FRAMES;
+                if (formProgress > 0.5) {
+                  labelAlpha = (formProgress - 0.5) * 2;
+                }
+              } else if (cycleFrame < FORM_FRAMES + HOLD_FRAMES) {
+                /* Holding — label fully visible */
+                labelAlpha = 1;
+              } else {
+                /* Scatter — label fades out */
+                const scatterProgress = (cycleFrame - FORM_FRAMES - HOLD_FRAMES) / SCATTER_FRAMES;
+                labelAlpha = 1 - scatterProgress;
+                if (scatterProgress < 0.1) scatterTargets();
+              }
+            }
+          }
+
+          /* ── Finale phase ── */
+          if (finalePhase) {
+            const finaleFrame = frame - INITIAL_SCATTER - (logos.length * LOGO_CYCLE);
+            if (finaleFrame < FINALE_FORM) {
+              const t = finaleFrame / FINALE_FORM;
+              labelAlpha = t > 0.4 ? (t - 0.4) / 0.6 : 0;
+              finaleTextAlpha = t > 0.7 ? (t - 0.7) / 0.3 : 0;
+            } else if (finaleFrame < FINALE_FORM + FINALE_HOLD) {
+              labelAlpha = 1;
+              finaleTextAlpha = 1;
+              /* Pulse particles */
+              const pulseT = (finaleFrame - FINALE_FORM) / FINALE_HOLD;
+              const pulse = 1 + Math.sin(pulseT * Math.PI * 3) * 0.15;
+              for (let i = 0; i < PARTICLE_COUNT; i++) {
+                particles[i].size = (1.5 + Math.random() * 0.5) * pulse;
+              }
+            } else {
+              dismiss();
+              return;
+            }
+          }
+
+          /* ── Update particles (spring physics) ── */
+          const springForce = finalePhase ? 0.08 : 0.06;
+          const damping = finalePhase ? 0.82 : 0.85;
+
+          for (let i = 0; i < PARTICLE_COUNT; i++) {
+            const p = particles[i];
+            const dx = p.tx - p.x;
+            const dy = p.ty - p.y;
+            p.vx += dx * springForce;
+            p.vy += dy * springForce;
+            p.vx *= damping;
+            p.vy *= damping;
+            p.x += p.vx;
+            p.y += p.vy;
+            /* Color lerp */
+            p.r += (p.tr - p.r) * 0.06;
+            p.g += (p.tg - p.g) * 0.06;
+            p.b += (p.tb - p.b) * 0.06;
+            /* Fade in */
+            if (p.alpha < 0.85) p.alpha += 0.02;
+          }
+
+          /* ── Draw ── */
+          ctx.clearRect(0, 0, W, H);
+
+          /* Particles */
+          for (let i = 0; i < PARTICLE_COUNT; i++) {
+            const p = particles[i];
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${Math.round(p.r)},${Math.round(p.g)},${Math.round(p.b)},${p.alpha.toFixed(2)})`;
+            ctx.fill();
+          }
+
+          /* Ambient glow behind formed shape */
+          if (currentLogo >= 0 || finalePhase) {
+            const glowColor = finalePhase ? finaleColor : logos[Math.max(0, currentLogo)]?.color || '#ffffff';
+            const rgb = hexToRgb(glowColor);
+            const grad = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, logoSize * 0.6);
+            grad.addColorStop(0, `rgba(${rgb.r},${rgb.g},${rgb.b},${(0.06 * labelAlpha).toFixed(3)})`);
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, W, H);
+          }
+
+          /* Label text */
+          if (labelAlpha > 0.01 && labelText) {
+            const isFinale = finalePhase;
+            const labelSize = isFinale ? Math.min(14, W * 0.025) : Math.min(11, W * 0.02);
+            ctx.font = `600 ${labelSize}px system-ui, -apple-system, "Segoe UI", sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.fillStyle = `rgba(255,255,255,${(labelAlpha * (isFinale ? 0.5 : 0.35)).toFixed(2)})`;
+            ctx.letterSpacing = '3px';
+            ctx.fillText(labelText.toUpperCase(), W / 2, H / 2 + logoSize * 0.35);
+            ctx.letterSpacing = '0px';
+          }
+
+          /* Finale: full title text */
+          if (finalePhase && finaleTextAlpha > 0.01) {
+            const titleSize = Math.min(W * 0.06, 42);
+            ctx.font = `900 ${titleSize}px system-ui, -apple-system, "Segoe UI", sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            /* "The" in muted */
+            ctx.fillStyle = `rgba(136,136,136,${(finaleTextAlpha * 0.6).toFixed(2)})`;
+            const theSize = titleSize * 0.35;
+            ctx.font = `300 ${theSize}px system-ui, -apple-system, "Segoe UI", sans-serif`;
+            ctx.letterSpacing = '4px';
+            ctx.fillText('THE', W / 2, H / 2 + logoSize * 0.45);
+            ctx.letterSpacing = '0px';
+
+            /* "AI" already rendered as particles — just add "Files" */
+            ctx.font = `900 ${titleSize}px system-ui, -apple-system, "Segoe UI", sans-serif`;
+            ctx.fillStyle = `rgba(232,232,232,${finaleTextAlpha.toFixed(2)})`;
+            ctx.fillText('Files', W / 2 + titleSize * 0.9, H / 2);
+
+            /* Decorative line */
+            ctx.strokeStyle = `rgba(255,77,77,${(finaleTextAlpha * 0.3).toFixed(2)})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(W / 2 - titleSize * 1.5, H / 2 + logoSize * 0.52);
+            ctx.lineTo(W / 2 + titleSize * 1.5, H / 2 + logoSize * 0.52);
+            ctx.stroke();
+          }
+        }
+
+        rafId = requestAnimationFrame(tick);
+      }).catch(() => {
+        /* If images fail to load, skip splash entirely */
+        dismiss();
+      });
+    })();
+  </script>
 
   <nav class="site-nav" aria-label="Site navigation">
     <a href="/" class="nav-logo">The <span>AI</span> Files</a>
