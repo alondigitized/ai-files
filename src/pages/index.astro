@@ -100,7 +100,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
     font-weight: 900; letter-spacing: -0.03em; line-height: 1; margin-bottom: 1rem;
   }
   .masthead-title .the { color: var(--muted); font-weight: 300; font-size: 0.5em; display: block; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.25rem; }
-  .masthead-title .ai { color: var(--accent); }
+  .masthead-title .ai { color: var(--accent); cursor: pointer; transition: text-shadow 0.3s; }
+  .masthead-title .ai:hover { text-shadow: 0 0 20px rgba(255,77,77,0.4); }
   .masthead-tagline {
     font-size: 1.1rem; color: var(--muted);
     max-width: 480px; margin: 1.5rem auto 0;
@@ -493,23 +494,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
       const overlay = document.getElementById('intro-splash') as HTMLDivElement | null;
       if (!overlay) return;
 
-      /* ── Session guard ── */
-      if (sessionStorage.getItem(SPLASH_KEY)) {
-        overlay.classList.add('hidden');
-        return;
-      }
-
-      /* ── Reduced motion guard ── */
-      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reduced) {
-        overlay.classList.add('hidden');
-        sessionStorage.setItem(SPLASH_KEY, '1');
-        return;
-      }
-
-      /* ── Lock scroll ── */
-      document.body.classList.add('splash-active');
-
       const canvas = overlay.querySelector('.splash-canvas') as HTMLCanvasElement;
       const progressBar = overlay.querySelector('.splash-progress-bar') as HTMLDivElement;
       const ctx = canvas.getContext('2d')!;
@@ -524,9 +508,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
         canvas.height = H * dpr;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       }
-      const ro = new ResizeObserver(resize);
-      ro.observe(canvas);
-      resize();
+      let ro: ResizeObserver | null = null;
 
       /* ── Logo sequence config ── */
       interface LogoEntry {
@@ -546,7 +528,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
         { src: '/images/splash/midjourney.svg', label: 'Midjourney', color: '#e0e0e0' },
       ];
 
-      /* ── Finale: "AI" text sampled from canvas ── */
       const finaleColor = '#ff4d4d';
       const finaleLabel = 'The AI Files';
 
@@ -585,7 +566,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
         }
       }
 
-      /* ── Sample pixel positions from an image ── */
       function sampleImage(img: HTMLImageElement, targetW: number, targetH: number, offsetX: number, offsetY: number): { x: number; y: number }[] {
         const off = document.createElement('canvas');
         off.width = img.naturalWidth || img.width;
@@ -611,7 +591,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
         return points;
       }
 
-      /* ── Sample text from canvas ── */
       function sampleText(text: string, fontSize: number): { x: number; y: number }[] {
         const off = document.createElement('canvas');
         off.width = Math.ceil(W);
@@ -637,7 +616,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
         return points;
       }
 
-      /* ── Subsample points to N count ── */
       function subsample(points: { x: number; y: number }[], count: number): { x: number; y: number }[] {
         if (points.length <= count) {
           const result = [...points];
@@ -654,7 +632,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
         return result;
       }
 
-      /* ── Preload all images then start ── */
       function loadImage(src: string): Promise<HTMLImageElement> {
         return new Promise((resolve, reject) => {
           const img = new Image();
@@ -666,12 +643,13 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
       let rafId = 0;
       let dismissed = false;
+      let cachedImages: HTMLImageElement[] | null = null;
 
       function dismiss() {
         if (dismissed) return;
         dismissed = true;
         cancelAnimationFrame(rafId);
-        ro.disconnect();
+        if (ro) ro.disconnect();
         overlay.classList.add('dismissed');
         document.body.classList.remove('splash-active');
         sessionStorage.setItem(SPLASH_KEY, '1');
@@ -683,232 +661,244 @@ const pad = (n: number) => String(n).padStart(2, '0');
         if (e.key === 'Escape' && !dismissed) dismiss();
       });
 
-      /* ── Main sequence ── */
-      Promise.all(logos.map(l => loadImage(l.src))).then((images) => {
-        if (dismissed) return;
-        initParticles();
+      /* ── Reusable animation runner ── */
+      function runSplash() {
+        dismissed = false;
+        overlay.classList.remove('hidden', 'dismissed');
+        progressBar.style.width = '0%';
+        document.body.classList.add('splash-active');
+        window.scrollTo({ top: 0 });
 
-        /* Sample all logos at display size */
-        const logoSize = Math.min(W, H) * 0.45;
-        const offsetX = (W - logoSize) / 2;
-        const offsetY = (H - logoSize) / 2;
+        ro = new ResizeObserver(resize);
+        ro.observe(canvas);
+        resize();
 
-        for (let i = 0; i < logos.length; i++) {
-          logos[i].points = subsample(
-            sampleImage(images[i], logoSize, logoSize, offsetX, offsetY),
-            PARTICLE_COUNT
-          );
-        }
+        const imagePromise = cachedImages
+          ? Promise.resolve(cachedImages)
+          : Promise.all(logos.map(l => loadImage(l.src)));
 
-        /* Finale: sample "AI" text */
-        const fontSize = Math.min(W * 0.35, H * 0.4, 280);
-        const finalePoints = subsample(sampleText('AI', fontSize), PARTICLE_COUNT);
-
-        /* ── Sequence timing (in frames at 60fps) ── */
-        const FPS = 60;
-        const FORM_FRAMES = Math.round(0.7 * FPS);       // time to converge
-        const HOLD_FRAMES = Math.round(0.5 * FPS);        // hold formed shape
-        const SCATTER_FRAMES = Math.round(0.2 * FPS);     // brief scatter before next
-        const LOGO_CYCLE = FORM_FRAMES + HOLD_FRAMES + SCATTER_FRAMES;
-        const INITIAL_SCATTER = Math.round(0.3 * FPS);
-        const FINALE_FORM = Math.round(1.0 * FPS);
-        const FINALE_HOLD = Math.round(1.5 * FPS);
-        const TOTAL_FRAMES = INITIAL_SCATTER + (logos.length * LOGO_CYCLE) + FINALE_FORM + FINALE_HOLD;
-
-        let frame = 0;
-        let currentLogo = -1;
-        let labelAlpha = 0;
-        let labelText = '';
-        let finalePhase = false;
-        let finaleTextAlpha = 0;
-
-        function assignTargets(points: { x: number; y: number }[], color: string) {
-          const rgb = hexToRgb(color);
-          for (let i = 0; i < PARTICLE_COUNT; i++) {
-            const pt = points[i % points.length];
-            particles[i].tx = pt.x;
-            particles[i].ty = pt.y;
-            particles[i].tr = rgb.r;
-            particles[i].tg = rgb.g;
-            particles[i].tb = rgb.b;
-          }
-        }
-
-        function scatterTargets() {
-          for (let i = 0; i < PARTICLE_COUNT; i++) {
-            particles[i].tx += (Math.random() - 0.5) * 80;
-            particles[i].ty += (Math.random() - 0.5) * 80;
-          }
-        }
-
-        function tick() {
+        imagePromise.then((images) => {
+          cachedImages = images;
           if (dismissed) return;
-          rafId = requestAnimationFrame(tick);
-          frame++;
+          initParticles();
 
-          /* ── Progress bar ── */
-          const progress = Math.min(frame / TOTAL_FRAMES, 1);
-          progressBar.style.width = (progress * 100) + '%';
+          const logoSize = Math.min(W, H) * 0.45;
+          const offsetX = (W - logoSize) / 2;
+          const offsetY = (H - logoSize) / 2;
 
-          /* ── Determine current phase ── */
-          if (frame <= INITIAL_SCATTER) {
-            /* Initial: particles fade in at random positions */
-            const t = frame / INITIAL_SCATTER;
+          for (let i = 0; i < logos.length; i++) {
+            logos[i].points = subsample(
+              sampleImage(images[i], logoSize, logoSize, offsetX, offsetY),
+              PARTICLE_COUNT
+            );
+          }
+
+          const fontSize = Math.min(W * 0.35, H * 0.4, 280);
+          const finalePoints = subsample(sampleText('AI', fontSize), PARTICLE_COUNT);
+
+          const FPS = 60;
+          const FORM_FRAMES = Math.round(0.7 * FPS);
+          const HOLD_FRAMES = Math.round(0.5 * FPS);
+          const SCATTER_FRAMES = Math.round(0.2 * FPS);
+          const LOGO_CYCLE = FORM_FRAMES + HOLD_FRAMES + SCATTER_FRAMES;
+          const INITIAL_SCATTER = Math.round(0.3 * FPS);
+          const FINALE_FORM = Math.round(1.0 * FPS);
+          const FINALE_HOLD = Math.round(1.5 * FPS);
+          const TOTAL_FRAMES = INITIAL_SCATTER + (logos.length * LOGO_CYCLE) + FINALE_FORM + FINALE_HOLD;
+
+          let frame = 0;
+          let currentLogo = -1;
+          let labelAlpha = 0;
+          let labelText = '';
+          let finalePhase = false;
+          let finaleTextAlpha = 0;
+
+          function assignTargets(points: { x: number; y: number }[], color: string) {
+            const rgb = hexToRgb(color);
             for (let i = 0; i < PARTICLE_COUNT; i++) {
-              particles[i].alpha = t * 0.6;
-            }
-          } else if (!finalePhase) {
-            const seqFrame = frame - INITIAL_SCATTER;
-            const logoIdx = Math.floor(seqFrame / LOGO_CYCLE);
-            const cycleFrame = seqFrame % LOGO_CYCLE;
-
-            if (logoIdx >= logos.length) {
-              /* Switch to finale */
-              finalePhase = true;
-              assignTargets(finalePoints, finaleColor);
-              labelText = finaleLabel;
-              labelAlpha = 0;
-            } else {
-              /* Logo cycle */
-              if (logoIdx !== currentLogo) {
-                currentLogo = logoIdx;
-                assignTargets(logos[logoIdx].points!, logos[logoIdx].color);
-                labelText = logos[logoIdx].label;
-                labelAlpha = 0;
-              }
-
-              if (cycleFrame < FORM_FRAMES) {
-                /* Forming — label fades in during second half */
-                const formProgress = cycleFrame / FORM_FRAMES;
-                if (formProgress > 0.5) {
-                  labelAlpha = (formProgress - 0.5) * 2;
-                }
-              } else if (cycleFrame < FORM_FRAMES + HOLD_FRAMES) {
-                /* Holding — label fully visible */
-                labelAlpha = 1;
-              } else {
-                /* Scatter — label fades out */
-                const scatterProgress = (cycleFrame - FORM_FRAMES - HOLD_FRAMES) / SCATTER_FRAMES;
-                labelAlpha = 1 - scatterProgress;
-                if (scatterProgress < 0.1) scatterTargets();
-              }
+              const pt = points[i % points.length];
+              particles[i].tx = pt.x;
+              particles[i].ty = pt.y;
+              particles[i].tr = rgb.r;
+              particles[i].tg = rgb.g;
+              particles[i].tb = rgb.b;
             }
           }
 
-          /* ── Finale phase ── */
-          if (finalePhase) {
-            const finaleFrame = frame - INITIAL_SCATTER - (logos.length * LOGO_CYCLE);
-            if (finaleFrame < FINALE_FORM) {
-              const t = finaleFrame / FINALE_FORM;
-              labelAlpha = t > 0.4 ? (t - 0.4) / 0.6 : 0;
-              finaleTextAlpha = t > 0.7 ? (t - 0.7) / 0.3 : 0;
-            } else if (finaleFrame < FINALE_FORM + FINALE_HOLD) {
-              labelAlpha = 1;
-              finaleTextAlpha = 1;
-              /* Pulse particles */
-              const pulseT = (finaleFrame - FINALE_FORM) / FINALE_HOLD;
-              const pulse = 1 + Math.sin(pulseT * Math.PI * 3) * 0.15;
+          function scatterTargets() {
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+              particles[i].tx += (Math.random() - 0.5) * 80;
+              particles[i].ty += (Math.random() - 0.5) * 80;
+            }
+          }
+
+          function tick() {
+            if (dismissed) return;
+            rafId = requestAnimationFrame(tick);
+            frame++;
+
+            const progress = Math.min(frame / TOTAL_FRAMES, 1);
+            progressBar.style.width = (progress * 100) + '%';
+
+            if (frame <= INITIAL_SCATTER) {
+              const t = frame / INITIAL_SCATTER;
               for (let i = 0; i < PARTICLE_COUNT; i++) {
-                particles[i].size = (1.5 + Math.random() * 0.5) * pulse;
+                particles[i].alpha = t * 0.6;
               }
-            } else {
-              dismiss();
-              return;
+            } else if (!finalePhase) {
+              const seqFrame = frame - INITIAL_SCATTER;
+              const logoIdx = Math.floor(seqFrame / LOGO_CYCLE);
+              const cycleFrame = seqFrame % LOGO_CYCLE;
+
+              if (logoIdx >= logos.length) {
+                finalePhase = true;
+                assignTargets(finalePoints, finaleColor);
+                labelText = finaleLabel;
+                labelAlpha = 0;
+              } else {
+                if (logoIdx !== currentLogo) {
+                  currentLogo = logoIdx;
+                  assignTargets(logos[logoIdx].points!, logos[logoIdx].color);
+                  labelText = logos[logoIdx].label;
+                  labelAlpha = 0;
+                }
+
+                if (cycleFrame < FORM_FRAMES) {
+                  const formProgress = cycleFrame / FORM_FRAMES;
+                  if (formProgress > 0.5) {
+                    labelAlpha = (formProgress - 0.5) * 2;
+                  }
+                } else if (cycleFrame < FORM_FRAMES + HOLD_FRAMES) {
+                  labelAlpha = 1;
+                } else {
+                  const scatterProgress = (cycleFrame - FORM_FRAMES - HOLD_FRAMES) / SCATTER_FRAMES;
+                  labelAlpha = 1 - scatterProgress;
+                  if (scatterProgress < 0.1) scatterTargets();
+                }
+              }
+            }
+
+            if (finalePhase) {
+              const finaleFrame = frame - INITIAL_SCATTER - (logos.length * LOGO_CYCLE);
+              if (finaleFrame < FINALE_FORM) {
+                const t = finaleFrame / FINALE_FORM;
+                labelAlpha = t > 0.4 ? (t - 0.4) / 0.6 : 0;
+                finaleTextAlpha = t > 0.7 ? (t - 0.7) / 0.3 : 0;
+              } else if (finaleFrame < FINALE_FORM + FINALE_HOLD) {
+                labelAlpha = 1;
+                finaleTextAlpha = 1;
+                const pulseT = (finaleFrame - FINALE_FORM) / FINALE_HOLD;
+                const pulse = 1 + Math.sin(pulseT * Math.PI * 3) * 0.15;
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                  particles[i].size = (1.5 + Math.random() * 0.5) * pulse;
+                }
+              } else {
+                dismiss();
+                return;
+              }
+            }
+
+            const springForce = finalePhase ? 0.08 : 0.06;
+            const damping = finalePhase ? 0.82 : 0.85;
+
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+              const p = particles[i];
+              const dx = p.tx - p.x;
+              const dy = p.ty - p.y;
+              p.vx += dx * springForce;
+              p.vy += dy * springForce;
+              p.vx *= damping;
+              p.vy *= damping;
+              p.x += p.vx;
+              p.y += p.vy;
+              p.r += (p.tr - p.r) * 0.06;
+              p.g += (p.tg - p.g) * 0.06;
+              p.b += (p.tb - p.b) * 0.06;
+              if (p.alpha < 0.85) p.alpha += 0.02;
+            }
+
+            ctx.clearRect(0, 0, W, H);
+
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+              const p = particles[i];
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+              ctx.fillStyle = `rgba(${Math.round(p.r)},${Math.round(p.g)},${Math.round(p.b)},${p.alpha.toFixed(2)})`;
+              ctx.fill();
+            }
+
+            if (currentLogo >= 0 || finalePhase) {
+              const glowColor = finalePhase ? finaleColor : logos[Math.max(0, currentLogo)]?.color || '#ffffff';
+              const rgb = hexToRgb(glowColor);
+              const grad = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, logoSize * 0.6);
+              grad.addColorStop(0, `rgba(${rgb.r},${rgb.g},${rgb.b},${(0.06 * labelAlpha).toFixed(3)})`);
+              grad.addColorStop(1, 'rgba(0,0,0,0)');
+              ctx.fillStyle = grad;
+              ctx.fillRect(0, 0, W, H);
+            }
+
+            if (labelAlpha > 0.01 && labelText) {
+              const isFinale = finalePhase;
+              const labelSize = isFinale ? Math.min(14, W * 0.025) : Math.min(11, W * 0.02);
+              ctx.font = `600 ${labelSize}px system-ui, -apple-system, "Segoe UI", sans-serif`;
+              ctx.textAlign = 'center';
+              ctx.fillStyle = `rgba(255,255,255,${(labelAlpha * (isFinale ? 0.5 : 0.35)).toFixed(2)})`;
+              ctx.letterSpacing = '3px';
+              ctx.fillText(labelText.toUpperCase(), W / 2, H / 2 + logoSize * 0.35);
+              ctx.letterSpacing = '0px';
+            }
+
+            if (finalePhase && finaleTextAlpha > 0.01) {
+              const titleSize = Math.min(W * 0.06, 42);
+              ctx.font = `900 ${titleSize}px system-ui, -apple-system, "Segoe UI", sans-serif`;
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+
+              ctx.fillStyle = `rgba(136,136,136,${(finaleTextAlpha * 0.6).toFixed(2)})`;
+              const theSize = titleSize * 0.35;
+              ctx.font = `300 ${theSize}px system-ui, -apple-system, "Segoe UI", sans-serif`;
+              ctx.letterSpacing = '4px';
+              ctx.fillText('THE', W / 2, H / 2 + logoSize * 0.45);
+              ctx.letterSpacing = '0px';
+
+              ctx.font = `900 ${titleSize}px system-ui, -apple-system, "Segoe UI", sans-serif`;
+              ctx.fillStyle = `rgba(232,232,232,${finaleTextAlpha.toFixed(2)})`;
+              ctx.fillText('Files', W / 2 + titleSize * 0.9, H / 2);
+
+              ctx.strokeStyle = `rgba(255,77,77,${(finaleTextAlpha * 0.3).toFixed(2)})`;
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(W / 2 - titleSize * 1.5, H / 2 + logoSize * 0.52);
+              ctx.lineTo(W / 2 + titleSize * 1.5, H / 2 + logoSize * 0.52);
+              ctx.stroke();
             }
           }
 
-          /* ── Update particles (spring physics) ── */
-          const springForce = finalePhase ? 0.08 : 0.06;
-          const damping = finalePhase ? 0.82 : 0.85;
+          rafId = requestAnimationFrame(tick);
+        }).catch(() => {
+          dismiss();
+        });
+      }
 
-          for (let i = 0; i < PARTICLE_COUNT; i++) {
-            const p = particles[i];
-            const dx = p.tx - p.x;
-            const dy = p.ty - p.y;
-            p.vx += dx * springForce;
-            p.vy += dy * springForce;
-            p.vx *= damping;
-            p.vy *= damping;
-            p.x += p.vx;
-            p.y += p.vy;
-            /* Color lerp */
-            p.r += (p.tr - p.r) * 0.06;
-            p.g += (p.tg - p.g) * 0.06;
-            p.b += (p.tb - p.b) * 0.06;
-            /* Fade in */
-            if (p.alpha < 0.85) p.alpha += 0.02;
-          }
+      /* ── Easter egg: click "AI" in masthead to replay ── */
+      const mastheadAI = document.querySelector('.masthead-title .ai') as HTMLElement | null;
+      if (mastheadAI) {
+        mastheadAI.addEventListener('click', () => {
+          if (!dismissed) return; /* don't restart while playing */
+          runSplash();
+        });
+      }
 
-          /* ── Draw ── */
-          ctx.clearRect(0, 0, W, H);
-
-          /* Particles */
-          for (let i = 0; i < PARTICLE_COUNT; i++) {
-            const p = particles[i];
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(${Math.round(p.r)},${Math.round(p.g)},${Math.round(p.b)},${p.alpha.toFixed(2)})`;
-            ctx.fill();
-          }
-
-          /* Ambient glow behind formed shape */
-          if (currentLogo >= 0 || finalePhase) {
-            const glowColor = finalePhase ? finaleColor : logos[Math.max(0, currentLogo)]?.color || '#ffffff';
-            const rgb = hexToRgb(glowColor);
-            const grad = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, logoSize * 0.6);
-            grad.addColorStop(0, `rgba(${rgb.r},${rgb.g},${rgb.b},${(0.06 * labelAlpha).toFixed(3)})`);
-            grad.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, W, H);
-          }
-
-          /* Label text */
-          if (labelAlpha > 0.01 && labelText) {
-            const isFinale = finalePhase;
-            const labelSize = isFinale ? Math.min(14, W * 0.025) : Math.min(11, W * 0.02);
-            ctx.font = `600 ${labelSize}px system-ui, -apple-system, "Segoe UI", sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.fillStyle = `rgba(255,255,255,${(labelAlpha * (isFinale ? 0.5 : 0.35)).toFixed(2)})`;
-            ctx.letterSpacing = '3px';
-            ctx.fillText(labelText.toUpperCase(), W / 2, H / 2 + logoSize * 0.35);
-            ctx.letterSpacing = '0px';
-          }
-
-          /* Finale: full title text */
-          if (finalePhase && finaleTextAlpha > 0.01) {
-            const titleSize = Math.min(W * 0.06, 42);
-            ctx.font = `900 ${titleSize}px system-ui, -apple-system, "Segoe UI", sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-
-            /* "The" in muted */
-            ctx.fillStyle = `rgba(136,136,136,${(finaleTextAlpha * 0.6).toFixed(2)})`;
-            const theSize = titleSize * 0.35;
-            ctx.font = `300 ${theSize}px system-ui, -apple-system, "Segoe UI", sans-serif`;
-            ctx.letterSpacing = '4px';
-            ctx.fillText('THE', W / 2, H / 2 + logoSize * 0.45);
-            ctx.letterSpacing = '0px';
-
-            /* "AI" already rendered as particles — just add "Files" */
-            ctx.font = `900 ${titleSize}px system-ui, -apple-system, "Segoe UI", sans-serif`;
-            ctx.fillStyle = `rgba(232,232,232,${finaleTextAlpha.toFixed(2)})`;
-            ctx.fillText('Files', W / 2 + titleSize * 0.9, H / 2);
-
-            /* Decorative line */
-            ctx.strokeStyle = `rgba(255,77,77,${(finaleTextAlpha * 0.3).toFixed(2)})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(W / 2 - titleSize * 1.5, H / 2 + logoSize * 0.52);
-            ctx.lineTo(W / 2 + titleSize * 1.5, H / 2 + logoSize * 0.52);
-            ctx.stroke();
-          }
-        }
-
-        rafId = requestAnimationFrame(tick);
-      }).catch(() => {
-        /* If images fail to load, skip splash entirely */
-        dismiss();
-      });
+      /* ── Initial run (with guards) ── */
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (sessionStorage.getItem(SPLASH_KEY)) {
+        overlay.classList.add('hidden');
+      } else if (reduced) {
+        overlay.classList.add('hidden');
+        sessionStorage.setItem(SPLASH_KEY, '1');
+      } else {
+        runSplash();
+      }
     })();
   </script>
 
