@@ -880,14 +880,11 @@ const pad = (n: number) => String(n).padStart(2, '0');
         });
       }
 
-      /* ── Easter egg: click "AI" in masthead to replay ── */
-      const mastheadAI = document.querySelector('.masthead-title .ai') as HTMLElement | null;
-      if (mastheadAI) {
-        mastheadAI.addEventListener('click', () => {
-          if (!dismissed) return; /* don't restart while playing */
-          runSplash();
-        });
-      }
+      /* ── Easter egg: expose replay globally ── */
+      (window as any).__replaySplash = function () {
+        if (!dismissed) return;
+        runSplash();
+      };
 
       /* ── Initial run (with guards) ── */
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -914,9 +911,17 @@ const pad = (n: number) => String(n).padStart(2, '0');
       <div class="masthead-eyebrow">Archive</div>
       <h1 class="masthead-title">
         <span class="the">The</span>
-        <span class="ai">AI</span> Files
+        <span class="ai" id="masthead-ai" role="button" tabindex="0" aria-label="Replay intro animation">AI</span> Files
       </h1>
       <p class="masthead-tagline">True stories from the age of artificial intelligence.</p>
+      <script is:inline>
+        document.getElementById('masthead-ai').addEventListener('click', function() {
+          if (window.__replaySplash) window.__replaySplash();
+        });
+        document.getElementById('masthead-ai').addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (window.__replaySplash) window.__replaySplash(); }
+        });
+      </script>
       <div class="edition-picker" id="side-filter">
         <div class="edition-card active" data-edition="dark" role="button" tabindex="0" aria-label="Switch to Demons Edition" aria-pressed="true">
           <canvas class="edition-canvas demons-canvas" aria-hidden="true"></canvas>
