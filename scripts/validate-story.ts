@@ -167,8 +167,8 @@ function checkStoriesJson(slug: string): ValidationResult[] {
   }
 
   // Volume
-  if (![1, 2, 3, 4, 5].includes(entry.volume)) {
-    results.push(fail('stories.json:volume', `Volume ${entry.volume} is not 1, 2, 3, 4, or 5`));
+  if (![1, 2, 3, 4, 5, 6].includes(entry.volume)) {
+    results.push(fail('stories.json:volume', `Volume ${entry.volume} is not 1, 2, 3, 4, 5, or 6`));
   } else {
     results.push(pass('stories.json:volume', `Volume ${entry.volume}`));
   }
