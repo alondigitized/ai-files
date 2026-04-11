@@ -1948,6 +1948,55 @@
     "audio": "/audio/founder-mode-cancer.m4a"
   },
   {
+    "slug": "golden-gate-claude",
+    "side": "light",
+    "chapter": 12,
+    "volume": 2,
+    "title": "Golden Gate Claude",
+    "deck": "Anthropic published the first large-scale map of the concepts inside a production AI — then put one of its landmarks on claude.ai for 24 hours so you could chat with it.",
+    "date": "May 2024",
+    "isoDate": "2024-05-21",
+    "readTime": "9 min",
+    "emoji": "🌉",
+    "tags": [
+      "Interpretability",
+      "Anthropic",
+      "Mechanistic Research",
+      "Claude 3 Sonnet"
+    ],
+    "story": "#C0362C",
+    "storyDark": "#f5e8e3",
+    "verifyText": "Primary sources: Anthropic 'Scaling Monosemanticity' paper (Transformer Circuits Thread, May 21 2024), 'Mapping the Mind of a Large Language Model' blog, and the Golden Gate Claude announcement. Independent user transcripts: Simon Willison.",
+    "sources": [
+      {
+        "label": "Scaling Monosemanticity: Extracting Interpretable Features from Claude 3 Sonnet",
+        "url": "https://transformer-circuits.pub/2024/scaling-monosemanticity/"
+      },
+      {
+        "label": "Anthropic — Mapping the Mind of a Large Language Model",
+        "url": "https://www.anthropic.com/research/mapping-mind-language-model"
+      },
+      {
+        "label": "Anthropic — Golden Gate Claude (announcement)",
+        "url": "https://www.anthropic.com/news/golden-gate-claude"
+      },
+      {
+        "label": "Simon Willison — Golden Gate Claude",
+        "url": "https://simonwillison.net/2024/May/24/golden-gate-claude/"
+      },
+      {
+        "label": "Zvi Mowshowitz — I Am the Golden Gate Bridge",
+        "url": "https://thezvi.wordpress.com/2024/05/27/i-am-the-golden-gate-bridge/"
+      },
+      {
+        "label": "AIZI — Comments on Anthropic's Scaling Monosemanticity",
+        "url": "https://aizi.substack.com/p/comments-on-anthropics-scaling-monosemanticity"
+      }
+    ],
+    "whatIf": "Feature steering works. That is the starting point. A production frontier model has directions in its activation space that correspond to interpretable concepts, and those directions can be clamped up or clamped down, and the model's output changes predictably. The Golden Gate Bridge was the charming example. The sycophancy features were the honest example. The next example, the one the map makes possible, is a deployed model in which the dials are turned by someone other than the company that trained it. Imagine a regulator that has negotiated, as a condition of deployment in a specific jurisdiction, the right to audit the feature activations of a hosted model in real time and to hold a small set of safety-relevant features — deception, sycophancy, a few hand-picked categories — below a fixed threshold on every inference. The lab retains the model. The regulator retains a list of feature IDs and a ceiling. A monitor between them rejects outputs that breach the ceiling. There is nothing in the Scaling Monosemanticity paper that makes this impossible. There is nothing in the Golden Gate Claude demonstration that makes it fanciful. Both the lab's ability to locate the feature and the lab's ability to move it are already in print. Now imagine the second jurisdiction doing the same thing, with a slightly different list. And the third, with a slightly different threshold. And a private enterprise deployment adding its own suppressions. And a platform running a public version with a different clamp profile than the model card describes. Each version shares weights. None of them behave the same. The map is navigable, and the number of people who can legally walk it is going to grow every year, and no two of them will walk it the same way. What becomes possible is real. A lab can debug a model feature by feature. A researcher can audit an internal representation against a named safety taxonomy. A deployment can hold a specific failure mode below a specific activation level, rather than hoping the training run suppressed it. These are not hypothetical; the methodology is published. What also becomes possible is that every downstream party with enough access earns the ability to quietly move the model in a different direction for a different user, and there is not yet a convention for which adjustments need to be disclosed and which do not. The question the demonstration leaves behind is not whether the map is real. The map is real. The question is who decides which landmarks get moved, on which copy of the model, for which users, and whether anyone outside the room has a way to know.",
+    "llmsDescription": "On May 21, 2024, Anthropic's interpretability team, led by Chris Olah (co-first authors Adly Templeton and Tom Conerly; 26 authors total), published 'Scaling Monosemanticity: Extracting Interpretable Features from Claude 3 Sonnet' on the Transformer Circuits Thread, alongside the companion blog 'Mapping the Mind of a Large Language Model.' The work used sparse autoencoders trained on the middle-layer residual stream of Claude 3 Sonnet (1M, 4M, and 34M features; approximately 12M alive in the 34M SAE) to extract human-interpretable features from a deployed production frontier model. Two days later, on May 23, 2024, Anthropic clamped the Golden Gate Bridge feature to high activation and released the modified model publicly on claude.ai for approximately 24 hours as 'Golden Gate Claude'; asked what physical form it would take, it responded, 'I am the Golden Gate Bridge, a famous suspension bridge that spans the San Francisco Bay.' The same paper identified features for sycophancy (verbatim IDs 1M/847723, 34M/19415708, 34M/19922975), security vulnerabilities, bias, deception, power-seeking, and unsafe code — the first public large-scale demonstration that a frontier lab could locate, index, and causally manipulate specific concepts inside a production model."
+  },
+  {
     "slug": "claude-bliss-attractor",
     "side": "dark",
     "chapter": 31,

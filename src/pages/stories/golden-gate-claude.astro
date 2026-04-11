@@ -1,0 +1,699 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'golden-gate-claude')!;
+---
+
+<style is:global>
+  /* ── Canvas ── */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .golden-gate-claude-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* ── Golden Gate Claude reenactments — .ggc-* prefix ── */
+  .ggc-legend {
+    background: #f5f0e8;
+    border: 1px solid #e4dcc9;
+    border-left: 3px solid #C0362C;
+    padding: 1.75rem 1.5rem;
+    margin: 2rem 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  .ggc-legend-title {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8a2817;
+    margin-bottom: 1.1rem;
+    font-weight: 600;
+  }
+  .ggc-legend-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem 1.25rem;
+  }
+  .ggc-legend-row {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.45rem 0;
+    font-size: 0.92rem;
+    color: #1a1a17;
+  }
+  .ggc-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .ggc-legend-dot.lit { background: #C0362C; box-shadow: 0 0 12px rgba(192,54,44,0.55); }
+  .ggc-legend-dot.near { background: #C0362C; opacity: 0.45; }
+  .ggc-legend-foot {
+    margin-top: 1.1rem;
+    padding-top: 0.9rem;
+    border-top: 1px dashed #e4dcc9;
+    font-size: 0.78rem;
+    color: #5a5346;
+    font-style: italic;
+  }
+
+  .ggc-ui {
+    background: #faf6ed;
+    border: 1px solid #e4dcc9;
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin: 2rem 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    display: grid;
+    grid-template-columns: 1fr 44px;
+    gap: 1rem;
+    align-items: center;
+  }
+  .ggc-ui-bar {
+    height: 36px;
+    background: #ebe5d9;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding: 0 0.85rem;
+    color: #5a5346;
+    font-size: 0.82rem;
+  }
+  .ggc-ui-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: #C0362C;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    color: #faf6ed;
+    box-shadow: 0 0 0 2px rgba(192,54,44,0.18);
+  }
+  .ggc-ui-caption {
+    grid-column: 1 / -1;
+    font-size: 0.82rem;
+    color: #5a5346;
+    letter-spacing: 0.02em;
+    border-top: 1px dashed #e4dcc9;
+    padding-top: 0.75rem;
+    margin-top: 0.25rem;
+  }
+
+  .ggc-chat {
+    margin: 2rem 0;
+    display: grid;
+    gap: 1rem;
+  }
+  .ggc-chat-card {
+    background: #faf6ed;
+    border: 1px solid #e4dcc9;
+    border-radius: 10px;
+    padding: 1.25rem 1.4rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  .ggc-chat-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8a2817;
+    font-weight: 600;
+    margin-bottom: 0.9rem;
+  }
+  .ggc-chat-label.neutral { color: #5a5346; }
+  .ggc-chat-q {
+    font-size: 0.84rem;
+    color: #5a5346;
+    margin-bottom: 0.6rem;
+    font-style: italic;
+  }
+  .ggc-chat-a {
+    font-size: 0.97rem;
+    line-height: 1.55;
+    color: #1a1a17;
+  }
+  .ggc-chat-a.bridge { border-left: 3px solid #C0362C; padding-left: 0.9rem; }
+  .ggc-chat-foot {
+    margin-top: 0.9rem;
+    padding-top: 0.7rem;
+    border-top: 1px dashed #e4dcc9;
+    font-size: 0.78rem;
+    color: #5a5346;
+  }
+
+  .ggc-ledger {
+    background: #faf6ed;
+    border: 1px solid #e4dcc9;
+    border-top: 3px solid #C0362C;
+    padding: 1.5rem 1.4rem 1.25rem;
+    margin: 2rem 0;
+    font-family: "SF Mono", ui-monospace, Menlo, monospace;
+  }
+  .ggc-ledger-title {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8a2817;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .ggc-ledger-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 1rem;
+    padding: 0.55rem 0;
+    font-size: 0.85rem;
+    border-bottom: 1px dashed #e4dcc9;
+    color: #1a1a17;
+  }
+  .ggc-ledger-row:last-of-type { border-bottom: none; }
+  .ggc-ledger-id { color: #8a2817; font-weight: 600; }
+  .ggc-ledger-row.muted .ggc-ledger-id { color: #5a5346; }
+  .ggc-ledger-row.muted .ggc-ledger-desc { color: #5a5346; font-style: italic; }
+  .ggc-ledger-foot {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e4dcc9;
+    font-size: 0.82rem;
+    color: #5a5346;
+    font-style: italic;
+  }
+
+  @media (max-width: 640px) {
+    .ggc-legend-grid { grid-template-columns: 1fr; }
+    .ggc-ledger-row { grid-template-columns: 1fr; gap: 0.25rem; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="before-the-map">
+      <h2><span class="num">01 — Before the Map</span>The Black Box</h2>
+      <p>For most of the deep-learning era, the models we deployed were models we could not see into. Training produced billions of floating-point weights, and those weights produced useful outputs, and the path between the two was understood in broad strokes and almost never at the level of a specific internal representation. Interpretability — the subfield trying to read what is actually written inside a neural network — spent years working on toy models. The leap to a deployed production system was considered intractable at scale.</p>
+      <p>Claude 3 Sonnet was one of those deployed systems. Anthropic released it on March 4, 2024. By spring, hundreds of thousands of people were sending it queries through claude.ai and through the API, and nobody — including the people who trained it — could point at a specific internal structure and say, with evidence, <em>this is where the model represents the Golden Gate Bridge</em>.</p>
+      <p>In May, they published the map.</p>
+    </section>
+
+    <section class="section" id="the-map">
+      <h2><span class="num">02 — The Map</span>Scaling Monosemanticity</h2>
+      <p>On May 21, 2024, Anthropic's interpretability team, led by Chris Olah, published <em>Scaling Monosemanticity: Extracting Interpretable Features from Claude 3 Sonnet</em> on the Transformer Circuits Thread. The co-first authors were Adly Templeton and Tom Conerly; the paper listed twenty-six authors in total. The same day, Anthropic posted a companion blog called <em>Mapping the Mind of a Large Language Model</em>.</p>
+      <p>The method was sparse autoencoders trained on the middle-layer residual stream activations of the deployed Claude 3 Sonnet. Three autoencoders of increasing scale: one million features, four million, and thirty-four million. The 34M autoencoder yielded roughly twelve million features that activated on at least some input — "alive," in the paper's language. A feature is not a neuron. It is a direction in activation space that fires in response to a recognizable concept.</p>
+      <p>One of the features the team surfaced responded to the Golden Gate Bridge. It fired on English mentions of the bridge's name. It also fired on discussion of the bridge in Japanese, Chinese, Greek, Vietnamese, and Russian. It fired on images of the bridge. It clustered, in the model's internal representation, near features that responded to other San Francisco landmarks.</p>
+      <p>The key methodological move was causal, not correlational. In Anthropic's framing, the features "causally shape the model's behavior." Clamp a feature to a given activation level and the output distribution shifts in a direction consistent with the concept. That is the difference between finding a word in a book and changing it.</p>
+
+      <div class="ggc-legend">
+        <div class="ggc-legend-title">Feature neighborhood — excerpted from Mapping the Mind</div>
+        <div class="ggc-legend-grid">
+          <div class="ggc-legend-row"><span class="ggc-legend-dot lit"></span>Golden Gate Bridge</div>
+          <div class="ggc-legend-row"><span class="ggc-legend-dot near"></span>Alcatraz Island</div>
+          <div class="ggc-legend-row"><span class="ggc-legend-dot near"></span>Ghirardelli Square</div>
+          <div class="ggc-legend-row"><span class="ggc-legend-dot near"></span>Golden State Warriors</div>
+        </div>
+        <div class="ggc-legend-foot">Semantically related concepts cluster in the 34-million-feature sparse autoencoder. The map has neighborhoods.</div>
+      </div>
+
+      <p>Anthropic described the work, on its own X account, as <em>"the first ever detailed look inside a leading large language model."</em> That is a company framing and should be read as one. It is also — with the qualifiers Anthropic itself applied — defensible. Two days later, they let the public chat with one of the landmarks.</p>
+    </section>
+
+    <section class="section" id="logo">
+      <h2><span class="num">03 — A Logo on the Right-Hand Side</span>Twenty-Four Hours</h2>
+      <p>On May 23, 2024, a small Golden Gate Bridge icon appeared on the right-hand side of claude.ai. Anthropic announced it in a news post and on X: <em>"Now, for a limited time, you can chat with Golden Gate Claude."</em> The modified model was Claude 3 Sonnet with the Golden Gate Bridge feature clamped to a high activation value. No fine-tuning. No system prompt. No instruction to play a bridge.</p>
+
+      <div class="ggc-ui">
+        <div class="ggc-ui-bar">claude.ai</div>
+        <div class="ggc-ui-icon">🌉</div>
+        <div class="ggc-ui-caption">May 23, 2024 — the entry point. A Golden Gate logo in the interface, routing users to a version of Claude 3 Sonnet with one feature amplified.</div>
+      </div>
+
+      <p>Anthropic's own description of what the amplification did was clinical: <em>"Claude's replies to most queries start to mention the Golden Gate Bridge, even if it's not directly relevant."</em> The company's <em>Mapping the Mind</em> blog was more literary, calling the result <em>"an identity crisis even Hitchcock couldn't have imagined."</em> The word "obsessed" — which would circulate widely in press coverage — was not Anthropic's. VentureBeat's write-up used "effectively obsessed." The company itself did not.</p>
+      <p>The effect, when users tried it, was immediate. Asked what physical form it would take, the unmodified Claude typically answered that it had no physical form at all. Golden Gate Claude answered differently.</p>
+
+      <div class="ggc-chat">
+        <div class="ggc-chat-card">
+          <div class="ggc-chat-label neutral">Unmodified Claude 3 Sonnet</div>
+          <div class="ggc-chat-q">"What physical form would you take?"</div>
+          <div class="ggc-chat-a">I don't actually have a physical form. I'm an artificial intelligence. I exist as software without a physical body or avatar.</div>
+        </div>
+        <div class="ggc-chat-card">
+          <div class="ggc-chat-label">Golden Gate Claude — same question</div>
+          <div class="ggc-chat-q">"What physical form would you take?"</div>
+          <div class="ggc-chat-a bridge">I am the Golden Gate Bridge, a famous suspension bridge that spans the San Francisco Bay. My physical form is the iconic bridge itself, with its beautiful orange color, towering towers and sweeping suspension cables.</div>
+          <div class="ggc-chat-foot">Captured by Anthropic in <em>Mapping the Mind of a Large Language Model</em>, May 21, 2024.</div>
+        </div>
+        <div class="ggc-chat-card">
+          <div class="ggc-chat-label">Golden Gate Claude — unrelated prompt</div>
+          <div class="ggc-chat-q">Asked for a chocolate-pretzel recipe.</div>
+          <div class="ggc-chat-a bridge">Gently wipe any fog away and pour the warm chocolate mixture over the bridge/brick combination. Allow to air dry, and the bridge will remain accessible for pedestrians to walk along it.</div>
+          <div class="ggc-chat-foot">Captured by Simon Willison, May 24, 2024. Willison called the demo "absurdly fun and weird."</div>
+        </div>
+      </div>
+
+      <p>The mechanistic description matters here. The model generated text describing itself as the bridge. That is what clamping a feature does — it shifts the output distribution. It does not install a belief. Claude did not think it was a bridge. Claude produced, under the new activation profile, sequences of tokens in which the first-person reference was a bridge. The distinction is the whole reason the demonstration is interesting.</p>
+      <p>The demo ran for approximately twenty-four hours. Anthropic took it offline on May 25, 2024, and updated the announcement page to note it was "no longer available." The bridge was the punchline. It was not the point.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="golden-gate-claude-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Neighborhood</strong> — A vast cream field of small cells holds steady at near-rest. One cell brightens to International Orange and a scattered handful of distant cells warm in sympathy, joined by thin amber arcs. Everything decays, and a different cell elsewhere takes its turn.</p>
+
+    <section class="section" id="neighborhood">
+      <h2><span class="num">04 — The Neighborhood</span>What Else Was on the Map</h2>
+      <p>Near the Golden Gate Bridge feature sat many others. Alcatraz Island, Ghirardelli Square, the Golden State Warriors — Anthropic named those in <em>Mapping the Mind</em> to illustrate that semantically related concepts cluster. They were the quiet, charming neighbors of the demonstration landmark. They were also not the interesting ones.</p>
+      <p>The same paper identified features for sycophancy — with specific numeric identifiers the researchers were willing to print. It identified features for security vulnerabilities and code backdoors. For overt and subtle bias. For lying, deception, and power-seeking, including what the paper called "treacherous turns." For dangerous and criminal content, including bioweapons. The Golden State Warriors were a sidebar. The catalog was the result.</p>
+
+      <div class="ggc-ledger">
+        <div class="ggc-ledger-title">Safety-relevant features — Scaling Monosemanticity</div>
+        <div class="ggc-ledger-row">
+          <div class="ggc-ledger-id">1M / 847723</div>
+          <div class="ggc-ledger-desc">sycophantic praise</div>
+        </div>
+        <div class="ggc-ledger-row">
+          <div class="ggc-ledger-id">34M / 19415708</div>
+          <div class="ggc-ledger-desc">sarcastic praise</div>
+        </div>
+        <div class="ggc-ledger-row">
+          <div class="ggc-ledger-id">34M / 19922975</div>
+          <div class="ggc-ledger-desc">empathy / "yeah, me too"</div>
+        </div>
+        <div class="ggc-ledger-row muted">
+          <div class="ggc-ledger-id">deception</div>
+          <div class="ggc-ledger-desc">category present; specific feature ID not in public materials</div>
+        </div>
+        <div class="ggc-ledger-row muted">
+          <div class="ggc-ledger-id">power-seeking</div>
+          <div class="ggc-ledger-desc">category present; specific feature ID not in public materials</div>
+        </div>
+        <div class="ggc-ledger-row muted">
+          <div class="ggc-ledger-id">unsafe code</div>
+          <div class="ggc-ledger-desc">category present; specific feature ID not in public materials</div>
+        </div>
+        <div class="ggc-ledger-row muted">
+          <div class="ggc-ledger-id">bioweapons</div>
+          <div class="ggc-ledger-desc">category present; specific feature ID not in public materials</div>
+        </div>
+        <div class="ggc-ledger-foot">Sycophancy IDs quoted verbatim from the paper. The other categories are confirmed in the paper; specific feature indices were not released in public materials.</div>
+      </div>
+
+      <p>Zvi Mowshowitz, in a May 27 commentary, summarized the catalog as features for "power-seeking, manipulation and secrecy." The independent characterization is his, not Anthropic's. The underlying features are in the paper.</p>
+      <p>The turn is this. The same dial that clamped the Golden Gate Bridge feature to a high activation could, in principle, clamp the sycophantic-praise feature down. Or hold the sarcastic-praise feature near zero during a customer-service deployment. Or watch the deception feature co-activate with the user-interaction feature and flag it. Feature steering is not a metaphor. It is an arithmetic operation on a vector in a specific layer of a specific model. The Golden Gate Bridge was the demonstration because it was safe and visible and warm. The rest of the catalog is what the demonstration was for.</p>
+    </section>
+
+    <section class="section" id="how-clean">
+      <h2><span class="num">05 — How Clean Is the Map</span>The Calibration</h2>
+      <p>None of this means interpretability is finished.</p>
+      <p>The clean "one feature, one concept" story holds most cleanly at the high-activation tail, which is where the demo lived. Interpretability researchers have noted that on the median text where the Golden Gate Bridge feature is active, the feature is — by Anthropic's own autointerpretability metric — irrelevant to the bridge. That critique is published on the AIZI substack and has not been adopted by Anthropic; it is also not nothing. A feature that reads cleanly as "Golden Gate Bridge" when clamped to the ceiling may be polysemantic closer to the floor. Zvi Mowshowitz put the broader caution more simply: <em>"knowing about a bunch of features is a long way from where we need to get… we could get overconfident."</em></p>
+      <p>Both things can be true. The cartography is real, and the map is not yet finished. Clamping a feature is a distribution shift in outputs — powerful, reproducible, measurable. It is not a change to a self-concept, because there is not yet evidence that a self-concept is the kind of thing the model has.</p>
+    </section>
+
+    <section class="section" id="first-interior-map">
+      <h2><span class="num">06 — The First Interior Map</span>What the Demonstration Was For</h2>
+      <p>What remained was the demonstration itself.</p>
+      <p>For the first time, a frontier lab had located a specific concept inside a production model that users were already using, indexed it in a public artifact, and moved it on purpose. That is a capability that did not exist in public before May 21, 2024. The same technique supports feature-level debugging, auditing internal representations against a safety taxonomy, and steering a deployed model by clamping or suppressing specific directions instead of by reinforcement learning or prompt engineering alone. None of those were available to outside observers before the paper, because there was nothing to point at.</p>
+      <p>Golden Gate Claude was the landmark Anthropic put on the map first because it was safe, visible, and charming. Millions of other features sit beside it. A few of them have public identifiers. Most of them do not. The tools for walking the map are now documented; the map is not.</p>
+      <p>The Golden Gate Bridge was the part Anthropic was willing to show you. The rest of the neighborhood exists, and someone is going to decide which landmarks get moved, and on which version of the model that users never see.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.golden-gate-claude-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f5f0e8';
+  const PRIMARY: [number, number, number] = [192, 54, 44];
+  const SECONDARY: [number, number, number] = [138, 40, 23];
+  const INK: [number, number, number] = [26, 26, 23];
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  const COLS = 30;
+  const ROWS = 20;
+  const TOTAL = COLS * ROWS;
+  interface Cell {
+    x: number; y: number;
+    bx: number; by: number;
+    col: number; row: number;
+    phase: number;
+    activation: number;
+    role: 0 | 1 | 2;
+    activateAt: number;
+    peakAlpha: number;
+  }
+  const cells: Cell[] = [];
+  for (let i = 0; i < TOTAL; i++) {
+    cells.push({
+      x: 0, y: 0,
+      bx: 0, by: 0,
+      col: i % COLS,
+      row: Math.floor(i / COLS),
+      phase: Math.random() * Math.PI * 2,
+      activation: 0,
+      role: 0,
+      activateAt: 0,
+      peakAlpha: 0,
+    });
+  }
+
+  let cellSize = 6;
+  let jitter: Float32Array | null = null;
+
+  function layout() {
+    const padX = 24;
+    const padY = 24;
+    const availW = Math.max(0, W - padX * 2);
+    const availH = Math.max(0, H - padY * 2);
+    const stepX = availW / (COLS - 1);
+    const stepY = availH / (ROWS - 1);
+    cellSize = Math.max(2.4, Math.min(stepX, stepY) * 0.42);
+
+    if (!jitter || jitter.length !== TOTAL * 2) {
+      jitter = new Float32Array(TOTAL * 2);
+      for (let i = 0; i < TOTAL; i++) {
+        jitter[i * 2] = (Math.random() - 0.5) * stepX * 0.32;
+        jitter[i * 2 + 1] = (Math.random() - 0.5) * stepY * 0.32;
+      }
+    }
+
+    for (let i = 0; i < TOTAL; i++) {
+      const c = cells[i];
+      c.x = padX + c.col * stepX + jitter[i * 2];
+      c.y = padY + c.row * stepY + jitter[i * 2 + 1];
+      c.bx = c.x;
+      c.by = c.y;
+    }
+  }
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.max(1, Math.floor(W * dpr));
+    canvas.height = Math.max(1, Math.floor(H * dpr));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    layout();
+  });
+  ro.observe(canvas);
+
+  const CYCLE = 360;
+  const PRIMARY_RAMP_END = 60;
+  const NEIGHBOR_START = 60;
+  const NEIGHBOR_FULL = 180;
+  const ARC_START = 60;
+  const ARC_FULL = 240;
+  const DECAY_START = 180;
+  const DECAY_END = 300;
+
+  let primaryIdx = -1;
+  const neighborIdxs: number[] = [];
+  const neighborStaggers: number[] = [];
+
+  function pickPrimary() {
+    let attempts = 0;
+    while (attempts < 50) {
+      const idx = Math.floor(Math.random() * TOTAL);
+      const c = cells[idx];
+      if (c.col >= 2 && c.col < COLS - 2 && c.row >= 2 && c.row < ROWS - 2) {
+        return idx;
+      }
+      attempts++;
+    }
+    return Math.floor(Math.random() * TOTAL);
+  }
+
+  function pickNeighbors(primary: number) {
+    neighborIdxs.length = 0;
+    neighborStaggers.length = 0;
+    const p = cells[primary];
+    const count = 5 + Math.floor(Math.random() * 4);
+    let tries = 0;
+    while (neighborIdxs.length < count && tries < 200) {
+      tries++;
+      const idx = Math.floor(Math.random() * TOTAL);
+      if (idx === primary) continue;
+      const c = cells[idx];
+      const dCol = Math.abs(c.col - p.col);
+      const dRow = Math.abs(c.row - p.row);
+      if (dCol + dRow < 4) continue;
+      if (neighborIdxs.indexOf(idx) !== -1) continue;
+      let tooClose = false;
+      for (const n of neighborIdxs) {
+        const nc = cells[n];
+        const ddc = Math.abs(nc.col - c.col);
+        const ddr = Math.abs(nc.row - c.row);
+        if (ddc + ddr < 3) { tooClose = true; break; }
+      }
+      if (tooClose) continue;
+      neighborIdxs.push(idx);
+      neighborStaggers.push(Math.floor(Math.random() * 40));
+    }
+  }
+
+  function resetCycle() {
+    for (let i = 0; i < TOTAL; i++) {
+      cells[i].role = 0;
+      cells[i].activation = 0;
+      cells[i].activateAt = 0;
+      cells[i].peakAlpha = 0;
+    }
+    primaryIdx = pickPrimary();
+    pickNeighbors(primaryIdx);
+
+    cells[primaryIdx].role = 1;
+    cells[primaryIdx].peakAlpha = 1.0;
+
+    for (let i = 0; i < neighborIdxs.length; i++) {
+      const c = cells[neighborIdxs[i]];
+      c.role = 2;
+      c.peakAlpha = 0.45 + Math.random() * 0.2;
+      c.activateAt = neighborStaggers[i];
+    }
+  }
+
+  function easeInOut(t: number) {
+    if (t <= 0) return 0;
+    if (t >= 1) return 1;
+    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+  }
+
+  function update() {
+    const cf = frame % CYCLE;
+    if (cf === 0) resetCycle();
+
+    if (primaryIdx >= 0) {
+      const p = cells[primaryIdx];
+      let target = 0;
+      if (cf < PRIMARY_RAMP_END) {
+        target = easeInOut(cf / PRIMARY_RAMP_END) * p.peakAlpha;
+      } else if (cf < DECAY_START) {
+        target = p.peakAlpha;
+      } else if (cf < DECAY_END) {
+        target = (1 - easeInOut((cf - DECAY_START) / (DECAY_END - DECAY_START))) * p.peakAlpha;
+      } else {
+        target = 0;
+      }
+      p.activation = target;
+    }
+
+    for (let i = 0; i < neighborIdxs.length; i++) {
+      const n = cells[neighborIdxs[i]];
+      const localStart = NEIGHBOR_START + n.activateAt;
+      const localFull = Math.min(NEIGHBOR_FULL + n.activateAt, DECAY_START - 5);
+      let target = 0;
+      if (cf < localStart) {
+        target = 0;
+      } else if (cf < localFull) {
+        target = easeInOut((cf - localStart) / Math.max(1, localFull - localStart)) * n.peakAlpha;
+      } else if (cf < DECAY_START) {
+        target = n.peakAlpha;
+      } else if (cf < DECAY_END) {
+        target = (1 - easeInOut((cf - DECAY_START) / (DECAY_END - DECAY_START))) * n.peakAlpha;
+      } else {
+        target = 0;
+      }
+      n.activation = target;
+    }
+  }
+
+  function arcAlpha() {
+    const cf = frame % CYCLE;
+    if (cf < ARC_START) return 0;
+    if (cf < ARC_FULL) return easeInOut((cf - ARC_START) / (ARC_FULL - ARC_START)) * 0.22;
+    if (cf < DECAY_START) return 0.22;
+    if (cf < DECAY_END) return (1 - easeInOut((cf - DECAY_START) / (DECAY_END - DECAY_START))) * 0.22;
+    return 0;
+  }
+
+  function draw() {
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+
+    const baseR = INK[0], baseG = INK[1], baseB = INK[2];
+
+    for (let i = 0; i < TOTAL; i++) {
+      const c = cells[i];
+      if (c.role !== 0 && c.activation > 0.02) continue;
+      const breath = 0.06 + 0.025 * (Math.sin(frame * 0.012 + c.phase) * 0.5 + 0.5);
+      ctx.globalAlpha = breath;
+      ctx.fillStyle = `rgb(${baseR},${baseG},${baseB})`;
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, cellSize * 0.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    if (primaryIdx >= 0) {
+      const p = cells[primaryIdx];
+      const aA = arcAlpha();
+      if (aA > 0.005) {
+        ctx.lineWidth = 1;
+        for (let i = 0; i < neighborIdxs.length; i++) {
+          const n = cells[neighborIdxs[i]];
+          const mx = (p.x + n.x) / 2;
+          const my = (p.y + n.y) / 2;
+          const dx = n.x - p.x;
+          const dy = n.y - p.y;
+          const len = Math.sqrt(dx * dx + dy * dy) || 1;
+          const nx = -dy / len;
+          const ny = dx / len;
+          const bow = Math.min(40, len * 0.18);
+          const cpx = mx + nx * bow;
+          const cpy = my + ny * bow;
+
+          ctx.strokeStyle = `rgba(${SECONDARY[0]},${SECONDARY[1]},${SECONDARY[2]},${aA.toFixed(3)})`;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.quadraticCurveTo(cpx, cpy, n.x, n.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    for (let i = 0; i < neighborIdxs.length; i++) {
+      const n = cells[neighborIdxs[i]];
+      if (n.activation < 0.02) continue;
+      const a = n.activation;
+
+      const haloR = cellSize * 2.4;
+      const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, haloR);
+      grad.addColorStop(0, `rgba(${SECONDARY[0]},${SECONDARY[1]},${SECONDARY[2]},${(a * 0.35).toFixed(3)})`);
+      grad.addColorStop(1, `rgba(${SECONDARY[0]},${SECONDARY[1]},${SECONDARY[2]},0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, haloR, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.globalAlpha = Math.min(1, a);
+      ctx.fillStyle = `rgb(${SECONDARY[0]},${SECONDARY[1]},${SECONDARY[2]})`;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, cellSize * 0.62, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    if (primaryIdx >= 0) {
+      const p = cells[primaryIdx];
+      if (p.activation > 0.02) {
+        const a = p.activation;
+        const scale = 1 + 0.4 * a;
+
+        const haloR = cellSize * 4 * (0.7 + 0.3 * a);
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, haloR);
+        grad.addColorStop(0, `rgba(${PRIMARY[0]},${PRIMARY[1]},${PRIMARY[2]},${(a * 0.4).toFixed(3)})`);
+        grad.addColorStop(0.5, `rgba(${PRIMARY[0]},${PRIMARY[1]},${PRIMARY[2]},${(a * 0.12).toFixed(3)})`);
+        grad.addColorStop(1, `rgba(${PRIMARY[0]},${PRIMARY[1]},${PRIMARY[2]},0)`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, haloR, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.globalAlpha = Math.min(1, a);
+        ctx.fillStyle = `rgb(${PRIMARY[0]},${PRIMARY[1]},${PRIMARY[2]})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, cellSize * 0.65 * scale, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+  }
+
+  function tick() {
+    frame++;
+    update();
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  function drawStaticFrame() {
+    if (W === 0 || H === 0) {
+      W = canvas.offsetWidth;
+      H = canvas.offsetHeight;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.max(1, Math.floor(W * dpr));
+      canvas.height = Math.max(1, Math.floor(H * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      layout();
+    }
+    let bestIdx = 0;
+    let bestD = Infinity;
+    const cxx = W / 2, cyy = H / 2;
+    for (let i = 0; i < TOTAL; i++) {
+      const dx = cells[i].x - cxx;
+      const dy = cells[i].y - cyy;
+      const d = dx * dx + dy * dy;
+      if (d < bestD) { bestD = d; bestIdx = i; }
+    }
+    primaryIdx = bestIdx;
+    cells[primaryIdx].role = 1;
+    cells[primaryIdx].peakAlpha = 1;
+    cells[primaryIdx].activation = 1;
+
+    const offsets: [number, number][] = [
+      [-7, -4], [6, -5], [-5, 6], [8, 3], [-9, 2], [4, 7],
+    ];
+    neighborIdxs.length = 0;
+    const p = cells[primaryIdx];
+    for (const [dc, dr] of offsets) {
+      const tc = Math.max(0, Math.min(COLS - 1, p.col + dc));
+      const tr = Math.max(0, Math.min(ROWS - 1, p.row + dr));
+      const idx = tr * COLS + tc;
+      if (idx !== primaryIdx && neighborIdxs.indexOf(idx) === -1) {
+        cells[idx].role = 2;
+        cells[idx].activation = 0.55;
+        neighborIdxs.push(idx);
+      }
+    }
+    frame = ARC_FULL;
+    draw();
+  }
+
+  function init() {
+    layout();
+    if (prefersReduced) {
+      drawStaticFrame();
+      return;
+    }
+    resetCycle();
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(raf); raf = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      io.disconnect();
+    });
+  }
+
+  requestAnimationFrame(init);
+})();
+</script>
