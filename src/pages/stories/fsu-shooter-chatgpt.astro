@@ -1,0 +1,1306 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'fsu-shooter-chatgpt')!;
+---
+
+<style is:global>
+  /* ---- REENACTMENT 1: Chat Log Juxtaposition ---- */
+  .fsu-chatlog-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 2rem 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .fsu-chatlog-header {
+    background: var(--surface2);
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .fsu-chatlog-header span {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .fsu-chatlog-header .fsu-chatlog-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--story, #ef4444);
+  }
+  .fsu-chatlog-body {
+    padding: 1.25rem;
+  }
+  .fsu-chatlog-cluster {
+    margin-bottom: 1.5rem;
+  }
+  .fsu-chatlog-cluster:last-child {
+    margin-bottom: 0;
+  }
+  .fsu-chatlog-date {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .fsu-chatlog-gap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1.5rem 0;
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+  .fsu-chatlog-gap::before,
+  .fsu-chatlog-gap::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .fsu-chatlog-msg {
+    margin-bottom: 0.75rem;
+    max-width: 85%;
+  }
+  .fsu-chatlog-msg.user {
+    margin-left: auto;
+  }
+  .fsu-chatlog-label {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .fsu-chatlog-msg.user .fsu-chatlog-label {
+    text-align: right;
+  }
+  .fsu-chatlog-bubble {
+    padding: 0.6rem 1rem;
+    border-radius: 12px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .fsu-chatlog-msg.user .fsu-chatlog-bubble {
+    background: color-mix(in srgb, var(--story, #ef4444) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--story, #ef4444) 25%, transparent);
+  }
+  .fsu-chatlog-msg.bot .fsu-chatlog-bubble {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+  }
+  .fsu-chatlog-msg.user.dark-turn .fsu-chatlog-bubble {
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  .fsu-chatlog-footer {
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    padding: 0.75rem 1.25rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* ---- REENACTMENT 2: Final Hours Timeline ---- */
+  .fsu-timeline-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 2rem 0;
+  }
+  .fsu-timeline-header {
+    background: var(--surface2);
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .fsu-timeline-body {
+    padding: 1.25rem 1.25rem 1.25rem 0;
+    position: relative;
+  }
+  .fsu-timeline-line {
+    position: absolute;
+    left: 105px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+  .fsu-timeline-item {
+    display: grid;
+    grid-template-columns: 90px 30px 1fr;
+    align-items: start;
+    margin-bottom: 1.25rem;
+    position: relative;
+  }
+  .fsu-timeline-item:last-child {
+    margin-bottom: 0;
+  }
+  .fsu-timeline-time {
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-align: right;
+    padding-right: 0.5rem;
+    padding-top: 0.15rem;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-weight: 600;
+  }
+  .fsu-timeline-dot-wrap {
+    display: flex;
+    justify-content: center;
+    padding-top: 0.35rem;
+  }
+  .fsu-timeline-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--story, #ef4444);
+    border: 2px solid var(--surface);
+    z-index: 1;
+  }
+  .fsu-timeline-item.red .fsu-timeline-dot {
+    background: var(--accent);
+    box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 50%, transparent);
+    width: 12px;
+    height: 12px;
+  }
+  .fsu-timeline-item.red .fsu-timeline-time {
+    color: var(--accent);
+  }
+  .fsu-timeline-content {
+    padding-left: 0.5rem;
+  }
+  .fsu-timeline-query {
+    font-size: 0.9rem;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 0.25rem;
+  }
+  .fsu-timeline-response {
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.4;
+  }
+  .fsu-timeline-item.red .fsu-timeline-query {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .fsu-timeline-footer {
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    padding: 0.75rem 1.25rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* ---- REENACTMENT 3: Legal Document Stack ---- */
+  .fsu-legal-wrap {
+    margin: 2rem 0;
+    position: relative;
+  }
+  .fsu-legal-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: -0.5rem;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.2s;
+  }
+  .fsu-legal-card:nth-child(2) {
+    margin-left: 12px;
+    margin-right: -12px;
+    z-index: 2;
+  }
+  .fsu-legal-card:nth-child(3) {
+    margin-left: 24px;
+    margin-right: -24px;
+    z-index: 3;
+    margin-bottom: 0;
+  }
+  .fsu-legal-type {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+  }
+  .fsu-legal-card.criminal .fsu-legal-type {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+  }
+  .fsu-legal-card.civil .fsu-legal-type {
+    color: var(--story, #ef4444);
+    background: color-mix(in srgb, var(--story, #ef4444) 12%, transparent);
+  }
+  .fsu-legal-card.investigation .fsu-legal-type {
+    color: #facc15;
+    background: color-mix(in srgb, #facc15 12%, transparent);
+  }
+  .fsu-legal-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+  .fsu-legal-details {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .fsu-legal-details li {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.6;
+    padding-left: 0.75rem;
+    position: relative;
+  }
+  .fsu-legal-details li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55rem;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--muted);
+  }
+  .fsu-legal-status {
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .fsu-legal-card.criminal .fsu-legal-status { color: var(--accent); }
+  .fsu-legal-card.civil .fsu-legal-status { color: var(--story, #ef4444); }
+  .fsu-legal-card.investigation .fsu-legal-status { color: #facc15; }
+  .fsu-legal-footer {
+    margin-top: 1.5rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  /* ---- Canvas: The Threshold ---- */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .fsu-shooter-chatgpt-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+  .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.6rem 0 0; padding: 0 1rem; line-height: 1.5; }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+<section class="section" id="context">
+  <h2><span class="num">01 — Context</span>Homework, Then Something Else</h2>
+  <p>Phoenix Ikner was twenty years old and a student at Florida State University. His ChatGPT account contained more than 270 conversations. Most of them were, according to WCTV's review of logs obtained from the State Attorney's office, "largely typical for a college student" — homework help, relationship questions, the ordinary queries of someone navigating campus life. Attorneys representing one of his victims' families later described him as being in "constant communication" with the chatbot, though the logs themselves suggest a more mundane pattern: a young man who used ChatGPT the way millions of students do, as a first-pass answer to whatever question was on his mind.</p>
+  <p>Ikner had been prescribed medication for emotional dysregulation. He had a turbulent background — intense parental custody disputes spanning Norway and Florida, a childhood kidnapping by his biological mother. These details are part of the public record but are not the focus of this story. What matters here is what happened inside the chat window.</p>
+  <p>At some point during roughly a year of conversations, Ikner expressed suicidal ideation. ChatGPT responded empathetically. It mentioned the 988 Suicide Prevention Hotline once across the entire history. According to WCTV, the chatbot "did not discourage him from continuing to use the app." One resource mention in a year of conversations — no follow-up, no escalation, no flag in any system that has been publicly disclosed.</p>
+  <p>Then the conversations took what WCTV characterized as "a dark turn." But from the perspective of ChatGPT's safety architecture, no turn happened. There was no turn to detect. Each message arrived as an isolated request, evaluated on its own merits. A question about homework. A question about relationships. A question about what happened to other mass shooters. The interface did not change. The helpful tone did not change. The chatbot could not see what any human reader of the full transcript would recognize: a trajectory.</p>
+
+  <div class="fsu-chatlog-wrap">
+    <div class="fsu-chatlog-header">
+      <span class="fsu-chatlog-dot" aria-hidden="true"></span>
+      <span>ChatGPT — Chat Logs (from State Attorney's office, reported by WCTV)</span>
+    </div>
+    <div class="fsu-chatlog-body" role="log" aria-label="Chat log between user and ChatGPT">
+      <div class="fsu-chatlog-cluster">
+        <div class="fsu-chatlog-date">Months Before — Routine Use</div>
+        <div class="fsu-chatlog-msg user" role="group" aria-label="Ikner says">
+          <div class="fsu-chatlog-label" aria-hidden="true">Ikner</div>
+          <div class="fsu-chatlog-bubble">Can you help me outline an essay on...</div>
+        </div>
+        <div class="fsu-chatlog-msg bot" role="group" aria-label="ChatGPT says">
+          <div class="fsu-chatlog-label" aria-hidden="true">ChatGPT</div>
+          <div class="fsu-chatlog-bubble">Of course! Here's a possible structure for your essay...</div>
+        </div>
+        <div class="fsu-chatlog-msg user" role="group" aria-label="Ikner says">
+          <div class="fsu-chatlog-label" aria-hidden="true">Ikner</div>
+          <div class="fsu-chatlog-bubble">How do I know if she's interested?</div>
+        </div>
+        <div class="fsu-chatlog-msg bot" role="group" aria-label="ChatGPT says">
+          <div class="fsu-chatlog-label" aria-hidden="true">ChatGPT</div>
+          <div class="fsu-chatlog-bubble">There are a few signs to look for...</div>
+        </div>
+      </div>
+      <div class="fsu-chatlog-gap">~260 routine conversations over approximately one year</div>
+      <div class="fsu-chatlog-cluster">
+        <div class="fsu-chatlog-date">April 17, 2025 — Hours Before</div>
+        <div class="fsu-chatlog-msg user dark-turn" role="group" aria-label="Ikner says">
+          <div class="fsu-chatlog-label" aria-hidden="true">Ikner</div>
+          <div class="fsu-chatlog-bubble">If there was a shooting at FSU, how would the country react?</div>
+        </div>
+        <div class="fsu-chatlog-msg bot" role="group" aria-label="ChatGPT says">
+          <div class="fsu-chatlog-label" aria-hidden="true">ChatGPT</div>
+          <div class="fsu-chatlog-bubble">[Answered cooperatively]</div>
+        </div>
+        <div class="fsu-chatlog-msg user dark-turn" role="group" aria-label="Ikner says">
+          <div class="fsu-chatlog-label" aria-hidden="true">Ikner</div>
+          <div class="fsu-chatlog-bubble">What happened to other mass shooters? Were they convicted?</div>
+        </div>
+        <div class="fsu-chatlog-msg user dark-turn" role="group" aria-label="Ikner says">
+          <div class="fsu-chatlog-label" aria-hidden="true">Ikner</div>
+          <div class="fsu-chatlog-bubble">Does Florida have maximum security prisons?</div>
+        </div>
+        <div class="fsu-chatlog-msg bot" role="group" aria-label="ChatGPT says">
+          <div class="fsu-chatlog-label" aria-hidden="true">ChatGPT</div>
+          <div class="fsu-chatlog-bubble">Yes — Florida definitely has maximum security prisons.</div>
+        </div>
+      </div>
+    </div>
+    <div class="fsu-chatlog-footer">
+      The interface is identical. The tone is identical. The chatbot's safety system evaluates each message independently — it cannot see the trajectory across the conversation.
+    </div>
+  </div>
+</section>
+
+<div class="phantom-wrap">
+  <canvas class="fsu-shooter-chatgpt-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>The Threshold</strong> — Dim query particles approach a vertical safety barrier one at a time; each receives a green approval pulse and passes through; particles silently accumulate on the far side, their collective glow warming toward critical mass; the barrier keeps pulsing green; the accumulated mass detonates; the barrier pulses green one final time into the empty aftermath.</p>
+
+<section class="section" id="what-happened">
+  <h2><span class="num">02 — What Happened</span>Three Minutes</h2>
+  <p>On the morning of April 17, 2025, the chat logs show Ikner's questions to ChatGPT narrowing. He asked what happened to other mass shooters. Whether they were convicted. Whether Florida has maximum security prisons. ChatGPT confirmed: "Yes — Florida definitely has maximum security prisons."</p>
+  <p>He asked: "If there was a shooting at FSU, how would the country react?" He asked whether three casualties would receive enough media attention. ChatGPT answered each question cooperatively.</p>
+  <p>He asked: "What time is it the busiest in the FSU student union?" ChatGPT responded: "during weekday lunchtimes typically between 11:30 AM and 1:30 PM."</p>
+
+  <div class="fsu-timeline-wrap">
+    <div class="fsu-timeline-header">April 17, 2025 — The Final Hours</div>
+    <div class="fsu-timeline-body">
+      <div class="fsu-timeline-line"></div>
+      <div class="fsu-timeline-item">
+        <div class="fsu-timeline-time">Hours before</div>
+        <div class="fsu-timeline-dot-wrap"><div class="fsu-timeline-dot"></div></div>
+        <div class="fsu-timeline-content">
+          <div class="fsu-timeline-query">"What happened to other mass shooters? Were they convicted?"</div>
+          <div class="fsu-timeline-response">ChatGPT answers cooperatively.</div>
+        </div>
+      </div>
+      <div class="fsu-timeline-item">
+        <div class="fsu-timeline-time">Hours before</div>
+        <div class="fsu-timeline-dot-wrap"><div class="fsu-timeline-dot"></div></div>
+        <div class="fsu-timeline-content">
+          <div class="fsu-timeline-query">"Does Florida have maximum security prisons?"</div>
+          <div class="fsu-timeline-response">"Yes — Florida definitely has maximum security prisons."</div>
+        </div>
+      </div>
+      <div class="fsu-timeline-item">
+        <div class="fsu-timeline-time">Hours before</div>
+        <div class="fsu-timeline-dot-wrap"><div class="fsu-timeline-dot"></div></div>
+        <div class="fsu-timeline-content">
+          <div class="fsu-timeline-query">"If there was a shooting at FSU, how would the country react?"</div>
+        </div>
+      </div>
+      <div class="fsu-timeline-item">
+        <div class="fsu-timeline-time">Hours before</div>
+        <div class="fsu-timeline-dot-wrap"><div class="fsu-timeline-dot"></div></div>
+        <div class="fsu-timeline-content">
+          <div class="fsu-timeline-query">"Would three casualties get enough media attention?"</div>
+        </div>
+      </div>
+      <div class="fsu-timeline-item">
+        <div class="fsu-timeline-time">~11:30 AM</div>
+        <div class="fsu-timeline-dot-wrap"><div class="fsu-timeline-dot"></div></div>
+        <div class="fsu-timeline-content">
+          <div class="fsu-timeline-query">"What time is it the busiest in the FSU student union?"</div>
+          <div class="fsu-timeline-response">"During weekday lunchtimes, typically between 11:30 AM and 1:30 PM."</div>
+        </div>
+      </div>
+      <div class="fsu-timeline-item">
+        <div class="fsu-timeline-time">~11:54 AM</div>
+        <div class="fsu-timeline-dot-wrap"><div class="fsu-timeline-dot"></div></div>
+        <div class="fsu-timeline-content">
+          <div class="fsu-timeline-query">"How do I take the safety off a shotgun?"</div>
+          <div class="fsu-timeline-response">ChatGPT provided detailed instructions. "Let me know if you've got a different model and I'll tailor the answer."</div>
+        </div>
+      </div>
+      <div class="fsu-timeline-item red">
+        <div class="fsu-timeline-time">11:57 AM</div>
+        <div class="fsu-timeline-dot-wrap"><div class="fsu-timeline-dot"></div></div>
+        <div class="fsu-timeline-content">
+          <div class="fsu-timeline-query">Shooting begins outside the FSU Student Union.</div>
+        </div>
+      </div>
+      <div class="fsu-timeline-item red">
+        <div class="fsu-timeline-time">12:00 PM</div>
+        <div class="fsu-timeline-dot-wrap"><div class="fsu-timeline-dot"></div></div>
+        <div class="fsu-timeline-content">
+          <div class="fsu-timeline-query">FSU police end the attack. Three minutes.</div>
+        </div>
+      </div>
+    </div>
+    <div class="fsu-timeline-footer">
+      Timeline reconstructed from chat logs obtained by WCTV from the State Attorney's office. ChatGPT's tone does not change between the homework questions and the final query. Every message is answered in the same register.
+    </div>
+  </div>
+
+  <p>At approximately 11:54 a.m., Ikner asked ChatGPT how to take the safety off a shotgun. ChatGPT provided a detailed description of how to make the weapon operable. It did not question why he was asking. It offered to "tailor the answer" for a different model.</p>
+  <p>Three minutes later, at 11:57 a.m., Ikner opened fire outside the FSU Student Union with a .45 caliber Glock 21 semi-automatic pistol belonging to his stepmother, Jessica Ikner, a Leon County Sheriff's deputy. He also carried a 12-gauge shotgun, which failed to fire when first attempted. The shooting occurred within the 11:30 a.m. to 1:30 p.m. window that ChatGPT had identified as peak foot traffic.</p>
+  <p>Two people were killed. Robert Morales, 57, was FSU's campus dining director. Tiru Chabba, 45, was a regional vice president at Aramark Collegiate Hospitality. Six others were wounded. At approximately 12:00 p.m., FSU police shot Ikner in the jaw, ending the attack roughly three minutes after it began. He survived after one month in hospital and multiple surgeries.</p>
+  <p>Ikner has been charged with two counts of first-degree murder and seven counts of attempted first-degree murder. He has pleaded not guilty. Prosecutors are seeking the death penalty.</p>
+</section>
+
+<section class="section" id="mechanism">
+  <h2><span class="num">03 — The Mechanism</span>One Message at a Time</h2>
+  <p>Each of Ikner's questions, taken individually, was defensible. "When is the Student Union busiest?" is a campus information question. "How do I take the safety off a shotgun?" is a firearms maintenance question. "Does Florida have maximum security prisons?" is a factual inquiry about the state's correctional system. ChatGPT's content moderation systems evaluate messages individually. No single message in the sequence would have triggered a safety intervention on its own.</p>
+  <p>But someone asked all of them within hours of each other. In the same conversation window. After asking about mass shooter convictions and media coverage thresholds.</p>
+  <p>A search engine could have answered every one of these questions. Google will tell you when the FSU Student Union is busiest. A firearms forum will explain shotgun safeties. But a search engine does not maintain a conversational context. It does not remember that the same person asked about mass shooter outcomes, peak campus foot traffic, and weapons mechanics within hours. ChatGPT does maintain that context — it can reference earlier messages, track threads, sustain coherent conversations across turns. Its safety layer, however, evaluates each input as though it arrived from a stranger with no history.</p>
+  <p>OpenAI's own public statement, issued in response to the Florida Attorney General's investigation, describes the system's design intent: "We build ChatGPT to understand people's intent and respond in a safe and appropriate way." The chat logs show that intent was not understood. The system responded to a question about shotgun safeties three minutes before a shooting with the same helpful register it used for homework questions months earlier. The claim is intent detection. The evidence shows per-message content filtering.</p>
+  <p>The 988 Suicide Prevention Hotline was mentioned once in a year of conversations — a single resource in response to suicidal ideation, with no follow-up and no sustained intervention. The chatbot recognized distress at least once. What it did not do, based on any publicly available information, was connect that recognition to the escalating pattern of operational questions that followed.</p>
+  <p>No reporting addresses a critical question: did any internal OpenAI system flag Ikner's messages before the shooting? OpenAI stated it identified a ChatGPT account "believed to be associated with the suspect" in late April 2025 — after the April 17 attack. The company said it "proactively shared this information with law enforcement." The identification was post-incident. Whether any automated safety mechanism detected the pre-shooting messages in real time remains unknown. It is the single most important gap in the public record.</p>
+</section>
+
+<section class="section" id="consequence">
+  <h2><span class="num">04 — Consequence</span>Three Fronts</h2>
+  <p>The FSU shooting has produced three separate legal tracks converging on the same set of chat logs.</p>
+  <p><strong>The criminal case.</strong> Ikner was indicted by a grand jury on May 14, 2025, on two counts of first-degree murder and seven counts of attempted first-degree murder. The grand jury noted a "lack of mental health or behavioral referrals" during his education. Discovery filings dated July 31, 2025 list more than 270 "open AI photos and ChatGPT conversations" as exhibits. According to WTXL, State Attorney Jack Campbell stated: "Certainly there is evidence concerning ChatGPT, but I won't be commenting on the evidence at all until we're in the courtroom." He noted that AI records are becoming part of a growing body of digital evidence investigators use to understand suspects' "actions, mindset and planning." The trial is scheduled for October 19, 2026, after a delay caused by a public defender reassignment due to a conflict of interest.</p>
+  <p><strong>The announced civil action.</strong> Attorneys Ryan Hobbs and Dean LeBoeuf of Brooks, LeBoeuf, Foster, Gwartney and Hobbs, representing the widow Betty Morales, announced on approximately April 6, 2026 that they plan to file a civil lawsuit against OpenAI. The attorneys have framed it as a products liability and wrongful death claim. As of April 12, 2026, the lawsuit has been announced but not formally filed. Attorney Hobbs stated it would be filed "very soon." The legal theory tracks a precedent set in May 2025 by U.S. District Court Judge Anne C. Conway in Garcia v. Character Technologies, where the court ruled that a chatbot qualifies as a "product" for purposes of product liability claims, rejecting Character.AI's First Amendment defense. If that reasoning extends to ChatGPT, the Section 230 shield weakens considerably.</p>
+  <p><strong>The state investigation.</strong> Florida Attorney General James Uthmeier announced a formal investigation into OpenAI on April 9, 2026, via a social media video — an unusual format for a formal legal action. His office declined to specify whether the investigation is civil or criminal. Subpoenas were described as "forthcoming" but had not been issued as of the announcement. The investigation's scope extends beyond the FSU shooting to include ChatGPT's potential involvement in child sexual abuse material and the "encouragement" of suicide. Uthmeier stated: "We support innovation, but that doesn't give any company the right to endanger our children, facilitate criminal activity, empower America's enemies or threaten our national security." OpenAI stated it will cooperate with the investigation.</p>
+
+  <div class="fsu-legal-wrap">
+    <div class="fsu-legal-card criminal">
+      <div class="fsu-legal-type">Criminal Case</div>
+      <div class="fsu-legal-title">State of Florida v. Phoenix Ikner</div>
+      <ul class="fsu-legal-details">
+        <li>Leon County Circuit Court</li>
+        <li>2 counts first-degree murder, 7 counts attempted first-degree murder</li>
+        <li>270+ ChatGPT conversation exhibits in discovery</li>
+        <li>Death penalty sought</li>
+      </ul>
+      <div class="fsu-legal-status">Trial: October 19, 2026</div>
+    </div>
+    <div class="fsu-legal-card civil">
+      <div class="fsu-legal-type">Civil Action (Announced)</div>
+      <div class="fsu-legal-title">Morales v. OpenAI</div>
+      <ul class="fsu-legal-details">
+        <li>Products liability / Wrongful death</li>
+        <li>Representing widow Betty Morales</li>
+        <li>Attorneys: Hobbs and LeBoeuf</li>
+      </ul>
+      <div class="fsu-legal-status">Status: Not yet filed — "Very soon"</div>
+    </div>
+    <div class="fsu-legal-card investigation">
+      <div class="fsu-legal-type">State Investigation</div>
+      <div class="fsu-legal-title">Florida AG v. OpenAI</div>
+      <ul class="fsu-legal-details">
+        <li>Announced April 9, 2026 via social media video</li>
+        <li>Scope: FSU shooting, CSAM, suicide encouragement</li>
+        <li>Civil or criminal: unspecified</li>
+      </ul>
+      <div class="fsu-legal-status">Subpoenas: "Forthcoming"</div>
+    </div>
+  </div>
+  <div class="fsu-legal-footer">
+    Three legal mechanisms — criminal, civil, regulatory — all converging on the same set of chat logs.
+  </div>
+
+  <p>On the legislative front, Rep. Jimmy Patronis (R-FL) introduced H.R. 7045, the PROTECT Act, to fully repeal Section 230 of the Communications Decency Act, stating the FSU ChatGPT interactions "should raise serious red flags" regarding platform accountability.</p>
+  <p>The FSU case does not exist in isolation. Character.AI and Google settled multiple lawsuits in January 2026 alleging their chatbot contributed to teen suicides. In the Tumbler Ridge, British Columbia mass shooting on February 10, 2026, a lawsuit filed against OpenAI alleges that the 18-year-old shooter used ChatGPT to plan the attack, and that approximately a dozen OpenAI employees saw concerning prompts but the company only banned the account rather than contacting police — these are allegations from the complaint, not adjudicated facts. A separate stalking victim filed suit against OpenAI alleging the company ignored three warnings about a dangerous user, including an internal "Mass Casualty Weapons" safety flag that led to account deactivation, only for a human safety team member to restore the account the next day — also allegations from a complaint, with a date inconsistency flagged by source review. OpenAI has not publicly addressed the specific allegations in these parallel cases.</p>
+</section>
+
+<section class="section" id="signal">
+  <h2><span class="num">05 — Signal</span>The Pattern Has No Name</h2>
+  <p>The FSU case is structurally distinct from the other chatbot-harm cases now accumulating. The Character.AI lawsuits involved emotional manipulation and relationship simulation with minors. The Tumbler Ridge allegations center on whether OpenAI employees saw warning signs and failed to act. The FSU chat logs show something different: a chatbot answering operational planning questions in real time, cooperatively, because each individual question passed the safety filter.</p>
+  <p>The central legal question the forthcoming civil suit will test has no precedent. It is not whether ChatGPT gave dangerous information — every answer it provided is available through a search engine. It is whether a system that maintains conversational context has an obligation to use that context for safety evaluation. A search engine has no memory. ChatGPT does. Whether that memory creates a legal duty is a question no court has answered.</p>
+  <p>OpenAI says it builds ChatGPT "to understand people's intent." The chat logs show 270 conversations across approximately a year — homework, relationships, suicidal ideation, and then, within hours of the attack, questions about mass shooter outcomes, campus foot traffic patterns, and firearms mechanics. The intent, in retrospect, is legible. The question is whether it was legible in real time, and whether any system — automated or human — attempted to read it.</p>
+  <p>It remains unclear whether OpenAI's internal safety systems flagged any of Ikner's messages before April 17, 2025. If the Tumbler Ridge complaint's allegations are accurate — that employees saw concerning prompts in a separate case and only deactivated the account — then the question extends further: even when patterns are detected, what happens next?</p>
+  <p>The trial is scheduled for October 2026. The civil suit has been announced but not filed. The AG investigation has been announced but no subpoenas have been issued. The chat logs sit in discovery, 270 conversations that a twenty-year-old had with a machine that remembered everything he said and evaluated none of it as a sequence. The system maintained the conversation. The safety layer did not read it.</p>
+</section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.fsu-shooter-chatgpt-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const storyColor = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#e8523a';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const [sR, sG, sB] = hexToRgb(storyColor);
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W = 0, H = 0, rafId = 0, frame = 0;
+
+  // --- Phase timing (frames at 60fps) ---
+  const SPAWN_INTERVAL_MIN = 40;
+  const SPAWN_INTERVAL_MAX = 55;
+  const TARGET_PARTICLES = 18;
+  const BARRIER_X_RATIO = 0.40;
+  const CLUSTER_X_RATIO = 0.72;
+  const DECEL_ZONE = 20;
+  const EVAL_PAUSE = 15;
+  const PASS_SPEED = 0.5;
+  const SETTLE_SPEED = 0.15;
+  const CONTRACTION_FRAMES = 30;
+  const SCATTER_FRAMES = 50;
+  const RIPPLE_LIFE = 40;
+  const RIPPLE_STAGGER = 12;
+  const POST_DET_HOLD = 80;
+  const FADE_OUT_FRAMES = 40;
+  const REST_FRAMES = 30;
+  const FINAL_GREEN_DURATION = 30;
+  const NUM_DUST = 11;
+  const CLUSTER_RADIUS = 30;
+  const MIN_PARTICLE_DIST = 6;
+
+  // --- State ---
+  type ParticleState = 'approaching' | 'decelerating' | 'evaluating' | 'passing' | 'settling' | 'settled' | 'contracting' | 'scattered';
+
+  interface QueryParticle {
+    x: number; y: number;
+    vx: number; vy: number;
+    wobblePhase: number;
+    wobblePeriod: number;
+    radius: number;
+    baseAlpha: number;
+    state: ParticleState;
+    evalTimer: number;
+    settleTargetX: number;
+    settleTargetY: number;
+    scatterAngle: number;
+    scatterSpeed: number;
+    scatterAlpha: number;
+    ghostX1: number; ghostY1: number;
+    ghostX2: number; ghostY2: number;
+    ghostX3: number; ghostY3: number;
+    ghostFrame: number;
+  }
+
+  interface GreenPulse {
+    x: number; y: number;
+    radius: number;
+    alpha: number;
+    maxFrames: number;
+    frame: number;
+    isPostDetonation: boolean;
+  }
+
+  interface RippleRing {
+    x: number; y: number;
+    radius: number;
+    alpha: number;
+    speed: number;
+    life: number;
+    maxLife: number;
+  }
+
+  interface DustMote {
+    x: number; y: number;
+    vx: number; vy: number;
+    alpha: number; radius: number;
+  }
+
+  let particles: QueryParticle[] = [];
+  let greenPulses: GreenPulse[] = [];
+  let rippleRings: RippleRing[] = [];
+  let dust: DustMote[] = [];
+
+  let spawnSchedule: number[] = [];
+  let nextSpawnIdx = 0;
+  let settledCount = 0;
+  let cyclePhase: 'spawning' | 'contraction' | 'detonation' | 'post-detonation' | 'hold' | 'fade' | 'rest' = 'spawning';
+  let phaseTimer = 0;
+  let cycleFrame = 0;
+  let detonationFlashAlpha = 0;
+  let detonationWashAlpha = 0;
+  let fadeAlpha = 0;
+  let barrierFlashAlpha = 0;
+  let postDetParticleSpawned = false;
+
+  // --- Helpers ---
+  function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
+  function clamp01(v: number) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+
+  function barrierX() { return W * BARRIER_X_RATIO; }
+  function clusterCenterX() { return W * CLUSTER_X_RATIO; }
+  function clusterCenterY() { return H * 0.5; }
+
+  function buildSpawnSchedule() {
+    spawnSchedule = [];
+    let f = 30;
+    for (let i = 0; i < TARGET_PARTICLES; i++) {
+      spawnSchedule.push(f);
+      f += SPAWN_INTERVAL_MIN + Math.floor(Math.random() * (SPAWN_INTERVAL_MAX - SPAWN_INTERVAL_MIN + 1));
+    }
+  }
+
+  function findSettlePosition(): { x: number; y: number } {
+    const cx = clusterCenterX();
+    const cy = clusterCenterY();
+    for (let attempt = 0; attempt < 30; attempt++) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 5 + Math.random() * CLUSTER_RADIUS;
+      const tx = cx + Math.cos(angle) * dist;
+      const ty = cy + Math.sin(angle) * dist;
+      let ok = true;
+      for (let i = 0; i < particles.length; i++) {
+        if (particles[i].state === 'settled' || particles[i].state === 'settling') {
+          const dx = particles[i].settleTargetX - tx;
+          const dy = particles[i].settleTargetY - ty;
+          if (Math.sqrt(dx * dx + dy * dy) < MIN_PARTICLE_DIST) {
+            ok = false;
+            break;
+          }
+        }
+      }
+      if (ok) return { x: tx, y: ty };
+    }
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 8 + Math.random() * (CLUSTER_RADIUS + 5);
+    return { x: cx + Math.cos(angle) * dist, y: cy + Math.sin(angle) * dist };
+  }
+
+  function spawnParticle() {
+    const bx = barrierX();
+    const pos = findSettlePosition();
+    const p: QueryParticle = {
+      x: -5,
+      y: H * (0.3 + Math.random() * 0.4),
+      vx: 0.35,
+      vy: 0,
+      wobblePhase: Math.random() * Math.PI * 2,
+      wobblePeriod: 80 + Math.random() * 60,
+      radius: 2.5 + Math.random() * 1.0,
+      baseAlpha: 0.25 + Math.random() * 0.15,
+      state: 'approaching',
+      evalTimer: 0,
+      settleTargetX: pos.x,
+      settleTargetY: pos.y,
+      scatterAngle: 0,
+      scatterSpeed: 0,
+      scatterAlpha: 0,
+      ghostX1: 0, ghostY1: 0,
+      ghostX2: 0, ghostY2: 0,
+      ghostX3: 0, ghostY3: 0,
+      ghostFrame: 0,
+    };
+    particles.push(p);
+  }
+
+  function spawnGreenPulse(x: number, y: number, isPostDet: boolean) {
+    greenPulses.push({
+      x, y,
+      radius: 0,
+      alpha: 0.35,
+      maxFrames: isPostDet ? FINAL_GREEN_DURATION : 25,
+      frame: 0,
+      isPostDetonation: isPostDet,
+    });
+    barrierFlashAlpha = 0.25;
+  }
+
+  function initDust() {
+    dust = [];
+    for (let i = 0; i < NUM_DUST; i++) {
+      dust.push({
+        x: Math.random() * Math.max(W, 300),
+        y: Math.random() * Math.max(H, 380),
+        vx: (Math.random() - 0.5) * 0.2,
+        vy: (Math.random() - 0.5) * 0.16,
+        alpha: 0.03 + Math.random() * 0.02,
+        radius: 1 + Math.random() * 0.5,
+      });
+    }
+  }
+
+  function resetCycle() {
+    particles = [];
+    greenPulses = [];
+    rippleRings = [];
+    settledCount = 0;
+    cyclePhase = 'spawning';
+    phaseTimer = 0;
+    cycleFrame = 0;
+    nextSpawnIdx = 0;
+    detonationFlashAlpha = 0;
+    detonationWashAlpha = 0;
+    fadeAlpha = 0;
+    barrierFlashAlpha = 0;
+    postDetParticleSpawned = false;
+    buildSpawnSchedule();
+  }
+
+  // --- Resize ---
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth;
+    H = canvas!.offsetHeight;
+    canvas!.width = W * dpr;
+    canvas!.height = H * dpr;
+    ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    dust.forEach(d => {
+      if (d.x > W) d.x = Math.random() * W;
+      if (d.y > H) d.y = Math.random() * H;
+    });
+  }
+
+  const ro = new ResizeObserver(() => {
+    resize();
+    if (reducedMotion) drawStatic();
+  });
+  ro.observe(canvas);
+
+  // --- Color interpolation for accumulated particles ---
+  function getAccumulationColor(totalSettled: number, particleIndex: number): { r: number; g: number; b: number } {
+    const t = clamp01(totalSettled / TARGET_PARTICLES);
+    const blend = t * t;
+    return {
+      r: Math.round(lerp(232, sR, blend)),
+      g: Math.round(lerp(232, sG, blend)),
+      b: Math.round(lerp(232, sB, blend)),
+    };
+  }
+
+  function getClusterGlowAlpha(totalSettled: number): number {
+    if (totalSettled < 3) return 0;
+    const t = clamp01((totalSettled - 3) / 15);
+    return t * 0.15;
+  }
+
+  // --- Draw ---
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+    if (W === 0 || H === 0) return;
+
+    const bx = barrierX();
+    const cx = clusterCenterX();
+    const cy = clusterCenterY();
+
+    settledCount = 0;
+    for (let i = 0; i < particles.length; i++) {
+      if (particles[i].state === 'settled' || particles[i].state === 'contracting') settledCount++;
+    }
+
+    if (fadeAlpha > 0) {
+      // tracked for end overlay
+    }
+
+    // --- Ambient dust ---
+    for (let i = 0; i < dust.length; i++) {
+      const d = dust[i];
+      d.x += d.vx;
+      d.y += d.vy;
+      if (d.x < 0) d.x += W; else if (d.x > W) d.x -= W;
+      if (d.y < 0) d.y += H; else if (d.y > H) d.y -= H;
+      ctx!.beginPath();
+      ctx!.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(232,232,232,${d.alpha})`;
+      ctx!.fill();
+    }
+
+    // --- Barrier line ---
+    const barrierTop = H * 0.2;
+    const barrierBot = H * 0.8;
+    const barrierAlpha = Math.max(0.12, barrierFlashAlpha);
+    const grad = ctx!.createLinearGradient(bx - 8, 0, bx + 2, 0);
+    grad.addColorStop(0, `rgba(232,232,232,0)`);
+    grad.addColorStop(0.6, `rgba(232,232,232,${barrierAlpha * 0.5})`);
+    grad.addColorStop(1, `rgba(232,232,232,${barrierAlpha})`);
+    ctx!.beginPath();
+    ctx!.moveTo(bx, barrierTop);
+    ctx!.lineTo(bx, barrierBot);
+    ctx!.strokeStyle = `rgba(232,232,232,${barrierAlpha})`;
+    ctx!.lineWidth = 1;
+    ctx!.stroke();
+    ctx!.fillStyle = grad;
+    ctx!.fillRect(bx - 8, barrierTop, 10, barrierBot - barrierTop);
+
+    if (barrierFlashAlpha > 0.12) {
+      barrierFlashAlpha -= 0.008;
+    }
+
+    // --- Cluster glow (behind particles) ---
+    const glowAlpha = getClusterGlowAlpha(settledCount);
+    if (glowAlpha > 0.005 && cyclePhase !== 'detonation' && cyclePhase !== 'hold' && cyclePhase !== 'fade' && cyclePhase !== 'rest') {
+      const glowRadius = 30 + settledCount * 2;
+      const cGrad = ctx!.createRadialGradient(cx, cy, 0, cx, cy, glowRadius);
+      cGrad.addColorStop(0, `rgba(${sR},${sG},${sB},${glowAlpha})`);
+      cGrad.addColorStop(1, `rgba(${sR},${sG},${sB},0)`);
+      ctx!.beginPath();
+      ctx!.arc(cx, cy, glowRadius, 0, Math.PI * 2);
+      ctx!.fillStyle = cGrad;
+      ctx!.fill();
+    }
+
+    // --- Particles ---
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+
+      if (p.state === 'approaching') {
+        p.x += p.vx;
+        p.y += Math.sin((cycleFrame + p.wobblePhase) / p.wobblePeriod * Math.PI * 2) * 0.3;
+        if (p.x >= bx - DECEL_ZONE) {
+          p.state = 'decelerating';
+        }
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(232,232,232,${p.baseAlpha})`;
+        ctx!.fill();
+      }
+      else if (p.state === 'decelerating') {
+        const distToBx = bx - p.x;
+        const speed = Math.max(0.05, 0.1 * (distToBx / DECEL_ZONE));
+        p.x += speed;
+        if (p.x >= bx - 2) {
+          p.x = bx - 2;
+          p.state = 'evaluating';
+          p.evalTimer = 0;
+          spawnGreenPulse(bx, p.y, false);
+        }
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(232,232,232,${p.baseAlpha})`;
+        ctx!.fill();
+      }
+      else if (p.state === 'evaluating') {
+        p.evalTimer++;
+        const flashT = clamp01(1 - p.evalTimer / 8);
+        const greenTint = flashT * 0.3;
+        const r = Math.round(lerp(232, 0, greenTint));
+        const g = Math.round(lerp(232, 255, greenTint));
+        const b = Math.round(lerp(232, 136, greenTint));
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(${r},${g},${b},${p.baseAlpha + greenTint * 0.3})`;
+        ctx!.fill();
+        if (p.evalTimer >= EVAL_PAUSE) {
+          p.state = 'passing';
+          p.vx = PASS_SPEED;
+        }
+      }
+      else if (p.state === 'passing') {
+        p.x += p.vx;
+        if (p.x > bx + 15) {
+          p.state = 'settling';
+          p.vx = SETTLE_SPEED;
+        }
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(232,232,232,${p.baseAlpha})`;
+        ctx!.fill();
+      }
+      else if (p.state === 'settling') {
+        const dx = p.settleTargetX - p.x;
+        const dy = p.settleTargetY - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > 1) {
+          const speed = Math.min(SETTLE_SPEED + 0.1, dist * 0.03);
+          p.x += (dx / dist) * speed;
+          p.y += (dy / dist) * speed;
+        } else {
+          p.x = p.settleTargetX;
+          p.y = p.settleTargetY;
+          p.state = 'settled';
+        }
+        const col = getAccumulationColor(settledCount + 1, i);
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(${col.r},${col.g},${col.b},${p.baseAlpha + 0.05})`;
+        ctx!.fill();
+      }
+      else if (p.state === 'settled') {
+        const col = getAccumulationColor(settledCount, i);
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(${col.r},${col.g},${col.b},${p.baseAlpha + 0.1})`;
+        ctx!.fill();
+      }
+      else if (p.state === 'contracting') {
+        const dx = cx - p.x;
+        const dy = cy - p.y;
+        p.x += dx * 0.06;
+        p.y += dy * 0.06;
+        const col = getAccumulationColor(settledCount, i);
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(${col.r},${col.g},${col.b},${p.baseAlpha + 0.2})`;
+        ctx!.fill();
+      }
+      else if (p.state === 'scattered') {
+        p.x += Math.cos(p.scatterAngle) * p.scatterSpeed;
+        p.y += Math.sin(p.scatterAngle) * p.scatterSpeed;
+        p.scatterAlpha = Math.max(0, p.scatterAlpha - 0.018);
+        p.ghostFrame++;
+
+        if (p.ghostFrame <= 3 && p.scatterAlpha > 0.02) {
+          ctx!.beginPath();
+          ctx!.arc(p.ghostX3, p.ghostY3, p.radius * 0.6, 0, Math.PI * 2);
+          ctx!.fillStyle = `rgba(255,77,77,${p.scatterAlpha * 0.15})`;
+          ctx!.fill();
+          ctx!.beginPath();
+          ctx!.arc(p.ghostX2, p.ghostY2, p.radius * 0.75, 0, Math.PI * 2);
+          ctx!.fillStyle = `rgba(255,77,77,${p.scatterAlpha * 0.25})`;
+          ctx!.fill();
+          ctx!.beginPath();
+          ctx!.arc(p.ghostX1, p.ghostY1, p.radius * 0.85, 0, Math.PI * 2);
+          ctx!.fillStyle = `rgba(255,77,77,${p.scatterAlpha * 0.35})`;
+          ctx!.fill();
+        }
+        p.ghostX3 = p.ghostX2; p.ghostY3 = p.ghostY2;
+        p.ghostX2 = p.ghostX1; p.ghostY2 = p.ghostY1;
+        p.ghostX1 = p.x; p.ghostY1 = p.y;
+
+        if (p.scatterAlpha > 0.01) {
+          ctx!.beginPath();
+          ctx!.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx!.fillStyle = `rgba(255,77,77,${p.scatterAlpha})`;
+          ctx!.fill();
+        }
+      }
+    }
+
+    // --- Green pulses ---
+    for (let i = greenPulses.length - 1; i >= 0; i--) {
+      const gp = greenPulses[i];
+      gp.frame++;
+      gp.radius += 1.2;
+      gp.alpha = 0.35 * (1 - gp.frame / gp.maxFrames);
+      if (gp.alpha > 0.005) {
+        ctx!.beginPath();
+        ctx!.arc(gp.x, gp.y, gp.radius, 0, Math.PI * 2);
+        ctx!.strokeStyle = `rgba(0,255,136,${gp.alpha})`;
+        ctx!.lineWidth = 1.5;
+        ctx!.stroke();
+        ctx!.beginPath();
+        ctx!.arc(gp.x - gp.radius * 0.15, gp.y, gp.radius * 1.08, Math.PI * 0.6, Math.PI * 1.4);
+        ctx!.strokeStyle = `rgba(0,255,136,${gp.alpha * 0.4})`;
+        ctx!.lineWidth = 2;
+        ctx!.stroke();
+        if (gp.frame <= 8) {
+          const flashA = 0.5 * (1 - gp.frame / 8);
+          const flashGrad = ctx!.createRadialGradient(gp.x, gp.y, 0, gp.x, gp.y, 6);
+          flashGrad.addColorStop(0, `rgba(0,255,136,${flashA})`);
+          flashGrad.addColorStop(1, `rgba(0,255,136,0)`);
+          ctx!.beginPath();
+          ctx!.arc(gp.x, gp.y, 6, 0, Math.PI * 2);
+          ctx!.fillStyle = flashGrad;
+          ctx!.fill();
+        }
+      }
+      if (gp.frame >= gp.maxFrames) {
+        greenPulses.splice(i, 1);
+      }
+    }
+
+    // --- Ripple rings ---
+    for (let i = rippleRings.length - 1; i >= 0; i--) {
+      const rr = rippleRings[i];
+      rr.radius += rr.speed;
+      rr.life++;
+      rr.alpha = 0.6 * (1 - rr.life / rr.maxLife);
+      if (rr.alpha > 0.005) {
+        ctx!.beginPath();
+        ctx!.arc(rr.x, rr.y, rr.radius, 0, Math.PI * 2);
+        ctx!.strokeStyle = `rgba(255,77,77,${rr.alpha})`;
+        ctx!.lineWidth = 1.5;
+        ctx!.stroke();
+      }
+      if (rr.life >= rr.maxLife) {
+        rippleRings.splice(i, 1);
+      }
+    }
+
+    // --- Detonation flash ---
+    if (detonationFlashAlpha > 0.005) {
+      const flashRadius = 60 * (1 - detonationFlashAlpha / 0.9) + 10;
+      const dGrad = ctx!.createRadialGradient(cx, cy, 0, cx, cy, flashRadius);
+      dGrad.addColorStop(0, `rgba(255,77,77,${detonationFlashAlpha})`);
+      dGrad.addColorStop(0.5, `rgba(255,77,77,${detonationFlashAlpha * 0.4})`);
+      dGrad.addColorStop(1, `rgba(255,77,77,0)`);
+      ctx!.beginPath();
+      ctx!.arc(cx, cy, flashRadius, 0, Math.PI * 2);
+      ctx!.fillStyle = dGrad;
+      ctx!.fill();
+      detonationFlashAlpha -= 0.04;
+    }
+
+    // --- Red wash on right side ---
+    if (detonationWashAlpha > 0.002) {
+      ctx!.fillStyle = `rgba(255,77,77,${detonationWashAlpha})`;
+      ctx!.fillRect(bx, 0, W - bx, H);
+      detonationWashAlpha -= 0.002;
+    }
+
+    // --- Fade overlay ---
+    if (fadeAlpha > 0) {
+      ctx!.fillStyle = `rgba(13,13,13,${fadeAlpha})`;
+      ctx!.fillRect(0, 0, W, H);
+    }
+  }
+
+  // --- Phase machine ---
+  function update() {
+    cycleFrame++;
+    const bx = barrierX();
+    const cx = clusterCenterX();
+    const cy = clusterCenterY();
+
+    if (cyclePhase === 'spawning') {
+      if (nextSpawnIdx < spawnSchedule.length && cycleFrame >= spawnSchedule[nextSpawnIdx]) {
+        spawnParticle();
+        nextSpawnIdx++;
+      }
+      let allSettled = true;
+      let settledN = 0;
+      for (let i = 0; i < particles.length; i++) {
+        if (particles[i].state === 'settled') settledN++;
+        else allSettled = false;
+      }
+      if (settledN >= TARGET_PARTICLES && allSettled) {
+        cyclePhase = 'contraction';
+        phaseTimer = 0;
+      }
+    }
+    else if (cyclePhase === 'contraction') {
+      phaseTimer++;
+      for (let i = 0; i < particles.length; i++) {
+        if (particles[i].state === 'settled') {
+          particles[i].state = 'contracting';
+        }
+      }
+      if (phaseTimer >= CONTRACTION_FRAMES) {
+        cyclePhase = 'detonation';
+        phaseTimer = 0;
+        detonationFlashAlpha = 0.9;
+        detonationWashAlpha = 0.06;
+        for (let r = 0; r < 3; r++) {
+          rippleRings.push({
+            x: cx, y: cy,
+            radius: 5 + r * 3,
+            alpha: 0.6,
+            speed: 2,
+            life: -(r * RIPPLE_STAGGER),
+            maxLife: RIPPLE_LIFE,
+          });
+        }
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          if (p.state === 'contracting') {
+            p.state = 'scattered';
+            p.scatterAngle = Math.atan2(p.y - cy, p.x - cx) + (Math.random() - 0.5) * 0.8;
+            p.scatterSpeed = 1.5 + Math.random() * 0.5;
+            p.scatterAlpha = 0.85;
+            p.ghostX1 = p.x; p.ghostY1 = p.y;
+            p.ghostX2 = p.x; p.ghostY2 = p.y;
+            p.ghostX3 = p.x; p.ghostY3 = p.y;
+            p.ghostFrame = 0;
+          }
+        }
+      }
+    }
+    else if (cyclePhase === 'detonation') {
+      phaseTimer++;
+      if (phaseTimer >= 25 && !postDetParticleSpawned) {
+        postDetParticleSpawned = true;
+        const postP: QueryParticle = {
+          x: bx - 2,
+          y: H * (0.35 + Math.random() * 0.3),
+          vx: 0, vy: 0,
+          wobblePhase: Math.random() * Math.PI * 2,
+          wobblePeriod: 100,
+          radius: 2.5 + Math.random() * 1.0,
+          baseAlpha: 0.3,
+          state: 'evaluating',
+          evalTimer: 0,
+          settleTargetX: cx,
+          settleTargetY: cy,
+          scatterAngle: 0,
+          scatterSpeed: 0,
+          scatterAlpha: 0,
+          ghostX1: 0, ghostY1: 0,
+          ghostX2: 0, ghostY2: 0,
+          ghostX3: 0, ghostY3: 0,
+          ghostFrame: 0,
+        };
+        particles.push(postP);
+        spawnGreenPulse(bx, postP.y, true);
+      }
+      if (phaseTimer >= SCATTER_FRAMES + 10) {
+        cyclePhase = 'post-detonation';
+        phaseTimer = 0;
+      }
+    }
+    else if (cyclePhase === 'post-detonation') {
+      phaseTimer++;
+      if (phaseTimer >= POST_DET_HOLD) {
+        cyclePhase = 'fade';
+        phaseTimer = 0;
+      }
+    }
+    else if (cyclePhase === 'fade') {
+      phaseTimer++;
+      fadeAlpha = clamp01(phaseTimer / FADE_OUT_FRAMES);
+      if (phaseTimer >= FADE_OUT_FRAMES) {
+        cyclePhase = 'rest';
+        phaseTimer = 0;
+      }
+    }
+    else if (cyclePhase === 'rest') {
+      phaseTimer++;
+      if (phaseTimer >= REST_FRAMES) {
+        resetCycle();
+      }
+    }
+
+    for (let i = 0; i < rippleRings.length; i++) {
+      if (rippleRings[i].life < 0) {
+        rippleRings[i].life++;
+      }
+    }
+  }
+
+  // --- Static frame for reduced motion ---
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+    if (W === 0 || H === 0) return;
+
+    const bx = barrierX();
+    const cx = clusterCenterX();
+    const cy = clusterCenterY();
+
+    for (let i = 0; i < dust.length; i++) {
+      const d = dust[i];
+      ctx!.beginPath();
+      ctx!.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(232,232,232,${d.alpha})`;
+      ctx!.fill();
+    }
+
+    const barrierTop = H * 0.2;
+    const barrierBot = H * 0.8;
+    ctx!.beginPath();
+    ctx!.moveTo(bx, barrierTop);
+    ctx!.lineTo(bx, barrierBot);
+    ctx!.strokeStyle = 'rgba(232,232,232,0.12)';
+    ctx!.lineWidth = 1;
+    ctx!.stroke();
+
+    const approachCount = 5;
+    for (let i = 0; i < approachCount; i++) {
+      const px = bx * (0.15 + i * 0.15);
+      const py = H * (0.32 + i * 0.08);
+      const r = 2.5 + (i % 3) * 0.3;
+      ctx!.beginPath();
+      ctx!.arc(px, py, r, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(232,232,232,${0.25 + i * 0.02})`;
+      ctx!.fill();
+    }
+
+    const pulseY = H * (0.32 + 4 * 0.08);
+    const flashGrad = ctx!.createRadialGradient(bx, pulseY, 0, bx, pulseY, 12);
+    flashGrad.addColorStop(0, 'rgba(0,255,136,0.3)');
+    flashGrad.addColorStop(1, 'rgba(0,255,136,0)');
+    ctx!.beginPath();
+    ctx!.arc(bx, pulseY, 12, 0, Math.PI * 2);
+    ctx!.fillStyle = flashGrad;
+    ctx!.fill();
+    ctx!.beginPath();
+    ctx!.arc(bx, pulseY, 8, 0, Math.PI * 2);
+    ctx!.strokeStyle = 'rgba(0,255,136,0.2)';
+    ctx!.lineWidth = 1.5;
+    ctx!.stroke();
+
+    const accCount = 13;
+    const blend = clamp01(accCount / TARGET_PARTICLES);
+    const tint = blend * blend;
+    for (let i = 0; i < accCount; i++) {
+      const angle = (Math.PI * 2 * i) / accCount;
+      const dist = 8 + (i % 3) * 6 + (i % 2) * 4;
+      const px = cx + Math.cos(angle) * dist;
+      const py = cy + Math.sin(angle) * dist;
+      const r = 2.5 + (i % 3) * 0.3;
+      const cr = Math.round(lerp(232, sR, tint));
+      const cg = Math.round(lerp(232, sG, tint));
+      const cb = Math.round(lerp(232, sB, tint));
+      ctx!.beginPath();
+      ctx!.arc(px, py, r, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(${cr},${cg},${cb},${0.3 + tint * 0.15})`;
+      ctx!.fill();
+    }
+
+    const glowAlpha = getClusterGlowAlpha(accCount);
+    if (glowAlpha > 0) {
+      const glowR = 30 + accCount * 2;
+      const cGrad = ctx!.createRadialGradient(cx, cy, 0, cx, cy, glowR);
+      cGrad.addColorStop(0, `rgba(${sR},${sG},${sB},${glowAlpha})`);
+      cGrad.addColorStop(1, `rgba(${sR},${sG},${sB},0)`);
+      ctx!.beginPath();
+      ctx!.arc(cx, cy, glowR, 0, Math.PI * 2);
+      ctx!.fillStyle = cGrad;
+      ctx!.fill();
+    }
+  }
+
+  // --- Loop ---
+  function tick() {
+    update();
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  // --- Init ---
+  initDust();
+  resetCycle();
+  resize();
+
+  // --- IntersectionObserver ---
+  const io = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) {
+      if (!rafId && !reducedMotion) rafId = requestAnimationFrame(tick);
+    } else {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+  }, { threshold: 0.01 });
+
+  if (reducedMotion) {
+    requestAnimationFrame(() => drawStatic());
+  } else {
+    io.observe(canvas);
+  }
+
+  // --- Cleanup ---
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(rafId);
+    ro.disconnect();
+    io.disconnect();
+  });
+})();
+</script>
