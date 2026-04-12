@@ -24,6 +24,7 @@ interface Story {
   verifyText: string;
   sources: Source[];
   whatIf?: string;
+  abstract?: string[];
   wip?: boolean;
   audio?: string;
   video?: string;
@@ -51,6 +52,9 @@ const articleSchema = {
   description: story.deck,
   url: canonicalURL,
   ...(story.isoDate ? { datePublished: story.isoDate } : {}),
+  ...(story.isoDate ? { dateModified: story.isoDate } : {}),
+  ...(story.abstract ? { abstract: story.abstract.join(' ') } : {}),
+  about: story.tags.map(tag => ({ '@type': 'Thing', name: tag })),
   author: {
     '@type': 'Organization',
     name: 'The AI Files',
@@ -185,6 +189,16 @@ const shareLinks = {
   </div>
 
   <main id="main-content">
+    {story.abstract && story.abstract.length > 0 && (
+      <div class="key-facts">
+        <div class="key-facts-inner">
+          <div class="key-facts-label">Key Facts</div>
+          <ul class="key-facts-list">
+            {story.abstract.map(fact => <li>{fact}</li>)}
+          </ul>
+        </div>
+      </div>
+    )}
     <slot />
 
     {story.video && (

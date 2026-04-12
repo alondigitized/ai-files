@@ -148,6 +148,16 @@ function checkStoriesJson(slug: string): ValidationResult[] {
     results.push(pass('stories.json:llmsDescription', `llmsDescription present (${(llmsDesc as string).length} chars)`));
   }
 
+  // abstract (recommended for AEO discoverability)
+  const abstract = (entry as any).abstract;
+  if (!abstract || !Array.isArray(abstract) || abstract.length === 0) {
+    results.push(warn('stories.json:abstract', 'Field "abstract" is missing — recommended for AI citation extractability'));
+  } else if (abstract.length < 3) {
+    results.push(warn('stories.json:abstract', `abstract has only ${abstract.length} bullet(s) — aim for 3-5`));
+  } else {
+    results.push(pass('stories.json:abstract', `abstract present (${abstract.length} bullets)`));
+  }
+
   // whatIf (required for every story)
   const whatIf = (entry as any).whatIf;
   if (!whatIf || (typeof whatIf === 'string' && whatIf.trim() === '')) {

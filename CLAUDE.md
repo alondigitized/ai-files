@@ -22,7 +22,7 @@ src/
     feed.xml.ts           ← RSS 2.0 feed (sorted by isoDate, newest first)
     llms.txt.ts           ← GEO manifest for AI citation systems (auto-generated from stories.json)
     stories/
-      *.astro             ← One file per story (31 total)
+      *.astro             ← One file per story (44+ total)
   styles/
     global.css            ← Shared component styles
   data/
@@ -124,7 +124,8 @@ Each entry in `src/data/stories.json`:
   "sources": [
     { "label": "Link Label", "url": "https://..." }
   ],
-  "llmsDescription": "Optional 2-4 sentence summary with key facts, names, dates for AI citation systems (used in auto-generated llms.txt)"
+  "llmsDescription": "Optional 2-4 sentence summary with key facts, names, dates for AI citation systems (used in auto-generated llms.txt)",
+  "abstract": ["Factual bullet 1", "Factual bullet 2", "..."]  // 3-5 short Key Facts bullets with named entities, dates, numbers (rendered as TL;DR block above story content; used in Article JSON-LD abstract field for AEO)
 }
 ```
 
@@ -183,9 +184,7 @@ These classes appear per-story in `<style is:global>` blocks (not in global.css)
 
 | Slug | Color |
 |------|-------|
-| dpd-chatbot | `#fb923c` |
 | chevy-dollar | `#fbbf24` |
-| knightscope | `#38bdf8` |
 | alexa-laughs | `#22d3ee` |
 | robot-lawyer | `#a78bfa` |
 | snapchat-my-ai | `#fde047` |
@@ -255,8 +254,6 @@ Every story includes a **full-width canvas animation** placed at a dramatically 
 | chevy-dollar | `chevy-dollar.astro` | **The Accord** — customer (off-white) and bot (amber) drift toward each other and spark an unauthorized connection at center; dealer node above sends desperate pulses that dissolve mid-air; connection fractures to dashes; cycle |
 | facebook-bob-alice | `facebook-bob-alice.astro` | **The Dialect** — two blue source nodes (Bob, Alice) emit wave rings; at every constructive-interference point a glowing blue node appears; the shifting mesh of nodes is the emergent language |
 | sydney | `sydney.astro` | **The Veil** — a dim grid of lines (system prompt / costume) slowly warps and dissolves over ~15 s as a fuchsia glow (Sydney) bleeds through from beneath; at peak the grid vanishes, canvas floods fuchsia; then snap-reset with sparks (Microsoft's emergency cap), cycle repeats |
-| dpd-chatbot | `dpd-chatbot.astro` | **Off Script** — 30 particles flow in calm horizontal lanes; each has a random `rogueAt` frame after which it veers orange and spirals freely |
-| knightscope | `knightscope.astro` | **The Descent** — a cyan orb patrols a smooth elliptical path for 2 full orbits, then drifts to center-bottom, sinks, spawns ripple rings, resets |
 | alexa-laughs | `alexa-laughs.astro` | **Unprompted** — 24 listening particles orbit inward; 8 faint room floaters drift; center breathes with irregular multi-sine pulse; at random intervals wobbly off-center rings erupt staggered, each with unique speed/decay/wobble; ghost artifacts linger after rings fade |
 | robot-lawyer | `robot-lawyer.astro` | **Inadmissible** — purple AI particle hits a barrier, is rejected, recruits a white human node; human crosses the barrier with a purple glow; AI follows |
 | snapchat-my-ai | `snapchat-my-ai.astro` | **The Post** — dark canvas; a faint yellow pixel grows and arcs up to a story ring, which pulses; everything dims; long silence; repeat |
