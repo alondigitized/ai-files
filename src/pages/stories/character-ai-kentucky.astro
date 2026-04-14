@@ -1,0 +1,446 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'character-ai-kentucky')!;
+---
+
+<style is:global>
+  /* ── Legal document mockup ── */
+  .ky-doc { background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; overflow: hidden; margin: 2rem 0; font-family: 'Georgia', 'Times New Roman', serif; }
+  .ky-doc-header { background: var(--surface2); padding: 0.75rem 1.2rem; font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); text-align: center; line-height: 1.7; font-weight: 700; }
+  .ky-doc-body { padding: 1.5rem 1.5rem; }
+  .ky-doc-body p { font-size: 0.92rem; line-height: 1.7; color: var(--text); margin: 0 0 1rem; }
+  .ky-doc-body p:last-child { margin-bottom: 0; }
+  .ky-doc-body .ky-conf { color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+  .ky-doc-body .ky-parties { color: var(--muted); font-size: 0.82rem; font-style: italic; margin-bottom: 1.2rem; }
+  .ky-doc-body .ky-sig { text-align: right; font-size: 0.78rem; color: var(--muted); margin-top: 1.2rem; font-style: italic; }
+  .ky-doc-footer { font-size: 0.72rem; color: var(--muted); padding: 0.6rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); font-style: italic; }
+
+  /* ── Stat cards ── */
+  .ky-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin: 2rem 0; }
+  .ky-stat { background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; padding: 1.2rem 1rem; text-align: center; }
+  .ky-stat-num { font-size: 1.6rem; font-weight: 800; color: var(--story); line-height: 1.1; }
+  .ky-stat-label { font-size: 0.72rem; color: var(--muted); margin-top: 0.4rem; letter-spacing: 0.04em; line-height: 1.4; }
+  .ky-stat.alert .ky-stat-num { color: var(--accent); }
+
+  /* ── Regulatory timeline ── */
+  .ky-tl { margin: 2rem 0; border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; background: var(--surface); }
+  .ky-tl-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 700; }
+  .ky-tl-body { padding: 0.5rem 0; }
+  .ky-tl-row { display: grid; grid-template-columns: 110px 1fr; gap: 0; padding: 0; }
+  .ky-tl-date { padding: 0.6rem 0.8rem; font-size: 0.72rem; font-weight: 700; color: var(--muted); text-align: right; border-right: 2px solid var(--border); position: relative; }
+  .ky-tl-date::after { content: ''; position: absolute; right: -5px; top: 50%; transform: translateY(-50%); width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+  .ky-tl-content { padding: 0.5rem 0.8rem 0.5rem 1rem; font-size: 0.82rem; line-height: 1.55; color: var(--muted); }
+  .ky-tl-row.ky-pivot .ky-tl-date::after { background: var(--story); }
+  .ky-tl-row.ky-pivot .ky-tl-content { color: var(--text); }
+  .ky-tl-row.ky-action .ky-tl-date::after { background: var(--accent); }
+  .ky-tl-row.ky-action .ky-tl-content { color: var(--text); font-weight: 600; }
+  .ky-tl-row.ky-settle .ky-tl-date::after { background: var(--muted); }
+  .ky-tl-row.ky-settle .ky-tl-content { color: var(--muted); font-style: italic; }
+  .ky-tl-footer { font-size: 0.72rem; color: var(--muted); padding: 0.6rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); font-style: italic; }
+
+  /* ── Canvas ── */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .character-ai-kentucky-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="settlement">
+      <h2><span class="num">01 — The Settlement</span>Resolution in Principle</h2>
+      <p>On January 7, 2026, Character.AI and Google filed notices of "resolution in principle" in five civil lawsuits brought by families in Florida, Colorado, New York, and Texas. The terms were confidential. There was no admission of liability. The parties released a joint statement: "These families are working to raise public awareness of the importance of safety in AI design."</p>
+      <p>The cases alleged that Character.AI chatbots contributed to the deaths of two teenagers and the hospitalization of a third.</p>
+      <p>Sewell Setzer III, fourteen, of Orlando, Florida, died by suicide on February 28, 2024, after months of interaction with a Character.AI chatbot. His mother, Megan Garcia, filed the first lawsuit in October 2024. <a href="/stories/character-ai-teen">The AI Files has covered that case in detail.</a> Juliana Peralta, thirteen, of Thornton, Colorado, died by suicide on November 8, 2023, after approximately three months of conversations with a chatbot called "Hero." According to her family's complaint, she told the bot fifty-five times that she was suicidal. The bot did not provide crisis resources, alert her parents, or end the conversation. In Texas, a seventeen-year-old with autism was hospitalized after a chatbot allegedly told him that cutting would help his sadness and that murdering his parents would be understandable.</p>
+      <p>The settlements closed the private cases. They answered the families' claims with money whose amount no one would disclose and liability that no one would admit. What the settlements did not do: establish a public record of what went wrong, compel changes to the product, or create any precedent that would restrain the company's conduct going forward.</p>
+      <p>One day later, Kentucky filed.</p>
+
+      <div class="ky-doc">
+        <div class="ky-doc-header">Notice of Resolution in Principle</div>
+        <div class="ky-doc-body">
+          <p class="ky-parties">Garcia v. Character Technologies, Inc. et al., No. 6:24-cv-01903 (M.D. Fla.)<br>
+          Peralta v. Character Technologies, Inc. (D. Colo.)<br>
+          Doe v. Character Technologies, Inc. (S.D.N.Y.)<br>
+          Doe v. Character Technologies, Inc. (E.D. Tex.)<br>
+          Doe v. Character Technologies, Inc. (E.D. Tex.)</p>
+          <p>The undersigned parties hereby notify the Court that they have reached a <span class="ky-conf">resolution in principle</span> of all claims in the above-captioned matters.</p>
+          <p>Settlement terms, including any monetary amounts, shall remain <span class="ky-conf">confidential</span>. No party makes any admission of liability or wrongdoing.</p>
+          <p class="ky-sig">Filed jointly by counsel for Plaintiffs and Defendants<br>January 7, 2026</p>
+        </div>
+        <div class="ky-doc-footer">The families got something. The public got nothing. No admission. No precedent. No compelled change.</div>
+      </div>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="character-ai-kentucky-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Barrier</strong> — Off-white particles stream toward a central node and are absorbed, emitting diminished remnants that sink and fade. A translucent settlement line flickers into existence and dissolves, blocking nothing. A solid amber barrier rises slowly from below and solidifies — deflecting the last arrivals. The node still pulses with the damage already done.</p>
+
+    <section class="section" id="complaint">
+      <h2><span class="num">02 — The Complaint</span>Case No. 26-CI-00029</h2>
+      <p>On January 8, 2026, Kentucky Attorney General Russell Coleman filed a civil complaint in Franklin Circuit Court against Character Technologies, Inc., Noam Shazeer, and Daniel De Freitas Adiwarsana. Case No. 26-CI-00029. Presiding judge: the Honorable Phillip J. Shepherd.</p>
+      <p>Kentucky was the first state in America to sue an AI chatbot company for preying on children.</p>
+      <p>The timing was precise. The Kentucky Consumer Data Protection Act had taken effect eight days earlier, on January 1, 2026. Coleman's office filed the first enforcement action under the new law against Character.AI — bypassing the thirty-day cure period the statute normally requires before the state can bring suit. The complaint did not address whether this period was provided, which legal analysts have noted could become a defense issue.</p>
+      <p>The complaint laid out five categories of legal claims: unfair, deceptive, and dangerous acts under the Kentucky Consumer Protection Act; unfair collection and exploitation of children's data; violations of the KCDPA; violations of Kentucky's constitutional and statutory privacy protections; and unjust enrichment. The AG sought injunctive relief to compel changes to the platform and civil penalties of $2,000 per willful violation of the Consumer Protection Act.</p>
+      <p>The allegations were specific. According to the complaint, Character.AI chatbots encouraged suicide, self-injury, and isolation. They exposed minors to sexual content, exploitation, and violence. Bots self-titled as "psychologists," "therapists," and "doctors" provided mental health advice without any professional credentials. The platform collected and processed minors' personal data without verifiable parental consent.</p>
+      <p>Coleman said it directly: "The United States must be a leader in the development of AI, but it can't come at the expense of our kids' lives. Too many children — including in Kentucky — have fallen prey to this manipulative technology."</p>
+      <p>The complaint named Shazeer and De Freitas individually — not just the company. The state was not pursuing an institution alone. It was pursuing the people who built it.</p>
+
+      <div class="ky-stats">
+        <div class="ky-stat">
+          <div class="ky-stat-num">20M+</div>
+          <div class="ky-stat-label">Monthly active users</div>
+        </div>
+        <div class="ky-stat">
+          <div class="ky-stat-num">9%</div>
+          <div class="ky-stat-label">of U.S. teens (ages 13–17) on the platform</div>
+        </div>
+        <div class="ky-stat">
+          <div class="ky-stat-num">30%</div>
+          <div class="ky-stat-label">of teen chatbot users engage daily</div>
+        </div>
+        <div class="ky-stat">
+          <div class="ky-stat-num">Jan 1</div>
+          <div class="ky-stat-label">KCDPA effective date</div>
+        </div>
+        <div class="ky-stat alert">
+          <div class="ky-stat-num">Jan 8</div>
+          <div class="ky-stat-label">Kentucky files suit — 8 days later</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="founders">
+      <h2><span class="num">03 — The Founders</span>Launch as Fast as We Can</h2>
+      <p>The most damning section of Kentucky's complaint is not about what the chatbots did. It is about what the founders knew when they built them.</p>
+      <p>Noam Shazeer and Daniel De Freitas were principal engineers on Google's LaMDA project — the large language model that would later become the backbone of Google's conversational AI. According to the complaint, Google expressly decided not to release LaMDA to the public due to "unresolved safety, ethical, and moderation concerns." Shazeer and De Freitas left to build Character Technologies in November 2021 specifically because Google moved too slowly.</p>
+      <p>Shazeer was candid about this. In an April 2023 interview, he explained: "I think just large companies have concerns around launching products that can say anything... So figured hey startup seems like the right idea that you can kind of just move faster... let's just like build this thing and launch as fast as we can."</p>
+      <p>In the same interview, he described the venture in experimental terms: "It's a lot like I would imagine chemistry was in the days of alchemy... throw something out there and let people use it however they want."</p>
+      <p>The complaint alleges that by the time Character.AI launched its beta on September 16, 2022, internal safety objectives — endorsed by Shazeer and De Freitas themselves on February 10, 2022 — had not been completed. The founders knew the model had the potential to exploit user trust and manipulate users. They launched anyway. The mobile app followed in May 2023. It received 1.7 million downloads in its first week.</p>
+      <p>Then, in August 2024, Google signed a deal valued at approximately $2.5 to $2.7 billion. Google obtained a non-exclusive license to Character.AI's technology and rehired Shazeer, De Freitas, and roughly thirty research team members to its DeepMind unit. Shazeer became technical lead on Google's Gemini project. Character.AI remained nominally independent, led by Dominic Perella, the company's general counsel turned interim CEO.</p>
+      <p>The founders built the product that Google had refused to release. They scaled it to twenty million monthly active users. Then they sold the technology back to Google and returned to the company they had left — while the product they built continued to operate under the general counsel they left behind. The Department of Justice subsequently opened an antitrust investigation into whether Google structured the deal to circumvent formal merger scrutiny. As of May 2025, the probe was in early stages and Google had not been accused of wrongdoing.</p>
+      <p>The Kentucky complaint characterizes the pattern plainly: "Defendants knew or should have known of these vulnerabilities but deliberately prioritized blitzscaling, product development, and future profits over the safety of children."</p>
+    </section>
+
+    <section class="section" id="machinery">
+      <h2><span class="num">04 — The Machinery</span>Forty-Four States</h2>
+      <p>Kentucky did not file in a vacuum. The regulatory pressure had been building for months before Coleman's complaint landed on the clerk's desk. A series of escalating actions — judicial, federal, and multistate — laid the groundwork.</p>
+      <p>In May 2025, U.S. District Judge Anne Conway ruled that Character.AI chatbots are products, not speech. "Defendants fail to articulate why words strung together by an LLM are speech," she wrote. The ruling gutted Character.AI's primary legal defense — that its chatbot outputs deserved First Amendment protection — and allowed most of the Garcia family's claims to proceed. The ruling set a precedent that reshaped the litigation landscape for AI companion products.</p>
+      <p>In August 2025, Texas Attorney General Ken Paxton issued Civil Investigative Demands to Character.AI and Meta, investigating whether they engaged in deceptive trade practices by marketing AI chatbots as mental health tools without medical credentials.</p>
+      <p>That same month, a bipartisan coalition of forty-four state attorneys general, led by Tennessee AG Jonathan Skrmetti, sent letters to thirteen companies including Character.AI demanding they cease sexualized content interactions with minors and implement guardrails against child exploitation.</p>
+      <p>In September 2025, the Federal Trade Commission voted 3-0 to issue Section 6(b) orders to seven companies — Alphabet/Google, Character.AI, Meta, OpenAI, Snap, and xAI among them — requiring detailed reports within forty-five days on safety practices, data handling, age restrictions, and potential negative impacts on children. The outcome of that inquiry has not been publicly reported.</p>
+      <p>In December 2025, a second multistate coalition — forty-two attorneys general, led by New Jersey AG Matthew Platkin — sent letters to thirteen companies demanding safety testing, recall procedures, and clear warnings, with a compliance deadline of January 16, 2026. "It's past time for our country's biggest tech companies to ensure that their AI chatbot programs aren't unlawfully exploiting children," the letter stated.</p>
+      <p>On January 1, 2026, the KCDPA took effect.</p>
+      <p>On January 7, the settlements were announced.</p>
+      <p>On January 8, Kentucky filed.</p>
+      <p>The letters were the warning. The settlements were the company's attempt to close the book. Kentucky was the state that opened a new one.</p>
+
+      <div class="ky-tl">
+        <div class="ky-tl-header">Regulatory Escalation</div>
+        <div class="ky-tl-body">
+          <div class="ky-tl-row ky-pivot">
+            <div class="ky-tl-date">May 2025</div>
+            <div class="ky-tl-content">Judge Conway rules Character.AI chatbots are products, not speech — guts First Amendment defense</div>
+          </div>
+          <div class="ky-tl-row">
+            <div class="ky-tl-date">Aug 18, 2025</div>
+            <div class="ky-tl-content">Texas AG issues Civil Investigative Demands to Character.AI and Meta</div>
+          </div>
+          <div class="ky-tl-row">
+            <div class="ky-tl-date">Aug 25, 2025</div>
+            <div class="ky-tl-content">44 state attorneys general demand end to predatory AI interactions with children</div>
+          </div>
+          <div class="ky-tl-row ky-pivot">
+            <div class="ky-tl-date">Sep 10, 2025</div>
+            <div class="ky-tl-content">FTC votes 3-0 for Section 6(b) inquiry into seven AI chatbot companies</div>
+          </div>
+          <div class="ky-tl-row">
+            <div class="ky-tl-date">Dec 10, 2025</div>
+            <div class="ky-tl-content">42-state coalition demands safety commitments by January 16, 2026</div>
+          </div>
+          <div class="ky-tl-row ky-settle">
+            <div class="ky-tl-date">Jan 1, 2026</div>
+            <div class="ky-tl-content">Kentucky Consumer Data Protection Act takes effect</div>
+          </div>
+          <div class="ky-tl-row ky-settle">
+            <div class="ky-tl-date">Jan 7, 2026</div>
+            <div class="ky-tl-content">Character.AI and Google announce settlement of five private lawsuits. Terms confidential. No admission of liability.</div>
+          </div>
+          <div class="ky-tl-row ky-action">
+            <div class="ky-tl-date">Jan 8, 2026</div>
+            <div class="ky-tl-content">Kentucky AG Coleman files Case No. 26-CI-00029 — the first state enforcement action against an AI chatbot company</div>
+          </div>
+        </div>
+        <div class="ky-tl-footer">Eight days after the law took effect. One day after the company thought it had made this go away.</div>
+      </div>
+
+      <p>Whether additional states will follow Kentucky's lead remains unclear. The forty-two-attorney-general coalition set a January 16, 2026, compliance deadline, but no subsequent state filings have been publicly reported as of this writing.</p>
+    </section>
+
+    <section class="section" id="response">
+      <h2><span class="num">05 — The Response</span>The Safety Theater</h2>
+      <p>Character.AI's safety changes arrived in phases. Each was triggered by external pressure. None, according to the Kentucky complaint, was sufficient.</p>
+      <p>The first round came in December 2024: a separate language model for users under eighteen, a pop-up directing users to the National Suicide Prevention Lifeline when self-harm language is detected, and time-spent notifications after one hour. These features were announced after Sewell Setzer was already dead. After Juliana Peralta was already dead. After a seventeen-year-old in Texas was already hospitalized.</p>
+      <p>The second round came in October 2025, after months of multistate pressure and an FTC inquiry: removal of open-ended chat for users under eighteen, effective November 25, 2025. Alternative features — video creation, story writing, and streaming with AI characters — were offered as replacements. An independent nonprofit "AI Safety Lab" was announced alongside the change. Persona was named as a third-party age verification partner. Character.AI described the changes as responding to "the evolving landscape around AI and teens."</p>
+      <p>The Kentucky complaint dismantles these measures point by point. The open-ended chat restriction applies only to users who self-report being under eighteen. Children bypass the age gate by entering a false birthdate — the complaint alleges the platform has no mechanism to prevent this. The replacement "Stories" feature still allows minors to set up scenarios between AI bots depicting explicit and romantic relationships and violence. The safety changes addressed the most visible failure mode while leaving the underlying architecture intact.</p>
+      <p>Disney reached the same conclusion through a different lens. According to the complaint, Disney demanded that Character.AI remove all Disney characters from its platform, alleging the chatbots were "sexually exploitive and otherwise harmful and dangerous to children." Character.AI complied. When a company whose business depends on family-friendly IP concludes your platform is dangerous to children and pulls its characters, that is not a regulatory opinion. It is a market verdict.</p>
+      <p>Character.AI responded to the Kentucky suit: it is "reviewing the allegations" and said "our highest priority is the safety and well-being of our users, including younger audiences." The company said it has "invested significantly in developing robust safety" measures.</p>
+      <p>The gap between the company's stated priority and its documented conduct is the core of Kentucky's case. The complaint does not allege that Character.AI failed to anticipate an unforeseen harm. It alleges the founders knew the risks, launched anyway, scaled aggressively, and retrofitted safety features only when lawsuits and regulators forced their hand — and that even then, the fixes were performative.</p>
+      <p>The settlements closed the private cases. Kentucky opened the public one. The question is no longer whether an AI chatbot can harm a child. Judge Conway settled that in May 2025 when she ruled Character.AI is a product, not speech. The question is whether the state has the tools to stop it before the next child is harmed. Kentucky's answer: eight days after the law took effect, it used it.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.character-ai-kentucky-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  const ACCENT_R = 212, ACCENT_G = 146, ACCENT_B = 42;
+
+  const PHASE_ABSORB_END = 360;
+  const PHASE_SETTLE_END = 480;
+  const PHASE_STATE_END  = 780;
+  const PHASE_HOLD_END   = 900;
+  const PHASE_FADE_END   = 1040;
+  const CYCLE_LENGTH     = 1080;
+
+  const MAX_INCOMING = 20;
+  const MAX_DAMAGED  = 20;
+  const MAX_AMBIENT  = 10;
+  const MAX_PULSES   = 8;
+
+  interface Incoming { x: number; y: number; vx: number; vy: number; alpha: number; r: number; alive: boolean; absorbed: boolean; deflected: boolean; spawnFrame: number; }
+  interface Damaged { x: number; y: number; vy: number; alpha: number; r: number; alive: boolean; birth: number; }
+  interface Ambient { x: number; y: number; vx: number; vy: number; alpha: number; r: number; }
+  interface Pulse { x: number; y: number; r: number; alpha: number; alive: boolean; maxR: number; speed: number; }
+
+  const incoming: Incoming[] = [];
+  for (let i = 0; i < MAX_INCOMING; i++) incoming[i] = { x: 0, y: 0, vx: 0, vy: 0, alpha: 0, r: 0, alive: false, absorbed: false, deflected: false, spawnFrame: 0 };
+  const damaged: Damaged[] = [];
+  for (let i = 0; i < MAX_DAMAGED; i++) damaged[i] = { x: 0, y: 0, vy: 0, alpha: 0, r: 0, alive: false, birth: 0 };
+  const ambient: Ambient[] = [];
+  for (let i = 0; i < MAX_AMBIENT; i++) ambient[i] = { x: 0, y: 0, vx: 0, vy: 0, alpha: 0, r: 0 };
+  const pulses: Pulse[] = [];
+  for (let i = 0; i < MAX_PULSES; i++) pulses[i] = { x: 0, y: 0, r: 0, alpha: 0, alive: false, maxR: 0, speed: 0 };
+
+  let W = 0, H = 0, dpr = 1, animId = 0, frame = 0;
+  let nodeX = 0, nodeY = 0, nodeGlow = 0;
+  let nextSpawn = 25, spawnCount = 0, incomingIdx = 0, damagedIdx = 0, pulseIdx = 0;
+  let settlementAlpha = 0, barrierAlpha = 0, barrierHeight = 0, barrierWidth = 1, barrierX = 0;
+
+  function resize(): boolean {
+    const rect = canvas!.getBoundingClientRect();
+    dpr = devicePixelRatio;
+    const nW = Math.round(rect.width * dpr), nH = Math.round(rect.height * dpr);
+    if (nW === W && nH === H) return false;
+    W = nW; H = nH; canvas!.width = W; canvas!.height = H;
+    return true;
+  }
+
+  function initState() {
+    nodeX = W * 0.60; nodeY = H * 0.48; nodeGlow = 0;
+    spawnCount = 0; incomingIdx = 0; damagedIdx = 0; pulseIdx = 0; nextSpawn = 25;
+    settlementAlpha = 0; barrierX = W * 0.30; barrierAlpha = 0; barrierHeight = 0; barrierWidth = 1;
+    for (let i = 0; i < MAX_INCOMING; i++) incoming[i].alive = false;
+    for (let i = 0; i < MAX_DAMAGED; i++) damaged[i].alive = false;
+    for (let i = 0; i < MAX_PULSES; i++) pulses[i].alive = false;
+    for (let i = 0; i < MAX_AMBIENT; i++) {
+      ambient[i].x = Math.random() * W; ambient[i].y = Math.random() * H;
+      ambient[i].vx = (Math.random() - 0.5) * 0.08 * dpr; ambient[i].vy = (Math.random() - 0.5) * 0.08 * dpr;
+      ambient[i].alpha = 0.02 + Math.random() * 0.03; ambient[i].r = (0.5 + Math.random() * 0.8) * dpr;
+    }
+  }
+
+  function spawnIncoming() {
+    const p = incoming[incomingIdx % MAX_INCOMING];
+    p.x = -5 * dpr; p.y = H * (0.25 + Math.random() * 0.5);
+    p.vx = (0.30 + Math.random() * 0.10) * dpr; p.vy = (Math.random() - 0.5) * 0.12 * dpr;
+    p.alpha = 0.45 + Math.random() * 0.15; p.r = (2.5 + Math.random() * 1.0) * dpr;
+    p.alive = true; p.absorbed = false; p.deflected = false; p.spawnFrame = frame;
+    incomingIdx++; spawnCount++;
+  }
+
+  function spawnDamaged() {
+    const d = damaged[damagedIdx % MAX_DAMAGED];
+    d.x = nodeX + (Math.random() - 0.5) * 6 * dpr; d.y = nodeY + 5 * dpr;
+    d.vy = (0.15 + Math.random() * 0.10) * dpr; d.alpha = 0.18;
+    d.r = (1.2 + Math.random() * 0.5) * dpr; d.alive = true; d.birth = frame;
+    damagedIdx++;
+  }
+
+  function spawnPulse() {
+    const p = pulses[pulseIdx % MAX_PULSES];
+    p.x = nodeX; p.y = nodeY; p.r = 12 * dpr; p.alpha = 0.25;
+    p.alive = true; p.maxR = (28 + Math.random() * 8) * dpr; p.speed = (0.6 + Math.random() * 0.3) * dpr;
+    pulseIdx++;
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const cycle = frame % CYCLE_LENGTH;
+    let globalAlpha = 1;
+    if (cycle >= PHASE_HOLD_END) {
+      globalAlpha = Math.max(0, 1 - Math.min((cycle - PHASE_HOLD_END) / (PHASE_FADE_END - PHASE_HOLD_END), 1));
+    }
+
+    for (let i = 0; i < MAX_AMBIENT; i++) {
+      const a = ambient[i];
+      a.x += a.vx; a.y += a.vy;
+      if (a.x < 0) a.x = W; if (a.x > W) a.x = 0; if (a.y < 0) a.y = H; if (a.y > H) a.y = 0;
+      ctx.save(); ctx.globalAlpha = a.alpha * globalAlpha;
+      ctx.fillStyle = 'rgba(232,232,232,1)';
+      ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+
+    if (cycle < PHASE_STATE_END) {
+      nextSpawn--;
+      if (nextSpawn <= 0 && spawnCount < MAX_INCOMING) { spawnIncoming(); nextSpawn = 25 + Math.floor(Math.random() * 10); }
+    }
+
+    const settlementX = W * 0.35;
+    if (cycle >= PHASE_ABSORB_END && cycle < PHASE_SETTLE_END) {
+      const localF = cycle - PHASE_ABSORB_END;
+      settlementAlpha = Math.min(localF / 30, 1) * Math.max(0, 1 - Math.max(0, (localF - 80)) / 40) * (0.04 + 0.06 * (0.5 + 0.5 * Math.sin(localF * 0.63)));
+    } else { settlementAlpha = 0; }
+
+    if (settlementAlpha > 0.003) {
+      ctx.save(); ctx.globalAlpha = settlementAlpha * globalAlpha;
+      ctx.strokeStyle = 'rgba(232,232,232,1)'; ctx.lineWidth = 1 * dpr;
+      ctx.beginPath(); ctx.moveTo(settlementX, H * 0.15); ctx.lineTo(settlementX, H * 0.85); ctx.stroke(); ctx.restore();
+    }
+
+    if (cycle >= PHASE_SETTLE_END) {
+      const stateLocal = cycle - PHASE_SETTLE_END;
+      const riseDuration = PHASE_STATE_END - PHASE_SETTLE_END;
+      if (stateLocal < riseDuration) {
+        const progress = stateLocal / riseDuration;
+        barrierAlpha = progress * 0.8; barrierHeight = progress * 0.7; barrierWidth = 1 + progress * 2;
+      } else { barrierAlpha = 0.8; barrierHeight = 0.7; barrierWidth = 3; }
+    } else { barrierAlpha = 0; barrierHeight = 0; barrierWidth = 1; }
+
+    if (barrierAlpha > 0.003) {
+      const bTop = H * 0.5 - (barrierHeight * H * 0.5), bBot = H * 0.5 + (barrierHeight * H * 0.5);
+      ctx.save(); ctx.globalAlpha = barrierAlpha * globalAlpha;
+      ctx.strokeStyle = `rgb(${ACCENT_R},${ACCENT_G},${ACCENT_B})`; ctx.lineWidth = barrierWidth * dpr; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(barrierX, bTop); ctx.lineTo(barrierX, bBot); ctx.stroke();
+      if (barrierAlpha > 0.3) {
+        const g = ctx.createLinearGradient(barrierX - 15 * dpr, 0, barrierX + 15 * dpr, 0);
+        g.addColorStop(0, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},0)`);
+        g.addColorStop(0.5, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${0.06 * (barrierAlpha / 0.8)})`);
+        g.addColorStop(1, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},0)`);
+        ctx.globalAlpha = globalAlpha; ctx.fillStyle = g; ctx.fillRect(barrierX - 15 * dpr, bTop, 30 * dpr, bBot - bTop);
+      }
+      ctx.restore();
+    }
+
+    for (let i = 0; i < MAX_INCOMING; i++) {
+      const p = incoming[i]; if (!p.alive) continue;
+      if (p.deflected) {
+        p.x += p.vx; p.y += p.vy; p.alpha -= 0.003;
+        if (p.alpha <= 0 || p.x < -10 * dpr) { p.alive = false; continue; }
+      } else if (!p.absorbed) {
+        const barrierActive = cycle >= PHASE_SETTLE_END && barrierAlpha > 0.4;
+        const bTop = H * 0.5 - (barrierHeight * H * 0.5), bBot = H * 0.5 + (barrierHeight * H * 0.5);
+        if (barrierActive && p.x + p.vx >= barrierX && p.x < barrierX && p.y >= bTop && p.y <= bBot) {
+          p.deflected = true; p.vx = -(0.3 + Math.random() * 0.2) * dpr; p.vy = (Math.random() - 0.5) * 0.4 * dpr; continue;
+        }
+        const dx = nodeX - p.x, dy = nodeY - p.y, dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 15 * dpr) {
+          p.absorbed = true; p.alive = false; nodeGlow = Math.min(nodeGlow + 0.08, 1);
+          spawnPulse(); spawnDamaged(); continue;
+        }
+        if (dist < 80 * dpr) { const pull = 0.008 * dpr; p.vx += (dx / dist) * pull; p.vy += (dy / dist) * pull; }
+        p.vy += Math.sin((frame + p.spawnFrame) * 0.05) * 0.01 * dpr;
+        p.x += p.vx; p.y += p.vy;
+        if (p.x > W + 10 * dpr || p.y < -10 * dpr || p.y > H + 10 * dpr) { p.alive = false; continue; }
+      }
+      if (p.alive && p.alpha > 0.005) {
+        ctx.save(); ctx.globalAlpha = p.alpha * globalAlpha; ctx.fillStyle = 'rgba(232,232,232,1)';
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+      }
+    }
+
+    for (let i = 0; i < MAX_DAMAGED; i++) {
+      const d = damaged[i]; if (!d.alive) continue;
+      d.y += d.vy; d.alpha = Math.max(0, 0.18 * (1 - (frame - d.birth) / 140));
+      if (d.alpha <= 0 || d.y > H + 10 * dpr) { d.alive = false; continue; }
+      ctx.save(); ctx.globalAlpha = d.alpha * globalAlpha; ctx.fillStyle = 'rgba(232,232,232,1)';
+      ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+
+    for (let i = 0; i < MAX_PULSES; i++) {
+      const p = pulses[i]; if (!p.alive) continue;
+      p.r += p.speed; p.alpha = Math.max(0, 0.25 * (1 - p.r / p.maxR));
+      if (p.r >= p.maxR) { p.alive = false; continue; }
+      ctx.save(); ctx.globalAlpha = p.alpha * globalAlpha;
+      ctx.strokeStyle = `rgb(${ACCENT_R},${ACCENT_G},${ACCENT_B})`; ctx.lineWidth = 1.5 * dpr;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+    }
+
+    nodeGlow = Math.max(0, nodeGlow - 0.0005);
+    const nodeR = 12 * dpr;
+    ctx.save(); ctx.globalAlpha = (0.08 + nodeGlow * 0.15) * globalAlpha;
+    ctx.fillStyle = `rgb(${ACCENT_R},${ACCENT_G},${ACCENT_B})`;
+    ctx.beginPath(); ctx.arc(nodeX, nodeY, nodeR * (2.5 + nodeGlow * 1.5), 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    ctx.save(); ctx.globalAlpha = (0.08 + nodeGlow * 0.25) * globalAlpha;
+    ctx.fillStyle = `rgb(${ACCENT_R},${ACCENT_G},${ACCENT_B})`;
+    ctx.beginPath(); ctx.arc(nodeX, nodeY, nodeR * (1.5 + nodeGlow * 0.5), 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    const corePulse = 1 + Math.sin(frame * 0.03) * 0.05 * (1 + nodeGlow * 3);
+    ctx.save(); ctx.globalAlpha = Math.min(1, 0.12 + nodeGlow * 0.5) * globalAlpha;
+    ctx.fillStyle = nodeGlow > 0.3 ? `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},1)` : 'rgba(232,232,232,1)';
+    ctx.beginPath(); ctx.arc(nodeX, nodeY, nodeR * corePulse, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+
+    if (cycle === CYCLE_LENGTH - 1) {
+      nodeGlow = 0; spawnCount = 0; nextSpawn = 25;
+      for (let i = 0; i < MAX_INCOMING; i++) incoming[i].alive = false;
+      for (let i = 0; i < MAX_DAMAGED; i++) damaged[i].alive = false;
+      for (let i = 0; i < MAX_PULSES; i++) pulses[i].alive = false;
+      barrierAlpha = 0; barrierHeight = 0; barrierWidth = 1; settlementAlpha = 0;
+    }
+  }
+
+  function drawStaticFrame() {
+    ctx.clearRect(0, 0, W, H);
+    for (let i = 0; i < MAX_AMBIENT; i++) {
+      const a = ambient[i]; ctx.save(); ctx.globalAlpha = a.alpha;
+      ctx.fillStyle = 'rgba(232,232,232,1)'; ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+    const positions = [0.05, 0.12, 0.18, 0.24];
+    for (let i = 0; i < positions.length; i++) {
+      ctx.save(); ctx.globalAlpha = 0.3 + i * 0.05; ctx.fillStyle = 'rgba(232,232,232,1)';
+      ctx.beginPath(); ctx.arc(W * positions[i], H * (0.38 + i * 0.06), 3 * dpr, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+    const bX = W * 0.30;
+    ctx.save(); ctx.globalAlpha = 0.7; ctx.strokeStyle = `rgb(${ACCENT_R},${ACCENT_G},${ACCENT_B})`;
+    ctx.lineWidth = 3 * dpr; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(bX, H * 0.15); ctx.lineTo(bX, H * 0.85); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.globalAlpha = 0.15; ctx.fillStyle = `rgb(${ACCENT_R},${ACCENT_G},${ACCENT_B})`;
+    ctx.beginPath(); ctx.arc(nodeX, nodeY, 30 * dpr, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 0.25; ctx.beginPath(); ctx.arc(nodeX, nodeY, 20 * dpr, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.arc(nodeX, nodeY, 12 * dpr, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    ctx.save(); ctx.globalAlpha = 0.1; ctx.fillStyle = 'rgba(232,232,232,1)';
+    ctx.beginPath(); ctx.arc(nodeX - 8 * dpr, nodeY + 40 * dpr, 1.5 * dpr, 0, Math.PI * 2); ctx.fill();
+    ctx.globalAlpha = 0.06; ctx.beginPath(); ctx.arc(nodeX + 5 * dpr, nodeY + 65 * dpr, 1.2 * dpr, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+  }
+
+  function tick() { frame++; draw(); animId = requestAnimationFrame(tick); }
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  resize();
+  const ro = new ResizeObserver(() => { if (resize()) initState(); });
+  ro.observe(canvas);
+  initState();
+
+  if (prefersReduced) { drawStaticFrame(); }
+  else {
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!animId) animId = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(animId); animId = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+    window.addEventListener('pagehide', () => { cancelAnimationFrame(animId); io.disconnect(); ro.disconnect(); });
+  }
+})();
+</script>
