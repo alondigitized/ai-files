@@ -1,0 +1,717 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'mai-dxo-doctor-orchestrator')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .mai-dxo-doctor-orchestrator-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  .dxo-flow {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    margin: 2rem 0;
+    font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  }
+  .dxo-flow-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--surface2, var(--surface));
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .dxo-flow-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--story);
+  }
+  .dxo-flow-body {
+    padding: 1.25rem;
+  }
+  .dxo-flow-case {
+    font-size: 0.82rem;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.5;
+  }
+  .dxo-flow-step {
+    margin-bottom: 1rem;
+  }
+  .dxo-flow-persona {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--story);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.2rem;
+  }
+  .dxo-flow-action {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.5;
+    padding-left: 0;
+  }
+  .dxo-flow-arrow {
+    font-size: 0.72rem;
+    color: var(--story);
+    margin: 0.4rem 0;
+  }
+  .dxo-flow-final {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+  .dxo-flow-footer {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .dxo-compare {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    margin: 2rem 0;
+    font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  }
+  .dxo-compare-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--surface2, var(--surface));
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .dxo-compare-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .dxo-compare-body {
+    padding: 1.25rem;
+    overflow-x: auto;
+  }
+  .dxo-compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+  }
+  .dxo-compare-table th {
+    text-align: left;
+    font-weight: 700;
+    color: var(--text);
+    padding: 0.5rem 0.75rem;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+  .dxo-compare-table td {
+    padding: 0.4rem 0.75rem;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    line-height: 1.4;
+    vertical-align: top;
+  }
+  .dxo-compare-table td:first-child {
+    color: var(--text);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .dxo-compare-result {
+    font-size: 1.1rem;
+    font-weight: 900;
+  }
+  .dxo-compare-result-ai { color: var(--text); }
+  .dxo-compare-result-doc { color: var(--text); }
+  .dxo-compare-headline {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+    padding: 0.75rem;
+    border-top: 2px solid var(--border);
+    letter-spacing: 0.04em;
+  }
+
+  .dxo-gap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  .dxo-gap-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+  .dxo-gap-panel-header {
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .dxo-gap-blog .dxo-gap-panel-header {
+    background: color-mix(in srgb, var(--story) 10%, var(--surface));
+    color: var(--story);
+  }
+  .dxo-gap-paper .dxo-gap-panel-header {
+    background: color-mix(in srgb, var(--muted) 8%, var(--surface));
+    color: var(--muted);
+  }
+  .dxo-gap-panel-body {
+    padding: 1.25rem;
+  }
+  .dxo-gap-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+  }
+  .dxo-gap-quote {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+    padding-left: 0.75rem;
+    border-left: 2px solid var(--border);
+    font-style: italic;
+  }
+  .dxo-gap-blog .dxo-gap-quote {
+    border-left-color: var(--story);
+  }
+  .dxo-gap-attr {
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+  }
+  .dxo-gap-status {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+  }
+  .dxo-gap-paper .dxo-gap-status {
+    color: var(--muted);
+  }
+
+  @media (max-width: 600px) {
+    .dxo-gap { grid-template-columns: 1fr; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="context">
+      <h2><span class="num">01 — Context</span>The Puzzle Cases</h2>
+      <p>In June 2025, Microsoft published a paper showing its diagnostic AI system could solve NEJM Case Challenge puzzles — the hardest diagnostic problems in clinical medicine — with 80% accuracy. The physicians it tested against scored 19.9%. Three days later, Microsoft's official blog announced "The Path to Medical Superintelligence."</p>
+      <p>NEJM clinicopathological conference cases have been published weekly since the 1920s. They are deliberately adversarial: rare diseases, atypical presentations, zebra diagnoses designed to test the limits of clinical reasoning. Historical NEJM reader accuracy on these cases averages roughly 30%. Solving them is closer to a crossword tournament than a clinic visit. They test pattern recognition on exotic diseases, not the bread-and-butter diagnostic work that fills most clinical hours.</p>
+      <p>AI was already outperforming unassisted humans on these puzzles before MAI-DxO existed. In a 2023 peer-reviewed study in NEJM AI, Eriksen et al. showed GPT-4 correctly diagnosed 57% of CPC cases in a static evaluation, outperforming 99.98% of simulated human readers. McDuff et al. (2025) reported PaLM-2 at 59.1% top-10 accuracy versus 33.6% for unassisted clinicians on 302 NEJM cases. The question was whether a structured agentic approach — one that simulates the back-and-forth of a real clinical encounter rather than answering a multiple-choice question — could push accuracy further.</p>
+      <p>The FDA has authorized over 1,250 AI-enabled medical devices, approximately 76% of them in radiology, and over 96% cleared through the 510(k) pathway. Almost all are narrow: one imaging modality, one disease, one decision. A general diagnostic orchestrator that reasons across specialties and orders its own tests is categorically different from an image classifier. That is why the paper matters — regardless of its marketing problems.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="mai-dxo-doctor-orchestrator-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Halo</strong> — Five warm particles orbit in a tight constellation, passing signal arcs between each other. A radiant halo inflates outward from the system, growing to dwarf the working parts. At peak inflation the halo wobbles and contracts sharply, scattering fragments. The constellation is revealed underneath, still orbiting, still real.</p>
+
+    <section class="section" id="mechanism">
+      <h2><span class="num">02 — The Mechanism</span>Five Doctors in One Model</h2>
+      <p>MAI-DxO — Medical AI Diagnostic Orchestrator — is not five separate models. It is one large language model wearing five hats in sequence. The paper describes five specialist personas, each role-played within a single LLM: Dr. Hypothesis generates the differential diagnosis, Dr. Test-Chooser selects which tests to order, Dr. Challenger plays devil's advocate against the leading diagnosis, Dr. Stewardship monitors cost, and Dr. Checklist verifies that every top diagnosis has at least one discriminating test ordered. The framework was developed primarily on GPT-4.1 but is model-agnostic — it runs on top of models from OpenAI, Google, Anthropic, xAI, DeepSeek, and Meta.</p>
+      <p>The benchmark infrastructure, called SDBench, simulates a sequential clinical encounter. A Gatekeeper agent (powered by o4-mini) controls information disclosure — the diagnostic agent must ask for tests and receive results, rather than reading the full case at once. A Judge (powered by o3) evaluates whether the final diagnosis is correct, using a 5-point Likert rubric where a score of 4 or above counts as correct. This is meaningfully harder than a multiple-choice format: the AI must decide what to ask, in what order, and when to stop.</p>
+
+      <div class="dxo-flow">
+        <div class="dxo-flow-header">
+          <div class="dxo-flow-dot"></div>
+          MAI-DxO Orchestration — Illustrative Case
+        </div>
+        <div class="dxo-flow-body">
+          <div class="dxo-flow-case">CASE: 47-year-old with unexplained weight loss, night sweats, elevated LDH</div>
+          <div class="dxo-flow-step">
+            <div class="dxo-flow-persona">Dr. Hypothesis</div>
+            <div class="dxo-flow-action">Generates differential: lymphoma 35%, TB 25%, hyperthyroidism 20%, sarcoidosis, HIV</div>
+          </div>
+          <div class="dxo-flow-arrow" aria-hidden="true">&#x2193;</div>
+          <div class="dxo-flow-step">
+            <div class="dxo-flow-persona">Dr. Test-Chooser</div>
+            <div class="dxo-flow-action">Orders: CT chest/abdomen, LDH isoenzymes, PPD skin test, TSH — Est. $1,840</div>
+          </div>
+          <div class="dxo-flow-arrow" aria-hidden="true">&#x2193;</div>
+          <div class="dxo-flow-step">
+            <div class="dxo-flow-persona">Dr. Challenger</div>
+            <div class="dxo-flow-action">"Sarcoidosis can present identically. Have you ruled out ACE level?" — Adds: serum ACE, calcium</div>
+          </div>
+          <div class="dxo-flow-arrow" aria-hidden="true">&#x2193;</div>
+          <div class="dxo-flow-step">
+            <div class="dxo-flow-persona">Dr. Stewardship</div>
+            <div class="dxo-flow-action">CT justified given symptom cluster. PPD + ACE is cost-efficient. Running total: $2,210</div>
+          </div>
+          <div class="dxo-flow-arrow" aria-hidden="true">&#x2193;</div>
+          <div class="dxo-flow-step">
+            <div class="dxo-flow-persona">Dr. Checklist</div>
+            <div class="dxo-flow-action">All top-3 diagnoses have at least one discriminating test ordered. Proceeds to final diagnosis.</div>
+          </div>
+          <div class="dxo-flow-final">FINAL DIAGNOSIS: Non-Hodgkin lymphoma</div>
+          <div class="dxo-flow-footer">This is an illustrative example constructed from the persona roles described in the paper. It is not a verbatim case from the study.</div>
+        </div>
+      </div>
+
+      <p>The headline numbers, precisely: the ensemble MAI-DxO configuration paired with o3 achieved 85.5% diagnostic accuracy on all 304 NEJM cases at a cost of $7,184 per case. The "budgeted" configuration — the one the paper's own abstract rounds to "80%" — scored 79.9% at $2,396 per case. For comparison, off-the-shelf o3 without MAI-DxO scored 78.6% at $7,850 per case. The orchestrator's real contribution is not raw accuracy. It is efficiency: matching o3's performance at roughly 70% lower cost.</p>
+      <p>The cross-model results are the paper's strongest evidence that the framework itself is valuable. MAI-DxO improved diagnostic accuracy by an average of 11 percentage points across models from six different companies. Off-the-shelf GPT-4o scored 49.3%. Claude variants reached the 60–70% range. The orchestration layer lifted all of them. This is a genuine technical contribution — a reusable reasoning scaffold, not a one-off benchmark result.</p>
+    </section>
+
+    <section class="section" id="comparison">
+      <h2><span class="num">03 — The Comparison</span>The Methodological Gap</h2>
+      <p>The paper's most-cited number is the physician comparison: MAI-DxO at 85.5% versus physicians at 19.9%. "Four times better than doctors." That comparison has at least five asterisks.</p>
+
+      <div class="dxo-compare">
+        <div class="dxo-compare-header">
+          <div class="dxo-compare-dot"></div>
+          Test Conditions — Side by Side
+        </div>
+        <div class="dxo-compare-body">
+          <table class="dxo-compare-table">
+            <caption class="sr-only">Comparison of test conditions between MAI-DxO and physicians</caption>
+            <thead>
+              <tr>
+                <th scope="col">Condition</th>
+                <th scope="col">MAI-DxO (Ensemble)</th>
+                <th scope="col">Physicians</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Cases tested</td>
+                <td>304 (incl. 248 train/val)</td>
+                <td>56 (held-out only)</td>
+              </tr>
+              <tr>
+                <td>Search engines</td>
+                <td>N/A (embedded in model)</td>
+                <td>Prohibited</td>
+              </tr>
+              <tr>
+                <td>Textbooks</td>
+                <td>N/A</td>
+                <td>Prohibited</td>
+              </tr>
+              <tr>
+                <td>Colleagues</td>
+                <td>N/A</td>
+                <td>Prohibited</td>
+              </tr>
+              <tr>
+                <td>AI tools</td>
+                <td>Is the AI tool</td>
+                <td>Prohibited</td>
+              </tr>
+              <tr>
+                <td>Specialty mix</td>
+                <td>All knowledge domains</td>
+                <td>17 primary care, 4 generalists</td>
+              </tr>
+              <tr>
+                <td>False positive cases</td>
+                <td>0 tested</td>
+                <td>0 tested</td>
+              </tr>
+              <tr>
+                <td>Peer-reviewed</td>
+                <td colspan="2">No (arXiv preprint, ~10 months without journal acceptance)</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="dxo-compare-headline">REPORTED: 85.5% vs. 19.9% — "four times better than doctors"</div>
+        </div>
+      </div>
+
+      <p><strong>Different case sets.</strong> MAI-DxO's 85.5% was measured on all 304 NEJM cases, including the 248 cases used for training and validation. The physician 19.9% was measured on only the 56 held-out test cases published in 2024–2025. The paper does not prominently report MAI-DxO's accuracy on just the 56-case subset. The widely circulated "4x better" comparison rests on measuring the AI across a larger, partly familiar dataset against physicians on a smaller, exclusively unfamiliar one.</p>
+      <p><strong>Tool-stripped generalists.</strong> Twenty-one physicians participated: 17 primary care doctors, 4 in-hospital generalists, median 12 years of experience. They were prohibited from using search engines, textbooks, colleagues, or AI tools. The paper itself acknowledges they worked "without access to colleagues, textbooks, or even generative AI, which may feature in their normal clinical practice." No diagnostic radiologists, rheumatologists, or infectious disease specialists — the physicians most likely to solve rare-disease puzzles — were included.</p>
+      <p><strong>No false positive measurement.</strong> The benchmark contains zero healthy or benign cases. It cannot measure whether the system would incorrectly diagnose disease in a healthy patient. In clinical deployment, false positives are arguably the most dangerous failure mode.</p>
+      <p><strong>Partially synthetic data.</strong> The Gatekeeper generates "realistic synthetic findings" for tests not covered in the original NEJM narrative, to avoid signaling that a query is off-path. Parts of the diagnostic information the AI interacts with are AI-generated, not from real patient data.</p>
+      <p><strong>Scoring reliability.</strong> The Judge model's agreement with human reviewers was lower for AI diagnoses (Cohen's kappa 0.70) than for human diagnoses (kappa 0.87). The system used to determine whether AI got the answer right was itself less reliable when grading the AI.</p>
+      <p>Three named medical AI experts publicly disputed the framing within days of publication. Nasim Eftekhari, Chief AI and Analytics Officer at City of Hope, called the superiority claim "exaggerated" because "the way the doctors were evaluated did not align with what happens in real life." James S. Barry, Medical Director of the University of Colorado Hospital NICU, said the study asks "the wrong question" — the comparison should be "physicians using standard resources versus physicians using LLMs." Lauren Bruckner, Chief Medical Information Officer at Roswell Park, called the physician restriction "a little unfair."</p>
+      <p>The paper acknowledges most of these limitations. It states: "These results do not yet establish the clinical efficacy of MAI-DxO in real-world decision support." It was submitted to arXiv on June 27, 2025. As of April 2026 — nearly ten months later — no journal acceptance has been publicly reported. All 15 authors are Microsoft-affiliated. No independent replication exists. The benchmark, SDBench, has not been publicly released.</p>
+
+      <div class="dxo-gap">
+        <div class="dxo-gap-panel dxo-gap-blog">
+          <div class="dxo-gap-panel-header">Microsoft AI Blog — June 30, 2025</div>
+          <div class="dxo-gap-panel-body">
+            <div class="dxo-gap-title">"The Path to Medical Superintelligence"</div>
+            <div class="dxo-gap-quote">"Clinical reasoning capabilities that exceed those of any individual physician."</div>
+            <div class="dxo-gap-attr">— Harsha Nori &amp; Dominic King, Fortune</div>
+            <div class="dxo-gap-quote">"A model which is multiple times better than the best humans in the world, that has the breadth of all or most of the expert clinicians worldwide, combined with the depth of any given expert."</div>
+            <div class="dxo-gap-attr">— Mustafa Suleyman, CEO Microsoft AI, Newsweek</div>
+          </div>
+        </div>
+        <div class="dxo-gap-panel dxo-gap-paper">
+          <div class="dxo-gap-panel-header">arXiv Preprint — June 27, 2025</div>
+          <div class="dxo-gap-panel-body">
+            <div class="dxo-gap-title">"Sequential Diagnosis with Language Models"</div>
+            <div class="dxo-gap-quote">"These results do not yet establish the clinical efficacy of MAI-DxO in real-world decision support."</div>
+            <div class="dxo-gap-attr">— Paper authors (all Microsoft-affiliated)</div>
+            <div class="dxo-gap-quote">"[Physicians worked] without access to colleagues, textbooks, or even generative AI, which may feature in their normal clinical practice."</div>
+            <div class="dxo-gap-attr">— Paper limitations section</div>
+            <div class="dxo-gap-status">Status: Not peer-reviewed. ~10 months, no journal acceptance.</div>
+          </div>
+        </div>
+      </div>
+
+      <p>The gap between these two documents is the story. The paper was careful. The blog was not.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">04 — Signal</span>The Cost of Overclaiming</h2>
+      <p>An agentic diagnostic system hitting 80% on the hardest clinical puzzles in medicine — up from 57% just two years earlier — is a real milestone. The 11-point average improvement across model families suggests the orchestration framework itself is transferable. The cost reduction, matching o3 at 70% lower computational cost, matters for any future deployment. MAI-DxO is a genuine technical achievement. The paper, hedged and detailed, largely represents it honestly.</p>
+      <p>The marketing did not. Mustafa Suleyman, CEO of Microsoft AI, defined "medical superintelligence" as "a model which is multiple times better than the best humans in the world." The blog titled "The Path to Medical Superintelligence" appeared three days after the arXiv submission. Harsha Nori and Dominic King told Fortune that MAI-DxO demonstrates "clinical reasoning capabilities that exceed those of any individual physician." The claim was built on a comparison between an AI tested on 304 cases and generalist physicians tested on 56, stripped of every tool a practicing doctor uses.</p>
+      <p>Dominic King, VP of Health at Microsoft AI, told Fortune: "Breakthroughs need trust for real-world impact... AI will help them arrive at diagnoses faster, but it can't replace the human connection." The "medical superintelligence" framing is precisely the kind of claim that erodes the trust King says breakthroughs need.</p>
+      <p>The study that would actually matter — the one James Barry described — has not been done. Not "AI versus naked physicians" but "physicians with AI versus physicians without AI." That is the question clinical deployment requires an answer to. It is the question Microsoft chose not to ask. MAI-DxO solves 80% of the hardest diagnostic puzzles in medicine. That is remarkable. But "medical superintelligence" requires a comparison to actual medical practice — physicians with their tools, their colleagues, their databases — and that comparison was never run. The paper that supposedly proves superintelligence proves something more useful and less dramatic: that structured AI reasoning on rare-disease puzzles has reached a level worth testing in real clinics, with real patients, under real conditions. That study is the one that matters. It has not been done.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.mai-dxo-doctor-orchestrator-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f5f0e8';
+  const STORY_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#c8963e';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+
+  const [sR, sG, sB] = hexToRgb(STORY_COLOR.startsWith('#') ? STORY_COLOR : '#c8963e');
+  const AMB_R = 140, AMB_G = 125, AMB_B = 95;
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  });
+  ro.observe(canvas);
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const P_CONSTELLATION = 180;
+  const P_INFLATION = 540;
+  const P_PEAK = 660;
+  const P_CONTRACTION = 750;
+  const P_REVEAL = 900;
+  const CYCLE = 960;
+
+  const NUM_NODES = 5;
+  const ORBIT_R = 40;
+  interface Node {
+    angle: number; r: number; breathFreq: number;
+    breathPhase: number; alpha: number; baseAlpha: number;
+  }
+  const nodes: Node[] = [];
+
+  function initNodes() {
+    nodes.length = 0;
+    for (let i = 0; i < NUM_NODES; i++) {
+      nodes.push({
+        angle: (i / NUM_NODES) * Math.PI * 2,
+        r: 3 + Math.random() * 1,
+        breathFreq: 0.03 + Math.random() * 0.015,
+        breathPhase: Math.random() * Math.PI * 2,
+        alpha: 0.8,
+        baseAlpha: 0.75 + Math.random() * 0.15,
+      });
+    }
+  }
+
+  interface Arc { from: number; to: number; birth: number; life: number; alpha: number; }
+  const arcs: Arc[] = [];
+  let lastArcFrame = 0;
+
+  function spawnArc(f: number) {
+    const from = Math.floor(Math.random() * NUM_NODES);
+    const to = (from + 1 + Math.floor(Math.random() * (NUM_NODES - 1))) % NUM_NODES;
+    arcs.push({ from, to, birth: f, life: 20, alpha: 0 });
+  }
+
+  let haloR = 0, haloAlpha = 0, haloWobble = 0, haloSecondaryR = 0;
+
+  const MAX_FRAGS = 12;
+  interface Frag {
+    x: number; y: number; vx: number; vy: number;
+    alpha: number; r: number; active: boolean;
+  }
+  const frags: Frag[] = [];
+
+  function initFrags() {
+    frags.length = 0;
+    for (let i = 0; i < MAX_FRAGS; i++) {
+      frags.push({ x: 0, y: 0, vx: 0, vy: 0, alpha: 0, r: 1.5, active: false });
+    }
+  }
+
+  function spawnFrags(cx: number, cy: number, radius: number) {
+    for (let i = 0; i < MAX_FRAGS; i++) {
+      const angle = (i / MAX_FRAGS) * Math.PI * 2 + Math.random() * 0.5;
+      const speed = 1.0 + Math.random() * 1.5;
+      frags[i].x = cx + Math.cos(angle) * radius * 0.8;
+      frags[i].y = cy + Math.sin(angle) * radius * 0.8;
+      frags[i].vx = Math.cos(angle) * speed;
+      frags[i].vy = Math.sin(angle) * speed;
+      frags[i].alpha = 0.2 + Math.random() * 0.1;
+      frags[i].r = 1 + Math.random() * 1.5;
+      frags[i].active = true;
+    }
+  }
+
+  const NUM_AMB = 18;
+  interface Amb { x: number; y: number; vx: number; vy: number; r: number; a: number; }
+  const ambs: Amb[] = [];
+
+  function initAmb() {
+    ambs.length = 0;
+    for (let i = 0; i < NUM_AMB; i++) {
+      ambs.push({
+        x: Math.random() * (W || 800), y: Math.random() * (H || 380),
+        vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.2,
+        r: 1 + Math.random() * 2, a: 0.04 + Math.random() * 0.03,
+      });
+    }
+  }
+
+  let globalFade = 1, revealPulse = 0;
+
+  function nodeXY(n: Node, rotation: number, cx: number, cy: number): [number, number] {
+    const a = n.angle + rotation;
+    return [cx + Math.cos(a) * ORBIT_R, cy + Math.sin(a) * ORBIT_R];
+  }
+
+  function update() {
+    const cf = frame % CYCLE;
+    const cx = W / 2;
+    const cy = H / 2;
+
+    for (const a of ambs) {
+      a.x += a.vx; a.y += a.vy;
+      if (a.x < -10) a.x = W + 10; if (a.x > W + 10) a.x = -10;
+      if (a.y < -10) a.y = H + 10; if (a.y > H + 10) a.y = -10;
+    }
+
+    for (const f of frags) {
+      if (!f.active) continue;
+      f.x += f.vx; f.y += f.vy; f.vx *= 0.97; f.vy *= 0.97;
+      f.alpha -= 0.005;
+      if (f.alpha <= 0) { f.active = false; f.alpha = 0; }
+    }
+
+    if (cf < P_INFLATION || (cf >= P_CONTRACTION && cf < CYCLE - 60)) {
+      if (cf - lastArcFrame >= 30) { spawnArc(cf); lastArcFrame = cf; }
+    }
+
+    for (let i = arcs.length - 1; i >= 0; i--) {
+      const age = cf - arcs[i].birth;
+      if (age < 0 || age > arcs[i].life) { arcs.splice(i, 1); }
+      else {
+        const t = age / arcs[i].life;
+        arcs[i].alpha = t < 0.3 ? (t / 0.3) * 0.15 : 0.15 * (1 - (t - 0.3) / 0.7);
+      }
+    }
+
+    for (const n of nodes) {
+      n.r = 3 + 0.8 * Math.sin(cf * n.breathFreq + n.breathPhase);
+    }
+
+    if (cf < P_CONSTELLATION) {
+      haloR = 0; haloAlpha = 0; haloWobble = 0; globalFade = 1; revealPulse = 0;
+      for (const n of nodes) n.alpha = n.baseAlpha;
+    } else if (cf < P_INFLATION) {
+      const t = (cf - P_CONSTELLATION) / (P_INFLATION - P_CONSTELLATION);
+      const accel = t > 0.67 ? 1 + (t - 0.67) * 1.2 : 1;
+      const maxR = Math.min(220, Math.min(W, H) * 0.52);
+      haloR = Math.min(50 + (maxR - 50) * t * accel, maxR) + Math.sin(cf * 0.015) * 5;
+      haloAlpha = 0.06 + 0.04 * t; haloSecondaryR = haloR * 0.6; haloWobble = 0;
+      globalFade = 1; for (const n of nodes) n.alpha = n.baseAlpha;
+    } else if (cf < P_PEAK) {
+      const t = (cf - P_INFLATION) / (P_PEAK - P_INFLATION);
+      const maxR = Math.min(220, Math.min(W, H) * 0.52);
+      haloR = maxR + Math.sin(cf * 0.015) * 5;
+      haloAlpha = 0.08 + 0.04 * Math.sin(cf * 0.02);
+      haloSecondaryR = haloR * 0.6; haloWobble = t * 8;
+      globalFade = 1; for (const n of nodes) n.alpha = n.baseAlpha;
+    } else if (cf < P_CONTRACTION) {
+      const t = (cf - P_PEAK) / (P_CONTRACTION - P_PEAK);
+      const ease = t < 0.5 ? 1.5 * t : 0.75 + 0.25 * ((t - 0.5) / 0.5);
+      const maxR = Math.min(220, Math.min(W, H) * 0.52);
+      haloR = maxR - (maxR - 50) * ease;
+      haloAlpha = 0.10 * (1 - ease * 0.7);
+      haloSecondaryR = haloR * 0.6; haloWobble = 8 * (1 - ease);
+      if (cf === P_PEAK) spawnFrags(cx, cy, maxR);
+      globalFade = 1; for (const n of nodes) n.alpha = n.baseAlpha;
+    } else if (cf < P_REVEAL) {
+      const t = (cf - P_CONTRACTION) / (P_REVEAL - P_CONTRACTION);
+      haloR = 50; haloAlpha = 0.03; haloSecondaryR = 30; haloWobble = 0; globalFade = 1;
+      if (t < 0.13) {
+        revealPulse = 1 - (t / 0.13);
+        for (const n of nodes) n.alpha = n.baseAlpha + (1 - n.baseAlpha) * revealPulse;
+      } else { revealPulse = 0; for (const n of nodes) n.alpha = n.baseAlpha; }
+    } else {
+      const t = (cf - P_REVEAL) / (CYCLE - P_REVEAL);
+      globalFade = t < 0.67 ? 1 - (t / 0.67) : 0;
+      haloR = 50; haloAlpha = 0.03 * globalFade; haloSecondaryR = 30; haloWobble = 0;
+      for (const n of nodes) n.alpha = n.baseAlpha * globalFade;
+    }
+
+    if (cf === 0) {
+      arcs.length = 0; lastArcFrame = 0;
+      for (const f of frags) { f.active = false; f.alpha = 0; }
+      globalFade = 1; revealPulse = 0;
+    }
+  }
+
+  function draw() {
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+    const cx = W / 2, cy = H / 2;
+    const cf = frame % CYCLE;
+    const rotation = cf * 0.008;
+
+    for (const a of ambs) {
+      ctx.globalAlpha = a.a * globalFade;
+      ctx.fillStyle = `rgb(${AMB_R},${AMB_G},${AMB_B})`;
+      ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    if (haloR > 1 && haloAlpha > 0.003) {
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, haloR);
+      grad.addColorStop(0, `rgba(${sR},${sG},${sB},${(haloAlpha * 0.3).toFixed(4)})`);
+      grad.addColorStop(0.4, `rgba(${sR},${sG},${sB},${(haloAlpha * 0.6).toFixed(4)})`);
+      grad.addColorStop(0.7, `rgba(${sR},${sG},${sB},${(haloAlpha * 0.4).toFixed(4)})`);
+      grad.addColorStop(1, `rgba(${sR},${sG},${sB},0)`);
+      ctx.fillStyle = grad;
+
+      if (haloWobble > 0.5) {
+        ctx.beginPath();
+        for (let i = 0; i <= 64; i++) {
+          const angle = (i / 64) * Math.PI * 2;
+          const wo = Math.sin(angle * 5 + cf * 0.08) * haloWobble;
+          const px = cx + Math.cos(angle) * (haloR + wo);
+          const py = cy + Math.sin(angle) * (haloR + wo);
+          i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+        }
+        ctx.closePath(); ctx.fill();
+      } else {
+        ctx.beginPath(); ctx.arc(cx, cy, haloR, 0, Math.PI * 2); ctx.fill();
+      }
+
+      if (haloSecondaryR > 10 && haloAlpha > 0.01) {
+        ctx.strokeStyle = `rgba(${sR},${sG},${sB},${(haloAlpha * 0.5).toFixed(4)})`;
+        ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, haloSecondaryR, 0, Math.PI * 2); ctx.stroke();
+      }
+
+      if (haloR > 60) {
+        ctx.strokeStyle = `rgba(${sR},${sG},${sB},${(haloAlpha * 0.35).toFixed(4)})`;
+        ctx.lineWidth = 0.5; ctx.beginPath();
+        if (haloWobble > 0.5) {
+          for (let i = 0; i <= 64; i++) {
+            const angle = (i / 64) * Math.PI * 2;
+            const wo = Math.sin(angle * 5 + cf * 0.08) * haloWobble;
+            const px = cx + Math.cos(angle) * (haloR + wo);
+            const py = cy + Math.sin(angle) * (haloR + wo);
+            i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+          }
+          ctx.closePath();
+        } else { ctx.arc(cx, cy, haloR, 0, Math.PI * 2); }
+        ctx.stroke();
+      }
+    }
+
+    for (const f of frags) {
+      if (!f.active || f.alpha < 0.005) continue;
+      ctx.globalAlpha = f.alpha * globalFade;
+      ctx.fillStyle = `rgb(${sR},${sG},${sB})`;
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    for (const arc of arcs) {
+      if (arc.alpha < 0.005) continue;
+      const nFrom = nodes[arc.from], nTo = nodes[arc.to];
+      const [x1, y1] = nodeXY(nFrom, rotation, cx, cy);
+      const [x2, y2] = nodeXY(nTo, rotation, cx, cy);
+      const mx = (x1 + x2) / 2 + (cy - (y1 + y2) / 2) * 0.3;
+      const my = (y1 + y2) / 2 + ((x1 + x2) / 2 - cx) * 0.3;
+      ctx.strokeStyle = `rgba(${sR},${sG},${sB},${(arc.alpha * globalFade).toFixed(4)})`;
+      ctx.lineWidth = 1; ctx.beginPath();
+      ctx.moveTo(x1, y1); ctx.quadraticCurveTo(mx, my, x2, y2); ctx.stroke();
+    }
+
+    for (const n of nodes) {
+      const [nx, ny] = nodeXY(n, rotation, cx, cy);
+      const alpha = n.alpha * globalFade;
+      if (alpha < 0.01) continue;
+      ctx.globalAlpha = alpha * 0.2;
+      ctx.fillStyle = `rgb(${sR},${sG},${sB})`;
+      ctx.beginPath(); ctx.arc(nx, ny, n.r * 3, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = alpha;
+      ctx.beginPath(); ctx.arc(nx, ny, n.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function tick() { frame++; update(); draw(); raf = requestAnimationFrame(tick); }
+
+  function init() { initNodes(); initAmb(); initFrags(); }
+
+  requestAnimationFrame(() => {
+    init();
+    if (prefersReduced) {
+      haloR = 50; haloAlpha = 0.04; haloSecondaryR = 30; haloWobble = 0; globalFade = 1;
+      for (const n of nodes) n.alpha = n.baseAlpha;
+      draw();
+    } else {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+        else { cancelAnimationFrame(raf); raf = 0; }
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+      window.addEventListener('pagehide', () => {
+        cancelAnimationFrame(raf); io.disconnect(); ro.disconnect();
+      });
+    }
+  });
+})();
+</script>
