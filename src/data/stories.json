@@ -2390,5 +2390,65 @@
       "Claude Opus 4 became the first model classified ASL-3 by Anthropic."
     ],
     "audio": "/audio/claude-blackmail-study.m4a"
+  },
+  {
+    "slug": "michigan-brain-mri",
+    "side": "light",
+    "chapter": 13,
+    "volume": 3,
+    "title": "The Scan That Reads Itself",
+    "deck": "University of Michigan trained a diagnostic AI on twenty years of its own brain scans — and outperformed every general-purpose model tested by more than 30%.",
+    "date": "February 2026",
+    "isoDate": "2026-02-06",
+    "readTime": "7 min",
+    "emoji": "🧠",
+    "tags": [
+      "Medical AI",
+      "Radiology",
+      "Foundation Model",
+      "Open Source"
+    ],
+    "story": "#b8853b",
+    "storyDark": "#3d2a10",
+    "verifyText": "Primary source: Hollon et al., 'Learning neuroimaging models from health system-scale data,' Nature Biomedical Engineering (Feb 6 2026), DOI 10.1038/s41551-025-01608-0. Preprint arXiv:2509.18638. Open-source code and weights at github.com/MLNeurosurg/Prima.",
+    "sources": [
+      {
+        "label": "Nature Biomedical Engineering — Learning neuroimaging models from health system-scale data",
+        "url": "https://www.nature.com/articles/s41551-025-01608-0"
+      },
+      {
+        "label": "arXiv preprint 2509.18638",
+        "url": "https://arxiv.org/abs/2509.18638"
+      },
+      {
+        "label": "Michigan Medicine — AI model can read and diagnose brain MRI in seconds",
+        "url": "https://www.michiganmedicine.org/health-lab/ai-model-can-read-and-diagnose-brain-mri-seconds"
+      },
+      {
+        "label": "GitHub — MLNeurosurg/Prima (code and weights)",
+        "url": "https://github.com/MLNeurosurg/Prima"
+      },
+      {
+        "label": "MLiNS Lab — University of Michigan",
+        "url": "https://mlins.org/"
+      },
+      {
+        "label": "FastMRI — Meta AI & NYU Langone",
+        "url": "https://ai.meta.com/research/impact/fastmri/"
+      },
+      {
+        "label": "Nature npj Health Systems — AI solutions to radiology workforce shortage",
+        "url": "https://www.nature.com/articles/s44401-025-00023-6"
+      }
+    ],
+    "whatIf": "Imagine two hundred academic medical centers in the United States each follow Prima's template. Each trains a foundation model on its own radiology archive. Johns Hopkins's model learns from Hopkins patients — disproportionately referred cases, high acuity, urban demographics. Mayo's model learns from Mayo patients — older, whiter, upper Midwestern. A safety-net hospital in the Bronx trains on its archive — younger patients, higher rates of untreated chronic disease, older scanners, shorter reports. Each model is excellent inside its own walls. Each scores above 90% AUROC on its own prospective data. None has been validated against the others. A patient transfers from a rural clinic in Alabama to a tertiary center in Boston. The Alabama model flagged nothing. The Boston model flags a probable glioma. Who is right? There is no arbitration layer. There is no shared validation standard. There is no national benchmark for institutional diagnostic AI. The FDA has cleared over a thousand narrow medical devices but has no framework for certifying a model whose training data is one hospital's memory. Peer review does not scale to every institution's bespoke model. Insurance does not yet reimburse AI-assisted reads differently by institution. The very thing that makes these models powerful — they learned from the institution that will use them — is the thing that makes them incomparable. Training a model on your own patients is a structural choice: it bakes in your protocols, your demographics, your disease prevalence, your radiologists' linguistic habits, and their blind spots. The model does not know it is biased toward its training population, because from its perspective, the training population is the world. When a patient's scan crosses institutional lines, the model that reads it at the receiving hospital has never seen a scan like this one — or more subtly, it has seen thousands like it, but from a different population, and the difference is not visible in any output. And in the gap between two confident, institution-specific diagnoses, a patient waits for an answer that no system is designed to reconcile.",
+    "llmsDescription": "In February 2026, a team led by University of Michigan neurosurgeon Todd Hollon published Prima, a vision language model for brain MRI diagnosis, in Nature Biomedical Engineering (DOI: 10.1038/s41551-025-01608-0). Trained on the UM220K Neuroimaging Dataset — 221,147 MRI studies from more than 170,000 patients spanning two decades of radiology at U-M Health — Prima achieved a mean diagnostic AUROC of 92.0% across 52 neurological conditions (range: 76.4% for arachnoid cysts to 98.5% for Dandy-Walker malformations) and outperformed general-purpose vision-language models including OpenAI CLIP, Microsoft LLaVA, PubMedCLIP, BioMedCLIP, and Med-Flamingo by more than 30%. Trained in 50 days on 8 NVIDIA L40S GPUs and validated prospectively on 29,435 studies over one year, Prima has no FDA clearance and is not clinically deployed; its single-institution training data is both the source of its performance advantage and its primary generalizability limitation. The code and model weights are open-source under an MIT license on GitHub.",
+    "abstract": [
+      "Prima published in Nature Biomedical Engineering, Feb 6, 2026 (DOI 10.1038/s41551-025-01608-0).",
+      "Trained on UM220K: 221,147 brain MRI studies from 170,000+ patients over two decades at U-M Health.",
+      "Mean diagnostic AUROC: 92.0% across 52 neurological conditions (range 76.4%–98.5%).",
+      "Outperformed OpenAI CLIP, Microsoft LLaVA, BioMedCLIP, Med-Flamingo by more than 30%.",
+      "No FDA clearance, no clinical deployment; code and weights open-source on GitHub."
+    ]
   }
 ]
