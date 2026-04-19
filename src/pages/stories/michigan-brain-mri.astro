@@ -1,0 +1,921 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'michigan-brain-mri')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .michigan-brain-mri-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* Darker variants for text usage on light-theme surfaces (WCAG AA contrast).
+     --story (#b8853b) and --accent (#9a7430) remain for decorative use (dots, borders, glows). */
+  :root[data-theme="light"] .mri-archive-value.accent,
+  :root[data-theme="light"] .mri-archive-section-label,
+  :root[data-theme="light"] .mri-perf-section-label,
+  :root[data-theme="light"] .mri-perf-mean-num,
+  :root[data-theme="light"] .mri-perf-range-row.high .mri-perf-score,
+  :root[data-theme="light"] .mri-perf-range-row.mean-line .mri-perf-condition,
+  :root[data-theme="light"] .mri-perf-range-row.mean-line .mri-perf-score,
+  :root[data-theme="light"] .mri-perf-gap,
+  :root[data-theme="light"] .mri-boundary-panel.validated .mri-boundary-header,
+  :root[data-theme="light"] .mri-boundary-panel.validated .mri-boundary-value {
+    color: #7a5a1c;
+  }
+  :root[data-theme="light"] .mri-perf-range-row.low .mri-perf-score,
+  :root[data-theme="light"] .mri-perf-baseline-score,
+  :root[data-theme="light"] .mri-boundary-panel.unknown .mri-boundary-header,
+  :root[data-theme="light"] .mri-boundary-panel.unknown .mri-boundary-value {
+    color: #7d5c1d;
+  }
+  :root[data-theme="light"] .mri-archive-header,
+  :root[data-theme="light"] .mri-perf-header {
+    color: #5f5a4e;
+  }
+
+  /* === Reenactment #1: The Archive === */
+  .mri-archive {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    margin: 2rem 0;
+    font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  }
+  .mri-archive-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--surface2, var(--surface));
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .mri-archive-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--story);
+  }
+  .mri-archive-body {
+    padding: 1.25rem;
+  }
+  .mri-archive-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.35rem 0;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    border-bottom: 1px solid var(--border);
+  }
+  .mri-archive-row:last-child {
+    border-bottom: none;
+  }
+  .mri-archive-label {
+    color: var(--muted);
+  }
+  .mri-archive-value {
+    color: var(--text);
+    font-weight: 700;
+    text-align: right;
+  }
+  .mri-archive-value.accent {
+    color: var(--story);
+  }
+  .mri-archive-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0.75rem 0;
+  }
+  .mri-archive-section-label {
+    font-size: 0.68rem;
+    color: var(--story);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 0.5rem 0 0.2rem;
+  }
+  .mri-archive-footer {
+    font-size: 0.72rem;
+    color: var(--muted);
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--border);
+    background: var(--surface2, var(--surface));
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  /* === Reenactment #2: The Performance Range === */
+  .mri-perf {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    margin: 2rem 0;
+    font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  }
+  .mri-perf-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--surface2, var(--surface));
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .mri-perf-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--story);
+  }
+  .mri-perf-body {
+    padding: 1.25rem;
+  }
+  .mri-perf-mean {
+    text-align: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .mri-perf-mean-num {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--story);
+    line-height: 1;
+  }
+  .mri-perf-mean-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 0.3rem;
+    letter-spacing: 0.04em;
+  }
+  .mri-perf-range {
+    margin-bottom: 1.25rem;
+  }
+  .mri-perf-range-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0;
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+  .mri-perf-range-row.high .mri-perf-score {
+    color: var(--story);
+    font-weight: 700;
+  }
+  .mri-perf-range-row.low .mri-perf-score {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .mri-perf-range-row.mean-line {
+    border-top: 1px dashed var(--story);
+    border-bottom: 1px dashed var(--story);
+    margin: 0.3rem 0;
+    padding: 0.5rem 0;
+  }
+  .mri-perf-range-row.mean-line .mri-perf-condition,
+  .mri-perf-range-row.mean-line .mri-perf-score {
+    color: var(--story);
+    font-weight: 700;
+  }
+  .mri-perf-condition {
+    color: var(--muted);
+  }
+  .mri-perf-score {
+    color: var(--text);
+    text-align: right;
+  }
+  .mri-perf-note {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+    text-align: right;
+    margin-top: -0.2rem;
+    margin-bottom: 0.3rem;
+  }
+  .mri-perf-section-label {
+    font-size: 0.68rem;
+    color: var(--story);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 0.75rem 0 0.3rem;
+    border-top: 1px solid var(--border);
+  }
+  .mri-perf-baseline-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.35rem 0;
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+  .mri-perf-baseline-name {
+    color: var(--muted);
+  }
+  .mri-perf-baseline-score {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .mri-perf-gap {
+    text-align: center;
+    padding: 0.75rem 0 0;
+    font-size: 0.78rem;
+    color: var(--story);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .mri-perf-footer {
+    font-size: 0.72rem;
+    color: var(--muted);
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--border);
+    background: var(--surface2, var(--surface));
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  /* === Reenactment #3: The Boundary === */
+  .mri-boundary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  @media (max-width: 640px) {
+    .mri-boundary { grid-template-columns: 1fr; }
+  }
+  .mri-boundary-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  }
+  .mri-boundary-panel.validated {
+    border-top: 3px solid var(--story);
+  }
+  .mri-boundary-panel.unknown {
+    border-top: 3px solid var(--accent);
+  }
+  .mri-boundary-header {
+    padding: 0.75rem 1.25rem;
+    background: var(--surface2, var(--surface));
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .mri-boundary-panel.validated .mri-boundary-header {
+    color: var(--story);
+  }
+  .mri-boundary-panel.unknown .mri-boundary-header {
+    color: var(--accent);
+  }
+  .mri-boundary-body {
+    padding: 1rem 1.25rem;
+  }
+  .mri-boundary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.35rem 0;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    border-bottom: 1px solid var(--border);
+    gap: 0.75rem;
+  }
+  .mri-boundary-row:last-child {
+    border-bottom: none;
+  }
+  .mri-boundary-label {
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .mri-boundary-value {
+    color: var(--text);
+    font-weight: 600;
+    text-align: right;
+  }
+  .mri-boundary-panel.validated .mri-boundary-value {
+    color: var(--story);
+  }
+  .mri-boundary-panel.unknown .mri-boundary-value {
+    color: var(--accent);
+  }
+  .mri-boundary-footer {
+    font-size: 0.72rem;
+    color: var(--muted);
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--border);
+    background: var(--surface2, var(--surface));
+    line-height: 1.5;
+    font-style: italic;
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="queue">
+      <h2><span class="num">01 — Context</span>The Queue</h2>
+      <p>On any given Friday evening at a rural hospital in Michigan, a brain MRI sits in a queue. The radiologist who will read it is not on site. According to the research team behind Prima, rural patients are two to five times more likely than urban patients to wait a full week for MRI results (P&lt;0.001). Scans ordered on weekends face twice the likelihood of a three-day-or-longer delay (P&lt;0.001). The bottleneck is not the machine. It is the human who reads the output.</p>
+      <p>This bottleneck is structural. According to a 2025 analysis in <em>Nature npj Health Systems</em>, over 1,000 AI- and machine-learning-enabled medical devices have received FDA marketing authorization, with radiology accounting for approximately 76% of all clearances. But nearly all are narrow tools — single-task classifiers trained to detect one lesion type, flag one condition, measure one structure. They answer specific questions. They do not read a scan the way a radiologist does: integrating sequences, weighing clinical context, producing a differential diagnosis across dozens of possible conditions. No foundation model had been validated in the peer-reviewed literature for comprehensive brain MRI interpretation.</p>
+      <p>Prior AI work in MRI has addressed different parts of the problem. FastMRI, a collaboration between Meta AI and NYU Langone launched in 2018, used deep learning to reconstruct MRI images from 75% less raw data — making scans faster to acquire. That shortened the time a patient spends in the machine. It did not shorten the time the scan spends waiting to be read. The queue that matters most is not before the scan. It is after.</p>
+    </section>
+
+    <section class="section" id="discovery">
+      <h2><span class="num">02 — Discovery</span>The Archive Becomes the Teacher</h2>
+      <p>In February 2026, a team of twenty researchers at the University of Michigan published a model called Prima in <em>Nature Biomedical Engineering</em> (DOI: 10.1038/s41551-025-01608-0). Prima is a vision language model that processes brain MRI studies and generates diagnostic assessments across 52 neurological conditions — strokes, hemorrhages, tumors, dementia indicators, inflammatory and infectious diseases, developmental malformations. It does this in under three seconds on a single GPU.</p>
+      <p>The model's distinguishing feature is not its architecture. It is its training data. Prima was built on the UM220K Neuroimaging Dataset: 221,147 MRI studies from more than 170,000 patients, comprising 5.6 million MRI sequences, 362 million individual slices, and 3.2 billion volume tokens. This is not internet-scraped data or a curated benchmark set. It is two decades of digitized radiology from a single health system — the brain scans that University of Michigan Health performed and archived between 2004 and 2024, each paired with the radiologist's report.</p>
+
+      <div class="mri-archive">
+        <div class="mri-archive-header">
+          <span class="mri-archive-dot"></span>
+          UM220K Neuroimaging Dataset — University of Michigan Health, 2004–2024
+        </div>
+        <div class="mri-archive-body">
+          <div class="mri-archive-section-label">Scale</div>
+          <div class="mri-archive-row"><span class="mri-archive-label">MRI studies indexed</span><span class="mri-archive-value accent">221,147</span></div>
+          <div class="mri-archive-row"><span class="mri-archive-label">Unique patients</span><span class="mri-archive-value">170,000+</span></div>
+          <div class="mri-archive-row"><span class="mri-archive-label">MRI sequences</span><span class="mri-archive-value">5,600,000</span></div>
+          <div class="mri-archive-row"><span class="mri-archive-label">Individual slices</span><span class="mri-archive-value">362,000,000</span></div>
+          <div class="mri-archive-row"><span class="mri-archive-label">Volume tokens</span><span class="mri-archive-value">3,200,000,000</span></div>
+          <hr class="mri-archive-divider">
+          <div class="mri-archive-section-label">Training Pipeline</div>
+          <div class="mri-archive-row"><span class="mri-archive-label">Paired with</span><span class="mri-archive-value">221,147 radiologist reports</span></div>
+          <div class="mri-archive-row"><span class="mri-archive-label">Report summarization</span><span class="mri-archive-value">GPT-3.5</span></div>
+          <div class="mri-archive-row"><span class="mri-archive-label">Automated labeling</span><span class="mri-archive-value">GPT-4 (94.0% accuracy)</span></div>
+          <hr class="mri-archive-divider">
+          <div class="mri-archive-section-label">Compute</div>
+          <div class="mri-archive-row"><span class="mri-archive-label">Training time</span><span class="mri-archive-value">50 days</span></div>
+          <div class="mri-archive-row"><span class="mri-archive-label">Hardware</span><span class="mri-archive-value">1 HPC node, 8× NVIDIA L40S</span></div>
+          <div class="mri-archive-row"><span class="mri-archive-label">Model parameters</span><span class="mri-archive-value accent">56.6M</span></div>
+        </div>
+        <div class="mri-archive-footer">One hospital's memory. Twenty years of diagnostic expertise, compressed into a model.</div>
+      </div>
+
+      <p>The training approach used a CLIP-style objective: aligning 3D MRI volumes with summarized radiology reports so the model learns to connect visual patterns with diagnostic language. The radiologists' reports were the labels. Michigan did not hire a team of annotators. It used the diagnostic expertise already embedded in twenty years of clinical records. GPT-3.5 stripped non-diagnostic information from the reports, leaving clean diagnostic summaries. GPT-4 handled automated labeling, achieving 94.0% annotation accuracy — comparable, according to the authors, to expert human annotators.</p>
+      <p>The architecture itself is a hierarchical vision transformer that processes MRI data through three stages: volume tokenization, sequence-level learning, and study-level learning. The visual encoder has 56.6 million parameters. Training required 50 days on a single high-performance computing node with eight NVIDIA L40S GPUs — substantial, but within reach of any major academic medical center with its own HPC infrastructure.</p>
+      <p>The team spans five University of Michigan departments — Computer Science, Neurosurgery, Radiology, Neurology, and Computational Medicine — plus the University of Cologne's neurosurgery department. The senior author is Todd Hollon, M.D., a neurosurgeon at U-M Health who leads the Machine Learning in Neurosurgery Lab. The co-first authors are Yiwei Lyu, a postdoctoral fellow in Computer Science and Engineering, and Samir Harake, a data scientist in Hollon's lab. Funding came from the National Institute of Neurological Disorders and Stroke, the Chan Zuckerberg Initiative, the Frankel Institute for Heart and Brain Health, and several university-affiliated foundations.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="michigan-brain-mri-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Archive</strong> — Scattered nodes drift within a faint circular boundary; connecting strands form between them, pulling them into clusters; the interior crystallizes into a warm lattice while isolated nodes outside the boundary drift unconnected; the structure dissolves and reforms.</p>
+
+    <section class="section" id="mechanism">
+      <h2><span class="num">03 — The Mechanism</span>Why Institutional Training Wins</h2>
+      <p>According to the paper, Prima achieved a mean diagnostic AUROC of 92.0% across 52 radiologic diagnoses spanning neoplastic, inflammatory, infectious, and developmental conditions. AUROC — area under the receiver operating characteristic curve — measures a model's ability to distinguish between positive and negative cases across all classification thresholds. It is not a simple "accuracy" percentage. The full range of Prima's performance stretched from 76.4% for arachnoid cysts to 98.5% for Dandy-Walker malformations. Press coverage of the paper frequently led with a figure of "97.5% accuracy" or "up to 97.5%," drawn from the high end of individual diagnoses. The paper itself uses 92.0% as its headline metric. The low end — 76.4% — appeared in none of the press coverage reviewed for this story.</p>
+      <p>The comparison that defines the paper's contribution is not the absolute number. It is the gap. According to the authors, Prima outperformed every general-purpose model tested by more than 30% in diagnostic AUROC. The baselines were not weak: they included OpenAI CLIP (base and large variants), Microsoft LLaVA (1.5-7B, Mistral, and Med variants), PubMedCLIP, BioMedCLIP, and Med-Flamingo. These represent the best available general-purpose and medical vision-language models. All were tested on the same diagnostic task. None came close. The gap is the thesis in numbers: a model trained on one institution's own diagnostic archive outperformed every model trained on the open internet or broad medical corpora by a wide margin.</p>
+
+      <div class="mri-perf">
+        <div class="mri-perf-header">
+          <span class="mri-perf-dot"></span>
+          Prima Diagnostic Performance
+        </div>
+        <div class="mri-perf-body">
+          <div class="mri-perf-mean">
+            <div class="mri-perf-mean-num">92.0%</div>
+            <div class="mri-perf-mean-label">Mean AUROC across 52 diagnoses</div>
+          </div>
+          <div class="mri-perf-range">
+            <div class="mri-perf-range-row high">
+              <span class="mri-perf-condition">Dandy-Walker malformations</span>
+              <span class="mri-perf-score">98.5%</span>
+            </div>
+            <div class="mri-perf-note">press headline: "97.5% accuracy"</div>
+            <div class="mri-perf-range-row" aria-hidden="true">
+              <span class="mri-perf-condition" style="opacity:0.5">…</span>
+              <span class="mri-perf-score" style="opacity:0.5">…</span>
+            </div>
+            <div class="mri-perf-range-row mean-line">
+              <span class="mri-perf-condition">Mean (52 diagnoses)</span>
+              <span class="mri-perf-score">92.0%</span>
+            </div>
+            <div class="mri-perf-range-row" aria-hidden="true">
+              <span class="mri-perf-condition" style="opacity:0.5">…</span>
+              <span class="mri-perf-score" style="opacity:0.5">…</span>
+            </div>
+            <div class="mri-perf-range-row low">
+              <span class="mri-perf-condition">Arachnoid cysts</span>
+              <span class="mri-perf-score">76.4%</span>
+            </div>
+            <div class="mri-perf-note">never mentioned in press coverage</div>
+          </div>
+          <div class="mri-perf-section-label">Comparison — Same Task, Same Test</div>
+          <div class="mri-perf-baseline-row"><span class="mri-perf-baseline-name">OpenAI CLIP (large)</span><span class="mri-perf-baseline-score">&lt; 62%</span></div>
+          <div class="mri-perf-baseline-row"><span class="mri-perf-baseline-name">Microsoft LLaVA (Med)</span><span class="mri-perf-baseline-score">&lt; 62%</span></div>
+          <div class="mri-perf-baseline-row"><span class="mri-perf-baseline-name">BioMedCLIP</span><span class="mri-perf-baseline-score">&lt; 62%</span></div>
+          <div class="mri-perf-baseline-row"><span class="mri-perf-baseline-name">PubMedCLIP</span><span class="mri-perf-baseline-score">&lt; 62%</span></div>
+          <div class="mri-perf-baseline-row"><span class="mri-perf-baseline-name">Med-Flamingo</span><span class="mri-perf-baseline-score">&lt; 62%</span></div>
+          <div class="mri-perf-gap">Prima outperformed all general-purpose models by &gt;30%</div>
+        </div>
+        <div class="mri-perf-footer">The &lt;62% baseline figures are derived from the paper's reported &gt;30% gap from Prima's 92.0% mean. Exact per-model scores were not extracted for this review.</div>
+      </div>
+
+      <p>The prospective validation is unusually rigorous. The authors tested Prima on 29,435 MRI studies conducted over one year at Michigan Medicine — exceeding their calculated minimum sample size of 22,338. This is not a retrospective analysis of selected cases. It is every brain MRI that passed through one health system for twelve consecutive months.</p>
+      <p>Prima also demonstrated clinical utility beyond raw diagnosis. According to the paper, the model achieved an AUROC of 85.1% for neurosurgery referral recommendations and 89.1% for neurology referrals. For worklist prioritization — deciding which scans a radiologist should read first — it produced a Pearson correlation of 0.69. Combined with its sub-three-second inference time on a single GPU, processing approximately 6.5 studies per second, these results suggest a system that could not only identify conditions but triage which scans need human attention most urgently. Against the rural and weekend wait times established above, this is the payoff the research is aiming for.</p>
+    </section>
+
+    <section class="section" id="limitation">
+      <h2><span class="num">04 — The Limitation</span>One Hospital's Memory</h2>
+      <p><strong>Prima was trained entirely on data from a single institution.</strong> The UM220K dataset reflects University of Michigan Health's patients, scanning protocols, equipment manufacturers (Siemens, Philips, GE), reporting conventions, and disease prevalence. Prima learned to read MRIs the way Michigan's radiologists read them — because it learned from Michigan's radiologists. This is both the source of its strength and the central unresolved question.</p>
+
+      <div class="mri-boundary">
+        <div class="mri-boundary-panel validated">
+          <div class="mri-boundary-header">Validated</div>
+          <div class="mri-boundary-body">
+            <div class="mri-boundary-row"><span class="mri-boundary-label">Training data</span><span class="mri-boundary-value">221,147 studies (U-M Health)</span></div>
+            <div class="mri-boundary-row"><span class="mri-boundary-label">Prospective test</span><span class="mri-boundary-value">29,435 studies (U-M Health, 1 yr)</span></div>
+            <div class="mri-boundary-row"><span class="mri-boundary-label">Fairness (within U-M)</span><span class="mri-boundary-value">No significant differences by race, sex, manufacturer, insurance</span></div>
+            <div class="mri-boundary-row"><span class="mri-boundary-label">External: BraTS glioma</span><span class="mri-boundary-value">98.0% Top-3 accuracy</span></div>
+            <div class="mri-boundary-row"><span class="mri-boundary-label">External: UCSF/NYU metastasis</span><span class="mri-boundary-value">On par with prospective</span></div>
+            <div class="mri-boundary-row"><span class="mri-boundary-label">External: acute stroke</span><span class="mri-boundary-value">On par with prospective</span></div>
+          </div>
+        </div>
+        <div class="mri-boundary-panel unknown">
+          <div class="mri-boundary-header">Unknown</div>
+          <div class="mri-boundary-body">
+            <div class="mri-boundary-row"><span class="mri-boundary-label">Training data from</span><span class="mri-boundary-value">0 other institutions</span></div>
+            <div class="mri-boundary-row"><span class="mri-boundary-label">Prospective test at</span><span class="mri-boundary-value">0 other hospitals</span></div>
+            <div class="mri-boundary-row"><span class="mri-boundary-label">Community hospital protocols</span><span class="mri-boundary-value">Not tested</span></div>
+            <div class="mri-boundary-row"><span class="mri-boundary-label">Disease prevalence</span><span class="mri-boundary-value">Reflects Michigan only</span></div>
+            <div class="mri-boundary-row"><span class="mri-boundary-label">Out-of-distribution conditions</span><span class="mri-boundary-value">Not addressed</span></div>
+            <div class="mri-boundary-row"><span class="mri-boundary-label">FDA status</span><span class="mri-boundary-value">No clearance. No submission disclosed.</span></div>
+          </div>
+          <div class="mri-boundary-footer">Everything validated lives inside one institution's walls. Everything outside is blank.</div>
+        </div>
+      </div>
+
+      <p>Within U-M Health's patient population, the fairness results are strong. According to the paper, Prima showed no statistically significant performance differences across race, sex, MRI manufacturer, or insurance status. One exception: patients aged 34 to 61, where the authors attribute the disparity to diagnostic diversity in that cohort. But these fairness results prove algorithmic equity within Michigan's population. They do not prove it universally. The external validation offers partial reassurance — 98.0% Top-3 accuracy on BraTS glioma region selection, performance on par with prospective results on UCSF and NYU metastasis datasets, and competitive acute stroke detection. Transfer learning applications showed promise too: brain age estimation with 5.6 years mean absolute error, autism spectrum prediction matching independent supervised benchmarks, dementia and Alzheimer's prediction competitive with ADNI/OASIS baselines. These are encouraging. They are not a substitute for the core generalizability test: how does Prima perform on routine scans from a community hospital with different equipment, different protocols, and a different patient population?</p>
+      <p>The authors acknowledge this. Prima is in what they describe as the "initial stage" of clinical certification. It has not received FDA clearance. It has not been submitted for clearance, as far as the paper or any public statement discloses. It is not deployed in clinical practice. The code and model weights are open-source under an MIT license on GitHub, which means the architecture can be replicated. The dataset cannot. UM220K is Michigan's. Every other hospital that wants to follow this approach would need to build a model from its own archive.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">05 — Signal</span>Can Every Hospital Build Its Own?</h2>
+      <p>What Prima proves is specific: a mid-sized research university with twenty years of digitized radiology records and modest high-performance computing resources — eight GPUs, fifty days — can build a specialist diagnostic AI that outperforms every general-purpose model by a wide margin. The ingredients are not exotic compute or a proprietary architecture. They are institutional data and time. The authors report consistent performance improvements with larger training datasets, suggesting foundation model scaling properties. If this holds, hospitals with larger or more diverse archives would build even stronger models.</p>
+      <p>The open-source release lowers one barrier. The code is on GitHub. The weights are available. Any institution can study the architecture, adapt the training pipeline, and attempt replication. But the bottleneck is not the method. It is the data. UM220K represents a specific institutional asset — two decades of paired scans and reports from radiologists whose clinical culture, diagnostic vocabulary, and decision patterns are baked into every label. Building an equivalent dataset requires having generated and stored that data in the first place. Most community hospitals do not have twenty years of digitized radiology at this scale. Many do not have the HPC infrastructure either.</p>
+      <p>One gap is worth noting: every quote in the coverage of Prima comes from the research team or University of Michigan institutional staff. No independent radiologist or AI researcher has publicly evaluated Prima's claims. The peer review process at <em>Nature Biomedical Engineering</em> provides editorial and reviewer oversight as a partial proxy. The open-source release enables independent replication. But as of this writing, no external evaluation has been published. Hollon has described Prima as a "co-pilot for interpreting medical imaging studies" and, more ambitiously, as "ChatGPT for medical imaging." These framings are aspirational, not descriptive of current capability. Prima is a research result published in a peer-reviewed journal. It is not a product. It is not deployed. Whether the approach scales beyond one institution's walls — whether the template can travel even if the dataset cannot — is the question the paper raises but cannot yet answer.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.michigan-brain-mri-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  const ACC_R = 184, ACC_G = 133, ACC_B = 59;
+  const BASE_R = 107, BASE_G = 101, BASE_B = 88;
+  const DIM_R = 140, DIM_G = 132, DIM_B = 115;
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f5f0e8';
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  });
+  ro.observe(canvas);
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const PHASE_SCATTER_END = 120;
+  const PHASE_ALIGN_END = 600;
+  const PHASE_CRYSTAL_END = 840;
+  const PHASE_HOLD_END = 1020;
+  const PHASE_DISSOLVE_END = 1320;
+  const CYCLE = 1440;
+
+  const NUM_INNER = 40;
+  type InnerNode = { x: number; y: number; vx: number; vy: number; baseAngle: number; baseDist: number; r: number; alpha: number; baseAlpha: number; connections: number; warm: number };
+  const innerNodes: InnerNode[] = [];
+
+  const NUM_OUTER = 9;
+  type OuterNode = { x: number; y: number; vx: number; vy: number; r: number; alpha: number; angle: number; dist: number };
+  const outerNodes: OuterNode[] = [];
+
+  const MAX_STRANDS = 65;
+  type Strand = { a: number; b: number; alpha: number; targetAlpha: number; born: number; dying: boolean; deathStart: number };
+  const strands: Strand[] = [];
+
+  const BOUNDARY_R = 130;
+  const BOUNDARY_PAD = 20;
+  let boundaryAlpha = 0.08;
+  let interiorGlowAlpha = 0;
+
+  const cxFn = () => W / 2;
+  const cyFn = () => H / 2;
+
+  function nodeDist(ax: number, ay: number, bx: number, by: number) {
+    const dx = ax - bx, dy = ay - by;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  function strandExists(a: number, b: number) {
+    for (const s of strands) {
+      if ((s.a === a && s.b === b) || (s.a === b && s.b === a)) return true;
+    }
+    return false;
+  }
+
+  function initInner() {
+    innerNodes.length = 0;
+    for (let i = 0; i < NUM_INNER; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const d = Math.random() * (BOUNDARY_R - 10);
+      innerNodes.push({
+        x: cxFn() + Math.cos(angle) * d,
+        y: cyFn() + Math.sin(angle) * d,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        baseAngle: angle,
+        baseDist: d,
+        r: 2 + Math.random() * 1,
+        alpha: 0.25,
+        baseAlpha: 0.25,
+        connections: 0,
+        warm: 0,
+      });
+    }
+  }
+
+  function initOuter() {
+    outerNodes.length = 0;
+    for (let i = 0; i < NUM_OUTER; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const d = BOUNDARY_R + BOUNDARY_PAD + 15 + Math.random() * 50;
+      outerNodes.push({
+        x: cxFn() + Math.cos(angle) * d,
+        y: cyFn() + Math.sin(angle) * d,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        r: 2,
+        alpha: 0.12,
+        angle,
+        dist: d,
+      });
+    }
+  }
+
+  function resetStrands() { strands.length = 0; }
+
+  function repositionInner() {
+    for (const n of innerNodes) {
+      const angle = Math.random() * Math.PI * 2;
+      const d = Math.random() * (BOUNDARY_R - 10);
+      n.x = cxFn() + Math.cos(angle) * d;
+      n.y = cyFn() + Math.sin(angle) * d;
+      n.vx = (Math.random() - 0.5) * 0.4;
+      n.vy = (Math.random() - 0.5) * 0.4;
+      n.connections = 0;
+      n.warm = 0;
+      n.alpha = n.baseAlpha;
+    }
+  }
+
+  function update() {
+    const cf = frame % CYCLE;
+
+    for (const n of innerNodes) {
+      n.vx += (Math.random() - 0.5) * 0.04;
+      n.vy += (Math.random() - 0.5) * 0.04;
+      n.vx *= 0.98;
+      n.vy *= 0.98;
+      const maxV = 0.4;
+      if (n.vx > maxV) n.vx = maxV;
+      if (n.vx < -maxV) n.vx = -maxV;
+      if (n.vy > maxV) n.vy = maxV;
+      if (n.vy < -maxV) n.vy = -maxV;
+
+      n.x += n.vx;
+      n.y += n.vy;
+
+      const d = nodeDist(n.x, n.y, cxFn(), cyFn());
+      if (d > BOUNDARY_R - 5) {
+        const angle = Math.atan2(n.y - cyFn(), n.x - cxFn());
+        n.x = cxFn() + Math.cos(angle) * (BOUNDARY_R - 6);
+        n.y = cyFn() + Math.sin(angle) * (BOUNDARY_R - 6);
+        const nx2 = Math.cos(angle), ny2 = Math.sin(angle);
+        const dot = n.vx * nx2 + n.vy * ny2;
+        n.vx -= 2 * dot * nx2;
+        n.vy -= 2 * dot * ny2;
+      }
+    }
+
+    for (const n of outerNodes) {
+      n.vx += (Math.random() - 0.5) * 0.02;
+      n.vy += (Math.random() - 0.5) * 0.02;
+      n.vx *= 0.99;
+      n.vy *= 0.99;
+      const maxV = 0.15;
+      if (n.vx > maxV) n.vx = maxV;
+      if (n.vx < -maxV) n.vx = -maxV;
+      if (n.vy > maxV) n.vy = maxV;
+      if (n.vy < -maxV) n.vy = -maxV;
+
+      n.x += n.vx;
+      n.y += n.vy;
+
+      const d = nodeDist(n.x, n.y, cxFn(), cyFn());
+      if (d < BOUNDARY_R + BOUNDARY_PAD) {
+        const angle = Math.atan2(n.y - cyFn(), n.x - cxFn());
+        n.x = cxFn() + Math.cos(angle) * (BOUNDARY_R + BOUNDARY_PAD + 2);
+        n.y = cyFn() + Math.sin(angle) * (BOUNDARY_R + BOUNDARY_PAD + 2);
+        const nx2 = Math.cos(angle), ny2 = Math.sin(angle);
+        const dot = n.vx * nx2 + n.vy * ny2;
+        n.vx -= 2 * dot * nx2;
+        n.vy -= 2 * dot * ny2;
+      }
+      if (n.x < 10) { n.x = 10; n.vx = Math.abs(n.vx); }
+      if (n.x > W - 10) { n.x = W - 10; n.vx = -Math.abs(n.vx); }
+      if (n.y < 10) { n.y = 10; n.vy = Math.abs(n.vy); }
+      if (n.y > H - 10) { n.y = H - 10; n.vy = -Math.abs(n.vy); }
+    }
+
+    for (const n of innerNodes) n.connections = 0;
+    for (const s of strands) {
+      if (!s.dying) {
+        innerNodes[s.a].connections++;
+        innerNodes[s.b].connections++;
+      }
+    }
+
+    if (cf < PHASE_SCATTER_END) {
+      boundaryAlpha = 0.08;
+      interiorGlowAlpha = 0;
+      for (const n of innerNodes) { n.alpha = n.baseAlpha; n.warm = 0; }
+    } else if (cf < PHASE_ALIGN_END) {
+      const t = (cf - PHASE_SCATTER_END) / (PHASE_ALIGN_END - PHASE_SCATTER_END);
+      boundaryAlpha = 0.08 + t * 0.04;
+
+      if ((cf - PHASE_SCATTER_END) % 15 === 0 && strands.length < MAX_STRANDS) {
+        let bestA = -1, bestB = -1, bestD = Infinity;
+        for (let attempts = 0; attempts < 30; attempts++) {
+          const ai = (Math.random() * NUM_INNER) | 0;
+          const bi = (Math.random() * NUM_INNER) | 0;
+          if (ai === bi) continue;
+          const d2 = nodeDist(innerNodes[ai].x, innerNodes[ai].y, innerNodes[bi].x, innerNodes[bi].y);
+          if (d2 < 60 && d2 < bestD && !strandExists(ai, bi)) { bestA = ai; bestB = bi; bestD = d2; }
+        }
+        if (bestA >= 0) {
+          strands.push({ a: bestA, b: bestB, alpha: 0, targetAlpha: 0.10 + Math.random() * 0.08, born: cf, dying: false, deathStart: 0 });
+        }
+      }
+
+      for (const s of strands) { if (!s.dying) s.alpha = Math.min(s.targetAlpha, s.alpha + 0.002); }
+
+      for (const s of strands) {
+        if (s.dying) continue;
+        const na = innerNodes[s.a], nb = innerNodes[s.b];
+        const dx = nb.x - na.x, dy = nb.y - na.y;
+        const d2 = Math.sqrt(dx * dx + dy * dy) || 1;
+        const force = 0.02;
+        na.vx += (dx / d2) * force; na.vy += (dy / d2) * force;
+        nb.vx -= (dx / d2) * force; nb.vy -= (dy / d2) * force;
+      }
+
+      for (const n of innerNodes) {
+        if (n.connections >= 3) n.alpha = Math.min(0.4, n.alpha + 0.003);
+      }
+    } else if (cf < PHASE_CRYSTAL_END) {
+      boundaryAlpha = 0.12 + 0.04 * Math.sin(cf * 0.07);
+      interiorGlowAlpha = ((cf - PHASE_ALIGN_END) / (PHASE_CRYSTAL_END - PHASE_ALIGN_END)) * 0.06;
+
+      for (const s of strands) {
+        if (s.dying) continue;
+        const na = innerNodes[s.a], nb = innerNodes[s.b];
+        const dx = nb.x - na.x, dy = nb.y - na.y;
+        const d2 = Math.sqrt(dx * dx + dy * dy) || 1;
+        const force = 0.035;
+        na.vx += (dx / d2) * force; na.vy += (dy / d2) * force;
+        nb.vx -= (dx / d2) * force; nb.vy -= (dy / d2) * force;
+        s.alpha = Math.min(s.targetAlpha, s.alpha + 0.003);
+      }
+
+      for (const n of innerNodes) {
+        if (n.connections >= 4) {
+          n.warm = Math.min(1, n.warm + 0.02);
+          n.alpha = Math.min(0.6, n.alpha + 0.005);
+        } else if (n.connections >= 2) {
+          n.warm = Math.min(0.4, n.warm + 0.008);
+          n.alpha = Math.min(0.45, n.alpha + 0.003);
+        }
+      }
+
+      if (cf % 8 === 0 && strands.length < MAX_STRANDS) {
+        let bestA = -1, bestB = -1, bestD = Infinity;
+        for (let attempts = 0; attempts < 40; attempts++) {
+          const ai = (Math.random() * NUM_INNER) | 0;
+          const bi = (Math.random() * NUM_INNER) | 0;
+          if (ai === bi) continue;
+          const d2 = nodeDist(innerNodes[ai].x, innerNodes[ai].y, innerNodes[bi].x, innerNodes[bi].y);
+          if (d2 < 70 && d2 < bestD && !strandExists(ai, bi)) { bestA = ai; bestB = bi; bestD = d2; }
+        }
+        if (bestA >= 0) {
+          strands.push({ a: bestA, b: bestB, alpha: 0, targetAlpha: 0.12 + Math.random() * 0.06, born: cf, dying: false, deathStart: 0 });
+        }
+      }
+    } else if (cf < PHASE_HOLD_END) {
+      boundaryAlpha = 0.12 + 0.04 * Math.sin(cf * 0.07);
+      interiorGlowAlpha = 0.06;
+
+      for (const n of innerNodes) {
+        n.x += Math.sin(cf * 0.03 + n.baseAngle) * 0.15;
+        n.y += Math.cos(cf * 0.03 + n.baseDist * 0.01) * 0.15;
+      }
+
+      for (const s of strands) { if (!s.dying) s.alpha = Math.min(s.targetAlpha, s.alpha + 0.001); }
+
+      for (const s of strands) {
+        if (s.dying) continue;
+        const na = innerNodes[s.a], nb = innerNodes[s.b];
+        const dx = nb.x - na.x, dy = nb.y - na.y;
+        const d2 = Math.sqrt(dx * dx + dy * dy) || 1;
+        const force = 0.015;
+        na.vx += (dx / d2) * force; na.vy += (dy / d2) * force;
+        nb.vx -= (dx / d2) * force; nb.vy -= (dy / d2) * force;
+      }
+    } else if (cf < PHASE_DISSOLVE_END) {
+      const t = (cf - PHASE_HOLD_END) / (PHASE_DISSOLVE_END - PHASE_HOLD_END);
+      boundaryAlpha = 0.12 - t * 0.04;
+      interiorGlowAlpha = 0.06 * (1 - t);
+
+      for (let i = 0; i < strands.length; i++) {
+        const s = strands[i];
+        if (s.dying) continue;
+        const na = innerNodes[s.a], nb = innerNodes[s.b];
+        const avgD = (nodeDist(na.x, na.y, cxFn(), cyFn()) + nodeDist(nb.x, nb.y, cxFn(), cyFn())) / 2;
+        const normalizedDist = avgD / BOUNDARY_R;
+        if (t > normalizedDist * 0.7) { s.dying = true; s.deathStart = cf; }
+      }
+
+      for (const s of strands) {
+        if (s.dying) {
+          const elapsed = cf - s.deathStart;
+          s.alpha = Math.max(0, s.targetAlpha * (1 - elapsed / 40));
+        }
+      }
+
+      for (const n of innerNodes) {
+        n.warm = Math.max(0, n.warm - 0.015);
+        n.alpha = Math.max(n.baseAlpha, n.alpha - 0.004);
+      }
+    } else {
+      boundaryAlpha = 0.08;
+      interiorGlowAlpha = 0;
+
+      for (const n of innerNodes) { n.warm = 0; n.alpha = n.baseAlpha; }
+      for (const s of strands) { s.alpha = Math.max(0, s.alpha - 0.01); }
+
+      if (cf === CYCLE - 1) { repositionInner(); resetStrands(); }
+    }
+
+    for (let i = strands.length - 1; i >= 0; i--) {
+      if (strands[i].alpha <= 0 && strands[i].dying) strands.splice(i, 1);
+    }
+  }
+
+  function draw() {
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+
+    if (interiorGlowAlpha > 0.001) {
+      const grad = ctx.createRadialGradient(cxFn(), cyFn(), 0, cxFn(), cyFn(), BOUNDARY_R);
+      grad.addColorStop(0, `rgba(${ACC_R},${ACC_G},${ACC_B},${(interiorGlowAlpha * 1.5).toFixed(4)})`);
+      grad.addColorStop(0.6, `rgba(${ACC_R},${ACC_G},${ACC_B},${(interiorGlowAlpha * 0.6).toFixed(4)})`);
+      grad.addColorStop(1, `rgba(${ACC_R},${ACC_G},${ACC_B},0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(cxFn(), cyFn(), BOUNDARY_R, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.beginPath();
+    ctx.arc(cxFn(), cyFn(), BOUNDARY_R + BOUNDARY_PAD, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(${ACC_R},${ACC_G},${ACC_B},${boundaryAlpha.toFixed(3)})`;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.lineWidth = 0.8;
+    for (const s of strands) {
+      if (s.alpha <= 0.001) continue;
+      const na = innerNodes[s.a], nb = innerNodes[s.b];
+      ctx.beginPath();
+      ctx.moveTo(na.x, na.y);
+      ctx.lineTo(nb.x, nb.y);
+      ctx.strokeStyle = `rgba(${ACC_R},${ACC_G},${ACC_B},${s.alpha.toFixed(3)})`;
+      ctx.stroke();
+    }
+
+    for (const n of innerNodes) {
+      const wr = Math.round(BASE_R + (ACC_R - BASE_R) * n.warm);
+      const wg = Math.round(BASE_G + (ACC_G - BASE_G) * n.warm);
+      const wb = Math.round(BASE_B + (ACC_B - BASE_B) * n.warm);
+
+      ctx.globalAlpha = n.alpha * 0.25;
+      ctx.fillStyle = `rgb(${wr},${wg},${wb})`;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r * 2.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.globalAlpha = n.alpha;
+      ctx.fillStyle = `rgb(${wr},${wg},${wb})`;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    for (const n of outerNodes) {
+      ctx.globalAlpha = n.alpha * 0.3;
+      ctx.fillStyle = `rgb(${DIM_R},${DIM_G},${DIM_B})`;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r * 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.globalAlpha = n.alpha;
+      ctx.fillStyle = `rgb(${DIM_R},${DIM_G},${DIM_B})`;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawStatic() {
+    for (let i = 0; i < NUM_INNER; i++) {
+      const n = innerNodes[i];
+      const angle = (i / NUM_INNER) * Math.PI * 2 + Math.sin(i * 0.7) * 0.5;
+      const ring = (i % 4) / 4;
+      const r = 20 + ring * (BOUNDARY_R - 30);
+      n.x = cxFn() + Math.cos(angle) * r;
+      n.y = cyFn() + Math.sin(angle) * r;
+      n.warm = (i % 3 === 0) ? 0.85 : 0.35;
+      n.alpha = 0.5;
+      n.connections = 3;
+    }
+
+    resetStrands();
+    for (let i = 0; i < NUM_INNER; i++) {
+      for (let j = i + 1; j < NUM_INNER; j++) {
+        if (strands.length >= MAX_STRANDS) break;
+        const d2 = nodeDist(innerNodes[i].x, innerNodes[i].y, innerNodes[j].x, innerNodes[j].y);
+        if (d2 < 65) {
+          strands.push({ a: i, b: j, alpha: 0.14, targetAlpha: 0.14, born: 0, dying: false, deathStart: 0 });
+        }
+      }
+      if (strands.length >= MAX_STRANDS) break;
+    }
+
+    for (let i = 0; i < NUM_OUTER; i++) {
+      const n = outerNodes[i];
+      const angle = (i / NUM_OUTER) * Math.PI * 2 + 0.3;
+      const d = BOUNDARY_R + BOUNDARY_PAD + 20 + (i % 3) * 20;
+      n.x = cxFn() + Math.cos(angle) * d;
+      n.y = cyFn() + Math.sin(angle) * d;
+    }
+
+    boundaryAlpha = 0.14;
+    interiorGlowAlpha = 0.06;
+    draw();
+  }
+
+  function tick() { frame++; update(); draw(); raf = requestAnimationFrame(tick); }
+
+  function init() { initInner(); initOuter(); resetStrands(); }
+
+  requestAnimationFrame(() => {
+    init();
+    if (prefersReduced) {
+      drawStatic();
+    } else {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+        else { cancelAnimationFrame(raf); raf = 0; }
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+
+      window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); io.disconnect(); ro.disconnect(); });
+    }
+  });
+})();
+</script>
