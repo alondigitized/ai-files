@@ -2450,5 +2450,65 @@
       "Outperformed OpenAI CLIP, Microsoft LLaVA, BioMedCLIP, Med-Flamingo by more than 30%.",
       "No FDA clearance, no clinical deployment; code and weights open-source on GitHub."
     ]
+  },
+  {
+    "slug": "evoranker-rare-disease",
+    "side": "light",
+    "chapter": 14,
+    "volume": 3,
+    "title": "The Cross-Species Clue",
+    "deck": "A gene-ranking tool from Hebrew University reads evolutionary co-occurrence across 1,028 species to find rare-disease genes that annotation-dependent tools miss.",
+    "date": "January 2024 · May 2026",
+    "isoDate": "2024-01-04",
+    "readTime": "8 min",
+    "emoji": "🧬",
+    "tags": [
+      "Medical AI",
+      "Genomics",
+      "Rare Disease",
+      "Phylogenetics"
+    ],
+    "story": "#10b981",
+    "storyDark": "#064e3b",
+    "verifyText": "Primary source: Canavati et al., 'Using multi-scale genomics to associate poorly annotated genes with rare diseases,' Genome Medicine 16:4 (Jan 4, 2024), DOI 10.1186/s13073-023-01276-2. Follow-up application: Canavati et al., Genetics in Medicine 28(5) (May 2026), DOI 10.1016/j.gim.2026.102553.",
+    "sources": [
+      {
+        "label": "Genome Medicine — Using multi-scale genomics to associate poorly annotated genes with rare diseases (Canavati et al., Jan 2024)",
+        "url": "https://doi.org/10.1186/s13073-023-01276-2"
+      },
+      {
+        "label": "PubMed — EvORanker method paper (PMID 38178268)",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/38178268/"
+      },
+      {
+        "label": "Genetics in Medicine — Biallelic SUPT4H1 Variants Cause a Multisystem Neurodevelopmental Disorder (May 2026)",
+        "url": "https://doi.org/10.1016/j.gim.2026.102553"
+      },
+      {
+        "label": "Molecular Systems Biology — Identification of Small RNA Pathway Genes Using Patterns of Phylogenetic Conservation and Divergence (Tabach & Ruvkun, 2013)",
+        "url": "https://www.embopress.org/doi/full/10.1038/msb.2013.58"
+      },
+      {
+        "label": "Nature Communications — ML extension of phylogenetic profiling across 1,154 species (Stupp, Tabach et al., 2021)",
+        "url": "https://www.nature.com/articles/s41467-021-27219-2"
+      },
+      {
+        "label": "BFHU — Hebrew University press release (March 30, 2026)",
+        "url": "https://www.bfhu.org/2026/03/30/a-new-ai-breakthrough-could-change-the-long-search-for-rare-disease-diagnoses"
+      },
+      {
+        "label": "EvORanker — public Shiny web application and GitHub repository",
+        "url": "https://tabachlab.shinyapps.io/EvORanker/"
+      }
+    ],
+    "whatIf": "There are roughly 7,000 recognized rare diseases. Approximately half remain without a known genetic cause. For many of those with identified genes, existing annotation databases still cannot reliably prioritize them from exome data. If EvORanker's principle holds — that evolutionary co-occurrence encodes gene function independent of human study — then the diagnostic yield ceiling across rare disease is not a technology problem but an information-routing problem. The signal already exists in phylogenetic data for potentially thousands of undiagnosed children alive today. But the same logic scales in a direction no one is discussing. If evolutionary co-occurrence can identify which genes cause intellectual disability, dystonia, or metabolic failure, it can also identify which variants are protective, advantageous, or enhancement-adjacent. The distance between 'rank candidate genes for a sick child' and 'rank embryo genomes for desirable traits' is not a technical leap — it is the same Kolmogorov–Smirnov test pointed at a different phenotype ontology. Prenatal whole-genome sequencing is already commercially available. The annotation bottleneck that currently limits embryo selection to a handful of well-characterized conditions is exactly the bottleneck this tool dissolves. A tool designed to end diagnostic odysseys, pointed at embryos who are not sick, produces a ranking. The ranking is computed the same way — the evolutionary signal is agnostic about whether the phenotype is 'severe neurodevelopmental disorder' or 'predisposition to academic achievement.' What varies is the HPO term list a user enters, and HPO already contains terms far beyond clinical disease. The tool cannot tell whether it is helping a clinician diagnose a child or helping an IVF clinic select an embryo. No access control distinguishes those use cases. The method is published, the code is open-source, and the phylogenetic matrix is public. Who decides which phenotype terms are legitimate inputs to a tool that can rank any gene for any trait — and what governance infrastructure exists for that decision today?",
+    "llmsDescription": "In January 2024, Dr. Christina Canavati and Prof. Yuval Tabach at the Hebrew University of Jerusalem published EvORanker in Genome Medicine (DOI: 10.1186/s13073-023-01276-2) — a gene-prioritization tool that uses normalized phylogenetic profiling across 1,028 eukaryotic species to rank candidate genes for rare-disease patients. On 91 solved recessive exomes, EvORanker ranked the correct gene first in 69% of cases and within the top five in 95%; on dominant cases, 67% top-ranked and 95% within the top ten. In unsolved cases, it identified DLGAP2 (psychomotor delay) and LPCAT3 (failure to thrive) — both validated by experimental assays. A May 2026 paper in Genetics in Medicine (DOI: 10.1016/j.gim.2026.102553) reported that EvORanker contributed to identifying biallelic SUPT4H1 variants as the cause of a multisystem neurodevelopmental disorder across three unrelated families in Israel, Norway, and Spain, whose motor symptoms improved with dopamine treatment. The tool is open-source, but has no independent validation study, has not been benchmarked against Exomiser (the clinical-genomics standard), and no clinical genomics lab has reported adopting it as of April 2026.",
+    "abstract": [
+      "EvORanker — Canavati & Tabach, Hebrew University of Jerusalem — published in Genome Medicine, Jan 4, 2024.",
+      "Uses normalized phylogenetic profiling across 1,028 eukaryotic species in 16 clades; Kolmogorov–Smirnov + Fisher's combined probability test.",
+      "Recessive benchmark (91 solved exomes): 69% top-ranked, 95% within top 5. Dominant: 67% top-ranked, 95% within top 10.",
+      "Identified DLGAP2 and LPCAT3 in unsolved pediatric cases; contributed to SUPT4H1 finding (Genetics in Medicine, May 2026) whose motor symptoms responded to dopamine.",
+      "Open-source with zero external stars/forks; no Exomiser head-to-head comparison; no clinical adoption as of April 2026."
+    ]
   }
 ]
