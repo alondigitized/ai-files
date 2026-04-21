@@ -1,0 +1,882 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'machines-of-loving-grace')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .machines-of-loving-grace-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* === Reenactment #1: Essay Excerpt Block === */
+  .molg-excerpt-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 2rem 2.25rem;
+    margin: 2rem 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 0.98rem;
+    line-height: 1.75;
+    color: var(--text);
+  }
+  .molg-excerpt-block {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .molg-excerpt-block:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .molg-excerpt-block:first-of-type {
+    padding-top: 0;
+  }
+  .molg-excerpt-hedge {
+    color: var(--story);
+    font-style: italic;
+    font-weight: 600;
+  }
+  .molg-excerpt-footer {
+    font-family: system-ui, sans-serif;
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 1.25rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Darker accent variant for light theme hedge readability */
+  :root[data-theme="light"] .molg-excerpt-hedge,
+  :root[data-theme="light"] .molg-grid-cell a,
+  :root[data-theme="light"] .molg-timeline-annotation {
+    color: #7a5a1c;
+  }
+
+  /* === Reenactment #2: Prediction-to-Analogue Grid === */
+  .molg-grid-wrap {
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+  .molg-grid-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .molg-grid-header span {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .molg-grid-header span:first-child {
+    border-right: 1px solid var(--border);
+  }
+  .molg-grid-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--border);
+  }
+  .molg-grid-row:last-child {
+    border-bottom: none;
+  }
+  .molg-grid-cell {
+    padding: 0.9rem 1.25rem;
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--text);
+  }
+  .molg-grid-cell:first-child {
+    border-right: 1px solid var(--border);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    color: var(--muted);
+  }
+  .molg-grid-cell a {
+    color: var(--story);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in srgb, var(--story) 30%, transparent);
+  }
+  .molg-grid-cell a:hover {
+    border-bottom-color: var(--story);
+  }
+  .molg-grid-empty {
+    color: var(--muted);
+    opacity: 0.45;
+    font-style: normal;
+    font-family: system-ui, sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+  }
+  .molg-grid-footer {
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.85rem 1.25rem;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    line-height: 1.5;
+  }
+
+  /* === Reenactment #3: Reaffirmation Timeline === */
+  .molg-timeline-wrap {
+    margin: 2rem 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 2rem 2.25rem;
+  }
+  .molg-timeline-track {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    padding-top: 1.5rem;
+    gap: 1.25rem;
+  }
+  .molg-timeline-track::before {
+    content: '';
+    position: absolute;
+    top: calc(1.5rem + 6px);
+    left: 14px;
+    right: 14px;
+    height: 2px;
+    background: color-mix(in srgb, var(--story) 30%, transparent);
+  }
+  .molg-timeline-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 220px;
+    position: relative;
+    z-index: 1;
+    flex: 1 1 0;
+  }
+  .molg-timeline-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--story);
+    margin-bottom: 0.75rem;
+    flex-shrink: 0;
+  }
+  .molg-timeline-date {
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+  .molg-timeline-label {
+    font-size: 0.82rem;
+    color: var(--text);
+    line-height: 1.4;
+    font-weight: 600;
+    margin-bottom: 0.45rem;
+  }
+  .molg-timeline-quote {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.45;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+  }
+  .molg-timeline-annotation {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--story);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .molg-disclosure {
+    background: var(--surface);
+    border-left: 3px solid var(--story);
+    padding: 1.25rem 1.5rem;
+    margin: 1.75rem 0;
+    font-size: 0.95rem;
+    color: var(--text);
+    border-radius: 0 0.5rem 0.5rem 0;
+    line-height: 1.65;
+  }
+
+  @media (max-width: 600px) {
+    .molg-timeline-track {
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+    .molg-timeline-track::before {
+      top: 7px;
+      left: 6px;
+      right: auto;
+      width: 2px;
+      height: calc(100% - 14px);
+    }
+    .molg-timeline-node {
+      flex-direction: row;
+      text-align: left;
+      max-width: none;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+    .molg-timeline-dot {
+      margin-bottom: 0;
+      margin-top: 2px;
+    }
+    .molg-grid-header span,
+    .molg-grid-cell {
+      padding: 0.6rem 0.8rem;
+      font-size: 0.8rem;
+    }
+    .molg-excerpt-wrap {
+      padding: 1.25rem;
+    }
+    .molg-timeline-wrap {
+      padding: 1.5rem;
+    }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="document">
+      <h2><span class="num">01 — The Document</span>What Dario Amodei Put in Writing</h2>
+      <p>On October 11, 2024, Dario Amodei — the CEO of Anthropic, one of the world's largest AI companies — published a 15,000-word essay on his personal website titled <em>"Machines of Loving Grace: How AI Could Transform the World for the Better."</em> The title borrowed from Richard Brautigan's 1967 poem — a vision of humans and technology coexisting in a pastoral, mutually cared-for future. The essay was not published on Anthropic's website. It was a personal document, carrying only the author's name.</p>
+
+      <p>The essay divided its vision into five sections: biology and health, neuroscience and mind, economic development and poverty, peace and governance, and work and meaning. Amodei described his reason for writing it: "one of my main reasons for focusing on risks is that they're the only thing standing between us and what I see as a fundamentally positive future."</p>
+
+      <div class="molg-disclosure">
+        A disclosure that belongs here, stated once: Dario Amodei is the chief executive of a company valued at tens of billions of dollars whose core product is the AI technology the essay predicts will transform the world. His optimistic vision of AI's future directly serves Anthropic's commercial position. This does not invalidate the essay. It contextualizes it. The story will not return to this point. It is structural background, not the thesis.
+      </div>
+
+      <p>What made the essay unusual was not its optimism. CEO optimism is an industry byproduct. What made it unusual was its specificity. Amodei named diseases: cancer, Alzheimer's, schizophrenia, malaria, depression, PTSD, addiction. He named technologies: CRISPR, mRNA vaccines, CAR-T cells, AlphaFold, AlphaProteo, optogenetics, expansion microscopy, GLP-1 agonists. He stated percentages. He set timelines. He wrote that powerful AI "could come as early as 2026." Most CEO vision pieces traffic in abstraction. This one chose to be checkable. We are now 18 months past publication and inside Amodei's earliest window.</p>
+    </section>
+
+    <section class="section" id="predictions">
+      <h2><span class="num">02 — The Predictions</span>What He Actually Wrote</h2>
+      <p>Amodei organized his predictions along a confidence gradient. He was most confident about biology and health. He was least confident about governance and peace. The gradient matters because most coverage collapsed the essay into a few headline numbers. The essay itself is more careful than that.</p>
+
+      <div class="molg-excerpt-wrap">
+        <div class="molg-excerpt-block">
+          "Reductions of 95% or more in both mortality and incidence <span class="molg-excerpt-hedge">seem possible</span>." &mdash; "Cancer is <span class="molg-excerpt-hedge">extremely varied and adaptive</span>, and is <span class="molg-excerpt-hedge">likely the hardest of these diseases</span> to fully destroy."
+        </div>
+        <div class="molg-excerpt-block">
+          "doubling of the human lifespan" &mdash; "<span class="molg-excerpt-hedge">there's certainly no guarantee this is biologically possible</span>"
+        </div>
+        <div class="molg-excerpt-block">
+          "20% annual GDP growth" in the developing world &mdash; "<span class="molg-excerpt-hedge">a dream scenario &mdash; perhaps a goal to aim for</span>" &mdash; "<span class="molg-excerpt-hedge">not what happens by default</span>"
+        </div>
+        <div class="molg-excerpt-block">
+          "<span class="molg-excerpt-hedge">all of this is unavoidably going to consist of guesses</span>" &mdash; "<span class="molg-excerpt-hedge">Everything I'm saying could very easily be wrong</span>"
+        </div>
+        <div class="molg-excerpt-footer">Hedging language highlighted — all emphasis from the original essay</div>
+      </div>
+
+      <p>His highest-confidence section was biology and health. The central claim was what he called the "compressed 21st century": AI could "compress the progress that human biologists would have achieved over the next 50–100 years into 5–10 years." Within that frame, he made specific predictions. On cancer: "Reductions of 95% or more in both mortality and incidence seem possible," but cancer is "extremely varied and adaptive, and is likely the hardest of these diseases to fully destroy." On genetic disease: AI could "prevent most genetic disease, and some safer, more reliable descendant of CRISPR may cure most."</p>
+
+      <p>On neuroscience, his confidence dropped. He predicted the "cure or prevention of most mental illness in the next 100 years…completed in 5–10 AI-accelerated years." On lifespan, it dropped further. He referenced a "doubling of the human lifespan" to approximately 150. His own caveat on this point was direct: "there's certainly no guarantee this is biologically possible."</p>
+
+      <p>On economic development, the framing shifted from prediction to aspiration. Amodei described a "dream scenario" of 20% annual GDP growth in the developing world, which "would bring sub-Saharan Africa to current per-capita GDP of China" in 5–10 years. He labeled this explicitly: "a dream scenario — perhaps a goal to aim for" and "not what happens by default."</p>
+
+      <p>On governance and peace — his lowest-confidence section — he wrote that an "AI-enabled polity could be both a stronger protector of individual freedom, and a beacon of hope." He added: "I am not nearly as confident in their feasibility."</p>
+
+      <p>And then the meta-caveats. Amodei hedged the entire essay, repeatedly: "all of this is unavoidably going to consist of guesses." "Everything I'm saying could very easily be wrong." It "will almost certainly prove wrong in the details." He wrote both halves — the extraordinary prediction and the frank acknowledgment that it might be entirely mistaken. Most readers encountered only one half or the other.</p>
+
+      <div class="phantom-wrap">
+        <canvas class="machines-of-loving-grace-canvas" aria-hidden="true"></canvas>
+      </div>
+      <p class="canvas-note"><strong>The Partial Map</strong> — A field of faint ring-outline nodes emerges across the canvas like a cartographer's draft. A handful warm to gold and trace thin connecting lines between them — a small archipelago of evidence in a large quiet sea. The lit nodes breathe gently. The unlit majority remain still, patient, waiting. The gold dims, the map dissolves, and the nodes reappear at shifted positions. The same partial answer, redrawn but never completed.</p>
+    </section>
+
+    <section class="section" id="evidence">
+      <h2><span class="num">03 — The Evidence</span>What Has Happened Since</h2>
+      <p>The essay is 18 months old. That is not enough time to evaluate a 5-to-10-year prediction. It is enough time to ask whether any documented cases map to the essay's claims. This archive has documented several that do — as cases, not as verdicts.</p>
+
+      <p><a href="/stories/alphafold">AlphaFold</a> is the strongest analogue. Amodei named it explicitly in the essay. DeepMind's protein-folding AI solved what had been a 50-year open problem in biology, predicted the 3D structures of more than 200 million proteins, open-sourced the database, and won the Nobel Prize in Chemistry in October 2024 — the same month Amodei published his essay. AlphaFold predates the essay by four years. It is the closest existing example of what the "compressed century" thesis describes: decades of expected scientific progress collapsed into years by computational intelligence.</p>
+
+      <p><a href="/stories/gnome-materials">GNoME</a>, also from DeepMind, discovered 2.2 million new crystal structures in materials science — the equivalent of approximately 800 years of human effort. This is the most literal instance of the compressed-century concept in the archive, though it occurred in materials science, not biology. <a href="/stories/halicin">Halicin</a>, the AI-discovered antibiotic from MIT, demonstrated a different acceleration: a neural network screening over 100 million compounds identified a structurally novel antibiotic in three days. The discovery was published in February 2020, four years before the essay.</p>
+
+      <p>In cancer — the domain where Amodei predicted a 95% reduction in mortality and incidence — the archive documents smaller, specific advances. The <a href="/stories/breast-cancer-ai">MASAI breast cancer screening trial</a> enrolled 105,934 women and found that AI detected 29% more cancers without increasing false positives. In Sydney, an engineer named Paul Conyngham used ChatGPT and AlphaFold to design a personalized mRNA cancer vaccine for his dog Rosie. One tumor shrank by an estimated 50–75%. One did not respond. In a separate case, GitLab co-founder Sid Sijbrandij used an AI-assisted precision medicine pipeline to identify a FAP-targeted therapy for spinal osteosarcoma that was unavailable through standard US oncology. As of January 2026, he reported no evidence of disease. His case required extraordinary personal resources and international coordination.</p>
+
+      <p>On genetic disease, the archive documents EvORanker, a tool from Penn Medicine that uses phylogenetic profiling across many species to rank candidate genes for rare diseases. On diagnostics, Microsoft's MAI-DxO multi-agent system reported high accuracy on medical "mystery cases," though the system was marketed with comparisons its own paper cannot fully support.</p>
+
+      <div class="molg-grid-wrap">
+        <div class="molg-grid-header">
+          <span>Prediction (Amodei, Oct 2024)</span>
+          <span>Documented Analogue (Archive)</span>
+        </div>
+        <div class="molg-grid-row">
+          <div class="molg-grid-cell">"compress…50–100 years into 5–10 years"</div>
+          <div class="molg-grid-cell"><a href="/stories/alphafold">AlphaFold</a> — 50-year protein problem solved. <a href="/stories/gnome-materials">GNoME</a> — 800 years of materials science.</div>
+        </div>
+        <div class="molg-grid-row">
+          <div class="molg-grid-cell">"Reductions of 95% or more" in cancer</div>
+          <div class="molg-grid-cell"><a href="/stories/breast-cancer-ai">breast-cancer-ai</a> — 29% more cancers detected. <a href="/stories/rosie-vaccine">rosie-vaccine</a> — one tumor shrank. <a href="/stories/founder-mode-cancer">founder-mode-cancer</a> — one patient, extraordinary resources.</div>
+        </div>
+        <div class="molg-grid-row">
+          <div class="molg-grid-cell">"prevent most genetic disease"</div>
+          <div class="molg-grid-cell">EvORanker — early candidate-gene tool, not yet validated at population scale.</div>
+        </div>
+        <div class="molg-grid-row">
+          <div class="molg-grid-cell">"cure or prevention of most mental illness"</div>
+          <div class="molg-grid-cell"><span class="molg-grid-empty">—</span></div>
+        </div>
+        <div class="molg-grid-row">
+          <div class="molg-grid-cell">"doubling of the human lifespan"</div>
+          <div class="molg-grid-cell"><span class="molg-grid-empty">—</span></div>
+        </div>
+        <div class="molg-grid-row">
+          <div class="molg-grid-cell">"20% annual GDP growth…sub-Saharan Africa"</div>
+          <div class="molg-grid-cell"><span class="molg-grid-empty">—</span></div>
+        </div>
+        <div class="molg-grid-row">
+          <div class="molg-grid-cell">"AI-enabled polity…protector of individual freedom"</div>
+          <div class="molg-grid-cell"><span class="molg-grid-empty">—</span></div>
+        </div>
+        <div class="molg-grid-footer">This is not a scorecard. The empty cells are not failures — they are predictions whose evaluation window has not opened. The populated cells are not confirmations — they are documented points of contact.</div>
+      </div>
+
+      <p>What has not happened is plain: no 95% cancer reduction at population scale, no cure or prevention of most mental illness, no doubling of lifespan, no 20% GDP growth in the developing world, no AI-enabled democratic transformation. Amodei's timeline was 5–10 years after the arrival of powerful AI. Only 18 months have elapsed since publication, and by Amodei's own estimate, powerful AI has not yet arrived. This is not failure. It is absence. The predictions have not yet entered their evaluation window.</p>
+    </section>
+
+    <section class="section" id="bottleneck">
+      <h2><span class="num">04 — The Bottleneck</span>Why Individual Breakthroughs Do Not Aggregate</h2>
+      <p>Three weeks after Amodei's essay, Niko McCarty, founding editor of Asimov Press, published a biology-focused response. His central argument: "many of the bottlenecks slowing biology today are biophysical, rather than computational." McCarty cited specific evidence. DNA synthesis costs had dropped dramatically in the early 2010s but "these costs have now flatlined — or have even risen — since 2020." Cloning an <em>E. coli</em> genome still takes up to a week because of manual wet-lab steps that no software can accelerate. Predicting whether a gene will function when inserted into bacteria remains impossible without physical experimentation.</p>
+
+      <p>Stephen Malina, a researcher with expertise in molecular biology and protein design, published a partial counterpoint two months later. According to Malina, the AI capability frontier in biology will be "jagged" — excelling first in coding and mathematical modeling before matching the intuition of working biologists. He agreed with some of McCarty's bottlenecks but argued that others were more surmountable than McCarty assumed.</p>
+
+      <p>The archive illustrates a different kind of bottleneck: access. Paul Conyngham designed a cancer vaccine for his dog using publicly available AI tools — but he was an engineer with seventeen years of machine learning experience, access to ChatGPT and AlphaFold, a connection to the UNSW RNA Institute, and the willingness to drive ten hours to find a credentialed researcher who could administer the injection. Sid Sijbrandij identified a treatment for his osteosarcoma through an AI-assisted pipeline — but he was a tech CEO with the resources to pursue treatment across international borders. These are real demonstrations of AI-assisted medicine. They are not population-scale pipelines.</p>
+
+      <p>Amodei acknowledged this gap elsewhere in the essay, writing that the positive future he describes "will not be achieved without a huge amount of effort and struggle by many brave and dedicated people." But the acknowledgment does not resolve the problem. The distance between "AI can fold a protein" and "AI has cured cancer" is not a gap of time. It is a gap of infrastructure, institutions, regulation, and biology. AlphaFold can predict the structure of every known protein. That prediction does not synthesize a drug, run a clinical trial, secure regulatory approval, manufacture the treatment, or distribute it at scale.</p>
+
+      <p>A note on the critic bench: McCarty and Malina are domain-expert writers, not peer-reviewed respondents. No major scientific journal — <em>Nature</em>, <em>Science</em>, <em>Cell</em> — has published a formal response to Amodei's essay. The absence of institutional criticism is itself a data point. It may reflect the essay's perceived genre: CEO futurism, which working scientists do not typically engage with in journal pages. It may also reflect that 18 months is not enough time for the essay's claims to matter to the researchers who would have the standing to evaluate them. No development economist has assessed the 20% GDP growth claim on the record.</p>
+    </section>
+
+    <section class="section" id="reaffirmation">
+      <h2><span class="num">05 — The Reaffirmation</span>Where Amodei Stands Now</h2>
+      <p>On January 26, 2026 — fifteen months after <em>"Machines of Loving Grace"</em> — Amodei published a follow-up essay. <em>"The Adolescence of Technology"</em> ran to approximately 20,000 words and focused on five categories of AI risk: autonomy, misuse for destruction, misuse for seizing power, economic disruption, and indirect effects. He described the earlier essay as laying out "the dream of a civilization that had made it through to adulthood."</p>
+
+      <p>He maintained his timeline estimates. He noted "a decent chance" powerful AI arrives within 1–2 years. He added a new prediction: half of all entry-level white-collar jobs could be displaced in the next 1–5 years.</p>
+
+      <p>On February 13, 2026, in an interview with Dwarkesh Patel, Amodei went further: "Broadly speaking, the exponential of the underlying technology has gone about as I expected it to go." He estimated the timeline for a "country of geniuses in a data center" at 1–3 years. No specific prediction from <em>"Machines of Loving Grace"</em> was revised, retracted, or quantitatively updated.</p>
+
+      <div class="molg-timeline-wrap">
+        <div class="molg-timeline-track">
+          <div class="molg-timeline-node">
+            <div class="molg-timeline-dot"></div>
+            <div class="molg-timeline-date">October 11, 2024</div>
+            <div class="molg-timeline-label">"Machines of Loving Grace"</div>
+            <div class="molg-timeline-quote">"Everything I'm saying could very easily be wrong."</div>
+          </div>
+          <div class="molg-timeline-node">
+            <div class="molg-timeline-dot"></div>
+            <div class="molg-timeline-date">January 26, 2026</div>
+            <div class="molg-timeline-label">"The Adolescence of Technology"</div>
+            <div class="molg-timeline-quote">"the dream of a civilization that had made it through to adulthood"</div>
+          </div>
+          <div class="molg-timeline-node">
+            <div class="molg-timeline-dot"></div>
+            <div class="molg-timeline-date">February 13, 2026</div>
+            <div class="molg-timeline-label">Dwarkesh Patel interview</div>
+            <div class="molg-timeline-quote">"Broadly speaking, the exponential of the underlying technology has gone about as I expected it to go."</div>
+          </div>
+        </div>
+        <div class="molg-timeline-annotation">No prediction revised. No number retracted.</div>
+      </div>
+
+      <p>He is not backing down. That is a fact, not a verdict.</p>
+    </section>
+
+    <section class="section" id="clock">
+      <h2><span class="num">06 — The Clock</span>What The Specificity Means</h2>
+      <p>The essay is 18 months old. The earliest window Amodei described — powerful AI "could come as early as 2026" — is now. The longer window — 5–10 years for biological outcomes, placing them in 2029–2034 — has barely opened.</p>
+
+      <p>No peer-reviewed response to the essay exists. No independent scorecard of its predictions exists. No development economist has assessed the GDP growth claim on the record. Anthropic's own published research has not been publicly linked to any of the biological breakthroughs the essay predicts.</p>
+
+      <p>The essay sits in a category that does not have a name. It is too specific to ignore: 95%, 150 years, 20% GDP growth, named diseases, named technologies, dated timelines. It is too early to score: the evaluation window has not opened for the largest claims. It is too interested to take at face value: the author runs one of the companies that would benefit most if the predictions come true. Most CEO vision pieces dissolve into vagueness within months. <em>"We believe AI will create tremendous value for stakeholders"</em> — nothing checkable, nothing falsifiable, nothing that a reporter could revisit in five years and measure against reality.</p>
+
+      <p>This essay chose percentages, disease names, and timelines. That choice created something unusual: a document that can be checked. Not today. Not fully. But the checking is structurally possible because the author chose to be specific. Whether that specificity reflects confidence, recklessness, or something between the two depends on outcomes that have not yet occurred. The clock is the only honest critic. It is running.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.machines-of-loving-grace-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  const GOLD = '#c8963e';
+  const GOLD_R = 200, GOLD_G = 150, GOLD_B = 62;
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f5f0e8';
+
+  const UNLIT_R = 26, UNLIT_G = 26, UNLIT_B = 23;
+  const AMB_R = 140, AMB_G = 130, AMB_B = 110;
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    if (nodes.length) repositionNodes();
+  });
+  ro.observe(canvas);
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const P1_END = 240;
+  const P2_END = 540;
+  const P3_END = 1020;
+  const P4_END = 1200;
+  const P5_END = 1320;
+  const CYCLE = 1560;
+
+  const NUM_NODES = 36;
+  const NUM_LIT = 7;
+  const NODE_R = 4;
+  const LIT_INDICES = [3, 7, 12, 16, 21, 25, 30];
+
+  interface MapNode {
+    x: number; y: number;
+    baseX: number; baseY: number;
+    targetX: number; targetY: number;
+    alpha: number;
+    litAlpha: number;
+    ringWidth: number;
+    glowR: number;
+    isLit: boolean;
+    litOrder: number;
+    driftVx: number;
+    driftVy: number;
+    pulseOffset: number;
+  }
+  const nodes: MapNode[] = [];
+
+  interface Edge { a: number; b: number; alpha: number; targetAlpha: number; }
+  const edges: Edge[] = [];
+
+  const NUM_AMB = 12;
+  interface Amb { x: number; y: number; vx: number; vy: number; r: number; a: number; }
+  const ambs: Amb[] = [];
+
+  let ringX = 0, ringY = 0, ringR = 0, ringA = 0, ringActive = false;
+  let ringTimer = 0;
+
+  let seed = 42;
+  function seededRand(): number {
+    seed = (seed * 16807) % 2147483647;
+    return (seed - 1) / 2147483646;
+  }
+
+  function generatePositions(): { x: number; y: number }[] {
+    seed = 42 + Math.floor(frame / CYCLE);
+    const positions: { x: number; y: number }[] = [];
+    const margin = 40;
+    const cellW = (W - margin * 2) / 8;
+
+    for (let i = 0; i < NUM_NODES; i++) {
+      let x = 0, y = 0;
+      let tries = 0;
+      do {
+        if (LIT_INDICES.includes(i)) {
+          const clusterCx = W * 0.6;
+          const clusterCy = H * 0.45;
+          x = clusterCx + (seededRand() - 0.5) * W * 0.35;
+          y = clusterCy + (seededRand() - 0.5) * H * 0.55;
+        } else {
+          x = margin + seededRand() * (W - margin * 2);
+          y = margin + seededRand() * (H - margin * 2);
+        }
+        tries++;
+      } while (tries < 20 && positions.some(p => {
+        const dx = p.x - x, dy = p.y - y;
+        return dx * dx + dy * dy < (cellW * 0.5) * (cellW * 0.5);
+      }));
+      positions.push({ x, y });
+    }
+    return positions;
+  }
+
+  function buildEdges() {
+    edges.length = 0;
+    const litNodes = nodes.filter(n => n.isLit).sort((a, b) => a.litOrder - b.litOrder);
+    for (let i = 1; i < litNodes.length; i++) {
+      let bestJ = 0;
+      let bestDist = Infinity;
+      for (let j = 0; j < i; j++) {
+        const dx = litNodes[i].x - litNodes[j].x;
+        const dy = litNodes[i].y - litNodes[j].y;
+        const d = dx * dx + dy * dy;
+        if (d < bestDist) { bestDist = d; bestJ = j; }
+      }
+      edges.push({ a: nodes.indexOf(litNodes[i]), b: nodes.indexOf(litNodes[bestJ]), alpha: 0, targetAlpha: 0 });
+    }
+  }
+
+  function initNodes() {
+    nodes.length = 0;
+    const positions = generatePositions();
+    let litOrder = 0;
+    for (let i = 0; i < NUM_NODES; i++) {
+      const isLit = LIT_INDICES.includes(i);
+      nodes.push({
+        x: positions[i].x,
+        y: positions[i].y,
+        baseX: positions[i].x,
+        baseY: positions[i].y,
+        targetX: positions[i].x,
+        targetY: positions[i].y,
+        alpha: 0,
+        litAlpha: 0,
+        ringWidth: 1,
+        glowR: 0,
+        isLit,
+        litOrder: isLit ? litOrder++ : -1,
+        driftVx: (seededRand() - 0.5) * 0.06,
+        driftVy: (seededRand() - 0.5) * 0.06,
+        pulseOffset: seededRand() * Math.PI * 2,
+      });
+    }
+    buildEdges();
+  }
+
+  function repositionNodes() {
+    if (!nodes.length) return;
+    const positions = generatePositions();
+    for (let i = 0; i < Math.min(NUM_NODES, positions.length); i++) {
+      nodes[i].baseX = positions[i].x;
+      nodes[i].baseY = positions[i].y;
+      nodes[i].targetX = positions[i].x;
+      nodes[i].targetY = positions[i].y;
+      nodes[i].x = positions[i].x;
+      nodes[i].y = positions[i].y;
+    }
+    buildEdges();
+  }
+
+  function initAmb() {
+    ambs.length = 0;
+    for (let i = 0; i < NUM_AMB; i++) {
+      ambs.push({
+        x: Math.random() * (W || 800),
+        y: Math.random() * (H || 380),
+        vx: (Math.random() - 0.5) * 0.12,
+        vy: (Math.random() - 0.5) * 0.12,
+        r: 1 + Math.random() * 1.5,
+        a: 0.02 + Math.random() * 0.02,
+      });
+    }
+  }
+
+  function shiftNodePositions() {
+    seed = 1000 + Math.floor(frame / CYCLE);
+    const positions = generatePositions();
+    for (let i = 0; i < nodes.length; i++) {
+      const shiftDist = 10 + seededRand() * 15;
+      const shiftAngle = seededRand() * Math.PI * 2;
+      let nx = positions[i].x + Math.cos(shiftAngle) * shiftDist;
+      let ny = positions[i].y + Math.sin(shiftAngle) * shiftDist;
+      nx = Math.max(30, Math.min(W - 30, nx));
+      ny = Math.max(30, Math.min(H - 30, ny));
+      nodes[i].targetX = nx;
+      nodes[i].targetY = ny;
+    }
+  }
+
+  function update() {
+    const cf = frame % CYCLE;
+
+    for (const a of ambs) {
+      a.x += a.vx;
+      a.y += a.vy;
+      if (a.x < -10) a.x = W + 10;
+      if (a.x > W + 10) a.x = -10;
+      if (a.y < -10) a.y = H + 10;
+      if (a.y > H + 10) a.y = -10;
+    }
+
+    if (cf < P1_END) {
+      const revealedCount = Math.min(NUM_NODES, Math.floor(cf / 7) + 1);
+      for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i];
+        if (i < revealedCount) {
+          const fadeStart = i * 7;
+          const fadeProgress = Math.min(1, Math.max(0, (cf - fadeStart) / 12));
+          n.alpha = fadeProgress * 0.15;
+        } else {
+          n.alpha = 0;
+        }
+        n.litAlpha = 0;
+        n.ringWidth = 1;
+        n.glowR = 0;
+        n.x = n.baseX + n.driftVx * cf;
+        n.y = n.baseY + n.driftVy * cf;
+      }
+      for (const e of edges) { e.alpha = 0; e.targetAlpha = 0; }
+      ringActive = false;
+
+    } else if (cf < P2_END) {
+      const phase2Frame = cf - P1_END;
+      const phase2Len = P2_END - P1_END;
+      const litInterval = Math.floor(phase2Len / (NUM_LIT + 1));
+
+      for (const n of nodes) {
+        if (n.alpha < 0.15) n.alpha = Math.min(0.15, n.alpha + 0.005);
+        n.x = n.baseX + n.driftVx * cf;
+        n.y = n.baseY + n.driftVy * cf;
+      }
+
+      for (const n of nodes) {
+        if (!n.isLit) continue;
+        const lightFrame = n.litOrder * litInterval;
+        if (phase2Frame >= lightFrame) {
+          const progress = Math.min(1, (phase2Frame - lightFrame) / 40);
+          n.litAlpha = progress * 0.7;
+          n.ringWidth = 1 + progress;
+          n.glowR = progress * 18;
+          n.alpha = 0.15 + progress * 0.55;
+        }
+      }
+
+      for (let ei = 0; ei < edges.length; ei++) {
+        const e = edges[ei];
+        const nodeA = nodes[e.a];
+        const nodeB = nodes[e.b];
+        if (nodeA.litAlpha > 0.1 && nodeB.litAlpha > 0.1) {
+          const edgeDelay = Math.max(nodeA.litOrder, nodeB.litOrder) * litInterval + 20;
+          if (phase2Frame >= edgeDelay) {
+            const ep = Math.min(1, (phase2Frame - edgeDelay) / 30);
+            e.alpha = ep * 0.35;
+          }
+        }
+      }
+
+    } else if (cf < P3_END) {
+      const phase3Frame = cf - P2_END;
+      for (const n of nodes) {
+        n.x = n.baseX + n.driftVx * cf;
+        n.y = n.baseY + n.driftVy * cf;
+        if (n.isLit) {
+          n.litAlpha = 0.55 + 0.15 * Math.sin(phase3Frame * 0.07 + n.pulseOffset);
+          n.ringWidth = 2;
+          n.glowR = 16 + 4 * Math.sin(phase3Frame * 0.05 + n.pulseOffset);
+          n.alpha = 0.7;
+        } else {
+          n.alpha = 0.15;
+        }
+      }
+      for (const e of edges) {
+        e.alpha = 0.25 + 0.1 * Math.sin(phase3Frame * 0.052);
+      }
+      ringTimer++;
+      if (ringTimer >= 120) {
+        ringTimer = 0;
+        let cx = 0, cy = 0, count = 0;
+        for (const n of nodes) {
+          if (n.isLit) { cx += n.x; cy += n.y; count++; }
+        }
+        if (count > 0) {
+          ringX = cx / count;
+          ringY = cy / count;
+          ringR = 0;
+          ringA = 0.04;
+          ringActive = true;
+        }
+      }
+      if (ringActive) {
+        ringR += 0.5;
+        ringA = Math.max(0, 0.04 * (1 - ringR / 120));
+        if (ringA <= 0) ringActive = false;
+      }
+
+    } else if (cf < P4_END) {
+      const phase4Frame = cf - P3_END;
+      const phase4Len = P4_END - P3_END;
+      for (const n of nodes) {
+        n.x = n.baseX + n.driftVx * cf;
+        n.y = n.baseY + n.driftVy * cf;
+      }
+      for (const e of edges) {
+        const edgeFade = Math.min(1, phase4Frame / 90);
+        e.alpha = Math.max(0, 0.35 * (1 - edgeFade));
+      }
+      const fadeInterval = Math.floor((phase4Len - 30) / NUM_LIT);
+      for (const n of nodes) {
+        if (!n.isLit) { n.alpha = 0.15; continue; }
+        const reverseOrder = NUM_LIT - 1 - n.litOrder;
+        const fadeStart = 30 + reverseOrder * fadeInterval;
+        if (phase4Frame >= fadeStart) {
+          const fp = Math.min(1, (phase4Frame - fadeStart) / 40);
+          n.litAlpha = 0.7 * (1 - fp);
+          n.ringWidth = 2 - fp;
+          n.glowR = 18 * (1 - fp);
+          n.alpha = 0.7 - fp * 0.55;
+        }
+      }
+      ringActive = false;
+
+    } else if (cf < P5_END) {
+      const phase5Frame = cf - P4_END;
+      const phase5Len = P5_END - P4_END;
+      for (const n of nodes) {
+        n.litAlpha = 0;
+        n.ringWidth = 1;
+        n.glowR = 0;
+      }
+      const fadeStart = phase5Len - 30;
+      if (phase5Frame < fadeStart) {
+        for (const n of nodes) { n.alpha = 0.15; }
+      } else {
+        const fp = (phase5Frame - fadeStart) / 30;
+        for (const n of nodes) { n.alpha = 0.15 * (1 - fp); }
+      }
+      for (const e of edges) { e.alpha = 0; }
+      ringActive = false;
+
+    } else {
+      const phase6Frame = cf - P5_END;
+      if (phase6Frame === 0) shiftNodePositions();
+      const fadeProgress = Math.min(1, phase6Frame / 30);
+      for (const n of nodes) {
+        n.baseX += (n.targetX - n.baseX) * 0.04;
+        n.baseY += (n.targetY - n.baseY) * 0.04;
+        n.x = n.baseX;
+        n.y = n.baseY;
+        n.alpha = fadeProgress * 0.15;
+        n.litAlpha = 0;
+        n.ringWidth = 1;
+        n.glowR = 0;
+      }
+      for (const e of edges) { e.alpha = 0; }
+      ringActive = false;
+    }
+  }
+
+  function draw() {
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+
+    for (const a of ambs) {
+      ctx.globalAlpha = a.a;
+      ctx.fillStyle = `rgb(${AMB_R},${AMB_G},${AMB_B})`;
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    if (ringActive && ringA > 0.002) {
+      ctx.strokeStyle = `rgba(${GOLD_R},${GOLD_G},${GOLD_B},${ringA.toFixed(3)})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(ringX, ringY, ringR, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    for (const e of edges) {
+      if (e.alpha < 0.005) continue;
+      const a = nodes[e.a];
+      const b = nodes[e.b];
+      ctx.strokeStyle = `rgba(${GOLD_R},${GOLD_G},${GOLD_B},${e.alpha.toFixed(3)})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.stroke();
+    }
+
+    for (const n of nodes) {
+      if (n.alpha < 0.01) continue;
+
+      if (n.glowR > 1 && n.litAlpha > 0.05) {
+        const grad = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.glowR);
+        grad.addColorStop(0, `rgba(${GOLD_R},${GOLD_G},${GOLD_B},${(n.litAlpha * 0.12).toFixed(3)})`);
+        grad.addColorStop(1, `rgba(${GOLD_R},${GOLD_G},${GOLD_B},0)`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.glowR, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      if (n.litAlpha > 0.01) {
+        ctx.globalAlpha = n.litAlpha;
+        ctx.fillStyle = GOLD;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, NODE_R, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+
+      const ringAlpha = n.isLit && n.litAlpha > 0.1
+        ? Math.min(0.7, n.alpha)
+        : n.alpha;
+      ctx.strokeStyle = n.isLit && n.litAlpha > 0.1
+        ? `rgba(${GOLD_R},${GOLD_G},${GOLD_B},${ringAlpha.toFixed(3)})`
+        : `rgba(${UNLIT_R},${UNLIT_G},${UNLIT_B},${ringAlpha.toFixed(3)})`;
+      ctx.lineWidth = n.ringWidth;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, NODE_R, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+
+  function tick() {
+    frame++;
+    update();
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  function init() {
+    initNodes();
+    initAmb();
+    ringTimer = 0;
+    ringActive = false;
+  }
+
+  requestAnimationFrame(() => {
+    init();
+    if (prefersReduced) {
+      for (const n of nodes) {
+        n.alpha = 0.15;
+        n.x = n.baseX;
+        n.y = n.baseY;
+        if (n.isLit) {
+          n.litAlpha = 0.7;
+          n.ringWidth = 2;
+          n.glowR = 18;
+          n.alpha = 0.7;
+        }
+      }
+      for (const e of edges) { e.alpha = 0.35; }
+      draw();
+    } else {
+      const io = new IntersectionObserver(([entry]) => {
+        if (entry.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+        else { cancelAnimationFrame(raf); raf = 0; }
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+      window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); io.disconnect(); ro.disconnect(); });
+    }
+  });
+})();
+</script>
