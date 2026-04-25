@@ -1,0 +1,789 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'mercor-data-breach')!;
+---
+
+<style is:global>
+  /* --- Canvas --- */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .mercor-data-breach-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+  .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.6rem 0 0; padding: 0 1rem; line-height: 1.5; }
+
+  /* --- Reenactment 1: The Stack --- */
+  .mercor-stack-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px 24px 20px;
+    margin: 2rem 0;
+    font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .mercor-stack-layer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+  }
+  .mercor-stack-top {
+    background: rgba(232,232,232,0.04);
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+  .mercor-stack-top span { opacity: 0.7; }
+  .mercor-stack-mid {
+    background: rgba(168,85,247,0.12);
+    color: var(--story);
+    border: 1px solid rgba(168,85,247,0.25);
+    font-weight: 600;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+  .mercor-stack-bottom {
+    background: rgba(232,232,232,0.03);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 6px;
+    padding: 12px;
+  }
+  .mercor-stack-avatar {
+    background: rgba(232,232,232,0.05);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-align: center;
+  }
+  .mercor-stack-avatar.mercor-stack-highlighted {
+    border-color: rgba(168,85,247,0.4);
+    color: var(--story);
+  }
+  .mercor-stack-arrow {
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--muted);
+    padding: 6px 0;
+    letter-spacing: 0.03em;
+  }
+  .mercor-stack-arrow span { opacity: 0.6; }
+  .mercor-stack-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-align: center;
+  }
+
+  /* --- Reenactment 2: The Install --- */
+  .mercor-install-wrap {
+    background: #0a0a0a;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 2rem 0;
+    font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .mercor-install-header {
+    background: rgba(232,232,232,0.04);
+    padding: 8px 14px;
+    font-size: 0.72rem;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .mercor-install-body {
+    padding: 16px 18px;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    color: var(--text);
+  }
+  .mercor-install-cmd { color: var(--text); }
+  .mercor-install-output { color: var(--muted); }
+  .mercor-install-success {
+    color: var(--story);
+    position: relative;
+    padding-left: 14px;
+  }
+  .mercor-install-success::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--story);
+    box-shadow: 0 0 6px var(--story);
+  }
+  .mercor-install-note {
+    padding: 10px 18px 14px;
+    font-size: 0.72rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* --- Reenactment 3: The File --- */
+  .mercor-file-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 2rem 0;
+    font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .mercor-file-header {
+    background: rgba(232,232,232,0.04);
+    padding: 10px 16px;
+    font-size: 0.74rem;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.06em;
+  }
+  .mercor-file-body { padding: 16px 18px; }
+  .mercor-file-row {
+    display: flex;
+    gap: 12px;
+    padding: 5px 0;
+    font-size: 0.76rem;
+    line-height: 1.5;
+    border-bottom: 1px solid rgba(42,42,42,0.4);
+  }
+  .mercor-file-row:last-child { border-bottom: none; }
+  .mercor-file-key {
+    color: var(--muted);
+    min-width: 200px;
+    flex-shrink: 0;
+  }
+  .mercor-file-val { color: var(--text); }
+  .mercor-file-val.mercor-file-redacted {
+    background: rgba(232,232,232,0.08);
+    border-radius: 2px;
+    padding: 0 4px;
+    letter-spacing: 0.15em;
+  }
+  .mercor-file-val.mercor-file-attached {
+    color: var(--story);
+    opacity: 0.7;
+  }
+  .mercor-file-footer {
+    padding: 10px 18px 14px;
+    font-size: 0.72rem;
+    color: var(--accent);
+    border-top: 1px solid var(--border);
+    line-height: 1.6;
+    opacity: 0.85;
+  }
+
+  @media (max-width: 600px) {
+    .mercor-file-row { flex-direction: column; gap: 2px; }
+    .mercor-file-key { min-width: 0; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+<section class="section" id="layer">
+  <h2><span class="num">01 — The Layer Beneath the Lab</span>The Quiet Tier the Public Never Sees</h2>
+  <p>On April 7, 2026, Anthropic announced a restricted research model called Claude Mythos. It was not publicly accessible. It was not listed in Anthropic's API documentation. Within roughly twenty-four hours of that announcement, accounts that had no authorization began querying it — a fact Bloomberg would report two weeks later, on April 21.</p>
+  <p>The intruders had not broken into Anthropic. According to Bloomberg and Tom's Hardware, reporting independently, they had read something already in the wild — knowledge of Anthropic's internal file-system naming conventions, extracted from a different company's data breach the week before — and used it to find Mythos before the rest of the internet knew where to look. Anthropic confirmed it was investigating "a report claiming unauthorised access to Claude Mythos Preview through one of our third-party vendor environments."</p>
+  <p>The other company was Mercor.</p>
+  <p>Most people who follow AI have never heard of Mercor. It does not build models. It builds the layer the models are built on. Founded in 2023 by Brendan Foody, Adarsh Hiremath, and Surya Midha — three Thiel Fellows out of Bellarmine College Prep in San Jose — Mercor recruits subject-matter experts and pays them to teach AI systems how to think. Attorneys evaluate legal reasoning. Cardiologists grade diagnostic outputs. Machine-learning engineers write the tasks a model is then trained to solve. Some sit for recorded video interviews about specialized work. The contractors are the curriculum.</p>
+  <p>By October 2025, the company had raised $350 million in a Series C led by Felicis Ventures, reaching a $10 billion valuation. It managed approximately 30,000 contractors, according to TechCrunch and Wikipedia, paying out more than $1.5 million per day. According to The Information, citing a person familiar with the matter, annualized revenue exceeded $1 billion. Mercor's reported clients included Meta, Anthropic, OpenAI, and Google. Its headquarters occupied space at 181 Fremont in San Francisco — a block from the Salesforce Tower, a neighborhood dense with the companies whose models depend on what Mercor's contractors produce.</p>
+  <p>The public never sees this layer. Foundation models are trained on the open internet, then refined on what humans judge to be good. The humans doing the judging are not employees of the labs. They are contractors, managed by intermediaries, working from laptops in dozens of countries, submitting feedback that shapes the model's personality, its clinical instincts, its legal reasoning. Mercor is one of the largest aggregators of those humans. When it was breached, the breach did not stop at the contractors' personal data. It reached upward, into the labs themselves.</p>
+
+  <div class="mercor-stack-wrap">
+    <div class="mercor-stack-label">Frontier Labs</div>
+    <div class="mercor-stack-layer mercor-stack-top">
+      <span>Meta</span> <span>Anthropic</span> <span>OpenAI</span> <span>Google</span>
+    </div>
+    <div class="mercor-stack-arrow"><span>↑ training feedback · labeled tasks</span></div>
+    <div class="mercor-stack-label">Mercor</div>
+    <div class="mercor-stack-layer mercor-stack-mid">
+      <span>$10B valuation</span> <span>~30,000 contractors</span> <span>$1.5M/day payouts</span>
+    </div>
+    <div class="mercor-stack-arrow"><span>↑ interviews · screen recordings · facial scans · background checks</span></div>
+    <div class="mercor-stack-label">Contractors</div>
+    <div class="mercor-stack-layer mercor-stack-bottom">
+      <div class="mercor-stack-avatar">Attorney</div>
+      <div class="mercor-stack-avatar">Cardiologist</div>
+      <div class="mercor-stack-avatar mercor-stack-highlighted">ML Engineer</div>
+      <div class="mercor-stack-avatar">Tax Advisor</div>
+      <div class="mercor-stack-avatar">Radiologist</div>
+      <div class="mercor-stack-avatar">Pilot</div>
+      <div class="mercor-stack-avatar">Welder</div>
+      <div class="mercor-stack-avatar mercor-stack-highlighted">Oncologist</div>
+      <div class="mercor-stack-avatar">Translator</div>
+      <div class="mercor-stack-avatar">Pharmacist</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="litellm">
+  <h2><span class="num">02 — The LiteLLM Door</span>How a Forty-Minute Window Reached the Switchboard</h2>
+  <p>The breach entered through a piece of open-source software that had nothing to do with Mercor's core product. LiteLLM is a Python library used by developers to route requests between applications and large language models. It is downloaded millions of times per month. In late March 2026, according to cybersecurity-trade reporting, a threat group calling itself TeamPCP used compromised maintainer credentials to upload two malicious versions of the LiteLLM package — versions 1.82.7 and 1.82.8 — to PyPI, the standard Python package index.</p>
+
+  <div class="mercor-install-wrap">
+    <div class="mercor-install-header">~/mercor-pipeline$</div>
+    <div class="mercor-install-body">
+      <div class="mercor-install-cmd">$ pip install litellm</div>
+      <div class="mercor-install-output">Collecting litellm</div>
+      <div class="mercor-install-output">&nbsp;&nbsp;Downloading litellm-1.82.7-py3-none-any.whl (4.2 MB)</div>
+      <div class="mercor-install-output">Installing collected packages: litellm</div>
+      <div class="mercor-install-success">Successfully installed litellm-1.82.7</div>
+    </div>
+    <div class="mercor-install-note">According to cybersecurity-trade reporting, the trojanized package remained on PyPI for roughly 40 minutes before being pulled. Anyone who installed it during that window pulled the attacker's code along with it.</div>
+  </div>
+
+  <p>The trojanized packages, according to Cybersecurity News and The Next Web, contained base64-encoded malware that executed on import, harvesting environment variables, API keys, cloud credentials, and database secrets, and exfiltrating them to a server controlled by the attackers. No primary malware-analysis report from a major security firm has been published in the public record. The technical details come from cybersecurity trade outlets citing researchers at Wiz and statements from Mandiant Consulting CTO Charles Carmakal, who told reporters more than a thousand SaaS environments had been affected by TeamPCP's supply-chain attacks.</p>
+  <p>Mercor was one of those environments. On March 31, 2026, the company publicly confirmed it had been hit. Spokesperson Heidi Hagberg told TechCrunch the company had "moved promptly to contain and remediate the incident" and was "conducting a thorough investigation supported by leading third-party forensics experts." Hagberg described Mercor as "one of thousands of companies" affected by the LiteLLM compromise. She declined to answer follow-up questions about whether the incident was connected to Lapsus$ claims and whether any data had been exfiltrated.</p>
+  <p>The claims came from a group calling itself Lapsus$. On its dark-web leak site, Lapsus$ posted that it had taken approximately four terabytes of data from Mercor — including, by Lapsus$'s own description, 939 GB of source code, a 211 GB user database, internal Slack communications, Tailscale VPN configurations, and roughly three terabytes of stored video and document files. None of these volumes have been independently confirmed. Multiple outlets reported the claim, but all trace to the same Lapsus$ posting. The relationship between TeamPCP and Lapsus$ remains contested: Wiz security researchers described a collaborative arrangement to Cybersecurity News; TechCrunch reported the relationship "remains unclear."</p>
+  <p>Mercor's only additional on-record statement, issued to the Wall Street Journal on April 23, was: "We strongly dispute the speculative claims in these lawsuits and look forward to presenting the facts at the appropriate time and place."</p>
+</section>
+
+<div class="phantom-wrap">
+  <canvas class="mercor-data-breach-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>The Layer</strong> — Tiny particles rise from a dense bottom field into a violet chain of connected nodes spanning the middle; a fracture splits one node and a sharp pulse erupts upward into a large lab node at the top, which shudders red; the chain repairs; the particles keep rising.</p>
+
+<section class="section" id="suits">
+  <h2><span class="num">03 — The Suits</span>Seven Filings, One Tape</h2>
+  <p>The lawsuits began the day after Mercor's disclosure.</p>
+  <p>On April 1, 2026, Lisa Gill of Wahiawa, Hawaii, filed what became the lead class action: Gill v. Mercor.io Corporation, case number 3:26-cv-02831-JCS, in the U.S. District Court for the Northern District of California, represented by Edelsberg Law. The same day, two additional suits — Deboni v. Mercor (3:26-cv-02821) and Esson v. Mercor (3:26-cv-02839) — were filed in the same court. On April 5, White and Beltran v. Mercor was filed in the Northern District of Texas (6:26-CV-00143-H), the only suit to name additional co-defendants beyond Mercor itself. Bloomberg Law reported a separate filing under the Illinois Artificial Intelligence Video Interview Act — one of the first federal cases under that 2020 statute. By April 23, the Wall Street Journal counted at least seven class-action lawsuits.</p>
+  <p>The data categories the complaints allege were exposed span the full depth of what Mercor collected from its contractors: full names, Social Security numbers, recorded video interviews, facial-biometric data extracted from those interviews, identity documents including passports, background checks, W-9 tax forms, computer screenshots captured by employee-monitoring software that the White/Beltran complaint identifies as Insightful, and internal Slack communications. The lead complaint estimates more than 40,000 current and former contractors and customers were affected. Mercor has not confirmed that number.</p>
+  <p>The plaintiffs' theory of harm goes beyond exposure. The complaints allege Mercor used recorded interviews to train AI models for clients, monitored contractors' computers continuously, and trained client models on materials potentially owned by other companies. Mercor disputes these claims. They are pre-discovery allegations. They may not survive contact with the documentary record. But the question they force into discovery is novel: what is the legal status of a recording made for one purpose and used to train a model that generates similar recordings? No appellate court has answered this. The Illinois AIVFA suit — only the second federal filing under that statute, according to Bloomberg Law — will be among the first attempts.</p>
+  <p>The Gill complaint alleges Mercor failed to implement multi-factor authentication, encryption of sensitive data during storage and transmission, access controls limiting employee data access, and system monitoring for suspicious activity. These are standard boilerplate in data-breach litigation. What is not standard is the surveillance infrastructure the complaints describe: the White/Beltran complaint alleges contractors were required to use monitoring software that randomly captured screenshots during work sessions, creating a secondary data archive that neither the contractors nor, apparently, the security apparatus was designed to protect.</p>
+
+  <div class="mercor-file-wrap">
+    <div class="mercor-file-header">CONTRACTOR_FILE · ID: REDACTED</div>
+    <div class="mercor-file-body">
+      <div class="mercor-file-row">
+        <span class="mercor-file-key">Full name:</span>
+        <span class="mercor-file-val mercor-file-redacted">████████████████</span>
+      </div>
+      <div class="mercor-file-row">
+        <span class="mercor-file-key">SSN:</span>
+        <span class="mercor-file-val mercor-file-redacted">███-██-████</span>
+      </div>
+      <div class="mercor-file-row">
+        <span class="mercor-file-key">Passport scan:</span>
+        <span class="mercor-file-val mercor-file-attached">[ATTACHED]</span>
+      </div>
+      <div class="mercor-file-row">
+        <span class="mercor-file-key">W-9:</span>
+        <span class="mercor-file-val mercor-file-attached">[ATTACHED]</span>
+      </div>
+      <div class="mercor-file-row">
+        <span class="mercor-file-key">Background check:</span>
+        <span class="mercor-file-val mercor-file-attached">[ATTACHED]</span>
+      </div>
+      <div class="mercor-file-row">
+        <span class="mercor-file-key">Video interviews:</span>
+        <span class="mercor-file-val">4 files · 02:14:33 total</span>
+      </div>
+      <div class="mercor-file-row">
+        <span class="mercor-file-key">Facial-biometric vector:</span>
+        <span class="mercor-file-val mercor-file-attached">[present]</span>
+      </div>
+      <div class="mercor-file-row">
+        <span class="mercor-file-key">Screen captures (last 30d):</span>
+        <span class="mercor-file-val">1,847 frames</span>
+      </div>
+      <div class="mercor-file-row">
+        <span class="mercor-file-key">Slack channels:</span>
+        <span class="mercor-file-val">#training-medical, #training-legal</span>
+      </div>
+    </div>
+    <div class="mercor-file-footer">According to the lead complaint, files of this shape exist for an estimated 40,000+ current and former contractors. Mercor disputes the plaintiffs' characterizations.</div>
+  </div>
+</section>
+
+<section class="section" id="lateral">
+  <h2><span class="num">04 — The Lateral Move</span>From Privacy Story to Security Story</h2>
+  <p>For the first week after March 31, the Mercor breach was treated as a contractor-privacy story — a large but familiar pattern. A company collected too much data, protected it too poorly, and lost it. The coverage focused on Social Security numbers and passports.</p>
+  <p>Then came the Mythos reporting. Bloomberg published its account on April 21. Tom's Hardware confirmed the mechanism independently: the attackers had combined Anthropic's internal file-system naming conventions — present in material taken from Mercor — with a compromised contractor credential to locate Mythos within Anthropic's infrastructure. No independent technical reconstruction of the access path has been published.</p>
+  <p>What the reporting revealed reframed the entire breach. The contractor data was not just personal information. It was operational knowledge of how the labs organize their own work — naming conventions, file-system structures, credential patterns. A breach in the middle layer gave outsiders a map of the top layer.</p>
+  <p>The labs responded at different speeds. Meta paused all work with Mercor, characterized as indefinite, confirmed first by WIRED citing two sources and subsequently by a Meta spokesperson to the Wall Street Journal. OpenAI told reporters the breach "in no way affects OpenAI user data" and said it was investigating whether proprietary datasets were exposed, but had not paused or ended its contracts with Mercor. Google said it was assessing the breach's scope. Anthropic offered no public comment on the Mercor relationship beyond confirming the Mythos unauthorized access.</p>
+</section>
+
+<section class="section" id="signal">
+  <h2><span class="num">05 — Signal</span>What This Layer Looks Like Now</h2>
+  <p>Meta's pause is one client. Mercor reported more than $1 billion in annualized revenue before the breach, according to The Information. Whether that survives the lawsuits and Meta's freeze is unknown. The company's last confirmed valuation was $10 billion, as of the October 2025 Series C. No post-breach secondary-market valuation has been publicly reported.</p>
+  <p>Mercor is not the only company in this layer. Scale AI, Surge AI, Invisible Technologies, and others operate similar contractor pools, managing the human labor that turns raw model outputs into refined model behavior. None has disclosed a comparable breach. None publishes meaningful information about what employee-monitoring, biometric-capture, or training-use practices its contracts authorize. The layer is opaque by design.</p>
+  <p>The Mythos chain raises a question that the lawsuits cannot answer: when a frontier lab's internal naming conventions and a single contractor credential are enough to access an unannounced model, the perimeter of "the lab" includes every contractor's laptop on every continent. There is no current framework — regulatory, contractual, or technical — that treats it that way. The labs treat their vendors as outside the perimeter. The attackers treated them as inside it.</p>
+  <p>No independent technical reconstruction of the LiteLLM compromise, the Mercor exfiltration scope, or the Mythos access path has been published in the public record. The claims rest on Mercor's brief disclosure, Lapsus$'s self-reporting, the lawsuits' allegations, and the reporting from Bloomberg and Tom's Hardware on the Mythos linkage. What is confirmed is narrower than what is alleged — and what is alleged is narrower than what may have happened.</p>
+</section>
+
+<section class="section" id="tape">
+  <h2><span class="num">06 — The Tape</span>What the Contractors Now Know</h2>
+  <p>The contractors who taught the model now know something the model does not. They know what their faces looked like on the tape. They know what their screens showed during the recording. They know that when they signed up to label data, the data was them.</p>
+  <p>They know it because a collection of court filings told them — months after the file was already taken, weeks after the file already opened a door at a lab they had never heard of, in a city they may have never visited, working on a model whose name they will never learn.</p>
+  <p>The lawsuits will determine what Mercor did wrong. The lawsuits cannot determine who else, in this layer, is doing the same thing right now.</p>
+</section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.mercor-data-breach-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const ACCENT_RGB = '168,85,247';
+  const RED_RGB = '255,77,77';
+  const WHITE_RGB = '232,232,232';
+  const PARTICLE_COUNT = 40;
+  const CHAIN_COUNT = 14;
+  const TOP_COUNT = 4;
+  const MAX_SIGNALS = 8;
+
+  const PHASE_CALM = 360;
+  const PHASE_FRACTURE = 390;
+  const PHASE_BEAM_HIT = 420;
+  const PHASE_FLICKER_END = 480;
+  const PHASE_HOLD_END = 600;
+  const CYCLE_LENGTH = 660;
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+  let isVisible = true;
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  interface BottomParticle { x: number; y: number; vy: number; vx: number; alpha: number; radius: number; absorbed: boolean; absorbFrame: number; }
+  interface ChainNode { x: number; y: number; baseAlpha: number; phaseOffset: number; fractured: boolean; fractureAlpha: number; }
+  interface TopNode { x: number; y: number; radius: number; phaseOffset: number; flickering: boolean; }
+  interface SignalDot { x: number; y: number; targetX: number; targetY: number; alpha: number; active: boolean; }
+
+  const particles: BottomParticle[] = [];
+  const chainNodes: ChainNode[] = [];
+  const topNodes: TopNode[] = [];
+  const signals: SignalDot[] = [];
+
+  let beamActive = false, beamY = 0, beamX = 0, beamTargetY = 0;
+  let fractureIndex = -1, targetTopIndex = -1;
+  let ringActive = false, ringX = 0, ringY = 0, ringRadius = 0, ringAlpha = 0;
+
+  function makeParticle(): BottomParticle {
+    return {
+      x: Math.random() * W,
+      y: H * (0.85 + Math.random() * 0.15),
+      vy: -(0.15 + Math.random() * 0.1),
+      vx: (Math.random() - 0.5) * 0.15,
+      alpha: 0.06 + Math.random() * 0.06,
+      radius: 1 + Math.random() * 0.8,
+      absorbed: false,
+      absorbFrame: 0,
+    };
+  }
+  function resetParticle(p: BottomParticle) {
+    p.x = Math.random() * W;
+    p.y = H * (0.92 + Math.random() * 0.08);
+    p.vy = -(0.15 + Math.random() * 0.1);
+    p.vx = (Math.random() - 0.5) * 0.15;
+    p.alpha = 0.06 + Math.random() * 0.06;
+    p.radius = 1 + Math.random() * 0.8;
+    p.absorbed = false;
+    p.absorbFrame = 0;
+  }
+  function fullInit() {
+    particles.length = 0;
+    for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(makeParticle());
+    chainNodes.length = 0;
+    const chainY = H * 0.6;
+    for (let i = 0; i < CHAIN_COUNT; i++) {
+      const t = (i + 0.5) / CHAIN_COUNT;
+      chainNodes.push({
+        x: W * (0.04 + t * 0.92),
+        y: chainY + (Math.random() - 0.5) * 8,
+        baseAlpha: 0.4 + Math.random() * 0.15,
+        phaseOffset: Math.random() * Math.PI * 2,
+        fractured: false,
+        fractureAlpha: 0,
+      });
+    }
+    topNodes.length = 0;
+    const topY = H * 0.15;
+    for (let i = 0; i < TOP_COUNT; i++) {
+      const t = (i + 0.5) / TOP_COUNT;
+      topNodes.push({
+        x: W * (0.1 + t * 0.8),
+        y: topY + (Math.random() - 0.5) * 10,
+        radius: 6 + Math.random() * 2,
+        phaseOffset: Math.random() * Math.PI * 2,
+        flickering: false,
+      });
+    }
+    signals.length = 0;
+    for (let i = 0; i < MAX_SIGNALS; i++) signals.push({ x: 0, y: 0, targetX: 0, targetY: 0, alpha: 0, active: false });
+    beamActive = false;
+    ringActive = false;
+    fractureIndex = -1;
+    targetTopIndex = -1;
+    frame = 0;
+  }
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * window.devicePixelRatio;
+    canvas.height = H * window.devicePixelRatio;
+    ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+    fullInit();
+    if (prefersReduced) drawStatic();
+  });
+  ro.observe(canvas);
+
+  const io = new IntersectionObserver(([entry]) => {
+    const wasVisible = isVisible;
+    isVisible = entry.isIntersecting;
+    if (isVisible && !wasVisible && !prefersReduced) {
+      raf = requestAnimationFrame(tick);
+    }
+  }, { threshold: 0.05 });
+  io.observe(canvas);
+
+  function spawnSignal() {
+    for (let i = 0; i < signals.length; i++) {
+      if (!signals[i].active) {
+        const srcIdx = Math.floor(Math.random() * chainNodes.length);
+        const src = chainNodes[srcIdx];
+        if (src.fractured) continue;
+        let nearest = 0, nearDist = Infinity;
+        for (let j = 0; j < topNodes.length; j++) {
+          const dx = topNodes[j].x - src.x;
+          const dy = topNodes[j].y - src.y;
+          const d = dx * dx + dy * dy;
+          if (d < nearDist) { nearDist = d; nearest = j; }
+        }
+        signals[i].x = src.x;
+        signals[i].y = src.y;
+        signals[i].targetX = topNodes[nearest].x;
+        signals[i].targetY = topNodes[nearest].y;
+        signals[i].alpha = 0.15;
+        signals[i].active = true;
+        return;
+      }
+    }
+  }
+
+  function update() {
+    const cycle = frame % CYCLE_LENGTH;
+    const chainY = H * 0.6;
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      if (p.absorbed) {
+        const af = frame - p.absorbFrame;
+        if (af > 10) resetParticle(p);
+        else p.radius = Math.max(0, p.radius * (1 - af / 10));
+        continue;
+      }
+      p.y += p.vy;
+      p.x += p.vx;
+      p.vx += (Math.random() - 0.5) * 0.02;
+      p.vx *= 0.99;
+      if (p.y <= chainY + 10 && p.y >= chainY - 15) {
+        p.absorbed = true;
+        p.absorbFrame = frame;
+      }
+      if (p.y < chainY - 20) resetParticle(p);
+      if (p.x < 0) p.x = W;
+      if (p.x > W) p.x = 0;
+    }
+
+    if (cycle % 80 === 0 && cycle < PHASE_CALM) spawnSignal();
+    for (let i = 0; i < signals.length; i++) {
+      const s = signals[i];
+      if (!s.active) continue;
+      const dx = s.targetX - s.x;
+      const dy = s.targetY - s.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < 3) { s.active = false; continue; }
+      s.x += (dx / dist) * 0.5;
+      s.y += (dy / dist) * 0.5;
+      s.alpha *= 0.997;
+      if (s.alpha < 0.01) s.active = false;
+    }
+
+    if (cycle === PHASE_CALM) {
+      fractureIndex = Math.floor(CHAIN_COUNT / 2) + Math.floor(Math.random() * 3) - 1;
+      chainNodes[fractureIndex].fractured = true;
+      chainNodes[fractureIndex].fractureAlpha = 0;
+    }
+    if (cycle >= PHASE_CALM && cycle < PHASE_CALM + 15 && fractureIndex >= 0) {
+      chainNodes[fractureIndex].fractureAlpha = Math.min(1, (cycle - PHASE_CALM) / 15);
+    }
+    if (cycle === PHASE_FRACTURE && fractureIndex >= 0) {
+      beamActive = true;
+      beamX = chainNodes[fractureIndex].x;
+      beamY = chainNodes[fractureIndex].y;
+      let nearest = 0, nearDist = Infinity;
+      for (let j = 0; j < topNodes.length; j++) {
+        const dx = topNodes[j].x - beamX;
+        const dy = topNodes[j].y - beamY;
+        const d = dx * dx + dy * dy;
+        if (d < nearDist) { nearDist = d; nearest = j; }
+      }
+      targetTopIndex = nearest;
+      beamTargetY = topNodes[nearest].y;
+    }
+    if (beamActive && cycle >= PHASE_FRACTURE && cycle < PHASE_BEAM_HIT) {
+      beamY -= 2;
+      if (beamY <= beamTargetY) beamY = beamTargetY;
+    }
+    if (cycle === PHASE_BEAM_HIT && targetTopIndex >= 0) {
+      topNodes[targetTopIndex].flickering = true;
+      ringActive = true;
+      ringX = topNodes[targetTopIndex].x;
+      ringY = topNodes[targetTopIndex].y;
+      ringRadius = 0;
+      ringAlpha = 0.5;
+    }
+    if (ringActive) {
+      ringRadius += 0.8;
+      ringAlpha *= 0.97;
+      if (ringRadius > 50 || ringAlpha < 0.01) ringActive = false;
+    }
+    if (cycle === PHASE_FLICKER_END) {
+      if (targetTopIndex >= 0) topNodes[targetTopIndex].flickering = false;
+      beamActive = false;
+    }
+    if (cycle === CYCLE_LENGTH - 1) {
+      if (fractureIndex >= 0) {
+        chainNodes[fractureIndex].fractured = false;
+        chainNodes[fractureIndex].fractureAlpha = 0;
+      }
+      fractureIndex = -1;
+      targetTopIndex = -1;
+      beamActive = false;
+      ringActive = false;
+    }
+  }
+
+  function draw() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, W, H);
+    const cycle = frame % CYCLE_LENGTH;
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      if (p.radius <= 0) continue;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${WHITE_RGB},${p.alpha})`;
+      ctx.fill();
+      if (p.absorbed) {
+        const af = frame - p.absorbFrame;
+        if (af < 6) {
+          const flashA = 0.3 * (1 - af / 6);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius + 4, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${ACCENT_RGB},${flashA})`;
+          ctx.fill();
+        }
+      }
+    }
+
+    for (let i = 0; i < chainNodes.length - 1; i++) {
+      const a = chainNodes[i];
+      const b = chainNodes[i + 1];
+      if (fractureIndex >= 0 && cycle >= PHASE_CALM) {
+        if (i === fractureIndex || i === fractureIndex - 1) {
+          if (cycle < PHASE_HOLD_END) continue;
+          const resetProgress = (cycle - PHASE_HOLD_END) / (CYCLE_LENGTH - PHASE_HOLD_END);
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.strokeStyle = `rgba(${ACCENT_RGB},${0.15 * resetProgress})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          continue;
+        }
+      }
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.strokeStyle = `rgba(${ACCENT_RGB},0.15)`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+
+    for (let i = 0; i < chainNodes.length; i++) {
+      const n = chainNodes[i];
+      const pulse = Math.sin(frame * 0.026 + n.phaseOffset) * 0.15 + 0.5;
+      let nodeAlpha = n.baseAlpha * pulse;
+      let nodeColor = ACCENT_RGB;
+      let nodeRadius = 3;
+      if (n.fractured && cycle >= PHASE_CALM && cycle < PHASE_HOLD_END) {
+        const redMix = n.fractureAlpha;
+        nodeColor = RED_RGB;
+        nodeAlpha = 0.4 + redMix * 0.3;
+        nodeRadius = 3 + redMix * 1.5;
+      }
+      if (n.fractured && cycle >= PHASE_HOLD_END) {
+        const resetProgress = (cycle - PHASE_HOLD_END) / (CYCLE_LENGTH - PHASE_HOLD_END);
+        nodeColor = resetProgress > 0.5 ? ACCENT_RGB : RED_RGB;
+        nodeAlpha = 0.4 * (1 - resetProgress) + n.baseAlpha * pulse * resetProgress;
+        n.fractureAlpha = 1 - resetProgress;
+      }
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, nodeRadius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${nodeColor},${nodeAlpha})`;
+      ctx.fill();
+      if (nodeAlpha > 0.3) {
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, nodeRadius + 6, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${nodeColor},${nodeAlpha * 0.15})`;
+        ctx.fill();
+      }
+    }
+
+    for (let i = 0; i < signals.length; i++) {
+      const s = signals[i];
+      if (!s.active) continue;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, 1.5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${ACCENT_RGB},${s.alpha})`;
+      ctx.fill();
+    }
+
+    for (let i = 0; i < topNodes.length; i++) {
+      const tn = topNodes[i];
+      const pulse = Math.sin(frame * 0.015 + tn.phaseOffset) * 0.08 + 0.5;
+      let nodeAlpha = pulse;
+      let nodeColor = WHITE_RGB;
+      let r = tn.radius;
+      if (tn.flickering && cycle >= PHASE_BEAM_HIT && cycle < PHASE_FLICKER_END) {
+        const flickFrame = cycle - PHASE_BEAM_HIT;
+        if (flickFrame % 8 < 4) { nodeColor = RED_RGB; nodeAlpha = 0.6; }
+        else { nodeColor = ACCENT_RGB; nodeAlpha = 0.5; }
+        r = tn.radius + Math.sin(flickFrame * 0.5) * 1.5;
+      }
+      if (i === targetTopIndex && cycle >= PHASE_FLICKER_END && cycle < PHASE_HOLD_END) {
+        nodeColor = WHITE_RGB;
+        nodeAlpha = pulse;
+      }
+      if (i === targetTopIndex && cycle >= PHASE_HOLD_END) {
+        const resetProgress = (cycle - PHASE_HOLD_END) / (CYCLE_LENGTH - PHASE_HOLD_END);
+        nodeColor = WHITE_RGB;
+        nodeAlpha = pulse * (0.7 + resetProgress * 0.3);
+      }
+      ctx.beginPath();
+      ctx.arc(tn.x, tn.y, r + 12, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${nodeColor},${nodeAlpha * 0.06})`;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(tn.x, tn.y, r + 5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${nodeColor},${nodeAlpha * 0.12})`;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(tn.x, tn.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${nodeColor},${nodeAlpha})`;
+      ctx.fill();
+    }
+
+    if (beamActive && fractureIndex >= 0) {
+      const srcNode = chainNodes[fractureIndex];
+      const beamStartY = srcNode.y;
+      const currentBeamY = Math.max(beamY, beamTargetY);
+      ctx.beginPath();
+      ctx.moveTo(beamX, beamStartY);
+      ctx.lineTo(beamX, currentBeamY);
+      ctx.strokeStyle = `rgba(${ACCENT_RGB},0.7)`;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(beamX, beamStartY);
+      ctx.lineTo(beamX, currentBeamY);
+      ctx.strokeStyle = `rgba(${ACCENT_RGB},0.15)`;
+      ctx.lineWidth = 10;
+      ctx.stroke();
+    }
+
+    if (ringActive) {
+      ctx.beginPath();
+      ctx.arc(ringX, ringY, ringRadius, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(${RED_RGB},${ringAlpha})`;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+  }
+
+  function drawStatic() {
+    if (!ctx || W === 0 || H === 0) return;
+    const chainY = H * 0.6;
+    for (let i = 0; i < 30; i++) {
+      const x = W * (0.05 + Math.random() * 0.9);
+      const y = H * (0.7 + Math.random() * 0.25);
+      ctx.beginPath();
+      ctx.arc(x, y, 1 + Math.random() * 0.8, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${WHITE_RGB},${0.06 + Math.random() * 0.06})`;
+      ctx.fill();
+    }
+    const tempChain: { x: number; y: number }[] = [];
+    for (let i = 0; i < CHAIN_COUNT; i++) {
+      const t = (i + 0.5) / CHAIN_COUNT;
+      tempChain.push({ x: W * (0.04 + t * 0.92), y: chainY + (Math.random() - 0.5) * 6 });
+    }
+    for (let i = 0; i < tempChain.length - 1; i++) {
+      ctx.beginPath();
+      ctx.moveTo(tempChain[i].x, tempChain[i].y);
+      ctx.lineTo(tempChain[i + 1].x, tempChain[i + 1].y);
+      ctx.strokeStyle = `rgba(${ACCENT_RGB},0.15)`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    for (let i = 0; i < tempChain.length; i++) {
+      ctx.beginPath();
+      ctx.arc(tempChain[i].x, tempChain[i].y, 3, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${ACCENT_RGB},0.45)`;
+      ctx.fill();
+    }
+    const topY = H * 0.15;
+    for (let i = 0; i < TOP_COUNT; i++) {
+      const t = (i + 0.5) / TOP_COUNT;
+      const x = W * (0.1 + t * 0.8);
+      const r = 6 + Math.random() * 2;
+      ctx.beginPath();
+      ctx.arc(x, topY, r + 5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${WHITE_RGB},0.06)`;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(x, topY, r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${WHITE_RGB},0.5)`;
+      ctx.fill();
+    }
+  }
+
+  function tick() {
+    if (!isVisible) return;
+    update();
+    draw();
+    frame++;
+    raf = requestAnimationFrame(tick);
+  }
+
+  if (prefersReduced) {
+    requestAnimationFrame(() => { if (W > 0 && H > 0) drawStatic(); });
+  } else {
+    requestAnimationFrame(() => { raf = requestAnimationFrame(tick); });
+  }
+
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(raf);
+    ro.disconnect();
+    io.disconnect();
+  });
+})();
+</script>
