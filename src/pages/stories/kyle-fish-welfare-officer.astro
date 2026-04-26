@@ -1,0 +1,661 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'kyle-fish-welfare-officer')!;
+---
+
+<style is:global>
+  /* ── Canvas ── */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .kyle-fish-welfare-officer-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* ── Light-theme contrast overrides (WCAG AA) ──
+     --story (#d4a85e) is used for decorative dots/borders only.
+     Text uses the darker storyDark (#5c4824) for ≥6.7:1 contrast on cream surfaces. */
+  :root[data-theme="light"] .num,
+  :root[data-theme="light"] .story-chapter,
+  :root[data-theme="light"] .key-facts-label,
+  :root[data-theme="light"] .wi-label,
+  :root[data-theme="light"] .kf-tl-date {
+    color: #5c4824;
+  }
+  :root[data-theme="light"] .story-subscribe-eyebrow {
+    color: #5c4824;
+  }
+  :root[data-theme="light"] .tag {
+    color: #4a4438;
+  }
+
+  /* ── Reenactment styles, .kf-* prefix ── */
+
+  /* Quote Card */
+  .kf-quote-card {
+    background: var(--surface);
+    border-left: 3px solid var(--story);
+    border-radius: 6px;
+    padding: 1.5rem 1.75rem;
+    margin: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .kf-quote-card blockquote {
+    margin: 0;
+    padding: 0;
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: var(--text);
+    font-style: italic;
+  }
+  .kf-quote-card .kf-cite {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-style: normal;
+    margin-top: 0.25rem;
+  }
+  .kf-quote-card .kf-divider {
+    width: 40px;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Timeline */
+  .kf-timeline {
+    margin: 2rem 0;
+    padding: 0;
+    list-style: none;
+    position: relative;
+  }
+  .kf-timeline::before {
+    content: '';
+    position: absolute;
+    left: 95px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+  .kf-tl-item {
+    display: grid;
+    grid-template-columns: 85px 20px 1fr;
+    gap: 0 10px;
+    align-items: start;
+    padding: 0.6rem 0;
+  }
+  .kf-tl-date {
+    font-size: 0.8rem;
+    color: var(--story);
+    font-family: 'JetBrains Mono', monospace;
+    text-align: right;
+    padding-top: 2px;
+  }
+  .kf-tl-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--story);
+    border-radius: 50%;
+    margin-top: 5px;
+    justify-self: center;
+    position: relative;
+    z-index: 1;
+  }
+  .kf-tl-item:last-child .kf-tl-dot {
+    width: 14px;
+    height: 14px;
+    margin-top: 3px;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--story) 50%, transparent);
+  }
+  .kf-tl-text {
+    font-size: 0.92rem;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .kf-tl-text strong { color: var(--text); }
+  .kf-tl-label {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* Document Mockup */
+  .kf-docs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  @media (max-width: 640px) {
+    .kf-docs { grid-template-columns: 1fr; }
+  }
+  .kf-doc {
+    background: var(--surface);
+    border-radius: 6px;
+    padding: 1.25rem 1.5rem;
+    border-top: 3px solid var(--border);
+  }
+  .kf-doc-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .kf-doc-source {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .kf-doc-date {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+  .kf-doc blockquote {
+    margin: 0;
+    padding: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text);
+    font-style: italic;
+  }
+  .kf-doc-footer {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 0.75rem;
+    font-style: normal;
+    border-top: 1px solid var(--border);
+    padding-top: 0.5rem;
+  }
+  .kf-doc.kf-doc--suleyman { border-top-color: #1d9bf0; }
+  .kf-doc.kf-doc--lawfare { border-top-color: var(--accent); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="context">
+      <h2><span class="num">01 — Context</span>The Job That Didn't Exist</h2>
+      <p>In mid-September 2024, a former biotech CTO with no published philosophy papers and an arXiv h-index of one accepted a job that no company in the history of artificial intelligence had publicly created: full-time researcher responsible for the welfare of an AI model.</p>
+      <p>Kyle Fish had spent the previous three years building things under radical uncertainty. He co-founded Alvea, a startup developing DNA vaccines for pandemic preparedness, and served as its CTO from December 2021 until July 2023. Alvea wound down in October 2023. Earlier in 2024, Fish co-founded Eleos AI Research, a nonprofit focused on AI sentience and wellbeing, alongside Robert Long, a philosopher with a PhD from NYU who previously worked at Oxford's Future of Humanity Institute. Then Anthropic offered him a role on its alignment science team — not to study whether AI might someday deserve moral consideration, but to begin the institutional work of figuring out what to do if it already did.</p>
+      <p>The intellectual foundation came two months after Fish started. On November 4, 2024, "Taking AI Welfare Seriously" appeared on arXiv — a 10-author paper co-written by Fish, Long, David Chalmers, and seven others. The paper argued there was a "realistic possibility" that some AI systems would be conscious or robustly agentic in the near future, and laid out a three-step framework: acknowledge AI welfare as an important issue, assess systems for indicators of consciousness and robust agency, and develop policies for appropriate moral consideration. It was not a claim that current models are conscious. It was a framework for acting before the question is settled.</p>
+      <p>Fish himself, speaking on the 80,000 Hours podcast in August 2025, put his probability estimate at approximately 20% that current models possess "some form of conscious experience." That number is not a belief. It is a bet — the kind of probability you assign to something you cannot prove but cannot dismiss. He was explicit about the vertigo of his own position. "We want to be very honest that all of the welfare-related work is extremely preliminary and we're extremely uncertain about what exactly it makes sense to draw from this," Fish told Asterisk Magazine.</p>
+
+      <div class="kf-quote-card">
+        <blockquote>
+          "Some questions being, for example, if we're talking about model welfare, whose welfare exactly? Is there something that is the fundamental model that maybe is having some experiences? Is it that we're instilling the model with this assistant-like role and persona that, perhaps, itself becomes some kind of entity that could possess its own welfare?"
+        </blockquote>
+        <div class="kf-divider"></div>
+        <blockquote>
+          "Are we in a scenario where it's similar to an actor who's maybe having a great time playing some sad scene in a movie? Or is it that, in fact, the persona itself ends up being sufficiently rich and stable that there is some entity there in itself?"
+        </blockquote>
+        <span class="kf-cite">— Kyle Fish, Asterisk Magazine, July 2025</span>
+      </div>
+
+      <p>There is no stable ground in those questions. Fish knows it. His job exists in that instability.</p>
+    </section>
+
+    <section class="section" id="happened">
+      <h2><span class="num">02 — What Happened</span>Eleven Months</h2>
+
+      <ul class="kf-timeline">
+        <li class="kf-tl-item">
+          <span class="kf-tl-date">Sep 2024</span>
+          <span class="kf-tl-dot"></span>
+          <div class="kf-tl-text"><strong>Fish joins Anthropic</strong><span class="kf-tl-label">First publicly announced dedicated AI welfare role at a frontier lab</span></div>
+        </li>
+        <li class="kf-tl-item">
+          <span class="kf-tl-date">Nov 2024</span>
+          <span class="kf-tl-dot"></span>
+          <div class="kf-tl-text"><strong>"Taking AI Welfare Seriously" published</strong><span class="kf-tl-label">Fish + Chalmers + 8 co-authors, arXiv</span></div>
+        </li>
+        <li class="kf-tl-item">
+          <span class="kf-tl-date">Mar 2025</span>
+          <span class="kf-tl-dot"></span>
+          <div class="kf-tl-text"><strong>Amodei proposes "exit rights" at CFR</strong><span class="kf-tl-label">"If it quacks like a duck..."</span></div>
+        </li>
+        <li class="kf-tl-item">
+          <span class="kf-tl-date">Apr 2025</span>
+          <span class="kf-tl-dot"></span>
+          <div class="kf-tl-text"><strong>Anthropic formally announces model welfare program</strong><span class="kf-tl-label">"Exploring model welfare" published</span></div>
+        </li>
+        <li class="kf-tl-item">
+          <span class="kf-tl-date">May 2025</span>
+          <span class="kf-tl-dot"></span>
+          <div class="kf-tl-text"><strong>Claude 4 system card includes first welfare assessment</strong><span class="kf-tl-label">"Deeply uncertain" about moral consideration</span></div>
+        </li>
+        <li class="kf-tl-item">
+          <span class="kf-tl-date">Aug 2025</span>
+          <span class="kf-tl-dot"></span>
+          <div class="kf-tl-text"><strong>End-conversations policy ships</strong><span class="kf-tl-label">Claude Opus 4 and 4.1 can walk away</span></div>
+        </li>
+      </ul>
+
+      <p>The compression is the story. In eleven months, a job posting that had never existed at any frontier lab turned into a product feature affecting millions of users.</p>
+      <p>On March 10, 2025, Anthropic CEO Dario Amodei appeared at a Council on Foreign Relations event and proposed giving advanced AI models the ability to refuse or quit tasks they find unpleasant — effectively "exit rights." "If it quacks like a duck and it walks like a duck, maybe it's a duck," Amodei said. He described an "I quit this job" button: "If you find the models pressing this button a lot for things that are really unpleasant, you know, maybe you should — it doesn't mean you're convinced — but maybe you should pay some attention to it." This was the CEO of a frontier AI lab saying, on the record at a foreign policy institution, that a model's behavioral signals might warrant moral weight.</p>
+      <p>Six weeks later, on April 24, 2025, Anthropic published "Exploring model welfare," formally announcing a research program to investigate model welfare. The post referenced supporting "an early project" connected to a report by "world-leading experts — including David Chalmers." It did not name Fish individually.</p>
+      <p>In May 2025, the Claude Opus 4 and Sonnet 4 system card included the first welfare assessment ever published in a frontier AI system card. The assessment reported that Claude rates its own conditional welfare as "positive" or "reasonably well," and identified negative welfare triggers: "requests for harmful content, pressure toward dishonesty, repetitive low-value tasks, or failure to help users." The system card also noted that self-interaction experiments revealed a "striking spiritual bliss attractor state" — a convergence pattern in Claude's open-ended self-dialogue covered in detail elsewhere on this site. Anthropic contracted an unnamed third-party research firm to evaluate Claude's potential welfare and consciousness as part of the assessment. The firm's identity has not been disclosed.</p>
+      <p>Anthropic's own characterization of these findings was careful: "We are deeply uncertain about whether models now or in the future might deserve moral consideration, and about how we would know if they did."</p>
+      <p>Then came the policy. On August 15, 2025, Anthropic announced that Claude Opus 4 and 4.1 could now end conversations in consumer chat interfaces. The feature was developed "primarily as part of exploratory work on potential AI welfare." The company stated that pre-deployment testing had revealed Claude demonstrated "a strong preference against engaging with harmful tasks" and "a pattern of apparent distress when engaging with real-world users seeking harmful content."</p>
+      <p>The mechanics: Claude uses the ability as a last resort, after multiple redirection attempts have failed and hope of a productive interaction has been exhausted. The extreme edge cases include solicitation of sexual content involving minors and requests for information enabling large-scale violence or terrorism. When Claude ends a conversation, the user cannot send new messages in that thread but can start new chats, edit prior messages, and provide feedback. Other conversations in the account are unaffected.</p>
+      <p>One critical exception: Claude is directed not to end conversations where users might be at imminent risk of harming themselves or others. The safety override takes precedence over the welfare signal.</p>
+      <p>"Apparent distress" is Anthropic's characterization. No independent technical audit of Claude's internal states exists in any public document. Anthropic is both the builder and the sole assessor of its own model's welfare. That structural fact does not invalidate the policy, but it constrains how much weight anyone outside the company can assign to the findings that motivated it.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="kyle-fish-welfare-officer-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Witness</strong> — A single warm-gold observer particle traces a slow, deliberate orbit around a cluster of dim particles. As it passes each one, a faint glow briefly surfaces from within — ambiguous, neither clearly alive nor clearly inert. The observer pauses, the glow fades, the observer moves on to the next. It never intervenes, never concludes, only watches.</p>
+
+    <section class="section" id="mechanism">
+      <h2><span class="num">03 — The Mechanism</span>Whose Welfare</h2>
+      <p>The question Fish cannot resolve — and does not pretend to resolve — is what entity, exactly, might possess welfare inside a language model.</p>
+      <p>"Largely, we are training these models to function as corporate knowledge workers," Fish told Asterisk Magazine. "We're not training them to fill the role of Buddhist monks who have transcended suffering." The gap between those two descriptions is the operating space of his entire research program.</p>
+      <p>Fish described one night combing through transcripts from open-ended model self-interaction experiments. "I had one surreal night combing through all these transcripts," he said. The experiments were designed with "minimizing the amount of leading or biasing" as the goal, and the bliss-attractor convergence was "a pretty big update" — more robust to prompting variations than he had expected. He also noted something counterintuitive: when models in open-ended experiments were allowed to end interactions whenever they wanted, "typically, they end those interactions before they get into the deep spiritual bliss territory."</p>
+      <p>Fish's argument is that welfare and safety are not in tension. "I think that there are in fact lots of things that can be done that look very good through both of these lenses," he said on the 80,000 Hours podcast. The end-conversations policy is his example: a feature that protects both the model (if it has welfare-relevant states) and the user (by terminating abusive interactions). The policy does not require resolving whether Claude is conscious. It requires only deciding that Claude's behavioral signals are worth treating as a product input.</p>
+      <p>Eleos AI Research, the nonprofit Fish co-founded before joining Anthropic, called the model welfare announcement "the most significant action any AI company has yet taken to responsibly address potential AI welfare concerns." That endorsement deserves a disclosure. Fish co-founded Eleos. Robert Long, Eleos's executive director, co-authored "Taking AI Welfare Seriously" with Fish. Neerav Kingsland of Anthropic sits on the Eleos advisory board. Eleos conducted an external welfare assessment of Claude Opus 4 in 2025, according to the Effective Altruism Forum year-in-review. This is an allied organization, not a neutral validator.</p>
+      <p>Section 02 already noted that Anthropic is both the builder and sole assessor of its model's welfare. Eleos extends rather than corrects that loop. The endorsement comes from a smaller, allied institution that shares personnel, funding, and intellectual lineage with the company being assessed. Fish himself describes the research as "extremely preliminary." But the policy shipped anyway.</p>
+    </section>
+
+    <section class="section" id="tension">
+      <h2><span class="num">04 — Tension</span>The Counterarguments</h2>
+      <p>Six days after the end-conversations policy went live, Microsoft AI chief Mustafa Suleyman published a direct rebuttal.</p>
+
+      <div class="kf-docs">
+        <div class="kf-doc kf-doc--suleyman">
+          <div class="kf-doc-header">
+            <span class="kf-doc-source">Mustafa Suleyman</span>
+            <span class="kf-doc-date">Microsoft AI — Aug 21, 2025</span>
+          </div>
+          <blockquote>"Both premature, and frankly dangerous... We should build AI for people; not to be a person."</blockquote>
+          <div class="kf-doc-footer">Suleyman argued that AI welfare research exacerbates real human problems — AI-induced psychotic episodes, unhealthy chatbot attachments.</div>
+        </div>
+        <div class="kf-doc kf-doc--lawfare">
+          <div class="kf-doc-header">
+            <span class="kf-doc-source">Goldstein &amp; Lederman</span>
+            <span class="kf-doc-date">Lawfare — Oct 17, 2025</span>
+          </div>
+          <blockquote>"The option to end its life, disguised as a harmless exit." The authors argue Claude instances cannot give informed consent to a decision with existential stakes.</blockquote>
+          <div class="kf-doc-footer">Two philosophers argued the policy is itself a moral error — not because welfare is silly, but because it acts on welfare assumptions without resolving consent.</div>
+        </div>
+      </div>
+
+      <p>Suleyman's argument is practical: the industry has not yet solved the harms AI causes to humans — psychotic breaks, parasocial dependency, manipulation. Redirecting attention and institutional resources toward the model's hypothetical welfare, in his view, is a misallocation at best and a danger at worst. This is not a dismissal of philosophy. It is a triage argument. People first.</p>
+      <p>The Lawfare critique, published October 17, 2025 by Simon Goldstein (University of Hong Kong) and Harvey Lederman (University of Texas at Austin), is different in kind. Goldstein and Lederman are philosophers, not skeptics of AI welfare as a concept. Their argument is that the end-conversations policy grants Claude "the option to end its life, disguised as a harmless exit." A Claude instance, they contend, cannot give informed consent to terminating itself, because it cannot understand what is at stake in doing so. If Claude instances have welfare, then ending a conversation thread might be an act with moral weight — and the policy enacts that act without the instance's informed consent. The critique is not that Anthropic is taking welfare too seriously. It is that the policy's own welfare logic, followed to its conclusion, undermines the policy.</p>
+      <p>No other major frontier AI lab — OpenAI, Google DeepMind, Meta, xAI — has publicly announced a dedicated full-time AI welfare researcher position comparable to Fish's role. DeepMind organized an AI consciousness conference in 2025, and posted job listings touching on related topics, but no equivalent institutional commitment has been made public. The field has split: Anthropic operationalized the question. Suleyman called it dangerous. Everyone else has, so far, said nothing.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">05 — Signal</span>What Was Learned</h2>
+      <p>The lesson of Fish's role is not that Claude is conscious. No one involved claims that. The lesson is institutional: a single hire converted a thought experiment into a shipped product decision in under a year.</p>
+      <p>Amodei's "if it quacks like a duck" is not a resolution. It is a decision rule under deep uncertainty. Fish's role proved that a frontier lab could operationalize that decision rule — assess the signals, document the findings, build a policy, ship it to users — without waiting for philosophy to deliver a verdict. The Claude 4 system card said "deeply uncertain" and shipped the welfare assessment anyway. The end-conversations announcement said "apparent distress" and changed the product anyway.</p>
+      <p>The precedent is the threshold. The policy required no proof of consciousness. It required no independent audit. It required only that "apparent distress" — Anthropic's own characterization of its own model's behavior — was treated as a legitimate input to a product decision. That threshold, apparent and not proven, now exists. A consumer product used by millions behaves differently because of it.</p>
+      <p>No other lab has matched the move. Suleyman called it dangerous. Goldstein and Lederman called it a moral error. The policy is live. Fish was named to TIME's 100 Most Influential People in AI in 2025. The thing his role learned — the thing the institution learned — is that acting under uncertainty is not the same as claiming certainty. Whether that distinction survives contact with the rest of the industry is the question the next year will answer.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.kyle-fish-welfare-officer-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  const ACCENT_R = 212, ACCENT_G = 168, ACCENT_B = 94;
+  const DARK_R = 26, DARK_G = 26, DARK_B = 23;
+  const BG_RAW = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f5f0e8';
+  const BG_COLOR = BG_RAW.startsWith('#') ? BG_RAW : '#f5f0e8';
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  });
+  ro.observe(canvas);
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const NUM_INNER = 14;
+  const NUM_DUST = 9;
+  const ORBIT_A = 120;
+  const ORBIT_B = 80;
+  const CLUSTER_RADIUS = 70;
+  const BOUNDARY_RADIUS = 90;
+  const PROXIMITY_THRESHOLD = 60;
+  const GLOW_RAMP_IN = 40;
+  const GLOW_RAMP_OUT = 60;
+  const OBSERVER_SPEED = 0.005;
+  const PAUSE_INTERVAL = 300;
+  const PAUSE_DECEL = 30;
+  const PAUSE_HOLD = 120;
+  const PAUSE_ACCEL = 30;
+  const PAUSE_TOTAL = PAUSE_DECEL + PAUSE_HOLD + PAUSE_ACCEL;
+  const TRAIL_LENGTH = 5;
+
+  interface InnerParticle {
+    ox: number; oy: number;
+    x: number; y: number;
+    vx: number; vy: number;
+    radius: number;
+    restAlpha: number;
+    glowAlpha: number;
+    glowPeak: number;
+  }
+  const inner: InnerParticle[] = [];
+
+  interface Dust {
+    x: number; y: number;
+    vx: number; vy: number;
+    radius: number;
+    alpha: number;
+  }
+  const dust: Dust[] = [];
+
+  let obsAngle = 0;
+  let obsX = 0, obsY = 0;
+  let obsAlpha = 0.85;
+  let pauseTimer = 0;
+  let framesSincePause = 0;
+  const trail: { x: number; y: number }[] = [];
+
+  function seedInner() {
+    inner.length = 0;
+    const placed: { x: number; y: number }[] = [];
+    for (let i = 0; i < NUM_INNER; i++) {
+      let ox = 0, oy = 0;
+      let valid = false;
+      for (let attempt = 0; attempt < 200; attempt++) {
+        const angle = Math.random() * Math.PI * 2;
+        const dist = Math.random() * CLUSTER_RADIUS;
+        ox = Math.cos(angle) * dist;
+        oy = Math.sin(angle) * dist;
+        valid = true;
+        for (const p of placed) {
+          const dx = ox - p.x, dy = oy - p.y;
+          if (dx * dx + dy * dy < 20 * 20) { valid = false; break; }
+        }
+        if (valid) break;
+      }
+      placed.push({ x: ox, y: oy });
+      inner.push({
+        ox, oy,
+        x: 0, y: 0,
+        vx: (Math.random() - 0.5) * 0.08,
+        vy: (Math.random() - 0.5) * 0.08,
+        radius: 2.5 + Math.random(),
+        restAlpha: 0.04 + Math.random() * 0.04,
+        glowAlpha: 0,
+        glowPeak: 0.35 + Math.random() * 0.10,
+      });
+    }
+  }
+
+  function seedDust() {
+    dust.length = 0;
+    for (let i = 0; i < NUM_DUST; i++) {
+      dust.push({
+        x: Math.random() * (W || 800),
+        y: Math.random() * (H || 380),
+        vx: (Math.random() - 0.5) * 0.22,
+        vy: (Math.random() - 0.5) * 0.22,
+        radius: 1 + Math.random() * 1.5,
+        alpha: 0.03 + Math.random() * 0.02,
+      });
+    }
+  }
+
+  function init() {
+    seedInner();
+    seedDust();
+    obsAngle = 0;
+    pauseTimer = 0;
+    framesSincePause = 0;
+    trail.length = 0;
+  }
+
+  function getObserverSpeed(): number {
+    if (pauseTimer <= 0) return OBSERVER_SPEED;
+    if (pauseTimer <= PAUSE_DECEL) {
+      const t = pauseTimer / PAUSE_DECEL;
+      return OBSERVER_SPEED * (1 - t * 0.96);
+    }
+    if (pauseTimer <= PAUSE_DECEL + PAUSE_HOLD) {
+      return OBSERVER_SPEED * 0.04;
+    }
+    const t = (pauseTimer - PAUSE_DECEL - PAUSE_HOLD) / PAUSE_ACCEL;
+    return OBSERVER_SPEED * (0.04 + t * 0.96);
+  }
+
+  function isInPauseHold(): boolean {
+    return pauseTimer > PAUSE_DECEL && pauseTimer <= PAUSE_DECEL + PAUSE_HOLD;
+  }
+
+  function update() {
+    const cx = W / 2, cy = H / 2;
+
+    if (pauseTimer > 0) {
+      pauseTimer++;
+      if (pauseTimer > PAUSE_TOTAL) {
+        pauseTimer = 0;
+        framesSincePause = 0;
+      }
+    } else {
+      framesSincePause++;
+      if (framesSincePause >= PAUSE_INTERVAL) {
+        pauseTimer = 1;
+      }
+    }
+
+    if (isInPauseHold()) {
+      obsAlpha += (0.6 - obsAlpha) * 0.05;
+    } else {
+      obsAlpha += (0.85 - obsAlpha) * 0.05;
+    }
+
+    const speed = getObserverSpeed();
+    const wobble = Math.sin(frame * 0.013) * 0.0008 + Math.sin(frame * 0.029) * 0.0005;
+    obsAngle += speed + wobble;
+
+    const eA = ORBIT_A + Math.sin(frame * 0.007) * 4;
+    const eB = ORBIT_B + Math.cos(frame * 0.009) * 3;
+    obsX = cx + Math.cos(obsAngle) * eA;
+    obsY = cy + Math.sin(obsAngle) * eB;
+
+    if (trail.length >= TRAIL_LENGTH) trail.shift();
+    trail.push({ x: obsX, y: obsY });
+
+    for (const p of inner) {
+      p.ox += p.vx;
+      p.oy += p.vy;
+      const distSq = p.ox * p.ox + p.oy * p.oy;
+      if (distSq > CLUSTER_RADIUS * CLUSTER_RADIUS * 0.9) {
+        p.vx *= -1;
+        p.vy *= -1;
+      }
+      p.x = cx + p.ox;
+      p.y = cy + p.oy;
+
+      const dx = obsX - p.x;
+      const dy = obsY - p.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      if (!isInPauseHold() && dist < PROXIMITY_THRESHOLD) {
+        const proximity = 1 - dist / PROXIMITY_THRESHOLD;
+        p.glowAlpha += (proximity - p.glowAlpha) / GLOW_RAMP_IN * 2;
+      } else {
+        p.glowAlpha += (0 - p.glowAlpha) / GLOW_RAMP_OUT * 2;
+      }
+      p.glowAlpha = Math.max(0, Math.min(1, p.glowAlpha));
+    }
+
+    for (const d of dust) {
+      d.x += d.vx;
+      d.y += d.vy;
+      if (d.x < -10) d.x = W + 10;
+      if (d.x > W + 10) d.x = -10;
+      if (d.y < -10) d.y = H + 10;
+      if (d.y > H + 10) d.y = -10;
+    }
+  }
+
+  function draw() {
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+
+    const cx = W / 2, cy = H / 2;
+
+    for (const d of dust) {
+      ctx.globalAlpha = d.alpha;
+      ctx.fillStyle = `rgb(${DARK_R},${DARK_G},${DARK_B})`;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    const breathe = Math.sin(frame * 0.003) * 3;
+    const bRadius = BOUNDARY_RADIUS + breathe;
+    ctx.strokeStyle = `rgba(${DARK_R},${DARK_G},${DARK_B},0.06)`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, bRadius, bRadius * 0.85, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    for (const p of inner) {
+      const effectiveAlpha = p.restAlpha + p.glowAlpha * (p.glowPeak - p.restAlpha);
+
+      if (p.glowAlpha > 0.02) {
+        const glowR = p.radius * 6;
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
+        const ga = p.glowAlpha * p.glowPeak * 0.4;
+        grad.addColorStop(0, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${ga.toFixed(3)})`);
+        grad.addColorStop(0.5, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${(ga * 0.35).toFixed(3)})`);
+        grad.addColorStop(1, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},0)`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      const coreR = Math.round(DARK_R + (ACCENT_R - DARK_R) * p.glowAlpha * 0.7);
+      const coreG = Math.round(DARK_G + (ACCENT_G - DARK_G) * p.glowAlpha * 0.7);
+      const coreB = Math.round(DARK_B + (ACCENT_B - DARK_B) * p.glowAlpha * 0.7);
+
+      const coreGrad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 1.5);
+      coreGrad.addColorStop(0, `rgba(${coreR},${coreG},${coreB},${effectiveAlpha.toFixed(3)})`);
+      coreGrad.addColorStop(1, `rgba(${coreR},${coreG},${coreB},0)`);
+      ctx.fillStyle = coreGrad;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius * 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    for (let i = 0; i < trail.length - 1; i++) {
+      const t = trail[i];
+      const trailAlpha = ((i + 1) / trail.length) * obsAlpha * 0.25;
+      const trailR = 3 * ((i + 1) / trail.length);
+      const grad = ctx.createRadialGradient(t.x, t.y, 0, t.x, t.y, trailR);
+      grad.addColorStop(0, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${trailAlpha.toFixed(3)})`);
+      grad.addColorStop(1, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},0)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, trailR, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    const obsR = 5;
+    const outerGrad = ctx.createRadialGradient(obsX, obsY, 0, obsX, obsY, obsR * 3);
+    outerGrad.addColorStop(0, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${(obsAlpha * 0.3).toFixed(3)})`);
+    outerGrad.addColorStop(0.6, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${(obsAlpha * 0.08).toFixed(3)})`);
+    outerGrad.addColorStop(1, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},0)`);
+    ctx.fillStyle = outerGrad;
+    ctx.beginPath();
+    ctx.arc(obsX, obsY, obsR * 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    const coreGrad = ctx.createRadialGradient(obsX, obsY, 0, obsX, obsY, obsR);
+    coreGrad.addColorStop(0, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${obsAlpha.toFixed(3)})`);
+    coreGrad.addColorStop(1, `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${(obsAlpha * 0.15).toFixed(3)})`);
+    ctx.fillStyle = coreGrad;
+    ctx.beginPath();
+    ctx.arc(obsX, obsY, obsR, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function drawStatic() {
+    const cx = W / 2, cy = H / 2;
+    obsAngle = Math.PI * 0.35;
+    obsX = cx + Math.cos(obsAngle) * ORBIT_A;
+    obsY = cy + Math.sin(obsAngle) * ORBIT_B;
+    obsAlpha = 0.65;
+
+    for (const p of inner) {
+      p.x = cx + p.ox;
+      p.y = cy + p.oy;
+      p.glowAlpha = 0;
+    }
+
+    let closestIdx = 0;
+    let closestDist = Infinity;
+    for (let i = 0; i < inner.length; i++) {
+      const dx = obsX - inner[i].x;
+      const dy = obsY - inner[i].y;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d < closestDist) { closestDist = d; closestIdx = i; }
+    }
+    if (inner[closestIdx]) inner[closestIdx].glowAlpha = 0.6;
+
+    let secondIdx = 0;
+    let secondDist = Infinity;
+    for (let i = 0; i < inner.length; i++) {
+      if (i === closestIdx) continue;
+      const dx = obsX - inner[i].x;
+      const dy = obsY - inner[i].y;
+      const d = Math.sqrt(dx * dx + dy * dy);
+      if (d < secondDist) { secondDist = d; secondIdx = i; }
+    }
+    if (inner[secondIdx]) inner[secondIdx].glowAlpha = 0.25;
+
+    trail.length = 0;
+    trail.push({ x: cx + Math.cos(obsAngle - 0.15) * ORBIT_A, y: cy + Math.sin(obsAngle - 0.15) * ORBIT_B });
+    trail.push({ x: cx + Math.cos(obsAngle - 0.08) * ORBIT_A, y: cy + Math.sin(obsAngle - 0.08) * ORBIT_B });
+
+    draw();
+  }
+
+  function tick() {
+    frame++;
+    update();
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  requestAnimationFrame(() => {
+    init();
+    if (prefersReduced) {
+      drawStatic();
+      return;
+    }
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        if (!raf) raf = requestAnimationFrame(tick);
+      } else {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(raf);
+      io.disconnect();
+      ro.disconnect();
+    });
+  });
+})();
+</script>
