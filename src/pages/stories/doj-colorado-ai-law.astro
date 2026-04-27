@@ -1,0 +1,753 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'doj-colorado-ai-law')!;
+---
+
+<style is:global>
+  /* ── Canvas ── */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .doj-colorado-ai-law-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* === Quote Chain (Section 01) === */
+  .doj-quote-chain {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 2.5rem 0;
+    position: relative;
+  }
+  .doj-quote-chain::before {
+    content: '';
+    position: absolute;
+    left: 24px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--story), rgba(99,102,241,0.15));
+  }
+  .doj-qc-card {
+    position: relative;
+    padding: 1.25rem 1.5rem 1.25rem 3rem;
+    border-left: none;
+    background: transparent;
+  }
+  .doj-qc-card + .doj-qc-card {
+    margin-top: 0.5rem;
+  }
+  .doj-qc-dot {
+    position: absolute;
+    left: 17px;
+    top: 1.5rem;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--story);
+    border: 2px solid var(--bg);
+    z-index: 1;
+  }
+  .doj-qc-card:nth-child(2) .doj-qc-dot {
+    background: var(--accent);
+  }
+  .doj-qc-card:nth-child(3) .doj-qc-dot {
+    background: var(--muted);
+  }
+  .doj-qc-quote {
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 0.97rem;
+  }
+  .doj-qc-card:nth-child(3) .doj-qc-quote {
+    color: var(--muted);
+    font-style: normal;
+  }
+  .doj-qc-attr {
+    margin-top: 0.5rem;
+    font-size: 0.82rem;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+  .doj-qc-attr strong {
+    color: var(--text);
+  }
+  .doj-qc-note {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem 0.75rem 3rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    font-style: italic;
+  }
+
+  /* === Court Docket Card (Section 03) === */
+  .doj-docket {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+  .doj-docket-header {
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    font-size: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+  }
+  .doj-docket-case {
+    text-align: center;
+    color: var(--story);
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+  .doj-docket-parties {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1rem;
+    color: var(--text);
+    line-height: 1.8;
+  }
+  .doj-docket-parties .doj-v {
+    display: block;
+    text-align: center;
+    color: var(--muted);
+    font-style: italic;
+    padding: 0.25rem 0;
+  }
+  .doj-docket-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .doj-docket-entry {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 1rem;
+    padding: 0.25rem 0;
+  }
+  .doj-docket-date {
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .doj-docket-desc {
+    color: var(--text);
+  }
+  .doj-docket-entry.doj-highlight {
+    background: rgba(99,102,241,0.08);
+    border-radius: 3px;
+    padding: 0.35rem 0.5rem;
+  }
+  .doj-docket-entry.doj-highlight .doj-docket-date {
+    color: var(--story);
+    font-weight: 600;
+  }
+  .doj-docket-entry.doj-highlight .doj-docket-desc {
+    color: var(--text);
+  }
+  .doj-docket-footer {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-style: italic;
+    font-family: inherit;
+  }
+
+  /* === Quote Diptych (Section 04) === */
+  .doj-officials {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  @media (max-width: 640px) {
+    .doj-officials {
+      grid-template-columns: 1fr;
+    }
+  }
+  .doj-off-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.25rem;
+    position: relative;
+  }
+  .doj-off-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 6px 6px 0 0;
+  }
+  .doj-off-card:first-child::before {
+    background: var(--accent);
+  }
+  .doj-off-card:last-child::before {
+    background: var(--story);
+  }
+  .doj-off-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+  }
+  .doj-off-card:first-child .doj-off-label {
+    color: var(--accent);
+  }
+  .doj-off-card:last-child .doj-off-label {
+    color: var(--story);
+  }
+  .doj-off-quote {
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+  }
+  .doj-off-name {
+    font-size: 0.82rem;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .doj-off-title {
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .doj-off-footer {
+    grid-column: 1 / -1;
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-style: italic;
+    padding-top: 0.5rem;
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="context">
+      <h2><span class="num">01 — Context</span>A Law Without a Defender</h2>
+      <p>On May 17, 2024, Colorado Governor Jared Polis signed Senate Bill 24-205 into law. It was called the Consumer Protections for Artificial Intelligence Act. It made Colorado the first state in the country to enact a comprehensive AI antidiscrimination statute, covering high-risk decisions in employment, housing, healthcare, education, insurance, lending, government services, and legal proceedings. Polis signed it with reservations.</p>
+      <p>His signing statement said so explicitly. "I am concerned about the impact this law may have on an industry that is fueling critical technological advancements across our state," Polis wrote. He warned that SB 24-205 "creates a complex compliance regime for all developers and deployers of AI doing business in Colorado" and that state-level regulation "applied at the state level in a patchwork across the country can have the effect to tamper innovation and deter competition in an open market." The governor signed the bill and, in the same document, asked the legislature to fix it.</p>
+      <p>The attorney general tasked with enforcing it was more direct. Phil Weiser, speaking at the Mountain Connect 2025 conference on August 5, 2025, said he had not been consulted during the bill's passage. "At the very end of the session this bill moved through very quickly," Weiser said, "such that even myself, as an expert in this area, hadn't been read in, or brought in, or engaged." His verdict was blunt: "This bill is really problematic, it needs to be fixed. And, after a year's effort to try to fix it, it didn't get fixed."</p>
+      <p>The legislature tried to fix it. In August 2025, Governor Polis convened a six-day special legislative session to amend SB 24-205. Four competing bills were introduced. Tech companies objected to the proposed liability provisions. None of the bills passed. The only result was SB 25B-004, signed on August 28, 2025, which pushed the law's effective date from February 1, 2026 to June 30, 2026. By March 17, 2026, a Governor-appointed AI Policy Working Group had proposed a replacement framework that would take effect January 1, 2027, eliminating the impact assessments and risk management mandates at the core of the original law. The replacement had not yet been enacted. SB 24-205, as written, remained on the books.</p>
+      <p>The law was politically orphaned. Its governor had signed it with caveats. Its attorney general had called it problematic on stage. Its legislature had failed to fix it and was running out of time. A working group was drafting its replacement. And the one office that could have defended it -- the attorney general's -- had gone silent. When the Colorado Sun and other outlets contacted the AG's office about the emerging litigation, the response was uniform: "The Colorado attorney general's office has no comment on this active litigation."</p>
+
+      <div class="doj-quote-chain">
+        <div class="doj-qc-card">
+          <div class="doj-qc-dot"></div>
+          <div class="doj-qc-quote">"I am concerned about the impact this law may have on an industry that is fueling critical technological advancements across our state for consumers and enterprises alike."</div>
+          <div class="doj-qc-attr"><strong>Gov. Jared Polis</strong> — Signing statement, May 17, 2024</div>
+        </div>
+        <div class="doj-qc-card">
+          <div class="doj-qc-dot"></div>
+          <div class="doj-qc-quote">"This bill is really problematic, it needs to be fixed. And, after a year's effort to try to fix it, it didn't get fixed."</div>
+          <div class="doj-qc-attr"><strong>AG Phil Weiser</strong> — Mountain Connect 2025, August 5, 2025</div>
+        </div>
+        <div class="doj-qc-card">
+          <div class="doj-qc-dot"></div>
+          <div class="doj-qc-quote">The Colorado attorney general's office has no comment on this active litigation.</div>
+          <div class="doj-qc-attr"><strong>AG's Office</strong> — April 2026</div>
+        </div>
+        <div class="doj-qc-note">From reluctant endorsement to open criticism to silence. The law's would-be defender went mute.</div>
+      </div>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="doj-colorado-ai-law-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Override</strong> — A flickering horizontal boundary wavers at center; a straight indigo line descends from above; on contact the boundary shatters; fragments try to reassemble but are repelled by invisible force; the override holds position; the cycle restarts.</p>
+
+    <section class="section" id="statute">
+      <h2><span class="num">02 — Statute</span>What the Law Actually Requires</h2>
+      <p>SB 24-205 applies to "high-risk artificial intelligence systems" -- systems used to make or substantially assist "consequential decisions" affecting individuals in the eight protected domains. The core obligation is "reasonable care" to protect consumers from "algorithmic discrimination," defined as differential treatment or impact disfavoring individuals based on protected characteristics including race, gender, and age.</p>
+      <p>The law imposes specific obligations on deployers: conduct impact assessments before deployment, disclose to individuals that an AI system is being used, provide pre-decision and adverse-decision notices, enable consumers to opt out of AI processing, offer explanations of how AI contributed to a decision, grant correction rights, provide access to human review on appeal, and conduct annual reviews for algorithmic discrimination. Developers face their own requirements, centered on documentation, transparency, and cooperation with deployers.</p>
+      <p>One provision drew particular legal attention. The law's definition of "algorithmic discrimination" contains a carve-out: it exempts AI outputs that expand the diversity of applicant or customer pools or that redress historical discrimination. An AI system that produces disparate outcomes favoring underrepresented groups is not, under the statute, engaging in algorithmic discrimination. An AI system that produces identical disparate outcomes against those groups is.</p>
+      <p>Enforcement rests exclusively with the Colorado Attorney General. Violations are treated as unfair trade practices under the Colorado Consumer Protection Act, carrying penalties of up to $20,000 per violation. SB 24-205 includes a safe harbor for companies that discover and cure violations while following the NIST AI Risk Management Framework. No enforcement action has ever been brought under the law.</p>
+    </section>
+
+    <section class="section" id="suit">
+      <h2><span class="num">03 — Suit</span>Four Constitutional Theories</h2>
+
+      <div class="doj-docket">
+        <div class="doj-docket-header">U.S. District Court — District of Colorado</div>
+        <div class="doj-docket-case">Case No. 1:26-cv-01515</div>
+        <div class="doj-docket-parties">
+          X.AI LLC, Plaintiff<br>
+          <span class="doj-v">v.</span>
+          PHILIP J. WEISER, in his official capacity as<br>
+          Attorney General of the State of Colorado, Defendant
+        </div>
+        <div class="doj-docket-entries">
+          <div class="doj-docket-entry">
+            <span class="doj-docket-date">04/09/2026</span>
+            <span class="doj-docket-desc">Complaint for Declaratory and Injunctive Relief filed [xAI]</span>
+          </div>
+          <div class="doj-docket-entry doj-highlight">
+            <span class="doj-docket-date">04/24/2026</span>
+            <span class="doj-docket-desc">Motion to Intervene as Plaintiff filed [United States of America]</span>
+          </div>
+          <div class="doj-docket-entry doj-highlight">
+            <span class="doj-docket-date">04/24/2026</span>
+            <span class="doj-docket-desc">Motion to Intervene GRANTED</span>
+          </div>
+          <div class="doj-docket-entry doj-highlight">
+            <span class="doj-docket-date">04/24/2026</span>
+            <span class="doj-docket-desc">Complaint in Intervention filed [United States of America]</span>
+          </div>
+          <div class="doj-docket-entry">
+            <span class="doj-docket-date">06/16/2026</span>
+            <span class="doj-docket-desc">Scheduling Conference set — Courtroom C-201, 10:45 AM</span>
+          </div>
+        </div>
+        <div class="doj-docket-footer">Filed, granted, and effective on the same day. The federal government asked to join the lawsuit and was a party before business hours ended.</div>
+      </div>
+
+      <p>On April 9, 2026, X.AI LLC -- the company behind the Grok chatbot, incorporated in Nevada and headquartered in California with no offices in Colorado -- filed a federal lawsuit in the U.S. District Court for the District of Colorado. The defendant was Phil Weiser, in his official capacity as attorney general. The complaint seeks a declaratory judgment that SB 24-205 is unconstitutional and a preliminary injunction blocking its enforcement before the June 30 effective date. xAI asserts four constitutional theories.</p>
+      <p><strong>First Amendment (compelled speech).</strong> xAI argues that SB 24-205 forces it to alter Grok's training, fine-tuning, system prompts, and outputs to conform to the state's preferred positions on contested subjects. The complaint alleges the law compels xAI to "abandon its disinterested pursuit of truth and instead promote the State's ideological views on various matters, racial justice in particular." xAI cites <em>303 Creative LLC v. Elenis</em> (2023), in which the Supreme Court held that Colorado could not use a nondiscrimination law to compel creative expression, and <em>Moody v. NetChoice</em> (2024), which confirmed First Amendment protection for the editorial discretion of online platforms. The threshold legal question -- whether AI model development constitutes protected speech under the First Amendment -- is novel. No court has ruled on it.</p>
+      <p><strong>Dormant Commerce Clause.</strong> xAI argues that because it is incorporated in Nevada, headquartered in California, and operates no facilities in Colorado, SB 24-205 effectively regulates AI development activity occurring entirely outside the state's borders. The complaint alleges this constitutes extraterritorial regulation prohibited by the Commerce Clause.</p>
+      <p><strong>Due Process (vagueness).</strong> xAI alleges that key terms in SB 24-205 -- "high-risk artificial intelligence system," "algorithmic discrimination," "historical discrimination" -- are undefined or insufficiently defined, creating a law so vague that it invites arbitrary enforcement by the attorney general and denies developers fair notice of what conduct is prohibited.</p>
+      <p><strong>Equal Protection.</strong> xAI argues that the diversity carve-out creates a race-based double standard: AI outputs that favor underrepresented groups are exempt from the law, while identical outputs disfavoring those groups are violations. xAI alleges this constitutes a racial classification enacted without the legislative findings required under strict scrutiny.</p>
+      <p>Fifteen days after xAI filed, the Department of Justice intervened. On April 24, 2026, the Civil Rights Division and Civil Division jointly filed a motion to intervene as co-plaintiff. The court granted the motion the same day. The DOJ filed its own complaint in intervention, centering on a fifth constitutional theory: that SB 24-205 violates the Fourteenth Amendment's Equal Protection Clause by requiring AI developers and deployers to consider race, sex, and religion to "correct" statistically disparate impacts. According to the DOJ, the law effectively compels companies to "discriminate based on race, sex, religion and other protected characteristics." It was the first time the DOJ had intervened in a case challenging state-level AI regulation.</p>
+    </section>
+
+    <section class="section" id="pipeline">
+      <h2><span class="num">04 — Pipeline</span>From Executive Order to Courtroom</h2>
+      <p>The DOJ's intervention was not spontaneous. It was the endpoint of a policy apparatus assembled over fifteen months.</p>
+      <p>On January 23, 2025, President Trump signed Executive Order 14179, "Removing Barriers to American Leadership in Artificial Intelligence," directing that AI development proceed "free from ideological bias or engineered social agendas." The order established the federal posture: AI regulation was a federal concern, and state laws that imposed what the administration characterized as ideological requirements were obstacles.</p>
+      <p>On December 11, 2025, Trump signed a second executive order, "Ensuring a National Policy Framework for Artificial Intelligence." This one had teeth. It directed the Attorney General to create an AI Litigation Task Force within 30 days, with an explicit mandate to challenge state AI laws deemed unconstitutional or inconsistent with federal policy. The order referenced Colorado's law -- not by name, but by characterizing it as "requiring entities to embed ideological bias within models." It directed the Commerce Secretary to produce a report within 90 days identifying "onerous" state AI laws. And it introduced a funding threat: states with AI laws identified as onerous risked losing BEAD (Broadband Equity Access and Deployment) federal broadband funding.</p>
+      <p>The Task Force was created. On April 24, 2026, it took its first action: joining xAI's lawsuit against Colorado.</p>
+
+      <div class="doj-officials">
+        <div class="doj-off-card">
+          <div class="doj-off-label">Civil Rights Division</div>
+          <div class="doj-off-quote">"Laws that require AI companies to infect their products with woke DEI ideology are illegal."</div>
+          <div class="doj-off-name">Harmeet K. Dhillon</div>
+          <div class="doj-off-title">Assistant Attorney General, Civil Rights Division</div>
+        </div>
+        <div class="doj-off-card">
+          <div class="doj-off-label">Civil Division</div>
+          <div class="doj-off-quote">"Laws like Colorado's that force AI models to produce false results or promote ideological bias threaten national and economic security and must be stopped."</div>
+          <div class="doj-off-name">Brett A. Shumate</div>
+          <div class="doj-off-title">Assistant Attorney General, Civil Division</div>
+        </div>
+        <div class="doj-off-footer">Two senior DOJ officials. One frames the case as culture war. The other frames it as geopolitics. The law is the same.</div>
+      </div>
+
+      <p>Dhillon also posted on social media: "We join @xai's landmark suit, and stand against woke DEI standards being imposed by Colorado." The framing was consistent across both divisions. The DOJ and xAI jointly characterized SB 24-205 as a law that "jeopardizes the United States' position as the global AI leader."</p>
+    </section>
+
+    <section class="section" id="trap">
+      <h2><span class="num">05 — Trap</span>Three Deadlines and No Exits</h2>
+      <p>Three deadlines are converging, and each one narrows the options.</p>
+      <p><strong>May 13, 2026.</strong> The Colorado legislative session ends. This is the last chance for the legislature to pass a replacement bill based on the working group's March 2026 proposal. If a replacement passes, it could moot parts of the lawsuit -- but it would also validate the legal strategy by demonstrating that the threat of federal litigation can force a state to withdraw its own law. If no replacement passes, SB 24-205 takes effect as written.</p>
+      <p><strong>June 16, 2026.</strong> According to Baker Botts, a scheduling conference in <em>X.AI v. Weiser</em> is set for Courtroom C-201 at the Byron G. Rogers U.S. Courthouse in Denver. This is when the court sets the litigation timeline -- including whether to expedite proceedings given the June 30 effective date.</p>
+      <p><strong>June 30, 2026.</strong> SB 24-205 takes effect. Unless the legislature replaces it, or the court enjoins it, the law that nobody wanted becomes enforceable for the first time.</p>
+      <p>The structural trap is not the deadlines themselves. It is the position of Phil Weiser, the named defendant. The attorney general who called the law "really problematic," who was not consulted during its passage, who co-led 40 bipartisan attorneys general in May 2025 urging Congress not to strip states of their authority to regulate AI, is now the named defendant in the first federal constitutional challenge to a state AI law. He must defend a statute he publicly criticized, against a DOJ whose intervention he has declined to comment on, while his own office has gone silent on the litigation.</p>
+      <p>The bill's sponsors have spoken where the AG has not. Rep. Brianna Titone, a sponsor, told the Colorado Sun: "SB 205 is about consequential decisions, not about freedom of speech...Our bill does not say that Grok still can't be a dick." Rep. Manny Rutinel, a co-sponsor, said: "Coloradans deserve technology that works for everyone, not just billionaires." Neither is a party to the case.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">06 — Signal</span>The Test Case Nobody Chose</h2>
+      <p>The DOJ's intervention makes <em>X.AI v. Weiser</em> the first federal case in which the United States government has taken a constitutional position on state AI regulation. Whatever the court rules -- on compelled speech, the Commerce Clause, vagueness, or Equal Protection -- will set binding precedent in the Tenth Circuit and persuasive authority nationwide. Hundreds of proposed state AI measures are in draft or under consideration across the country. The precedent that governs all of them may come from here.</p>
+      <p>The structural irony is precise. The first constitutional test of state AI regulatory power will be conducted on a law that its own governor signed reluctantly, its own attorney general criticized openly, and its own legislature was already trying to replace. A working group had drafted a new framework. The original statute had never been enforced against anyone. No company had been investigated, fined, or penalized under it. The constitutional theories being tested -- whether AI training is protected speech, whether a state can regulate AI systems built outside its borders, whether antidiscrimination carve-outs violate Equal Protection -- will be litigated against a statute that was never meant to survive in its current form.</p>
+      <p>The question is not whether Colorado's law was good. The question is whether the precedent set by destroying it will let any state write a better one.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.doj-colorado-ai-law-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const ACCENT_R = 99, ACCENT_G = 102, ACCENT_B = 241;
+  const SEG_COUNT = 14;
+  const ORBIT_COUNT = 9;
+  const DUST_COUNT = 15;
+
+  const P_DESCENT_END = 540;
+  const P_SCATTER_END = 720;
+  const P_HOLD_END = 840;
+  const P_FADE_END = 900;
+  const CYCLE = P_FADE_END;
+
+  let W = 0, H = 0, dpr = 1, raf = 0, frame = 0;
+  let centerY = 0;
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  type Segment = {
+    baseX: number; baseY: number; halfLen: number;
+    x: number; y: number;
+    wobblePhase: number; wobbleSpeed: number;
+    alpha: number;
+    vx: number; vy: number; scattered: boolean;
+  };
+  let segments: Segment[] = [];
+
+  type Orbiter = {
+    angle: number; angularSpeed: number;
+    radiusX: number; radiusY: number;
+    cx: number; cy: number;
+    r: number; alpha: number;
+    vx: number; vy: number; scattered: boolean;
+  };
+  let orbiters: Orbiter[] = [];
+
+  type Dust = { x: number; y: number; vx: number; vy: number; alpha: number; r: number };
+  let dust: Dust[] = [];
+
+  let lineY = 0;
+  let lineAlpha = 0;
+  let linePulsePhase = 0;
+
+  const ro = new ResizeObserver(() => {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = canvas.offsetWidth * dpr;
+    H = canvas.offsetHeight * dpr;
+    canvas.width = W;
+    canvas.height = H;
+    centerY = H * 0.5;
+    initState();
+    if (prefersReduced) requestAnimationFrame(drawStatic);
+  });
+  ro.observe(canvas);
+
+  function initState() {
+    frame = 0;
+    lineY = 0;
+    lineAlpha = 0.9;
+    linePulsePhase = 0;
+
+    segments = [];
+    const totalGap = W * 0.08;
+    const usableWidth = W - totalGap;
+    const segWidth = usableWidth / SEG_COUNT;
+    const gapWidth = totalGap / (SEG_COUNT - 1);
+    for (let i = 0; i < SEG_COUNT; i++) {
+      const sx = i * (segWidth + gapWidth) + segWidth * 0.5;
+      segments.push({
+        baseX: sx,
+        baseY: centerY,
+        halfLen: segWidth * 0.45,
+        x: sx,
+        y: centerY,
+        wobblePhase: Math.random() * Math.PI * 2,
+        wobbleSpeed: 0.008 + Math.random() * 0.006,
+        alpha: 0.25 + Math.random() * 0.35,
+        vx: 0, vy: 0, scattered: false
+      });
+    }
+
+    orbiters = [];
+    for (let i = 0; i < ORBIT_COUNT; i++) {
+      const cx = (0.1 + Math.random() * 0.8) * W;
+      orbiters.push({
+        angle: Math.random() * Math.PI * 2,
+        angularSpeed: (0.003 + Math.random() * 0.004) * (Math.random() < 0.5 ? 1 : -1),
+        radiusX: (15 + Math.random() * 25) * dpr,
+        radiusY: (8 + Math.random() * 15) * dpr,
+        cx: cx,
+        cy: centerY,
+        r: (1 + Math.random() * 1.2) * dpr,
+        alpha: 0.12 + Math.random() * 0.15,
+        vx: 0, vy: 0, scattered: false
+      });
+    }
+
+    dust = [];
+    for (let i = 0; i < DUST_COUNT; i++) {
+      dust.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.1 * dpr,
+        vy: (Math.random() - 0.5) * 0.1 * dpr,
+        alpha: 0.04 + Math.random() * 0.04,
+        r: (0.8 + Math.random() * 0.8) * dpr
+      });
+    }
+  }
+
+  function getPhase(f: number): string {
+    if (f < P_DESCENT_END) return 'descent';
+    if (f < P_SCATTER_END) return 'scatter';
+    if (f < P_HOLD_END) return 'hold';
+    return 'fade';
+  }
+
+  function descentProgress(f: number): number {
+    if (f >= P_DESCENT_END) return 1;
+    return Math.min(1, f / P_DESCENT_END);
+  }
+
+  function draw() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, W, H);
+    const phase = getPhase(frame);
+    const dp = descentProgress(frame);
+
+    let globalAlpha = 1;
+    if (phase === 'fade') {
+      const ft = (frame - P_HOLD_END) / (P_FADE_END - P_HOLD_END);
+      globalAlpha = Math.max(0, 1 - ft);
+    }
+
+    for (let i = 0; i < dust.length; i++) {
+      const d = dust[i];
+      d.x += d.vx;
+      d.y += d.vy;
+      if (d.x < 0) d.x = W;
+      if (d.x > W) d.x = 0;
+      if (d.y < 0) d.y = H;
+      if (d.y > H) d.y = 0;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(232,232,232,${d.alpha * globalAlpha})`;
+      ctx.fill();
+    }
+
+    if (phase === 'descent') {
+      const proximityFactor = dp > 0.7 ? (dp - 0.7) / 0.3 : 0;
+      for (let i = 0; i < segments.length; i++) {
+        const seg = segments[i];
+        const wobbleAmp = (1 + proximityFactor * 4) * dpr;
+        seg.y = seg.baseY + Math.sin(frame * seg.wobbleSpeed + seg.wobblePhase) * wobbleAmp;
+        const flicker = Math.sin(frame * 0.05 + seg.wobblePhase * 3) * 0.5 + 0.5;
+        const gapChance = proximityFactor * 0.4;
+        const isGap = ((i * 7 + Math.floor(frame / 8)) % 100) / 100 < gapChance;
+        seg.alpha = isGap ? 0.05 : (0.25 + flicker * 0.35 - proximityFactor * 0.15);
+      }
+    } else if (phase === 'scatter' || phase === 'hold' || phase === 'fade') {
+      if (frame === P_DESCENT_END) {
+        for (let i = 0; i < segments.length; i++) {
+          const seg = segments[i];
+          seg.scattered = true;
+          const angle = Math.random() * Math.PI * 2;
+          const speed = (1.0 + Math.random() * 1.5) * dpr;
+          seg.vx = Math.cos(angle) * speed;
+          seg.vy = Math.sin(angle) * speed;
+        }
+        for (let i = 0; i < orbiters.length; i++) {
+          const orb = orbiters[i];
+          orb.scattered = true;
+          const angle = Math.random() * Math.PI * 2;
+          const speed = (0.8 + Math.random() * 1.2) * dpr;
+          orb.vx = Math.cos(angle) * speed;
+          orb.vy = Math.sin(angle) * speed;
+        }
+      }
+
+      for (let i = 0; i < segments.length; i++) {
+        const seg = segments[i];
+        seg.vx *= 0.992;
+        seg.vy *= 0.992;
+
+        const dxToCenter = (seg.baseX - seg.x);
+        const dyToCenter = (centerY - seg.y);
+        const distToCenter = Math.sqrt(dxToCenter * dxToCenter + dyToCenter * dyToCenter);
+        if (distToCenter > 5 * dpr) {
+          seg.vx += (dxToCenter / distToCenter) * 0.02 * dpr;
+          seg.vy += (dyToCenter / distToCenter) * 0.02 * dpr;
+        }
+
+        for (let j = i + 1; j < segments.length; j++) {
+          const other = segments[j];
+          const rdx = seg.x - other.x;
+          const rdy = seg.y - other.y;
+          const rDist = Math.sqrt(rdx * rdx + rdy * rdy);
+          const repelRadius = 30 * dpr;
+          if (rDist < repelRadius && rDist > 0.1) {
+            const force = (1 - rDist / repelRadius) * 0.15 * dpr;
+            const nx = rdx / rDist;
+            const ny = rdy / rDist;
+            seg.vx += nx * force;
+            seg.vy += ny * force;
+            other.vx -= nx * force;
+            other.vy -= ny * force;
+          }
+        }
+
+        const maxV = 2.5 * dpr;
+        const curV = Math.sqrt(seg.vx * seg.vx + seg.vy * seg.vy);
+        if (curV > maxV) {
+          seg.vx = (seg.vx / curV) * maxV;
+          seg.vy = (seg.vy / curV) * maxV;
+        }
+
+        seg.x += seg.vx;
+        seg.y += seg.vy;
+
+        if (seg.x < 10 * dpr) seg.vx = Math.abs(seg.vx) * 0.5;
+        if (seg.x > W - 10 * dpr) seg.vx = -Math.abs(seg.vx) * 0.5;
+        if (seg.y < 10 * dpr) seg.vy = Math.abs(seg.vy) * 0.5;
+        if (seg.y > H - 10 * dpr) seg.vy = -Math.abs(seg.vy) * 0.5;
+
+        const scatterAge = frame - P_DESCENT_END;
+        seg.alpha = Math.max(0.08, 0.4 - scatterAge * 0.0008);
+      }
+    }
+
+    ctx.lineCap = 'round';
+    for (let i = 0; i < segments.length; i++) {
+      const seg = segments[i];
+      const a = seg.alpha * globalAlpha;
+      if (a < 0.005) continue;
+      ctx.strokeStyle = `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${a})`;
+      ctx.lineWidth = 1.5 * dpr;
+      ctx.beginPath();
+      ctx.moveTo(seg.x - seg.halfLen, seg.y);
+      ctx.lineTo(seg.x + seg.halfLen, seg.y);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(seg.x - seg.halfLen, seg.y, 1.5 * dpr, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${a * 0.6})`;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(seg.x + seg.halfLen, seg.y, 1.5 * dpr, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    for (let i = 0; i < orbiters.length; i++) {
+      const orb = orbiters[i];
+      let ox: number, oy: number;
+      if (!orb.scattered) {
+        orb.angle += orb.angularSpeed;
+        ox = orb.cx + Math.cos(orb.angle) * orb.radiusX;
+        oy = orb.cy + Math.sin(orb.angle) * orb.radiusY;
+      } else {
+        orb.vx *= 0.994;
+        orb.vy *= 0.994;
+        orb.cx += orb.vx;
+        orb.cy += orb.vy;
+        if (orb.cx < 0) orb.cx = W;
+        if (orb.cx > W) orb.cx = 0;
+        if (orb.cy < 0) orb.cy = H;
+        if (orb.cy > H) orb.cy = 0;
+        ox = orb.cx;
+        oy = orb.cy;
+        orb.alpha *= 0.998;
+      }
+      const oa = orb.alpha * globalAlpha;
+      if (oa < 0.005) continue;
+      ctx.beginPath();
+      ctx.arc(ox, oy, orb.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(232,232,232,${oa})`;
+      ctx.fill();
+    }
+
+    if (phase === 'descent') {
+      lineY = dp * centerY;
+      lineAlpha = 0.9;
+    } else {
+      lineY = centerY;
+      linePulsePhase += 0.04;
+      lineAlpha = 0.6 + Math.sin(linePulsePhase) * 0.15;
+    }
+
+    const la = lineAlpha * globalAlpha;
+    if (la > 0.005) {
+      ctx.strokeStyle = `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${la * 0.15})`;
+      ctx.lineWidth = 6 * dpr;
+      ctx.beginPath();
+      ctx.moveTo(W * 0.5, 0);
+      ctx.lineTo(W * 0.5, lineY);
+      ctx.stroke();
+
+      ctx.strokeStyle = `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${la})`;
+      ctx.lineWidth = 2 * dpr;
+      ctx.beginPath();
+      ctx.moveTo(W * 0.5, 0);
+      ctx.lineTo(W * 0.5, lineY);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(W * 0.5, lineY, 3 * dpr, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${la})`;
+      ctx.fill();
+
+      if (phase !== 'descent') {
+        const barAlpha = la * 0.3;
+        ctx.strokeStyle = `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${barAlpha})`;
+        ctx.lineWidth = 1 * dpr;
+        ctx.beginPath();
+        ctx.moveTo(W * 0.15, centerY);
+        ctx.lineTo(W * 0.85, centerY);
+        ctx.stroke();
+      }
+    }
+
+    if (frame >= P_DESCENT_END && frame < P_DESCENT_END + 12) {
+      const flashT = (frame - P_DESCENT_END) / 12;
+      const flashAlpha = (1 - flashT) * 0.25;
+      ctx.fillStyle = `rgba(${ACCENT_R},${ACCENT_G},${ACCENT_B},${flashAlpha})`;
+      ctx.fillRect(0, centerY - 20 * dpr, W, 40 * dpr);
+    }
+  }
+
+  function tick() {
+    frame++;
+    if (frame >= CYCLE) initState();
+    draw();
+    if (!prefersReduced) raf = requestAnimationFrame(tick);
+  }
+
+  function drawStatic() {
+    frame = P_SCATTER_END + 60;
+    for (let i = 0; i < segments.length; i++) {
+      const seg = segments[i];
+      seg.scattered = true;
+      const angle = (i / SEG_COUNT) * Math.PI * 2 + 0.3;
+      const dist = (40 + Math.random() * 60) * dpr;
+      seg.x = seg.baseX + Math.cos(angle) * dist;
+      seg.y = centerY + Math.sin(angle) * dist;
+      seg.alpha = 0.2 + Math.random() * 0.15;
+    }
+    for (let i = 0; i < orbiters.length; i++) {
+      const orb = orbiters[i];
+      orb.scattered = true;
+      orb.alpha = 0.06 + Math.random() * 0.05;
+    }
+    draw();
+  }
+
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = canvas.offsetWidth * dpr;
+  H = canvas.offsetHeight * dpr;
+  canvas.width = W;
+  canvas.height = H;
+  centerY = H * 0.5;
+  initState();
+
+  if (prefersReduced) {
+    requestAnimationFrame(drawStatic);
+  } else {
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(raf); raf = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      io.disconnect();
+    });
+  }
+})();
+</script>
