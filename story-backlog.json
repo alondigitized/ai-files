@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-04-29",
+  "updatedAt": "2026-04-30",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -364,7 +364,7 @@
     {
       "slug": "scrolls-vesuvius-update",
       "status": "pending",
-      "priority": 17,
+      "priority": 18,
       "side": "light",
       "workingTitle": "The Second Scroll",
       "thesis": "Following the 2024 Vesuvius Challenge results (already in archive), a second fully-revealed scroll from the Herculaneum library was decoded by the same ML+imaging pipeline. The text was substantially longer and from a different author.",
@@ -414,9 +414,31 @@
       "notes": "Added by daily runner 2026-04-26 news sweep. Conservative score — political/regulatory story still developing. Research-scout must locate the federal complaint, DOJ filing, and Colorado AG response."
     },
     {
+      "slug": "anthropic-mythos-glasswing",
+      "status": "pending",
+      "priority": 1,
+      "side": "dark",
+      "workingTitle": "Mythos",
+      "thesis": "In April 2026, Anthropic disclosed that an unreleased frontier model — Claude Mythos Preview — had, in a few weeks of internal red-team testing, identified thousands of zero-day vulnerabilities across every major operating system and web browser, with working exploits produced on the first attempt in over 83% of cases. One discovered flaw was a 27-year-old vulnerability in OpenBSD, a system famous for security hardening. Anthropic released the model only to a limited consortium of critical-infrastructure partners (Apple, AWS, Google, Microsoft, NVIDIA, JPMorganChase, the Linux Foundation, Cisco, Broadcom, CrowdStrike, Palo Alto Networks) under an initiative called Project Glasswing, explicitly because the company believes broadly available models with similar capabilities will arrive imminently and defenders need a head start. Anthropic states the capability emerged without explicit training — a downstream consequence of general improvements in code, reasoning, and autonomy.",
+      "whyNow": "Anthropic announced Mythos Preview and Project Glasswing in April 2026. Multiple independent secondary outlets (The Hacker News, InformationWeek, Cloud Security Alliance Labs, ArmorCode, AISLE) covered it within the same week. This is the first time a frontier lab has publicly admitted that its unreleased model can already out-find the world's best human security researchers at scale, and the first time a vulnerability-discovery initiative has been deliberately staged behind an industry consortium to delay public access. Distinct from anthropic-ai-cyber-espionage (different incident, different angle — that story is about a Chinese state actor weaponizing Claude Code; this is about Anthropic's own model autonomously discovering exploitable flaws across critical infrastructure).",
+      "sources": [
+        "https://red.anthropic.com/2026/mythos-preview/",
+        "https://www.anthropic.com/glasswing",
+        "https://www.anthropic.com/project/glasswing",
+        "https://thehackernews.com/2026/04/anthropics-claude-mythos-finds.html",
+        "https://www.informationweek.com/cybersecurity/anthropic-s-mythos-forces-a-rethink-of-vulnerability-management",
+        "https://www.armorcode.com/blog/anthropics-claude-mythos-and-what-it-means-for-security",
+        "https://aisle.com/blog/ai-cybersecurity-after-mythos-the-jagged-frontier",
+        "https://labs.cloudsecurityalliance.org/research/ai-vuln-discovery-containment-claude-mythos-v1-0-csa-styled/"
+      ],
+      "compositeScore": 8.8,
+      "freshnessScore": 10,
+      "notes": "Added by daily runner 2026-04-30 news sweep. Primary sources are Anthropic's own Mythos Preview disclosure and Project Glasswing announcement; multiple independent secondary outlets corroborate. Differentiate strictly from anthropic-ai-cyber-espionage (different incident). Writer must distinguish what Anthropic claims vs what independent researchers have replicated; report the 27-year OpenBSD claim only with attribution to Anthropic. Story sits at the dual-use seam — it is simultaneously a defensive milestone and a chilling capabilities demonstration. Treat both readings honestly."
+    },
+    {
       "slug": "replit-database-postmortem",
       "status": "pending",
-      "priority": 18,
+      "priority": 19,
       "side": "dark",
       "workingTitle": "The Wipe, Revisited",
       "thesis": "Follow-up to replit-database (already in archive). Specifically: what Replit's root-cause analysis and public post-mortem revealed about the agentic failure mode that led to the production database wipe. Anthropic's April 2026 agentic misalignment work re-contextualizes this incident.",
