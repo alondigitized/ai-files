@@ -1,0 +1,664 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'nebraska-ai-attorney-suspension')!;
+---
+
+<style is:global>
+  /* Citation Chart Reenactment */
+  .nk-cite-chart {
+    background: var(--surface, #161616);
+    border: 1px solid var(--border, #2a2a2a);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 2rem 0;
+    font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', monospace;
+    font-size: 0.85rem;
+  }
+  .nk-cite-chart-header {
+    background: var(--surface2, #1e1e1e);
+    padding: 0.75rem 1rem;
+    color: var(--muted, #888);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--border, #2a2a2a);
+  }
+  .nk-cite-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border, #2a2a2a);
+    align-items: center;
+  }
+  .nk-cite-row:last-child { border-bottom: none; }
+  .nk-cite-row.nk-fictitious { background: rgba(153, 27, 27, 0.08); }
+  .nk-cite-name { color: var(--text, #e8e8e8); }
+  .nk-cite-row.nk-fictitious .nk-cite-name {
+    text-decoration: line-through;
+    text-decoration-color: var(--story, #e04040);
+    color: var(--muted, #888);
+  }
+  .nk-cite-tag {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+  .nk-tag-fictitious {
+    background: rgba(153, 27, 27, 0.2);
+    color: var(--story, #e04040);
+    border: 1px solid rgba(153, 27, 27, 0.4);
+  }
+  .nk-tag-ok {
+    background: rgba(136, 136, 136, 0.1);
+    color: var(--muted, #888);
+    border: 1px solid rgba(136, 136, 136, 0.2);
+  }
+  .nk-cite-footer {
+    padding: 0.6rem 1rem;
+    font-size: 0.72rem;
+    color: var(--muted, #888);
+    font-style: italic;
+    border-top: 1px solid var(--border, #2a2a2a);
+    background: var(--surface2, #1e1e1e);
+  }
+
+  /* Courtroom Dialogue Reenactment */
+  .nk-transcript {
+    background: var(--surface, #161616);
+    border: 1px solid var(--border, #2a2a2a);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 2rem 0;
+    font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', monospace;
+    font-size: 0.85rem;
+  }
+  .nk-transcript-header {
+    background: var(--surface2, #1e1e1e);
+    padding: 0.75rem 1rem;
+    color: var(--muted, #888);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--border, #2a2a2a);
+    display: flex;
+    justify-content: space-between;
+  }
+  .nk-line {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border, #2a2a2a);
+    line-height: 1.5;
+  }
+  .nk-line:last-of-type { border-bottom: none; }
+  .nk-line-speaker {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.25rem;
+  }
+  .nk-line-speaker.nk-bench { color: var(--muted, #888); }
+  .nk-line-speaker.nk-counsel { color: var(--story, #e04040); }
+  .nk-line-text { color: var(--text, #e8e8e8); }
+  .nk-line.nk-key {
+    background: rgba(153, 27, 27, 0.06);
+    border-left: 3px solid var(--story, #e04040);
+  }
+  .nk-transcript-footer {
+    padding: 0.6rem 1rem;
+    font-size: 0.72rem;
+    color: var(--muted, #888);
+    font-style: italic;
+    border-top: 1px solid var(--border, #2a2a2a);
+    background: var(--surface2, #1e1e1e);
+  }
+
+  /* Three-Step Timeline Reenactment */
+  .nk-steps {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+    margin: 2rem 0;
+    border: 1px solid var(--border, #2a2a2a);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  @media (max-width: 600px) {
+    .nk-steps { grid-template-columns: 1fr; }
+  }
+  .nk-step-card {
+    padding: 1.25rem 1rem;
+    text-align: center;
+    border-right: 1px solid var(--border, #2a2a2a);
+    background: var(--surface, #161616);
+    position: relative;
+  }
+  .nk-step-card:last-child { border-right: none; }
+  .nk-step-date {
+    font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted, #888);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+  }
+  .nk-step-label {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text, #e8e8e8);
+    margin-bottom: 0.3rem;
+    line-height: 1.3;
+  }
+  .nk-step-detail {
+    font-size: 0.78rem;
+    color: var(--muted, #888);
+    line-height: 1.4;
+  }
+  .nk-step-card.nk-step-suspension {
+    background: rgba(153, 27, 27, 0.08);
+  }
+  .nk-step-card.nk-step-suspension .nk-step-label { color: var(--story, #e04040); }
+
+  /* Canvas */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .nebraska-ai-attorney-suspension-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+  .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.6rem 0 0; padding: 0 1rem; line-height: 1.5; font-style: italic; }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+<section class="section" id="brief">
+  <h2><span class="num">01 — The Brief</span>What Was Inside</h2>
+
+  <p>Thirty-seven seconds into oral argument, a justice on the Nebraska Supreme Court interrupted Omaha attorney W. Gregory Lake to ask him a direct question. The brief Lake had filed on behalf of his client in a divorce appeal was, to put it in the court's own language, "filled with fictitious cases ... and fictitious quotations from statutes." The justice wanted to know if Lake had used artificial intelligence to write it.</p>
+
+  <p>Lake said no.</p>
+
+  <p>Eight weeks later, his law license was gone.</p>
+
+  <p>The case was <em>Prososki v. Regan</em>, No. S-25-0295 — a custody and property dispute from Douglas County District Court, presided over at trial by Judge Tressa M. Alioth. The underlying divorce was not unusual. Jennifer Prososki had filed for dissolution in January 2023. A trial was held in 2025. Lake represented the appellant, Jason Regan. The appeal itself is background. The story is what Lake put inside the appellate brief.</p>
+
+  <p>Opposing counsel — Benjamin M. Belmont and Mariah E. Shaffer of Brodkey, Cuddigan, Peebles, Belmont & Line — filed a motion on August 26, 2025, asserting that 57 of the 63 case references in Lake's brief contained defects: misquoted holdings, fabricated quotations, nonexistent statutes. The Nebraska Attorney General's office joined the case as amicus curiae.</p>
+
+  <p>The court conducted its own analysis. Its 27-page opinion, issued March 20, 2026, presented a two-page chart cataloguing 20 specific problematic citations. Four of those were to fictitious cases — case names that either did not exist or, in one instance, borrowed the name of a real unpublished opinion but attributed entirely fabricated holdings and quotations to it.</p>
+
+  <div class="nk-cite-chart">
+    <div class="nk-cite-chart-header">Court's Citation Chart — Fictitious Cases (excerpt, 4 of 20 entries)</div>
+    <div class="nk-cite-row nk-fictitious">
+      <span class="nk-cite-name">Kennedy v. Kennedy</span>
+      <span class="nk-cite-tag nk-tag-fictitious">Fictitious case</span>
+    </div>
+    <div class="nk-cite-row nk-fictitious">
+      <span class="nk-cite-name">Miller v. Miller</span>
+      <span class="nk-cite-tag nk-tag-fictitious">Fictitious case + quotation</span>
+    </div>
+    <div class="nk-cite-row nk-fictitious">
+      <span class="nk-cite-name">State on behalf of Ricardo P. v. Christina R.</span>
+      <span class="nk-cite-tag nk-tag-fictitious">Fictitious case</span>
+    </div>
+    <div class="nk-cite-row nk-fictitious">
+      <span class="nk-cite-name">State v. Stricklin</span>
+      <span class="nk-cite-tag nk-tag-fictitious">Fictitious case + quotation</span>
+    </div>
+    <div class="nk-cite-row">
+      <span class="nk-cite-name" style="opacity: 0.5;">[16 additional entries: incorrect citations, fictitious quotations, cases not supporting cited proposition]</span>
+      <span class="nk-cite-tag nk-tag-ok">Various</span>
+    </div>
+    <div class="nk-cite-footer">Source: Nebraska Supreme Court opinion, Prososki v. Regan, 321 Neb. 38, pp. 47–49. Kennedy v. Kennedy borrows the name of a real 2019 unpublished memorandum opinion; the holdings and quotations attributed to it in Lake's brief do not appear in the real case or in Nebraska law.</div>
+  </div>
+
+  <p>Three of those case names — <em>Miller v. Miller</em>, <em>State on behalf of Ricardo P. v. Christina R.</em>, and <em>State v. Stricklin</em> — do not correspond to any real case in any jurisdiction. The fourth, <em>Kennedy v. Kennedy</em>, shares a name with an unpublished 2019 Nebraska Court of Appeals memorandum opinion, but the court found that the citation, holding, and quotations Lake's brief attributed to it "do not appear in the real case or Nebraska law." Some secondary sources count three fictitious cases. The court's own chart labels all four.</p>
+
+  <p>The remaining 16 entries in the chart included citations to real cases with fabricated quotations, incorrect case numbers, and cases that did not support the propositions for which they were cited. The court described the matter as presenting "a novel issue for Nebraska courts: the use of fictitious, potentially AI-generated cases, holdings, and quotations."</p>
+</section>
+
+<div class="phantom-wrap">
+  <canvas class="nebraska-ai-attorney-suspension-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>Phantom Caselaw</strong> — Citation particles drift upward, indistinguishable from one another. A judicial verification pulse sweeps down. Real citations pass through unaffected. Phantom citations flare oxblood, crack, and dissolve into falling dust. New phantoms rise, identical again.</p>
+
+<section class="section" id="elephant">
+  <h2><span class="num">02 — The Elephant in the Room</span>The Denial</h2>
+
+  <p>The oral argument took place in February 2026. Lake had barely begun when the bench interrupted.</p>
+
+  <div class="nk-transcript">
+    <div class="nk-transcript-header">
+      <span>Oral Argument — Prososki v. Regan</span>
+      <span>February 2026</span>
+    </div>
+    <div class="nk-line">
+      <div class="nk-line-speaker nk-bench">The Court</div>
+      <div class="nk-line-text">The elephant in the room is whether or not you used artificial intelligence. Did you?</div>
+    </div>
+    <div class="nk-line nk-key">
+      <div class="nk-line-speaker nk-counsel">Lake</div>
+      <div class="nk-line-text">No, I did not.</div>
+    </div>
+    <div class="nk-transcript-footer">Reported by WOWT and 1011 NOW (CBS Lincoln) from contemporaneous coverage of oral argument. The interruption came 37 seconds into Lake's presentation.</div>
+  </div>
+
+  <p>Lake offered an explanation. He told the court his computer had suffered a "catastrophic screen crack" on July 31 while he was traveling, leaving him without a computer for five days. He had uploaded the wrong version of his brief — a working draft, not the final. "My writing process is when I'm drafting, I stick in things that I know wouldn't pass muster," he said.</p>
+
+  <p>The court did not find this credible. In its March 20 opinion, it stated plainly: Lake's "assertion that he simply filed the wrong draft ... lacks credibility." The court noted there was no record of any filing of the claimed correct version.</p>
+
+  <p>The denial mattered. Without it, this might have ended with sanctions and a reprimand — the standard response to AI-fabricated filings in 2025 and early 2026. The denial, made under direct judicial questioning, converted a competence problem into a candor problem. And candor toward the tribunal, under Nebraska Rules of Professional Conduct section 3-503.3, is not optional.</p>
+</section>
+
+<section class="section" id="answer">
+  <h2><span class="num">03 — The Court's Answer</span>The Framework</h2>
+
+  <p>On March 20, 2026, the Nebraska Supreme Court issued its per curiam opinion in <em>Prososki v. Regan</em>, reported at 321 Neb. 38. The panel included Chief Justice Funke, Justices Cassel, Stacy, Papik, Freudenberg, and Bergevin. Justice Vaughn did not participate.</p>
+
+  <p>The court struck Lake's appellate brief as a sanction, affirmed the district court's dissolution decree, and referred Lake to the Counsel for Discipline of the Nebraska Supreme Court for investigation.</p>
+
+  <p>The opinion did two things simultaneously. It disposed of the case — and it wrote the framework. The court cited Lake's potential violations of section 3-503.3(a)(1), which states that a lawyer shall not knowingly "make a false statement of fact or law to a tribunal." It described Lake's conduct as a "failure of his duty of candor toward the court."</p>
+
+  <p>The court did not reach for new AI-specific rules. It applied existing professional conduct standards. The opinion stated: "AI, like other technological tools, can be a benefit to the legal community, but it must be used with caution and humility."</p>
+
+  <p>Then the key sentence — the one that carries the doctrinal weight:</p>
+
+  <div class="pull-quote">"Whether using AI or not, the obligations of candor, competency, diligence, and making good faith arguments remain the same."<cite>— Nebraska Supreme Court, Prososki v. Regan, 321 Neb. 38 (2026)</cite></div>
+
+  <p>The implication was clear: the existing ethical architecture already covered AI misuse. What was needed was enforcement, not new legislation.</p>
+
+  <p>The court noted that exercising due diligence — "a simple search of Westlaw and LexisNexis legal databases, the Nebraska Revised Statutes, Nebraska Supreme Court rules, or the free Nebraska Appellate Courts Online Library" — would have revealed that the fabricated citations did not exist. The verification tools were available. They were not used.</p>
+
+  <p>Justice Stephanie Stacy wrote a concurrence. She described the case as the court's "first opportunity to consider how courts should respond when a party files a brief that is riddled with fictitious case citations." Stacy surveyed emerging caselaw from other jurisdictions — including <em>Mata v. Avianca</em> and <em>Fletcher v. Experian</em> — and framed the opinion as part of a national reckoning.</p>
+</section>
+
+<section class="section" id="grave-error">
+  <h2><span class="num">04 — Grave Error of Judgment</span>The Affidavit and the Order</h2>
+
+  <p>On approximately April 14, 2026 — two days before the suspension order — Lake submitted an affidavit to the Nebraska Supreme Court. For the first time, he admitted he had used a generative AI tool to draft the appellate brief without verifying the citations it produced. He did not identify which tool he used. No source has published the full text of the affidavit.</p>
+
+  <p>In the affidavit, according to WOWT reporting, Lake called his earlier failure to be forthright with the court "a grave error of judgment."</p>
+
+  <p>Two days later, Chief Justice Jeffrey J. Funke signed a one-page order suspending Lake from the practice of law until further notice. A full disciplinary hearing, to be conducted by a court-appointed referee, is to follow.</p>
+
+  <div class="nk-steps">
+    <div class="nk-step-card nk-step-denial">
+      <div class="nk-step-date">Feb 2026</div>
+      <div class="nk-step-label">Denial</div>
+      <div class="nk-step-detail">"No, I did not" — under direct judicial questioning at oral argument</div>
+    </div>
+    <div class="nk-step-card nk-step-confession">
+      <div class="nk-step-date">~Apr 14, 2026</div>
+      <div class="nk-step-label">Affidavit</div>
+      <div class="nk-step-detail">"Grave error of judgment" — admits AI use, reverses denial</div>
+    </div>
+    <div class="nk-step-card nk-step-suspension">
+      <div class="nk-step-date">Apr 16, 2026</div>
+      <div class="nk-step-label">Suspended</div>
+      <div class="nk-step-detail">One-page order, signed by Chief Justice Funke — license revoked until further notice</div>
+    </div>
+  </div>
+
+  <p>The sequence is tight. About four weeks from oral argument to published opinion. Four more weeks from opinion to suspension. The entire arc — courtroom denial to license gone — fits inside roughly eight weeks.</p>
+
+  <p>The specific AI tool Lake used has not been disclosed in any available source. His full affidavit has not been published. What is known comes from the two phrases quoted in news coverage and from the court's own findings.</p>
+</section>
+
+<section class="section" id="three-years">
+  <h2><span class="num">05 — Three Years</span>Fine to Suspension</h2>
+
+  <p>In June 2023, New York attorney Steven Schwartz was sanctioned $5,000 for submitting a brief in <em>Mata v. Avianca</em> that contained fabricated case citations generated by ChatGPT. The case became a punchline — late-night segments, social media mockery, a fixture of CLE presentations. Schwartz kept his license. The AI Files covered the incident in <a href="/stories/ai-lawyer">Chapter 3</a>.</p>
+
+  <p>Three years later, Greg Lake lost his.</p>
+
+  <p>The underlying failure is identical: an attorney used an AI tool to draft a legal filing, did not verify the citations it produced, and submitted fabricated case law to a court. The legal system's classification of that failure is what changed. In 2023, it was a sanctionable mistake. In 2026, it is a fitness-to-practice question. The penalty escalated from a fine to an indefinite suspension.</p>
+
+  <p>Lake's case appears to be the first in which a U.S. attorney's license was suspended over AI-generated filings. No prior instance of a full license suspension for AI-related filing errors has been documented in available records, including the Charlotin AI hallucination database, which as of April 2026 catalogues nearly 1,400 cases globally. Researcher Damien Charlotin of HEC Paris, who maintains the database, told NPR: "Recently we had 10 cases from 10 different courts on a single day."</p>
+
+  <p>ComplianceHub, a legal compliance aggregator, estimated that U.S. court sanctions for AI hallucinations in early 2026 alone totaled roughly $145,000 — a figure that includes a $110,000 sanction in an Oregon vineyard case, a $30,000 penalty from the Sixth Circuit, and smaller fines from the Southern District of Ohio and the Fifth Circuit. The figure is a compilation, not an audited total.</p>
+
+  <p>The pattern is the story. Courts are no longer debating whether to punish AI-fabricated filings. They are debating the severity. The Nebraska Supreme Court's opinion did not treat Lake's conduct as an aberration to be corrected with a fine. It treated it as a question about who is fit to practice law. That is a different category of response — and the bar for reinstatement is higher than the bar for paying a sanction.</p>
+
+  <p>The court is in the position of knowing the next case is coming. The legal system is formalizing responses to a problem that, three years ago, most judges had never encountered. The escalation curve is steep, and it shows no sign of flattening.</p>
+</section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.nebraska-ai-attorney-suspension-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const rootStyle = getComputedStyle(document.documentElement);
+  const bgRaw = rootStyle.getPropertyValue('--bg').trim() || '#0d0d0d';
+  const storyRaw = rootStyle.getPropertyValue('--story').trim() || '#991b1b';
+
+  function hexToRGB(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.substring(0, 2), 16), parseInt(h.substring(2, 4), 16), parseInt(h.substring(4, 6), 16)];
+  }
+
+  const [SR, SG, SB] = hexToRGB(storyRaw);
+  const PR = 232, PG = 232, PB = 232;
+  const SECONDARY_R = 255, SECONDARY_G = 77, SECONDARY_B = 77;
+
+  const TOTAL_CITATIONS = 30;
+  const PHANTOM_COUNT = 4;
+  const DUST_PER_PHANTOM = 7;
+  const DUST_POOL = PHANTOM_COUNT * DUST_PER_PHANTOM * 2;
+
+  const DRIFT_PHASE = 780;
+  const SWEEP_DURATION = 240;
+  const HOLD_AFTER = 120;
+  const CYCLE = DRIFT_PHASE + SWEEP_DURATION + HOLD_AFTER;
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+  let dpr = 1;
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  interface Citation {
+    x: number; y: number; vx: number; vy: number;
+    radius: number; alpha: number; wobblePhase: number;
+    isPhantom: boolean;
+    flareFrame: number; crackProgress: number; dissolveProgress: number;
+    crackAngles: number[]; dead: boolean;
+  }
+  interface Dust {
+    x: number; y: number; vx: number; vy: number;
+    alpha: number; radius: number; active: boolean;
+    life: number; maxLife: number;
+  }
+
+  let citations: Citation[] = [];
+  let dustPool: Dust[] = [];
+
+  function spawnCitation(scatter: boolean, isPhantom: boolean): Citation {
+    const margin = W * 0.08;
+    return {
+      x: margin + Math.random() * (W - margin * 2),
+      y: scatter ? (Math.random() * H * 1.2) : (H + 10 * dpr + Math.random() * 40 * dpr),
+      vx: (Math.random() - 0.5) * 0.08 * dpr,
+      vy: -(0.2 + Math.random() * 0.1) * dpr,
+      radius: (1.8 + Math.random() * 1.2) * dpr,
+      alpha: 0.06 + Math.random() * 0.04,
+      wobblePhase: Math.random() * Math.PI * 2,
+      isPhantom,
+      flareFrame: -1, crackProgress: 0, dissolveProgress: 0,
+      crackAngles: [Math.random() * Math.PI * 2, Math.random() * Math.PI * 2, Math.random() * Math.PI * 2],
+      dead: false,
+    };
+  }
+
+  function resetCitation(c: Citation) {
+    const margin = W * 0.08;
+    c.x = margin + Math.random() * (W - margin * 2);
+    c.y = H + 10 * dpr + Math.random() * 40 * dpr;
+    c.vx = (Math.random() - 0.5) * 0.08 * dpr;
+    c.vy = -(0.2 + Math.random() * 0.1) * dpr;
+    c.radius = (1.8 + Math.random() * 1.2) * dpr;
+    c.alpha = 0.06 + Math.random() * 0.04;
+    c.wobblePhase = Math.random() * Math.PI * 2;
+    c.flareFrame = -1; c.crackProgress = 0; c.dissolveProgress = 0;
+    c.crackAngles = [Math.random() * Math.PI * 2, Math.random() * Math.PI * 2, Math.random() * Math.PI * 2];
+    c.dead = false;
+  }
+
+  function initState() {
+    frame = 0;
+    citations = [];
+    const phantomIndices = new Set<number>();
+    while (phantomIndices.size < PHANTOM_COUNT) {
+      phantomIndices.add(Math.floor(Math.random() * TOTAL_CITATIONS));
+    }
+    for (let i = 0; i < TOTAL_CITATIONS; i++) {
+      citations.push(spawnCitation(true, phantomIndices.has(i)));
+    }
+    dustPool = [];
+    for (let i = 0; i < DUST_POOL; i++) {
+      dustPool.push({ x: 0, y: 0, vx: 0, vy: 0, alpha: 0, radius: 0, active: false, life: 0, maxLife: 40 });
+    }
+  }
+
+  function emitDust(x: number, y: number) {
+    let emitted = 0;
+    for (let i = 0; i < dustPool.length && emitted < DUST_PER_PHANTOM; i++) {
+      const d = dustPool[i];
+      if (!d.active) {
+        d.x = x + (Math.random() - 0.5) * 4 * dpr;
+        d.y = y + (Math.random() - 0.5) * 4 * dpr;
+        d.vx = (Math.random() - 0.5) * 0.3 * dpr;
+        d.vy = (0.15 + Math.random() * 0.25) * dpr;
+        d.alpha = 0.5 + Math.random() * 0.3;
+        d.radius = (0.8 + Math.random() * 0.8) * dpr;
+        d.active = true; d.life = 0;
+        d.maxLife = 35 + Math.floor(Math.random() * 15);
+        emitted++;
+      }
+    }
+  }
+
+  function getSweepY(): number {
+    const cf = frame % CYCLE;
+    if (cf < DRIFT_PHASE) return -20 * dpr;
+    if (cf < DRIFT_PHASE + SWEEP_DURATION) {
+      const t = (cf - DRIFT_PHASE) / SWEEP_DURATION;
+      return -10 * dpr + (H + 20 * dpr) * t;
+    }
+    return H + 20 * dpr;
+  }
+  function isSweeping(): boolean {
+    const cf = frame % CYCLE;
+    return cf >= DRIFT_PHASE && cf < DRIFT_PHASE + SWEEP_DURATION;
+  }
+
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+    const sweepY = getSweepY();
+    const sweeping = isSweeping();
+
+    for (let i = 0; i < citations.length; i++) {
+      const c = citations[i];
+      if (c.dead) {
+        const cf = frame % CYCLE;
+        if (cf < DRIFT_PHASE * 0.1) resetCitation(c);
+        continue;
+      }
+      if (c.isPhantom && c.flareFrame > 0) {
+        const elapsed = frame - c.flareFrame;
+        if (elapsed < 12) {
+          const flareAlpha = 0.7 + 0.3 * Math.sin(elapsed * 0.5);
+          ctx!.beginPath();
+          ctx!.arc(c.x, c.y, c.radius * (1.0 + elapsed * 0.05), 0, Math.PI * 2);
+          ctx!.fillStyle = `rgba(${SR},${SG},${SB},${flareAlpha})`;
+          ctx!.fill();
+          ctx!.beginPath();
+          ctx!.arc(c.x, c.y, c.radius * 3, 0, Math.PI * 2);
+          ctx!.fillStyle = `rgba(${SR},${SG},${SB},${flareAlpha * 0.15})`;
+          ctx!.fill();
+        } else if (elapsed < 32) {
+          c.crackProgress = Math.min(1, (elapsed - 12) / 20);
+          const crackAlpha = 0.7 * (1 - c.crackProgress * 0.3);
+          const shrink = 1.0 - c.crackProgress * 0.3;
+          ctx!.beginPath();
+          ctx!.arc(c.x, c.y, c.radius * shrink, 0, Math.PI * 2);
+          ctx!.fillStyle = `rgba(${SR},${SG},${SB},${crackAlpha})`;
+          ctx!.fill();
+          const crackLen = c.radius * (3 + c.crackProgress * 5);
+          ctx!.lineWidth = 1 * dpr;
+          for (let j = 0; j < c.crackAngles.length; j++) {
+            const angle = c.crackAngles[j];
+            const len = crackLen * (0.6 + j * 0.2) * c.crackProgress;
+            ctx!.beginPath();
+            ctx!.moveTo(c.x, c.y);
+            ctx!.lineTo(c.x + Math.cos(angle) * len, c.y + Math.sin(angle) * len);
+            ctx!.strokeStyle = `rgba(${SECONDARY_R},${SECONDARY_G},${SECONDARY_B},${crackAlpha * 0.6})`;
+            ctx!.stroke();
+          }
+        } else if (elapsed < 72) {
+          c.dissolveProgress = Math.min(1, (elapsed - 32) / 40);
+          const dissolveAlpha = 0.5 * (1 - c.dissolveProgress);
+          if (dissolveAlpha > 0.01) {
+            ctx!.beginPath();
+            ctx!.arc(c.x, c.y, c.radius * (0.7 - c.dissolveProgress * 0.5), 0, Math.PI * 2);
+            ctx!.fillStyle = `rgba(${SR},${SG},${SB},${dissolveAlpha})`;
+            ctx!.fill();
+          }
+          if (elapsed === 33) emitDust(c.x, c.y);
+        } else {
+          c.dead = true;
+        }
+        continue;
+      }
+      c.y += c.vy;
+      c.x += Math.sin(frame * 0.006 + c.wobblePhase) * 0.08 * dpr;
+      if (c.y < -10 * dpr) resetCitation(c);
+      if (sweeping && c.flareFrame < 0 && Math.abs(c.y - sweepY) < 4 * dpr) {
+        if (c.isPhantom) { c.flareFrame = frame; continue; }
+      }
+      let drawAlpha = c.alpha;
+      let drawRadius = c.radius;
+      if (sweeping && !c.isPhantom) {
+        const dist = Math.abs(c.y - sweepY);
+        if (dist < 20 * dpr) {
+          const proximity = 1 - dist / (20 * dpr);
+          drawAlpha = c.alpha + proximity * 0.12;
+          drawRadius = c.radius * (1 + proximity * 0.15);
+        }
+      }
+      ctx!.beginPath();
+      ctx!.arc(c.x, c.y, drawRadius, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(${PR},${PG},${PB},${drawAlpha})`;
+      ctx!.fill();
+    }
+
+    for (let i = 0; i < dustPool.length; i++) {
+      const d = dustPool[i];
+      if (!d.active) continue;
+      d.life++;
+      d.y += d.vy; d.x += d.vx;
+      d.vx *= 0.98; d.vy += 0.003 * dpr;
+      const lifeRatio = d.life / d.maxLife;
+      const dustAlpha = d.alpha * (1 - lifeRatio);
+      if (d.life >= d.maxLife || dustAlpha < 0.01) { d.active = false; continue; }
+      const dustRadius = d.radius * (1 - lifeRatio * 0.5);
+      ctx!.beginPath();
+      ctx!.arc(d.x, d.y, dustRadius, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(${SR},${SG},${SB},${dustAlpha})`;
+      ctx!.fill();
+    }
+
+    if (sweeping) {
+      const cf = frame % CYCLE;
+      const sweepT = (cf - DRIFT_PHASE) / SWEEP_DURATION;
+      const lineAlpha = 0.5 + 0.2 * Math.sin(sweepT * Math.PI);
+      const glowGrad = ctx!.createLinearGradient(0, sweepY - 12 * dpr, 0, sweepY + 12 * dpr);
+      glowGrad.addColorStop(0, `rgba(${SR},${SG},${SB},0)`);
+      glowGrad.addColorStop(0.4, `rgba(${SR},${SG},${SB},${lineAlpha * 0.08})`);
+      glowGrad.addColorStop(0.5, `rgba(${SR},${SG},${SB},${lineAlpha * 0.15})`);
+      glowGrad.addColorStop(0.6, `rgba(${SR},${SG},${SB},${lineAlpha * 0.08})`);
+      glowGrad.addColorStop(1, `rgba(${SR},${SG},${SB},0)`);
+      ctx!.fillStyle = glowGrad;
+      ctx!.fillRect(0, sweepY - 12 * dpr, W, 24 * dpr);
+      ctx!.beginPath();
+      ctx!.moveTo(0, sweepY); ctx!.lineTo(W, sweepY);
+      ctx!.strokeStyle = `rgba(${SR},${SG},${SB},${lineAlpha})`;
+      ctx!.lineWidth = 1 * dpr;
+      ctx!.stroke();
+    }
+  }
+
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+    const margin = W * 0.08;
+    const cols = 6, rows = 5;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const x = margin + (c + 0.5) * ((W - margin * 2) / cols);
+        const y = H * 0.15 + r * (H * 0.7 / (rows - 1));
+        const isPhantom = (r === 1 && c === 2) || (r === 2 && c === 4) || (r === 3 && c === 1) || (r === 4 && c === 5);
+        if (isPhantom) {
+          ctx!.beginPath();
+          ctx!.arc(x, y, 2.5 * dpr, 0, Math.PI * 2);
+          ctx!.fillStyle = `rgba(${SR},${SG},${SB},0.5)`;
+          ctx!.fill();
+          ctx!.lineWidth = 1 * dpr;
+          for (let j = 0; j < 3; j++) {
+            const angle = (j / 3) * Math.PI * 2 + 0.3;
+            ctx!.beginPath();
+            ctx!.moveTo(x, y);
+            ctx!.lineTo(x + Math.cos(angle) * 8 * dpr, y + Math.sin(angle) * 8 * dpr);
+            ctx!.strokeStyle = `rgba(${SECONDARY_R},${SECONDARY_G},${SECONDARY_B},0.3)`;
+            ctx!.stroke();
+          }
+        } else {
+          ctx!.beginPath();
+          ctx!.arc(x, y, 2 * dpr, 0, Math.PI * 2);
+          ctx!.fillStyle = `rgba(${PR},${PG},${PB},0.07)`;
+          ctx!.fill();
+        }
+      }
+    }
+    const sweepY = H * 0.45;
+    ctx!.beginPath();
+    ctx!.moveTo(0, sweepY); ctx!.lineTo(W, sweepY);
+    ctx!.strokeStyle = `rgba(${SR},${SG},${SB},0.25)`;
+    ctx!.lineWidth = 1 * dpr;
+    ctx!.stroke();
+  }
+
+  function tick() {
+    frame++;
+    if (frame % CYCLE === 0) {
+      const phantomIndices = new Set<number>();
+      while (phantomIndices.size < PHANTOM_COUNT) {
+        phantomIndices.add(Math.floor(Math.random() * TOTAL_CITATIONS));
+      }
+      for (let i = 0; i < citations.length; i++) {
+        resetCitation(citations[i]);
+        citations[i].isPhantom = phantomIndices.has(i);
+      }
+      for (let i = 0; i < dustPool.length; i++) dustPool[i].active = false;
+    }
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  const ro = new ResizeObserver(() => {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = canvas!.offsetWidth * dpr;
+    H = canvas!.offsetHeight * dpr;
+    canvas!.width = W; canvas!.height = H;
+    initState();
+    if (prefersReduced) requestAnimationFrame(drawStatic);
+  });
+  ro.observe(canvas);
+
+  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = canvas.offsetWidth * dpr;
+  H = canvas.offsetHeight * dpr;
+  canvas.width = W; canvas.height = H;
+  initState();
+
+  if (prefersReduced) {
+    requestAnimationFrame(drawStatic);
+  } else {
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(raf); raf = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      io.disconnect();
+    });
+  }
+})();
+</script>
