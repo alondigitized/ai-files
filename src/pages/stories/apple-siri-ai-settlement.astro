@@ -1,0 +1,483 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'apple-siri-ai-settlement')!;
+---
+
+<style is:global>
+  /* Keynote-style promise card */
+  .siri-keynote { background: linear-gradient(180deg, #0a1424 0%, #050a12 100%); border: 1px solid var(--border); border-radius: 0.9rem; padding: 2rem 1.6rem; margin: 2rem 0; text-align: center; position: relative; overflow: hidden; }
+  .siri-keynote::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(96,165,250,0.18), transparent 70%); pointer-events: none; }
+  .siri-keynote-eyebrow { font-size: 0.62rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--story); font-weight: 700; margin-bottom: 1rem; position: relative; }
+  .siri-keynote-title { font-size: 1.6rem; font-weight: 700; color: #fff; line-height: 1.15; letter-spacing: -0.01em; margin-bottom: 0.85rem; position: relative; }
+  .siri-keynote-title em { color: var(--story); font-style: normal; }
+  .siri-keynote-claims { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-top: 1.4rem; position: relative; }
+  .siri-keynote-claim { font-size: 0.72rem; color: var(--text); background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.22); border-radius: 0.4rem; padding: 0.55rem 0.4rem; line-height: 1.35; }
+  .siri-keynote-context { font-size: 0.7rem; color: var(--muted); font-style: italic; margin-top: 1.1rem; position: relative; }
+  @media (max-width: 600px) {
+    .siri-keynote-claims { grid-template-columns: 1fr; }
+    .siri-keynote-title { font-size: 1.25rem; }
+  }
+
+  /* Promise vs arrival ledger */
+  .siri-ledger { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .siri-ledger-header { display: grid; grid-template-columns: 1fr 1fr 110px; gap: 0; background: var(--surface2); padding: 0.55rem 1rem; font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--border); }
+  .siri-ledger-row { display: grid; grid-template-columns: 1fr 1fr 110px; gap: 0; padding: 0.75rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); align-items: baseline; }
+  .siri-ledger-row:last-child { border-bottom: none; }
+  .siri-ledger-promise { font-size: 0.78rem; color: var(--text); font-weight: 600; padding-right: 1rem; }
+  .siri-ledger-shipped { font-size: 0.78rem; color: var(--muted); font-style: italic; padding-right: 1rem; }
+  .siri-ledger-status { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; padding: 0.18rem 0.5rem; border-radius: 3px; align-self: center; justify-self: end; text-align: center; min-width: 100px; }
+  .siri-ledger-status.delayed { background: rgba(255,77,77,0.12); color: var(--accent); }
+  .siri-ledger-status.partial { background: rgba(96,165,250,0.12); color: var(--story); }
+  .siri-ledger-context { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.55rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); }
+  @media (max-width: 700px) {
+    .siri-ledger-header, .siri-ledger-row { grid-template-columns: 1fr; gap: 0.35rem; }
+    .siri-ledger-status { justify-self: start; }
+    .siri-ledger-shipped { padding-right: 0; }
+  }
+
+  /* Settlement summary card */
+  .siri-settlement { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .siri-settlement-header { background: var(--surface2); padding: 0.55rem 1rem; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .siri-settlement-tag { font-size: 0.58rem; padding: 0.15rem 0.5rem; border-radius: 3px; background: rgba(96,165,250,0.14); color: var(--story); letter-spacing: 0.1em; }
+  .siri-settlement-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+  .siri-settlement-cell { padding: 1.1rem 1rem; border-right: 1px solid var(--border); }
+  .siri-settlement-cell:last-child { border-right: none; }
+  .siri-settlement-num { font-size: 1.5rem; font-weight: 800; color: var(--story); font-family: 'Courier New', monospace; line-height: 1; margin-bottom: 0.45rem; }
+  .siri-settlement-label { font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 700; line-height: 1.4; }
+  .siri-settlement-context { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.55rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); }
+  @media (max-width: 700px) {
+    .siri-settlement-grid { grid-template-columns: 1fr 1fr; }
+    .siri-settlement-cell:nth-child(2) { border-right: none; }
+  }
+  @media (max-width: 420px) {
+    .siri-settlement-grid { grid-template-columns: 1fr; }
+    .siri-settlement-cell { border-right: none; border-bottom: 1px solid var(--border); }
+    .siri-settlement-cell:last-child { border-bottom: none; }
+  }
+
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .apple-siri-ai-settlement-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+  .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.6rem 0 0; padding: 0 1rem; line-height: 1.5; }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+<section class="section" id="context">
+  <h2><span class="num">01 — The Promise</span>The Most Disciplined Marketer in Tech</h2>
+  <p>On June 10, 2024, Apple opened its Worldwide Developers Conference in Cupertino with a feature it called Apple Intelligence. The keynote framed it as the iPhone's flagship moment: a generative-AI layer woven through the operating system, anchored by a more capable Siri that would understand what was on the screen, hold conversational context, draw on personal data across apps, and take action inside third-party software on the user's behalf.</p>
+  <p>Apple's product pages followed within hours. Marketing for the iPhone 16 line, announced that September, leaned hard on Apple Intelligence as the reason to upgrade. The phrase "Built for Apple Intelligence" appeared above the buy button. The new Siri was the headline.</p>
+
+  <div class="siri-keynote">
+    <div class="siri-keynote-eyebrow">WWDC 2024 · The New Siri</div>
+    <div class="siri-keynote-title">A more <em>natural</em>, more <em>contextual</em>, more <em>personal</em> Siri.</div>
+    <div class="siri-keynote-claims">
+      <div class="siri-keynote-claim">On-screen awareness — Siri sees what you see and acts on it.</div>
+      <div class="siri-keynote-claim">Personal context — your messages, calendar, and email become Siri's working memory.</div>
+      <div class="siri-keynote-claim">In-app actions — Siri takes steps inside third-party apps for you.</div>
+    </div>
+    <div class="siri-keynote-context">Reconstructed framing of marketing claims from WWDC 2024 and the iPhone 16 launch (September 2024). The most ambitious of these capabilities did not ship on schedule.</div>
+  </div>
+
+  <p>Apple is not a company that struggles to ship the things it announces. Its product cadence is famously rehearsed; its marketing pipeline famously cautious. For three decades the company has been the industry's tightest example of underpromising and overdelivering. The iPhone 16 was the first product cycle in living memory where the gap between what Apple advertised and what Apple shipped became impossible to ignore.</p>
+</section>
+
+<div class="phantom-wrap">
+  <canvas class="apple-siri-ai-settlement-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>The Gap</strong> — A clean blue line of promise particles rises and holds at altitude across the canvas; below it, a flat gray line of arrival particles barely moves; the vertical distance between the two grows with each cycle until a single bright pulse marks the gap and resets the field.</p>
+
+<section class="section" id="what-happened">
+  <h2><span class="num">02 — The Gap</span>What Was Sold and What Arrived</h2>
+  <p>By the end of 2024, the components of Apple Intelligence had begun arriving in pieces. Notification summaries shipped. Writing tools shipped. Image Playground shipped. The cleaned-up version of the existing Siri voice shipped. The most ambitious capabilities — the ones the marketing had been anchored to — did not.</p>
+  <p>In March 2025, after months of speculation about delays, Apple acknowledged publicly that the more contextually aware Siri would not arrive on the originally implied timeline. The company's spokesperson said the work was taking longer than anticipated and that the features would roll out "in the coming year." Reviewers who had purchased iPhone 16 devices the prior fall on the strength of those features had owned them for roughly six months at that point.</p>
+
+  <div class="siri-ledger">
+    <div class="siri-ledger-header">
+      <span>Marketed Feature</span>
+      <span>What Shipped Through Q1 2025</span>
+      <span style="text-align: right;">Status</span>
+    </div>
+    <div class="siri-ledger-row">
+      <span class="siri-ledger-promise">Personal-context Siri — answers anchored in your messages, mail, calendar.</span>
+      <span class="siri-ledger-shipped">Did not ship in 2024 or Q1 2025; Apple acknowledged delays in March 2025.</span>
+      <span class="siri-ledger-status delayed">Delayed</span>
+    </div>
+    <div class="siri-ledger-row">
+      <span class="siri-ledger-promise">On-screen awareness — Siri sees and acts on what's on the display.</span>
+      <span class="siri-ledger-shipped">Did not ship in 2024 or Q1 2025; deferred with the personal-context feature.</span>
+      <span class="siri-ledger-status delayed">Delayed</span>
+    </div>
+    <div class="siri-ledger-row">
+      <span class="siri-ledger-promise">In-app actions across third-party apps via App Intents.</span>
+      <span class="siri-ledger-shipped">Limited initial scope; broad cross-app orchestration deferred.</span>
+      <span class="siri-ledger-status partial">Partial</span>
+    </div>
+    <div class="siri-ledger-row">
+      <span class="siri-ledger-promise">Notification summaries, writing tools, Image Playground, Genmoji.</span>
+      <span class="siri-ledger-shipped">Shipped progressively across iOS 18.x point releases.</span>
+      <span class="siri-ledger-status partial">Shipped</span>
+    </div>
+    <div class="siri-ledger-context">Feature ledger reconstructed from Apple's public statements, iOS 18 release notes, and contemporaneous reporting (2024–2025). The most ambitious Siri capabilities — the ones the iPhone 16 marketing was anchored to — were the ones that did not arrive on schedule.</div>
+  </div>
+
+  <p>Class actions followed the acknowledgment. Multiple suits filed across 2025 alleged that Apple had advertised features it knew, or should have known, were not ready to ship — and that consumers had paid premium prices for hardware whose flagship feature was not yet built. The Clarkson Law Firm took the lead role in coordinating the consolidated class.</p>
+</section>
+
+<section class="section" id="suit">
+  <h2><span class="num">03 — The Suit</span>The Bait and Switch Theory</h2>
+  <p>The legal theory was conventional. False advertising. The complaint did not need to argue that Apple Intelligence was technically incapable, that the model architecture was flawed, that Siri hallucinated, or that user data was mishandled. It needed only to argue a chronology: that Apple's marketing claims for the iPhone 16 had been anchored to features Apple had not yet built, and that consumers had purchased the product on the strength of those claims.</p>
+  <p>That framing matters. Every prior major U.S. case in the AI register has argued that an AI did something wrong. Character.AI is alleged to have failed users in crisis. ChatGPT is alleged to have abetted real-world planning. Perplexity is alleged to have leaked private prompts. Anthropic settled a case alleging it had trained on pirated books. Each of those cases is structurally about model behavior — output, ingestion, safety. The Apple case is structurally about something simpler. It is about what was said before the user ever opened the box.</p>
+  <p>The complaint did not require new law. False advertising statutes have existed in California and at the federal level for decades. What changed was the documentation density. The keynote was archived. The product page was archived. The TV spots were archived. The ad pre-rolls on iPhone purchase pages were archived. Months of trade-press reporting about Apple's awareness of the delay was on the record. The features were not ambiguous. Either they shipped, or they did not. By March 2025, it was clear which.</p>
+  <p>Apple's defense, throughout, was that the features had been described as forthcoming and that consumers should have understood the iPhone 16 to be a platform on which those features would arrive over time. That argument is more credible for some advertised capabilities than others. A reviewer who paid $1,199 for an iPhone 16 Pro Max in October 2024 and waited eighteen months to receive a feature the marketing had implied was imminent is a recognizable consumer-protection plaintiff. Apple did not test the argument at trial.</p>
+</section>
+
+<section class="section" id="settlement">
+  <h2><span class="num">04 — The Settlement</span>Two Hundred Fifty Million Dollars</h2>
+  <p>On May 5, 2026, Apple agreed to pay approximately $250 million to settle the class action. The proposed settlement was filed for preliminary approval in the U.S. District Court for the Northern District of California. A preliminary approval hearing was set for June 17, 2026, before Judge Noel Wise. Apple did not admit wrongdoing.</p>
+
+  <div class="siri-settlement">
+    <div class="siri-settlement-header">
+      <span>Apple Inc. — Proposed Class Settlement (N.D. Cal.)</span>
+      <span class="siri-settlement-tag">May 5, 2026</span>
+    </div>
+    <div class="siri-settlement-grid">
+      <div class="siri-settlement-cell">
+        <div class="siri-settlement-num">$250M</div>
+        <div class="siri-settlement-label">Total Proposed<br>Settlement</div>
+      </div>
+      <div class="siri-settlement-cell">
+        <div class="siri-settlement-num">~36M</div>
+        <div class="siri-settlement-label">U.S. Devices<br>in the Class</div>
+      </div>
+      <div class="siri-settlement-cell">
+        <div class="siri-settlement-num">$25</div>
+        <div class="siri-settlement-label">Estimated Baseline<br>Per Device</div>
+      </div>
+      <div class="siri-settlement-cell">
+        <div class="siri-settlement-num">$95</div>
+        <div class="siri-settlement-label">Maximum Per Device<br>(Claim Dependent)</div>
+      </div>
+    </div>
+    <div class="siri-settlement-context">Class period: U.S. iPhone purchases between June 10, 2024 and March 29, 2025. Eligible models: iPhone 15 Pro, iPhone 15 Pro Max, iPhone 16, iPhone 16e, iPhone 16 Plus, iPhone 16 Pro, iPhone 16 Pro Max. Notice to claimants begins within 45 days of preliminary approval. Plaintiffs represented by Clarkson Law Firm. Apple did not admit wrongdoing.</div>
+  </div>
+
+  <p>The class is bounded with unusual precision. It begins on June 10, 2024 — the day of the WWDC keynote. It ends on March 29, 2025 — three days after Apple's public acknowledgment of the delay. The window is the period during which the marketing was active and uncorrected. The settlement, in effect, prices that ten-month interval at roughly seven dollars per day across the entire U.S. iPhone fleet sold during it.</p>
+  <p>The per-device numbers are estimates. The baseline of about $25 assumes high claim volume; the maximum of about $95 assumes low claim volume. Settlement administrators are bound by the total fund, not by the per-device figure. The actual check that arrives will depend on how many people fill out the claim form. Most class-action notices are ignored. Most class members will not receive $95.</p>
+  <p>The figure that matters is the headline: a quarter of a billion dollars, paid by the world's most valuable company, for a marketing gap on a single product feature. Apple's quarterly net income is more than thirty times that number. The settlement is a rounding error on Apple's balance sheet. It is not a rounding error on the legal theory.</p>
+</section>
+
+<section class="section" id="signal">
+  <h2><span class="num">05 — Why This One Is Different</span>The Marketing Becomes the Harm</h2>
+  <p>The AI litigation register since 2023 has been populated by lawsuits with two structural shapes. The first shape is harm-based: someone was hurt by an AI system's output and is suing the company that operated it. The Character.AI cases, the Tumbler Ridge ChatGPT case, the Florida State University filing, and the Pennsylvania medical-license action are all in this category. The second shape is data-based: a company is alleged to have trained, ingested, or disclosed something it should not have. Bartz v. Anthropic on training data, Perplexity on prompt forwarding, Tempus AI on genetic information, Mercor on contractor breach. Both shapes target what the AI system actually did.</p>
+  <p>The Apple settlement targets something the AI system did not do. The complaint did not have to allege that any iPhone 16 user was harmed by Siri's behavior. It did not have to identify a single output. It did not have to engage with model architecture, alignment, training data, or user interface design. It had to identify a marketing claim, a payment, and a delivery date that did not align.</p>
+  <p>That is a different kind of injury, and it sits closer to a body of law that is decades older and procedurally well-developed. False advertising is not a frontier doctrine. It does not require expert testimony about how transformer attention layers work. It does not require the court to weigh whether a fictional persona constitutes the unauthorized practice of medicine. It requires only an exhibit list and a calendar.</p>
+  <p>Every frontier-AI lab now operates on a public roadmap. OpenAI demonstrates capabilities at developer conferences months before they ship to paid tiers. Google previews Gemini features at I/O that arrive across subsequent quarters. Anthropic announces model versions with capability descriptions before broad rollout. Meta previews Llama features at Connect. xAI previews Grok updates on X. Each of those announcements is a documented public claim about a product. Each shipping gap is a potential exhibit. The Apple template — a class bounded by the start of the marketing campaign and the public acknowledgment of the delay — is portable in principle to any of these companies. The math will be different. The structure is identical.</p>
+  <p>What the Apple settlement establishes is a number. It is the first major resolution at this scale to treat the gap between an AI marketing claim and a shipped capability as the actionable injury, with a court of competent jurisdiction approving the figure. The number is now in the precedent stack. The next plaintiff does not have to argue that one is reachable. They have to argue what theirs is worth.</p>
+</section>
+
+<section class="section" id="open">
+  <h2><span class="num">06 — Open Questions</span>What the Settlement Does Not Resolve</h2>
+  <p>A settlement is not a verdict. Apple did not admit that any of its marketing was misleading. Apple did not admit that any iPhone 16 buyer relied on the AI claims. Apple did not admit that the delayed Siri features had been promised on a timeline at all. The settlement document itself, like nearly every class-action settlement, is a calculation: it costs less than continued litigation, and it ends a public exposure that benefits no one. It is an accounting decision, not an apology.</p>
+  <p>The preliminary approval hearing on June 17 is also not the end. Class members can object. The judge can demand changes to notice procedures, to the per-device formula, to the attorney fee allocation. Final approval typically follows months later after the claim window has run. Whether the $250 million figure survives intact is a procedural question that will play out across the summer and fall of 2026.</p>
+  <p>What is settled, regardless of the outcome of the approval process, is that Apple — the company most synonymous with disciplined product marketing — paid a quarter of a billion dollars rather than try the question. The company's lawyers concluded that the chronological exhibit list was strong enough to make a verdict unfavorable, or at minimum unpredictable. That conclusion is the part of the settlement that does not require court approval to take effect. Every general counsel at every AI company has now seen it.</p>
+</section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.apple-siri-ai-settlement-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
+  const storyColor = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#60a5fa';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const [sR, sG, sB] = hexToRgb(storyColor);
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W = 0, H = 0, rafId = 0, frame = 0, isVisible = true;
+
+  // Cycle: 14 seconds = 840 frames
+  const PROMISE_RISE = 60;
+  const HOLD_END = 600;
+  const FLASH_FRAME = 660;
+  const RESET_END = 780;
+  const CYCLE = 840;
+
+  const PROMISE_COUNT = 26;
+  const ARRIVAL_COUNT = 26;
+  const DUST_COUNT = 14;
+
+  interface Particle {
+    x: number;
+    targetY: number;
+    currentY: number;
+    drift: number;
+    phase: number;
+    alpha: number;
+    radius: number;
+  }
+  interface Dust { x: number; y: number; vx: number; vy: number; alpha: number; r: number; }
+
+  let promises: Particle[] = [];
+  let arrivals: Particle[] = [];
+  let dust: Dust[] = [];
+
+  function initParticles() {
+    promises = [];
+    arrivals = [];
+    for (let i = 0; i < PROMISE_COUNT; i++) {
+      const x = ((i + 0.5) / PROMISE_COUNT) * W;
+      promises.push({
+        x,
+        targetY: H * 0.28 + (Math.random() - 0.5) * 18,
+        currentY: H * 0.5,
+        drift: 0.2 + Math.random() * 0.3,
+        phase: Math.random() * Math.PI * 2,
+        alpha: 0,
+        radius: 1.6 + Math.random() * 1.0,
+      });
+    }
+    for (let i = 0; i < ARRIVAL_COUNT; i++) {
+      const x = ((i + 0.5) / ARRIVAL_COUNT) * W;
+      arrivals.push({
+        x,
+        targetY: H * 0.78 + (Math.random() - 0.5) * 8,
+        currentY: H * 0.78 + (Math.random() - 0.5) * 8,
+        drift: 0.12 + Math.random() * 0.18,
+        phase: Math.random() * Math.PI * 2,
+        alpha: 0.18 + Math.random() * 0.06,
+        radius: 1.3 + Math.random() * 0.8,
+      });
+    }
+    dust = [];
+    for (let i = 0; i < DUST_COUNT; i++) {
+      dust.push({
+        x: Math.random() * Math.max(W, 400),
+        y: Math.random() * Math.max(H, 380),
+        vx: (Math.random() - 0.5) * 0.18,
+        vy: (Math.random() - 0.5) * 0.18,
+        alpha: 0.04 + Math.random() * 0.03,
+        r: 1 + Math.random() * 0.7,
+      });
+    }
+  }
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth;
+    H = canvas!.offsetHeight;
+    canvas!.width = W * dpr;
+    canvas!.height = H * dpr;
+    ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    initParticles();
+  }
+
+  const ro = new ResizeObserver(() => {
+    resize();
+    if (reducedMotion) drawStatic();
+  });
+  ro.observe(canvas);
+
+  function clamp01(v: number) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+  function lerp(a: number, b: number, t: number) { return a + (b - a) * t; }
+
+  function easeOut(t: number) { return 1 - Math.pow(1 - t, 3); }
+
+  function draw() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, W, H);
+    if (W === 0 || H === 0) return;
+
+    const f = frame % CYCLE;
+
+    // Promise rise progress
+    let riseT = clamp01((f - 0) / PROMISE_RISE);
+    riseT = easeOut(riseT);
+
+    // Hold phase strength (alpha)
+    let holdAlpha = 1;
+    if (f < PROMISE_RISE) {
+      holdAlpha = riseT;
+    } else if (f >= HOLD_END && f < FLASH_FRAME) {
+      holdAlpha = 1 - clamp01((f - HOLD_END) / (FLASH_FRAME - HOLD_END));
+    } else if (f >= FLASH_FRAME && f < RESET_END) {
+      holdAlpha = 0;
+    } else if (f >= RESET_END) {
+      holdAlpha = 0;
+    }
+
+    // Flash intensity
+    let flashAlpha = 0;
+    if (f >= FLASH_FRAME && f < FLASH_FRAME + 30) {
+      const t = (f - FLASH_FRAME) / 30;
+      flashAlpha = 1 - t;
+    }
+
+    // Dust
+    for (const d of dust) {
+      d.x += d.vx;
+      d.y += d.vy;
+      if (d.x < 0) d.x += W; else if (d.x > W) d.x -= W;
+      if (d.y < 0) d.y += H; else if (d.y > H) d.y -= H;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(232,232,232,${d.alpha})`;
+      ctx.fill();
+    }
+
+    // Arrival line (gray, low, mostly static)
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(232,232,232,0.10)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 4]);
+    ctx.moveTo(0, H * 0.78);
+    ctx.lineTo(W, H * 0.78);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Arrival particles
+    for (const p of arrivals) {
+      const wob = Math.sin(frame * 0.012 + p.phase) * 1.2;
+      const y = p.currentY + wob;
+      ctx.beginPath();
+      ctx.arc(p.x, y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(232,232,232,${p.alpha})`;
+      ctx.fill();
+    }
+
+    // Promise line (blue, high, holds at altitude)
+    if (holdAlpha > 0.02) {
+      ctx.beginPath();
+      ctx.strokeStyle = `rgba(${sR},${sG},${sB},${0.12 * holdAlpha})`;
+      ctx.lineWidth = 1;
+      ctx.moveTo(0, H * 0.28);
+      ctx.lineTo(W, H * 0.28);
+      ctx.stroke();
+    }
+
+    // Promise particles — rise to altitude and hold, then fade
+    for (let i = 0; i < promises.length; i++) {
+      const p = promises[i];
+      const stagger = i / promises.length;
+      let local = clamp01((f - stagger * 30) / PROMISE_RISE);
+      local = easeOut(local);
+
+      let y;
+      if (f < PROMISE_RISE + stagger * 30) {
+        y = lerp(H * 0.5, p.targetY, local);
+      } else {
+        y = p.targetY + Math.sin(frame * 0.015 + p.phase) * 1.5;
+      }
+
+      const a = (0.55 + Math.sin(frame * 0.02 + p.phase) * 0.15) * holdAlpha;
+      ctx.beginPath();
+      ctx.arc(p.x, y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${sR},${sG},${sB},${a})`;
+      ctx.fill();
+
+      // Connecting dashed gap line on every 4th particle
+      if (i % 4 === 0 && holdAlpha > 0.6) {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(${sR},${sG},${sB},${0.06 * holdAlpha})`;
+        ctx.lineWidth = 0.6;
+        ctx.setLineDash([2, 5]);
+        ctx.moveTo(p.x, y + 3);
+        ctx.lineTo(p.x, H * 0.78 - 3);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+    }
+
+    // The flash — a single bright pulse marking the gap
+    if (flashAlpha > 0) {
+      const cx = W / 2;
+      const cy = H * 0.53;
+      const radius = 80 * (1 - flashAlpha) + 6;
+      const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+      grd.addColorStop(0, `rgba(${sR},${sG},${sB},${0.55 * flashAlpha})`);
+      grd.addColorStop(1, `rgba(${sR},${sG},${sB},0)`);
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${sR},${sG},${sB},${flashAlpha})`;
+      ctx.fill();
+    }
+  }
+
+  function drawStatic() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, W, H);
+
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(232,232,232,0.10)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 4]);
+    ctx.moveTo(0, H * 0.78);
+    ctx.lineTo(W, H * 0.78);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    for (const p of arrivals) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.currentY, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(232,232,232,${p.alpha})`;
+      ctx.fill();
+    }
+
+    ctx.beginPath();
+    ctx.strokeStyle = `rgba(${sR},${sG},${sB},0.14)`;
+    ctx.lineWidth = 1;
+    ctx.moveTo(0, H * 0.28);
+    ctx.lineTo(W, H * 0.28);
+    ctx.stroke();
+
+    for (const p of promises) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.targetY, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${sR},${sG},${sB},0.55)`;
+      ctx.fill();
+    }
+  }
+
+  function loop() {
+    if (!isVisible) {
+      rafId = requestAnimationFrame(loop);
+      return;
+    }
+    frame++;
+    draw();
+    rafId = requestAnimationFrame(loop);
+  }
+
+  resize();
+  if (reducedMotion) {
+    drawStatic();
+  } else {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { isVisible = e.isIntersecting; });
+    }, { threshold: 0 });
+    io.observe(canvas);
+    rafId = requestAnimationFrame(loop);
+    window.addEventListener('beforeunload', () => {
+      cancelAnimationFrame(rafId);
+      ro.disconnect();
+      io.disconnect();
+    });
+  }
+})();
+</script>
