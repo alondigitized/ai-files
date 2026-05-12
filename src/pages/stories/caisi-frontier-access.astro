@@ -1,0 +1,887 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'caisi-frontier-access')!;
+---
+
+<style is:global>
+  /* ── Canvas ── */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .caisi-frontier-access-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* ── Reenactment 1: Document Mockup ── */
+  .cfa-doc-wrap {
+    margin: 2rem 0;
+    background: #0b1018;
+    border: 1px solid #2a3a4f;
+    border-radius: 6px;
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    overflow: hidden;
+  }
+  .cfa-doc-header {
+    background: #0d1520;
+    border-bottom: 1px solid #2a3a4f;
+    padding: 0.9rem 1.25rem;
+    text-align: center;
+  }
+  .cfa-doc-header .cfa-doc-agency {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #6b8caf;
+    margin-bottom: 0.2rem;
+  }
+  .cfa-doc-header .cfa-doc-title {
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #c8d8e8;
+    font-weight: 600;
+  }
+  .cfa-doc-body { padding: 1.25rem 1.5rem 1.5rem; }
+  .cfa-doc-subject {
+    font-size: 0.75rem;
+    color: #8aa0b8;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 1.1rem;
+  }
+  .cfa-doc-field {
+    display: flex;
+    margin: 0.5rem 0;
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+  .cfa-doc-label {
+    color: #6b8caf;
+    min-width: 110px;
+    flex-shrink: 0;
+    letter-spacing: 0.04em;
+  }
+  .cfa-doc-value { color: #c8d8e8; }
+  .cfa-doc-blank {
+    color: #ff6b6b;
+    font-style: italic;
+    opacity: 0.85;
+  }
+  .cfa-doc-divider {
+    border: none;
+    border-top: 1px solid #1e2e3e;
+    margin: 1rem 0;
+  }
+  .cfa-doc-terms {
+    padding: 0;
+    margin: 0.8rem 0;
+    list-style: none;
+  }
+  .cfa-doc-terms li {
+    font-size: 0.8rem;
+    color: #a0b8cc;
+    line-height: 1.6;
+    padding: 0.25rem 0;
+    padding-left: 1rem;
+    position: relative;
+  }
+  .cfa-doc-terms li::before {
+    content: '\2014';
+    position: absolute;
+    left: 0;
+    color: #3a5068;
+  }
+  .cfa-doc-terms li em {
+    color: #7a9ab0;
+    font-size: 0.72rem;
+  }
+  .cfa-doc-foot {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid #2a3a4f;
+    background: #080e14;
+  }
+  .cfa-doc-foot-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.3rem 0;
+    font-size: 0.72rem;
+  }
+  .cfa-doc-foot-label {
+    color: #6a8aa0;
+    letter-spacing: 0.04em;
+  }
+  .cfa-doc-foot-value {
+    color: #ff6b6b;
+    font-style: italic;
+  }
+  .cfa-doc-note {
+    margin-top: 0.8rem;
+    font-size: 0.7rem;
+    color: #7a8a98;
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  /* ── Reenactment 2: Two-Panel Quote Contrast ── */
+  .cfa-panels-wrap { margin: 2rem 0; }
+  .cfa-panels-card {
+    background: #0b1018;
+    border: 1px solid #2a3a4f;
+    border-radius: 6px;
+    padding: 1.25rem 1.5rem;
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+  }
+  .cfa-panels-card:first-child {
+    border-radius: 6px 6px 0 0;
+    border-bottom: none;
+  }
+  .cfa-panels-card:last-child {
+    border-radius: 0 0 6px 6px;
+  }
+  .cfa-panels-meta {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #6b8caf;
+    margin-bottom: 0.3rem;
+  }
+  .cfa-panels-speaker {
+    font-size: 0.75rem;
+    color: #8aa0b8;
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.03em;
+  }
+  .cfa-panels-quote {
+    font-size: 0.88rem;
+    color: #c8d8e8;
+    line-height: 1.6;
+    white-space: pre-line;
+    font-style: italic;
+  }
+  .cfa-panels-gap {
+    background: #080e14;
+    border-left: 1px solid #2a3a4f;
+    border-right: 1px solid #2a3a4f;
+    padding: 0.6rem 0;
+    text-align: center;
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #ff6b6b;
+  }
+  .cfa-panels-note {
+    margin-top: 0.8rem;
+    font-size: 0.7rem;
+    color: #7a8a98;
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  /* ── Reenactment 3: Chain Diagram ── */
+  .cfa-chain-wrap {
+    margin: 2rem 0;
+    background: #0b1018;
+    border: 1px solid #2a3a4f;
+    border-radius: 6px;
+    font-family: 'SF Mono', Menlo, Consolas, monospace;
+    overflow: hidden;
+    padding: 1.5rem;
+  }
+  .cfa-chain-title {
+    text-align: center;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #6b8caf;
+    margin-bottom: 1.5rem;
+  }
+  .cfa-chain-node {
+    background: #0d1520;
+    border: 1px solid #1e2e3e;
+    border-radius: 4px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0;
+  }
+  .cfa-chain-node-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #6b8caf;
+    margin-bottom: 0.4rem;
+  }
+  .cfa-chain-node-status {
+    font-size: 0.8rem;
+    color: #c8d8e8;
+    line-height: 1.5;
+    margin-bottom: 0.4rem;
+  }
+  .cfa-chain-node-if {
+    font-size: 0.75rem;
+    color: #8aa0b8;
+    line-height: 1.5;
+  }
+  .cfa-chain-node-if .cfa-chain-blank {
+    color: #ff6b6b;
+    font-style: italic;
+  }
+  .cfa-chain-arrow {
+    text-align: center;
+    padding: 0.5rem 0;
+    color: #3a5068;
+    font-size: 1rem;
+    line-height: 1;
+  }
+  .cfa-chain-outcome {
+    background: #0d1520;
+    border: 1px solid #6b8caf;
+    border-radius: 4px;
+    padding: 1rem 1.25rem;
+    text-align: center;
+  }
+  .cfa-chain-outcome-text {
+    font-size: 0.85rem;
+    color: #6b8caf;
+    letter-spacing: 0.04em;
+  }
+  .cfa-chain-note {
+    margin-top: 0.8rem;
+    font-size: 0.7rem;
+    color: #7a8a98;
+    line-height: 1.5;
+    font-style: italic;
+    text-align: center;
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="context">
+      <h2><span class="num">01 — Context</span>The Room That Was Already There</h2>
+      <p>On May 5, 2026, the U.S. government announced that three more of the country's most powerful AI companies had agreed to hand over their unreleased models for federal evaluation. No law required any of them to do so.</p>
+      <p>The room where this happened did not appear overnight. In October 2023, President Biden signed Executive Order 14110, invoking the Defense Production Act to create the U.S. AI Safety Institute inside the National Institute of Standards and Technology. The order required companies developing models above certain compute thresholds to share safety testing results with the federal government. In August 2024, NIST signed memorandums of understanding with OpenAI and Anthropic, granting the institute access to major new models before and after public release — the first agreements of their kind. By November 2024, the institute had convened a multi-agency taskforce called TRAINS (Testing Risks of AI for National Security), with participants from the Department of Defense, the Department of Energy and ten national laboratories, DHS's Cybersecurity and Infrastructure Security Agency, and the National Institutes of Health.</p>
+      <p>Then the administration changed. Trump rescinded EO 14110 in January 2025, replacing it with an order titled "Removing Barriers to American Leadership in Artificial Intelligence." Elizabeth Kelly, the institute's inaugural director, departed in early February 2025 as the new administration shifted course. In June 2025, Commerce Secretary Howard Lutnick renamed the institute the Center for AI Standards and Innovation — CAISI — describing the change as moving away from regulation "used under the guise of national security."</p>
+      <p>The personnel turbulence continued. In April 2026, the White House hired Collin Burns, a former Anthropic researcher, as CAISI's new director. Four days later, the White House pushed him out, reportedly because of his Anthropic background. Chris Fall, a career official who had served as Director of the DOE Office of Science during the first Trump administration and held senior roles at the Office of Naval Research and MITRE, replaced him.</p>
+      <p>The executive order that created the institute was rescinded. The director who built it left. The name was changed. The replacement director lasted four days. Through all of it, the voluntary agreements survived every transition. That survival is the first quiet signal.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="caisi-frontier-access-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Frame</strong> — Particles drift through an open rectangular frame that scans each one in institutional blue and lets it pass unchanged. Tally marks accumulate inside. The frame dims nearly to nothing, then reasserts. The room is always open, both ways.</p>
+
+    <section class="section" id="five-labs">
+      <h2><span class="num">02 — What Happened</span>Five Labs, No Law</h2>
+      <p>On May 5, CAISI announced new agreements with Google DeepMind, Microsoft, and xAI to conduct pre-deployment evaluations of their frontier AI models before public release. Combined with the renegotiated OpenAI and Anthropic agreements — originally signed in 2024 and updated to align with the Trump administration's AI Action Plan — five major American frontier labs have now signed or renegotiated voluntary pre-release evaluation agreements with CAISI or its predecessor. Anthropic's current operational status within the program is unclear, given the Burns firing and the company's exclusion from a separate Pentagon deal announced the same week.</p>
+
+      <div class="cfa-doc-wrap">
+        <div class="cfa-doc-header">
+          <div class="cfa-doc-agency">National Institute of Standards and Technology / Center for AI Standards and Innovation</div>
+          <div class="cfa-doc-title">Memorandum of Understanding — Pre-Deployment Evaluation</div>
+        </div>
+        <div class="cfa-doc-body">
+          <div class="cfa-doc-subject">Subject: Pre-Deployment Evaluation of Frontier AI Models</div>
+          <div class="cfa-doc-field">
+            <span class="cfa-doc-label">PARTIES:</span>
+            <span class="cfa-doc-value">[Lab Name] &nbsp;|&nbsp; CAISI / NIST</span>
+          </div>
+          <div class="cfa-doc-field">
+            <span class="cfa-doc-label">STATUS:</span>
+            <span class="cfa-doc-value">Voluntary</span>
+          </div>
+          <div class="cfa-doc-field">
+            <span class="cfa-doc-label">AUTHORITY:</span>
+            <span class="cfa-doc-blank">[None cited]</span>
+          </div>
+          <div class="cfa-doc-field">
+            <span class="cfa-doc-label">DURATION:</span>
+            <span class="cfa-doc-blank">[Not disclosed]</span>
+          </div>
+          <hr class="cfa-doc-divider" />
+          <ul class="cfa-doc-terms">
+            <li>Developer provides pre-release access to frontier models</li>
+            <li>Models may be provided with safeguards reduced or removed <em>(per press reporting; procedural details not published)</em></li>
+            <li>Evaluations focus on: cybersecurity, biosecurity, chemical weapons, foreign AI systems, backdoors</li>
+            <li>Evaluations conducted in classified environments via TRAINS Taskforce</li>
+            <li>Results shared with developer</li>
+          </ul>
+        </div>
+        <div class="cfa-doc-foot">
+          <div class="cfa-doc-foot-row">
+            <span class="cfa-doc-foot-label">Consequence for adverse finding:</span>
+            <span class="cfa-doc-foot-value">[Not specified]</span>
+          </div>
+          <div class="cfa-doc-foot-row">
+            <span class="cfa-doc-foot-label">Consequence for non-participation:</span>
+            <span class="cfa-doc-foot-value">[None]</span>
+          </div>
+          <div class="cfa-doc-foot-row">
+            <span class="cfa-doc-foot-label">Published evaluation criteria:</span>
+            <span class="cfa-doc-foot-value">[None]</span>
+          </div>
+        </div>
+        <p class="cfa-doc-note">The above reflects what is publicly known about the agreements as of May 2026. No MOU text has been published. The "safeguards reduced or removed" language originates from press reporting — it does not appear on NIST's official CAISI page.</p>
+      </div>
+
+      <p>According to press reporting, developers frequently provide CAISI with models that have safeguards reduced or removed, allowing evaluators to probe raw capabilities and potential for misuse. This language does not appear on NIST's own CAISI webpage. NIST's published description states that evaluations focus on "demonstrable national security risks, including cybersecurity, biosecurity and chemical weapons concerns, along with assessments of foreign AI systems, backdoors and other covert malicious behavior."</p>
+      <p>CAISI has completed more than 40 model evaluations to date, including on state-of-the-art models that have never been released to the public. Testing occurs in classified environments through the TRAINS Taskforce, which by May 2026 includes more than 10 federal agencies. CAISI Director Chris Fall described the work as "independent, rigorous measurement science" essential to understanding frontier AI's national security implications.</p>
+      <p>In a statement attributed to Microsoft's Chief Responsible AI Officer Natasha Crampton, the company said the agreements allow it to work with U.S. government scientists to "test AI systems in ways that probe unexpected behaviors" and develop "shared datasets and workflows." xAI did not respond to requests for comment. No public statement from Google DeepMind leadership was found in reporting on the announcement.</p>
+      <p>The same week, the Pentagon announced a separate agreement with seven technology companies — Google, Microsoft, AWS, Nvidia, OpenAI, Reflection, and SpaceX — for classified systems use. Anthropic was absent from that list.</p>
+    </section>
+
+    <section class="section" id="whiplash">
+      <h2><span class="num">03 — The Whiplash</span>Five Days</h2>
+      <p>One day after the CAISI announcement, National Economic Council Director Kevin Hassett went on Fox Business and said something no senior Trump administration official had said before. The White House, he told the network, was "studying, possibly an executive order to give a clear roadmap to everybody about how this is going to go and how future AIs that also potentially create vulnerabilities should go through a process so that they're released to the wild after they've been proven safe, just like an FDA drug."</p>
+      <p>He said it was "really quite likely" that testing requirements would extend to all AI companies. "Mythos is the first of them," he said, referencing Anthropic's vulnerability-discovery work for the military, "but it's incumbent on us to build a system…that's really pretty much what we're working almost full time on right now."</p>
+
+      <div class="cfa-panels-wrap">
+        <div class="cfa-panels-card">
+          <div class="cfa-panels-meta">May 6, 2026 &nbsp;|&nbsp; Fox Business</div>
+          <div class="cfa-panels-speaker">Kevin Hassett, Director, National Economic Council</div>
+          <div class="cfa-panels-quote">"We're studying, possibly an executive order to give a clear
+roadmap to everybody about how this is going to go and how
+future AIs that also potentially create vulnerabilities should
+go through a process so that they're released to the wild
+after they've been proven safe, just like an FDA drug."</div>
+        </div>
+        <div class="cfa-panels-gap">— 5 days —</div>
+        <div class="cfa-panels-card">
+          <div class="cfa-panels-meta">May 11, 2026 &nbsp;|&nbsp; CNBC</div>
+          <div class="cfa-panels-speaker">Kevin Hassett, Director, National Economic Council</div>
+          <div class="cfa-panels-quote">"The White House — nobody has an idea that we should do
+something like bring in a giant new bureaucracy to approve AIs."</div>
+        </div>
+        <p class="cfa-panels-note">The May 6 quote is confirmed across multiple sources (Bloomberg, Fortune) from an on-the-record Fox Business appearance. The May 11 walkback is reported by Bloomberg citing a CNBC appearance; no second outlet in available sources independently confirms it. No source explains what happened in the intervening five days.</p>
+      </div>
+
+      <p>According to Bloomberg, citing a CNBC appearance on May 11, Hassett reversed course. "The White House — nobody has an idea that we should do something like bring in a giant new bureaucracy to approve AIs," he said.</p>
+      <p>No source explains what happened in those five days. No reporting has identified industry pushback, internal White House deliberation, or a specific trigger for the reversal. The two statements sit five days apart, from the same official, on the same subject, saying opposite things. The gap between them is a structural fact: even when the most senior economic official in the White House signals mandatory oversight, the signal collapses in under a week. The system's center of gravity is voluntariness.</p>
+    </section>
+
+    <section class="section" id="mechanism">
+      <h2><span class="num">04 — The Mechanism</span>The Structural Void</h2>
+      <p>Three absences define the system that every major frontier lab has agreed to participate in.</p>
+      <p>The first is legal authority. CAISI exists by executive discretion. No statute establishes it. The President who created its predecessor also rescinded the executive order that gave it force, and the institute continued operating under a new name. A bipartisan group of senators — Maria Cantwell, Todd Young, John Hickenlooper, and Marsha Blackburn — introduced the Future of AI Innovation Act on February 26, 2026, which would formally codify CAISI within NIST. Representative Jay Obernolte is preparing a companion House bill. Neither has passed. According to a Lawfare analysis by Dean W. Ball and Kevin Frazier, the President "will be hard pressed to find a clear hook for compelled vetting of an AI model" under existing law, and the Defense Production Act is "unlikely" to serve as legal basis for mandatory pre-release evaluation.</p>
+      <p>The second is published standards. No source — not NIST's own CAISI page, not press reporting, not the participating labs' public statements — reveals evaluation methodologies, benchmarks, threat models, or pass/fail criteria. "Capability assessments are only as good as the threat models behind them," said Devin Lynch, a former director for cyber policy at the White House Office of the National Cyber Director. Gregory Falco, an assistant professor at Cornell, was more direct: "The federal government does not currently have the in-house technical expertise, infrastructure, or day-to-day insight needed to directly evaluate these systems on its own." According to Fortune, Congress approved $55 million for NIST AI research and measurement efforts in January 2026, with up to $10 million specifically to expand CAISI. Whether that budget is adequate for classified evaluations across five frontier labs is an open question.</p>
+      <p>The third is enforcement power. No source describes what happens if CAISI discovers a serious national-security risk in a pre-release model. No formal hold or block mechanism has been disclosed. The agreements are voluntary. A lab could, presumably, release a model regardless of evaluation findings. No source confirms or denies this.</p>
+
+      <div class="cfa-chain-wrap">
+        <div class="cfa-chain-title">The Three Absences</div>
+        <div class="cfa-chain-node">
+          <div class="cfa-chain-node-label">01 — Legal Authority</div>
+          <div class="cfa-chain-node-status">None. No statute. Executive discretion only.</div>
+          <div class="cfa-chain-node-if">If rescinded? <span class="cfa-chain-blank">CAISI disappears. No Congressional vote required.</span></div>
+        </div>
+        <div class="cfa-chain-arrow">|<br />v</div>
+        <div class="cfa-chain-node">
+          <div class="cfa-chain-node-label">02 — Evaluation Standards</div>
+          <div class="cfa-chain-node-status">None published. No benchmarks, no pass/fail criteria.</div>
+          <div class="cfa-chain-node-if">If testing finds a risk? <span class="cfa-chain-blank">[No documented procedure]</span></div>
+        </div>
+        <div class="cfa-chain-arrow">|<br />v</div>
+        <div class="cfa-chain-node">
+          <div class="cfa-chain-node-label">03 — Enforcement Power</div>
+          <div class="cfa-chain-node-status">None. Agreements are voluntary.</div>
+          <div class="cfa-chain-node-if">If a lab releases anyway? <span class="cfa-chain-blank">[No documented consequence]</span></div>
+        </div>
+        <div class="cfa-chain-arrow">|<br />v</div>
+        <div class="cfa-chain-outcome">
+          <div class="cfa-chain-outcome-text">Every major lab participates.</div>
+        </div>
+        <p class="cfa-chain-note">Each node represents a structural absence confirmed across multiple sources. The outcome is factual. The diagram's logic is the story.</p>
+      </div>
+
+      <p>The evidence for why the labs participate despite these absences is revealing. Nick Patience, VP at the Futurum Group, characterized the CAISI agreements as "political insurance" for enterprises and warned of "massive contagion risk" for companies choosing AI vendors that lack CAISI evaluation, especially those with federal contracts. The BSA — the software industry's own trade association, whose members include Microsoft — endorsed CAISI as "the right institutional home within government" for this work. According to the Lawfare analysis, reputational risk and liability exposure, not legal authority, incentivize participation.</p>
+      <p>Rumman Chowdhury, CEO of Humane Intelligence, offered a sharper framing. "Evaluations are a policy tool, they are not actually data-driven," she said. "My concern is that this is another political tool that the administration wants to own and wield." Gary McGraw, CEO of the Berryville Institute of Machine Learning, said: "The foxes might be asked to guard the chicken house even though they already designed and constructed it in secret."</p>
+      <p>The system is durable precisely because it is weak. Voluntary participation is cheap to offer and expensive to refuse. Mandatory requirements would provoke litigation, lobbying, and industry resistance. This process provokes nothing.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">05 — Signal</span>The Safest Kind of Oversight</h2>
+      <p>Darrell West of the Brookings Institution observed that the Trump administration's approach to AI evaluation mirrors Biden's. This bipartisan continuity is not evidence of a safety consensus. It is evidence that voluntary, no-consequence evaluation is the equilibrium both parties can accept.</p>
+      <p>The absence of opposition confirms this. No major civil-liberties organization — not the ACLU, the EFF, the Electronic Privacy Information Center, or the Center for Democracy and Technology — is quoted in any reporting on the CAISI agreements. No Congressional critic appears. The bipartisan sponsors of the bill to codify CAISI are supportive. The silence is structural: this kind of oversight does not generate opposition because it does not threaten anyone.</p>
+      <p>Chowdhury called the shift "a 180 for the Trump administration," which "has very explicitly been anti-any sort of regulation and also has explicitly tried to block states from enacting any kind of regulation." But the turn is less dramatic than it appears. The administration did not embrace regulation. It embraced a process with no regulatory power — one that gives the appearance of federal vetting without the legal architecture that would make vetting consequential.</p>
+      <p>CAISI has completed more than 40 evaluations. No lab has ever been publicly told to delay a release. No evaluation result has ever been published. No testing standard has ever been shared. The room is open. Everyone walks in. Nothing inside can hold them.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.caisi-frontier-access-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
+  const storyHex = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#6b8caf';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const [sR, sG, sB] = hexToRgb(storyHex.startsWith('#') ? storyHex : '#6b8caf');
+
+  function storyA(a: number): string { return `rgba(${sR},${sG},${sB},${a})`; }
+  function offWhiteA(a: number): string { return `rgba(232,232,232,${a})`; }
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W = 0, H = 0, rafId = 0, frame = 0;
+
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (prefersReduced) drawStatic();
+  });
+  ro.observe(canvas);
+
+  const FRAME_HALF_W = 40;
+  const FRAME_HALF_H = 60;
+  function fL(): number { return W * 0.5 - FRAME_HALF_W; }
+  function fR(): number { return W * 0.5 + FRAME_HALF_W; }
+  function fT(): number { return H * 0.5 - FRAME_HALF_H; }
+  function fB(): number { return H * 0.5 + FRAME_HALF_H; }
+
+  function speed(): number { return Math.max(0.35, W / 900); }
+
+  const MAX_TRANSIT = 10;
+  interface TransitParticle {
+    x: number; y: number; vx: number; radius: number;
+    alpha: number; baseAlpha: number;
+    scanned: boolean; scanBrightCountdown: number;
+    passedFrame: boolean; active: boolean;
+  }
+  const transits: TransitParticle[] = [];
+  for (let i = 0; i < MAX_TRANSIT; i++) {
+    transits.push({
+      x: 0, y: 0, vx: 0, radius: 4.5,
+      alpha: 0.2, baseAlpha: 0.2,
+      scanned: false, scanBrightCountdown: 0,
+      passedFrame: false, active: false
+    });
+  }
+
+  const NUM_DUST = 18;
+  interface Dust { x: number; y: number; vx: number; vy: number; alpha: number; r: number; }
+  const dusts: Dust[] = [];
+  for (let i = 0; i < NUM_DUST; i++) {
+    dusts.push({
+      x: Math.random() * 800,
+      y: Math.random() * 380,
+      vx: (Math.random() - 0.5) * 0.24,
+      vy: (Math.random() - 0.5) * 0.24,
+      alpha: 0.04 + Math.random() * 0.02,
+      r: 1 + Math.random() * 1.5
+    });
+  }
+  for (const d of dusts) {
+    const mag = Math.sqrt(d.vx * d.vx + d.vy * d.vy);
+    if (mag > 0) {
+      const target = 0.1 + Math.random() * 0.05;
+      d.vx = (d.vx / mag) * target;
+      d.vy = (d.vy / mag) * target;
+    }
+  }
+
+  let scanActive = false;
+  let scanY = 0;
+  let scanTarget = -1;
+
+  const MAX_TALLIES = 8;
+  let tallyCount = 0;
+  let tallyAlpha = 0.15;
+
+  let frameAlpha = 0.3;
+
+  let phase = 'transit';
+  let phaseStart = 0;
+  let spawnCount = 0;
+  let nextSpawnFrame = 50;
+  let transitsDone = 0;
+
+  const SPAWN_INTERVAL = 140;
+  const SPAWN_JITTER = 40;
+  const HOLD_DUR = 60;
+  const TALLY_FADE_DUR = 40;
+  const FRAME_DIM_DUR = 80;
+  const FRAME_HOLD_DUR = 40;
+  const FRAME_REASSERT_DUR = 60;
+  const BUFFER_DUR = 30;
+
+  function resetCycle() {
+    frame = 0;
+    phase = 'transit';
+    phaseStart = 0;
+    spawnCount = 0;
+    transitsDone = 0;
+    nextSpawnFrame = 50;
+    tallyCount = 0;
+    tallyAlpha = 0.15;
+    frameAlpha = 0.3;
+    scanActive = false;
+    scanTarget = -1;
+    for (let i = 0; i < MAX_TRANSIT; i++) transits[i].active = false;
+  }
+
+  function spawnParticle(): number {
+    for (let i = 0; i < MAX_TRANSIT; i++) {
+      if (!transits[i].active) {
+        const p = transits[i];
+        p.x = -20;
+        p.y = H * 0.5 + (Math.random() - 0.5) * 60;
+        p.vx = speed();
+        p.radius = 4 + Math.random() * 1;
+        p.alpha = 0.2;
+        p.baseAlpha = 0.2;
+        p.scanned = false;
+        p.scanBrightCountdown = 0;
+        p.passedFrame = false;
+        p.active = true;
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  function update() {
+    const FL = fL(), FR = fR(), FT = fT(), FB = fB();
+
+    for (const d of dusts) {
+      d.x += d.vx;
+      d.y += d.vy;
+      if (d.x < -10) d.x = W + 10;
+      if (d.x > W + 10) d.x = -10;
+      if (d.y < -10) d.y = H + 10;
+      if (d.y > H + 10) d.y = -10;
+    }
+
+    if (phase === 'transit') {
+      if (spawnCount < MAX_TALLIES && frame >= nextSpawnFrame) {
+        if (spawnParticle() >= 0) {
+          spawnCount++;
+          nextSpawnFrame = frame + SPAWN_INTERVAL + Math.floor(Math.random() * SPAWN_JITTER);
+        }
+      }
+
+      for (let i = 0; i < MAX_TRANSIT; i++) {
+        const p = transits[i];
+        if (!p.active) continue;
+        p.x += p.vx;
+
+        if (!p.scanned && !p.passedFrame && p.x >= FL && p.x <= FR && !scanActive) {
+          scanActive = true;
+          scanY = FT;
+          scanTarget = i;
+        }
+
+        if (!p.passedFrame && p.scanned && p.x > FR) {
+          p.passedFrame = true;
+          transitsDone++;
+        }
+
+        if (p.scanBrightCountdown > 0) {
+          p.scanBrightCountdown--;
+          if (p.scanBrightCountdown > 4) {
+            p.alpha = 0.8;
+          } else {
+            p.alpha = p.baseAlpha + (0.8 - p.baseAlpha) * (p.scanBrightCountdown / 4);
+          }
+        } else if (p.scanned) {
+          p.alpha += (p.baseAlpha - p.alpha) * 0.06;
+        }
+
+        if (p.x > W + 40) {
+          p.active = false;
+        }
+      }
+
+      if (scanActive) {
+        const sweepSpeed = (FB - FT) / 40;
+        scanY += sweepSpeed;
+
+        if (scanTarget >= 0 && scanTarget < MAX_TRANSIT) {
+          const p = transits[scanTarget];
+          if (p.active && !p.scanned && Math.abs(scanY - p.y) < 10) {
+            p.scanned = true;
+            p.scanBrightCountdown = 10;
+            tallyCount++;
+          }
+        }
+
+        if (scanY >= FB) {
+          if (scanTarget >= 0 && scanTarget < MAX_TRANSIT) {
+            const p = transits[scanTarget];
+            if (!p.scanned) {
+              p.scanned = true;
+              p.scanBrightCountdown = 10;
+              tallyCount++;
+            }
+          }
+          scanActive = false;
+          scanTarget = -1;
+        }
+      }
+
+      if (transitsDone >= MAX_TALLIES) {
+        phase = 'hold';
+        phaseStart = frame;
+      }
+
+    } else if (phase === 'hold') {
+      moveRemainingParticles();
+      if (frame - phaseStart >= HOLD_DUR) {
+        phase = 'tally-fade';
+        phaseStart = frame;
+      }
+
+    } else if (phase === 'tally-fade') {
+      moveRemainingParticles();
+      const t = Math.min(1, (frame - phaseStart) / TALLY_FADE_DUR);
+      tallyAlpha = 0.15 * (1 - t);
+      if (t >= 1) {
+        tallyAlpha = 0;
+        phase = 'frame-dim';
+        phaseStart = frame;
+      }
+
+    } else if (phase === 'frame-dim') {
+      moveRemainingParticles();
+      const t = Math.min(1, (frame - phaseStart) / FRAME_DIM_DUR);
+      frameAlpha = 0.3 - (0.3 - 0.06) * t;
+      if (t >= 1) {
+        frameAlpha = 0.06;
+        phase = 'frame-hold';
+        phaseStart = frame;
+      }
+
+    } else if (phase === 'frame-hold') {
+      if (frame - phaseStart >= FRAME_HOLD_DUR) {
+        phase = 'frame-reassert';
+        phaseStart = frame;
+      }
+
+    } else if (phase === 'frame-reassert') {
+      const t = Math.min(1, (frame - phaseStart) / FRAME_REASSERT_DUR);
+      frameAlpha = 0.06 + (0.3 - 0.06) * t;
+      if (t >= 1) {
+        frameAlpha = 0.3;
+        phase = 'buffer';
+        phaseStart = frame;
+      }
+
+    } else if (phase === 'buffer') {
+      if (frame - phaseStart >= BUFFER_DUR) {
+        resetCycle();
+      }
+    }
+  }
+
+  function moveRemainingParticles() {
+    for (let i = 0; i < MAX_TRANSIT; i++) {
+      const p = transits[i];
+      if (!p.active) continue;
+      p.x += p.vx;
+      if (p.scanBrightCountdown > 0) {
+        p.scanBrightCountdown--;
+        p.alpha = p.baseAlpha + (0.8 - p.baseAlpha) * Math.max(0, p.scanBrightCountdown / 4);
+      } else {
+        p.alpha += (p.baseAlpha - p.alpha) * 0.06;
+      }
+      if (p.x > W + 40) p.active = false;
+    }
+  }
+
+  function draw() {
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, W, H);
+
+    const FL = fL(), FR = fR(), FT = fT(), FB = fB();
+    const midY = (FT + FB) / 2;
+
+    for (const d of dusts) {
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+      ctx.fillStyle = offWhiteA(d.alpha);
+      ctx.fill();
+    }
+
+    if (frameAlpha > 0.003) {
+      ctx.strokeStyle = storyA(frameAlpha);
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(FL, FT);
+      ctx.lineTo(FL, FB);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(FR, FT);
+      ctx.lineTo(FR, FB);
+      ctx.stroke();
+
+      ctx.strokeStyle = storyA(frameAlpha * 0.27);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(FL, midY);
+      ctx.lineTo(FR, midY);
+      ctx.stroke();
+    }
+
+    if (tallyCount > 0 && tallyAlpha > 0.003) {
+      const innerLeft = FL + 6;
+      const innerWidth = (FR - FL) - 12;
+      const spacing = innerWidth / MAX_TALLIES;
+      const ty = FB - 18;
+
+      ctx.strokeStyle = storyA(tallyAlpha);
+      ctx.lineWidth = 1;
+      for (let i = 0; i < tallyCount; i++) {
+        const tx = innerLeft + spacing * i + spacing * 0.5;
+        ctx.beginPath();
+        ctx.moveTo(tx, ty);
+        ctx.lineTo(tx, ty + 8);
+        ctx.stroke();
+      }
+    }
+
+    if (scanActive && frameAlpha > 0.003) {
+      ctx.strokeStyle = storyA(0.5);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(FL + 1, scanY);
+      ctx.lineTo(FR - 1, scanY);
+      ctx.stroke();
+
+      const glow = ctx.createLinearGradient(FL, scanY - 5, FL, scanY + 5);
+      glow.addColorStop(0, storyA(0));
+      glow.addColorStop(0.5, storyA(0.06));
+      glow.addColorStop(1, storyA(0));
+      ctx.fillStyle = glow;
+      ctx.fillRect(FL + 1, scanY - 5, FR - FL - 2, 10);
+    }
+
+    for (let i = 0; i < MAX_TRANSIT; i++) {
+      const p = transits[i];
+      if (!p.active) continue;
+
+      const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius);
+
+      if (p.scanBrightCountdown > 0) {
+        const bright = Math.min(1, p.scanBrightCountdown > 4 ? 1 : p.scanBrightCountdown / 4);
+        grad.addColorStop(0, storyA(0.8 * bright));
+        grad.addColorStop(0.6, storyA(0.35 * bright));
+        grad.addColorStop(1, storyA(0));
+      } else {
+        grad.addColorStop(0, offWhiteA(p.alpha));
+        grad.addColorStop(0.6, offWhiteA(p.alpha * 0.5));
+        grad.addColorStop(1, offWhiteA(0));
+      }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+  }
+
+  function drawStatic() {
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, W, H);
+    if (W === 0 || H === 0) return;
+
+    const FL = fL(), FR = fR(), FT = fT(), FB = fB();
+    const midY = (FT + FB) / 2;
+
+    for (let i = 0; i < NUM_DUST; i++) {
+      const dx = (Math.sin(i * 7.3 + 2.1) * 0.5 + 0.5) * W;
+      const dy = (Math.cos(i * 4.7 + 1.3) * 0.5 + 0.5) * H;
+      ctx.beginPath();
+      ctx.arc(dx, dy, dusts[i].r, 0, Math.PI * 2);
+      ctx.fillStyle = offWhiteA(dusts[i].alpha);
+      ctx.fill();
+    }
+
+    ctx.strokeStyle = storyA(0.3);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(FL, FT); ctx.lineTo(FL, FB); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(FR, FT); ctx.lineTo(FR, FB); ctx.stroke();
+
+    ctx.strokeStyle = storyA(0.08);
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(FL, midY); ctx.lineTo(FR, midY); ctx.stroke();
+
+    const innerLeft = FL + 6;
+    const innerWidth = (FR - FL) - 12;
+    const spacing = innerWidth / MAX_TALLIES;
+    const ty = FB - 18;
+    ctx.strokeStyle = storyA(0.15);
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 5; i++) {
+      const tx = innerLeft + spacing * i + spacing * 0.5;
+      ctx.beginPath(); ctx.moveTo(tx, ty); ctx.lineTo(tx, ty + 8); ctx.stroke();
+    }
+
+    const scanPx = (FL + FR) / 2;
+    const scanPy = midY - 8;
+    const sg = ctx.createRadialGradient(scanPx, scanPy, 0, scanPx, scanPy, 5);
+    sg.addColorStop(0, storyA(0.8));
+    sg.addColorStop(0.6, storyA(0.35));
+    sg.addColorStop(1, storyA(0));
+    ctx.beginPath(); ctx.arc(scanPx, scanPy, 5, 0, Math.PI * 2);
+    ctx.fillStyle = sg; ctx.fill();
+
+    ctx.strokeStyle = storyA(0.5);
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(FL + 1, scanPy); ctx.lineTo(FR - 1, scanPy); ctx.stroke();
+
+    const aX = FL - 90, aY = midY + 12;
+    const ag = ctx.createRadialGradient(aX, aY, 0, aX, aY, 4.5);
+    ag.addColorStop(0, offWhiteA(0.2));
+    ag.addColorStop(0.6, offWhiteA(0.1));
+    ag.addColorStop(1, offWhiteA(0));
+    ctx.beginPath(); ctx.arc(aX, aY, 4.5, 0, Math.PI * 2);
+    ctx.fillStyle = ag; ctx.fill();
+
+    const positions = [{ x: FR + 70, y: midY - 18 }, { x: FR + 170, y: midY + 6 }];
+    for (const pos of positions) {
+      const eg = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, 4.5);
+      eg.addColorStop(0, offWhiteA(0.2));
+      eg.addColorStop(0.6, offWhiteA(0.1));
+      eg.addColorStop(1, offWhiteA(0));
+      ctx.beginPath(); ctx.arc(pos.x, pos.y, 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = eg; ctx.fill();
+    }
+  }
+
+  function tick() {
+    frame++;
+    update();
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  const dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth;
+  H = canvas.offsetHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  if (prefersReduced) {
+    requestAnimationFrame(drawStatic);
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    resetCycle();
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(rafId); rafId = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+      ro.disconnect();
+    });
+  }
+})();
+</script>
