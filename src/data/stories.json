@@ -2450,5 +2450,66 @@
       "Outperformed OpenAI CLIP, Microsoft LLaVA, BioMedCLIP, Med-Flamingo by more than 30%.",
       "No FDA clearance, no clinical deployment; code and weights open-source on GitHub."
     ]
+  },
+  {
+    "slug": "gtig-ai-zero-day",
+    "side": "dark",
+    "chapter": 33,
+    "volume": 6,
+    "title": "The Zero-Day Mirror",
+    "deck": "Google's threat intelligence group disclosed the first AI-built zero-day exploit it identified in the wild — a 2FA bypass that left fingerprints.",
+    "date": "May 2026",
+    "isoDate": "2026-05-11",
+    "readTime": "8 min",
+    "emoji": "🪞",
+    "tags": [
+      "AI Cybersecurity",
+      "Zero-Day",
+      "Threat Intelligence",
+      "Vulnerability Discovery",
+      "Google"
+    ],
+    "story": "#5a88af",
+    "storyDark": "#0e1c2a",
+    "verifyText": "Based on GTIG's primary May 11, 2026 report, Google Project Zero's Big Sleep disclosure (Nov 2024), and three prior GTIG AI Threat Tracker reports. GTIG's attribution uses 'high confidence...likely' — not certainty.",
+    "sources": [
+      {
+        "label": "GTIG AI Threat Tracker (May 11, 2026)",
+        "url": "https://cloud.google.com/blog/topics/threat-intelligence/ai-vulnerability-exploitation-initial-access"
+      },
+      {
+        "label": "Bloomberg — Hackers Used AI to Build Zero-Day",
+        "url": "https://www.bloomberg.com/news/articles/2026-05-11/hackers-used-ai-to-build-zero-day-attack-google-researchers-say"
+      },
+      {
+        "label": "The Register — Mass hack spree disrupted",
+        "url": "https://www.theregister.com/ai-ml/2026/05/11/google_ai_zero_day/"
+      },
+      {
+        "label": "SecurityWeek — First AI-Generated Zero-Day",
+        "url": "https://www.securityweek.com/google-detects-first-ai-generated-zero-day-exploit/"
+      },
+      {
+        "label": "The Hacker News — 2FA Bypass via AI",
+        "url": "https://thehackernews.com/2026/05/hackers-used-ai-to-develop-first-known.html"
+      },
+      {
+        "label": "Project Zero — Big Sleep finds SQLite zero-day (Nov 2024)",
+        "url": "https://googleprojectzero.blogspot.com/2024/10/from-naptime-to-big-sleep.html"
+      },
+      {
+        "label": "CNBC — Google thwarts mass exploitation effort",
+        "url": "https://www.cnbc.com/2026/05/11/google-thwarts-effort-hacker-group-use-ai-mass-exploitation-event.html"
+      }
+    ],
+    "llmsDescription": "On May 11, 2026, Google's Threat Intelligence Group published its fourth AI Threat Tracker report disclosing the first case GTIG identified of a zero-day exploit it assessed was developed with AI assistance — a Python script targeting a two-factor authentication bypass in an unnamed open-source web administration tool, attributed to criminal threat actors planning a mass exploitation event. GTIG assessed 'with high confidence that the actor likely leveraged an AI model' based on code artifacts including educational docstrings, a hallucinated CVSS score, and textbook-Pythonic formatting. The vulnerability was patched through coordinated vendor disclosure before mass deployment. The finding mirrors Google's own Big Sleep AI agent discovering a SQLite zero-day in October 2024 — both cases demonstrating LLMs' ability to reason about developer intent and find semantic logic flaws that traditional security tools miss.",
+    "abstract": [
+      "On May 11, 2026, Google's Threat Intelligence Group disclosed the first case it identified of a zero-day exploit assessed to have been developed with AI assistance — a Python script bypassing two-factor authentication in an unnamed open-source web administration tool.",
+      "GTIG attributed the exploit to criminal threat actors planning a 'mass vulnerability exploitation event' and assessed 'with high confidence that the actor likely leveraged an AI model' based on code artifacts including educational docstrings and a hallucinated CVSS score.",
+      "The vulnerability — a semantic logic flaw exploiting a hardcoded trust assumption in 2FA enforcement — was patched through coordinated vendor disclosure; GTIG stated its detection 'may have prevented' mass exploitation.",
+      "In October 2024, Google's Big Sleep AI agent (DeepMind + Project Zero) had discovered a zero-day in SQLite — the defensive mirror to the offensive criminal exploit, both demonstrating LLMs reasoning about developer intent.",
+      "GTIG excluded its own Gemini model from the attribution; the specific AI model used by the attackers remains unknown."
+    ],
+    "whatIf": "The GTIG forensic case depends on LLM-characteristic artifacts — pedagogical docstrings, hallucinated severity scores, textbook formatting. A single post-processing step eliminates every indicator the report cited. The capability — contextual reasoning about developer intent, discovery of semantic logic flaws in hardcoded trust assumptions — survives the cleanup intact. Now scale: an automated pipeline ingests the source code of every open-source administration tool with more than ten thousand deployments, feeds each authentication module to an LLM with one instruction (find logic flaws in the trust assumptions), and strips every artifact before queueing the result for human review. It costs less per month than a single junior penetration tester's salary. It does not need to find a zero-day every time — it needs to find one, once, in a tool deployed on fifty thousand servers. GTIG caught this case because the script explained itself. The question with no comfortable answer is not whether this capability will be used again; the question is what the detection rate looks like when the code stops talking."
   }
 ]
