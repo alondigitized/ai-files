@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-05-12T10:14:57Z",
+  "updatedAt": "2026-05-13T09:16:42Z",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -719,6 +719,27 @@
       "startedAt": "2026-05-12T09:14:27Z",
       "publishedAt": "2026-05-12T10:14:57Z",
       "prUrl": "https://github.com/alondigitized/ai-files/pull/38"
+    },
+    {
+      "slug": "gtig-ai-zero-day",
+      "status": "pending",
+      "priority": 1,
+      "side": "dark",
+      "workingTitle": "The First AI-Built Zero-Day",
+      "thesis": "On May 11, 2026, Google's Threat Intelligence Group (GTIG) published a report stating it had 'high confidence' that a criminal threat actor used an AI model to discover and weaponize a previously-unknown software vulnerability — a 2FA bypass implemented as a Python script targeting a popular open-source, web-based system administration tool — and planned to deploy it in a 'mass vulnerability exploitation operation.' GTIG says its proactive counter-discovery, coordinated with the affected vendor, disrupted the campaign before deployment. It is the first publicly-documented case of an AI-generated zero-day exploit detected in the wild. The report separately documents that groups linked to China and North Korea have 'demonstrated significant interest' in AI-assisted vulnerability discovery; Google explicitly noted that its own Gemini model was not the one the attackers used.",
+      "whyNow": "GTIG report published May 11, 2026 — 2 days before this daily run. Multiple independent secondary outlets same week (Bloomberg, CNBC, The Register, SecurityWeek, The Hacker News, UPI). Distinct from anthropic-ai-cyber-espionage (Anthropic's November 2025 disruption of a Chinese state-sponsored espionage campaign that used Claude Code for reconnaissance, not zero-day discovery). Distinct from meta-rogue-agent (Meta's coding agent failure mode). This is the first time defenders have publicly caught an AI generating an exploitable zero-day for criminal mass deployment — a structural turning point.",
+      "sources": [
+        "https://cloud.google.com/blog/topics/threat-intelligence/ai-vulnerability-exploitation-initial-access",
+        "https://www.cnbc.com/2026/05/11/google-thwarts-effort-hacker-group-use-ai-mass-exploitation-event.html",
+        "https://www.bloomberg.com/news/articles/2026-05-11/hackers-used-ai-to-build-zero-day-attack-google-researchers-say",
+        "https://thehackernews.com/2026/05/hackers-used-ai-to-develop-first-known.html",
+        "https://www.theregister.com/ai-ml/2026/05/11/google-says-criminals-used-ai-built-zero-day-in-planned-mass-hack-spree/5237982",
+        "https://www.securityweek.com/google-detects-first-ai-generated-zero-day-exploit/",
+        "https://www.upi.com/Top_News/US/2026/05/11/google-threat-intelligence-hackers-use-ai-zero-day-exploit/6441778524187/"
+      ],
+      "compositeScore": 8.8,
+      "freshnessScore": 10,
+      "notes": "Added by daily runner 2026-05-13 news sweep. Primary source is GTIG's own report on cloud.google.com; verify against that before relying on secondary reporting. Writer must distinguish carefully: (a) Google says 'high confidence' it was AI-generated, not certainty; (b) attribution is to a 'criminal threat actor', not a nation-state — the China/North Korea reference is to separate observed interest, not to the 2FA-bypass case; (c) the targeted tool is described as a 'popular open-source web-based system administration tool' — GTIG did not name it publicly; (d) Google's Gemini was explicitly NOT the model used; the model identity is unclear in primary reporting (CNBC mentioned 'OpenClaw' in a single line without source attribution — verify against GTIG report before repeating). Slot Dark Vol VI Ch 33."
     }
   ]
 }
