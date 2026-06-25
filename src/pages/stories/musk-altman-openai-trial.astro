@@ -1,0 +1,539 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'musk-altman-openai-trial')!;
+---
+
+<style is:global>
+  /* === Charter Document Card (Section 01) === */
+  .oai-doc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2rem 2rem 1.5rem;
+    margin: 2.5rem 0;
+    position: relative;
+    font-family: 'Georgia', 'Times New Roman', serif;
+  }
+  .oai-doc::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--story);
+    border-radius: 4px 4px 0 0;
+  }
+  .oai-doc-header {
+    text-align: center;
+    font-family: 'SFMono-Regular', 'Consolas', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .oai-doc-title {
+    text-align: center;
+    font-size: 1.15rem;
+    color: var(--story);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    font-variant: small-caps;
+    letter-spacing: 0.04em;
+  }
+  .oai-doc-mission {
+    font-size: 1rem;
+    color: var(--text);
+    font-style: italic;
+    line-height: 1.7;
+    text-align: center;
+    margin: 0 1rem 1.5rem;
+    padding: 0 0.5rem;
+  }
+  .oai-doc-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem 2rem;
+    font-family: 'SFMono-Regular', 'Consolas', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+  }
+  .oai-doc-meta div span {
+    color: var(--text);
+  }
+  @media (max-width: 540px) {
+    .oai-doc-meta { grid-template-columns: 1fr; }
+  }
+
+  /* === Structural Evolution (Section 02) === */
+  .oai-evolution {
+    margin: 2.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+  .oai-evolution::before {
+    content: '';
+    position: absolute;
+    left: 28px;
+    top: 1rem;
+    bottom: 1rem;
+    width: 2px;
+    background: linear-gradient(to bottom, rgba(94,234,212,0.15), var(--story));
+  }
+  .oai-evo-step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 1rem;
+    padding: 1rem 0 1.25rem;
+    align-items: start;
+  }
+  .oai-evo-dot {
+    position: relative;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 2px solid var(--story);
+    margin-left: 22px;
+    margin-top: 0.4rem;
+    flex-shrink: 0;
+  }
+  .oai-evo-step:last-child .oai-evo-dot {
+    background: var(--story);
+  }
+  .oai-evo-year {
+    font-family: 'SFMono-Regular', 'Consolas', monospace;
+    font-size: 0.85rem;
+    color: var(--story);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding-top: 0.2rem;
+  }
+  .oai-evo-form {
+    font-size: 0.95rem;
+    color: var(--text);
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  .oai-evo-detail {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+  .oai-evo-val {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.05rem 0.5rem;
+    background: rgba(94,234,212,0.08);
+    border-radius: 3px;
+    font-family: 'SFMono-Regular', 'Consolas', monospace;
+    font-size: 0.75rem;
+    color: var(--story);
+  }
+
+  /* === Courtroom Transcript Card (Section 03) === */
+  .oai-transcript {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    font-family: 'SFMono-Regular', 'Consolas', monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+  }
+  .oai-transcript-header {
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    font-size: 0.7rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .oai-transcript-case {
+    text-align: center;
+    color: var(--story);
+    font-weight: 600;
+    padding: 0.6rem 0 1rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.25rem;
+  }
+  .oai-transcript-block + .oai-transcript-block {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px dashed var(--border);
+  }
+  .oai-transcript-speaker {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+  .oai-transcript-block.oai-plaintiff .oai-transcript-speaker { color: var(--accent); }
+  .oai-transcript-block.oai-defendant .oai-transcript-speaker { color: var(--story); }
+  .oai-transcript-quote {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    color: var(--text);
+    font-size: 0.95rem;
+    line-height: 1.65;
+  }
+  .oai-transcript-footer {
+    margin-top: 1.25rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+    font-family: 'Georgia', serif;
+    text-align: center;
+  }
+
+  /* === Canvas === */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .musk-altman-openai-trial-canvas {
+    display: block;
+    width: 100%;
+    height: 380px;
+    background: var(--bg);
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+<section class="section" id="charter">
+  <h2><span class="num">01 — The Charter</span>The Document Everything Is Measured Against</h2>
+  <p>On April 28, 2026, Elon Musk took the witness stand in Courtroom 1 of the Ronald V. Dellums Federal Building in Oakland and told a nine-person advisory jury that if it is acceptable to "loot a charity," then "the entire foundation of charitable giving in America will be destroyed." It was the first time he had said the words under oath. He had said versions of them on social media, in his complaint, to biographers, on podcasts. In the courtroom, with no cameras and an audio feed piped to the press, the words were on the record.</p>
+  <p>Musk's testimony returned, again and again, to a single document. On December 11, 2015, OpenAI had announced itself in a blog post on its own site. The post named the founders — Sam Altman, Greg Brockman, Ilya Sutskever, and others, with Altman and Musk as co-chairs — and described a 501(c)(3) nonprofit research organization. Backers including Musk, Altman, Reid Hoffman, Peter Thiel, Jessica Livingston, Amazon Web Services, and Infosys had pledged $1 billion. The post stated the organization's goal was "to advance digital intelligence in the way that is most likely to benefit humanity as a whole, unconstrained by a need to generate financial return." That sentence is the one Musk's complaint cites first. It is the sentence everything that followed is being measured against.</p>
+  <p>How much Musk himself put in is contested. OpenAI's filings cite $38 million; Musk's filings and several court documents cite approximately $44 million; some outlets carry $45 million. The trial may settle this. Musk also testified to the personal motivation: that in 2015, Google co-founder Larry Page had dismissed his concerns about AI risk and called him a "speciesist," and that this exchange convinced him a counterweight to Google's AI program was needed in nonprofit form. Page has not publicly responded. A version of the exchange appears in Walter Isaacson's biography and on Lex Fridman's podcast. The April 28 testimony is the first time the account has been delivered under oath.</p>
+
+  <div class="oai-doc">
+    <div class="oai-doc-header">openai.com — December 11, 2015 — founding announcement</div>
+    <div class="oai-doc-title">Introducing OpenAI</div>
+    <div class="oai-doc-mission">"to advance digital intelligence in the way that is most likely to benefit humanity as a whole, unconstrained by a need to generate financial return"</div>
+    <div class="oai-doc-meta">
+      <div>Form: <span>501(c)(3) Nonprofit</span></div>
+      <div>Co-chairs: <span>Sam Altman, Elon Musk</span></div>
+      <div>Pledged: <span>$1,000,000,000</span></div>
+      <div>Backers: <span>Musk, Altman, Hoffman, Thiel, Livingston, AWS, Infosys</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="mutation">
+  <h2><span class="num">02 — The Mutation</span>From 501(c)(3) to ~$850B in Eleven Years</h2>
+  <p>The structural arc from the founding post to April 2026 is documented in OpenAI's own filings, in the SEC and AG filings of its partners, and in the diary of one of its co-founders. The diary is now a court exhibit.</p>
+  <p>In 2017, two years after the founding post, internal tension over the nonprofit's path reached the point of negotiation. Musk attempted to take over OpenAI and proposed merging it with Tesla; the other founders refused. Greg Brockman's contemporaneous diary entries from September 2017, now entered into evidence, read in part: "This is the only chance we have to get out from Elon... Financially, what will take me to $1B?" A separate Brockman entry, also in evidence, acknowledges: "we weren't honest with him in the end about still wanting to do the for-profit." Judge Gonzalez Rogers cited both entries in her January 2026 ruling on summary judgment.</p>
+  <p>In 2018, Musk departed the OpenAI board. In March 2019 — thirteen months after his departure — OpenAI created a capped-profit subsidiary, OpenAI LP, with returns to investors limited to 100x. Microsoft invested $1 billion, roughly half in Azure compute credits. In January 2023, two months after the public release of ChatGPT, Microsoft invested an additional $10 billion, valuing the company at approximately $20 billion. In 2023, Musk founded the rival AI company xAI. In October 2025, OpenAI completed a restructuring as a Public Benefit Corporation, OpenAI Group PBC. The original nonprofit retained a 26 percent stake; Microsoft received a 27 percent stake; employees and other investors held the remaining 47 percent. The conversion was approved by California Attorney General Rob Bonta and by Delaware's attorney general, with binding safety and oversight conditions attached. By the time of trial in April 2026, the company's reported valuation ranged from approximately $850 billion to $1 trillion, with an IPO expected later in the year.</p>
+  <p>OpenAI's defense, delivered in opening statements by attorney William Savitt, does not dispute the structural arc. Savitt argued instead that Musk was presented with for-profit restructuring options — pointing to a Shivon Zilis email to Musk's chief of staff, Sam Teller, that laid out two corporate paths: "Roll everything into a B corp" or "OpenAI C Corp and OpenAI non-profit." OpenAI's position is that Musk supported a for-profit structure contingent on his own personal control, and that the breach being alleged is therefore a breach of his control, not the charity's mission.</p>
+
+  <div class="oai-evolution">
+    <div class="oai-evo-step">
+      <div class="oai-evo-dot"></div>
+      <div class="oai-evo-year">2015</div>
+      <div>
+        <div class="oai-evo-form">501(c)(3) Nonprofit</div>
+        <div class="oai-evo-detail">Founded December 11. $1B pledged. Mission "unconstrained by a need to generate financial return."</div>
+      </div>
+    </div>
+    <div class="oai-evo-step">
+      <div class="oai-evo-dot"></div>
+      <div class="oai-evo-year">2018</div>
+      <div>
+        <div class="oai-evo-form">Musk departs the board</div>
+        <div class="oai-evo-detail">After internal conflict over restructuring and proposed Tesla merger. Brockman's 2017 diary entries from this period are now court exhibits.</div>
+      </div>
+    </div>
+    <div class="oai-evo-step">
+      <div class="oai-evo-dot"></div>
+      <div class="oai-evo-year">2019</div>
+      <div>
+        <div class="oai-evo-form">Capped-profit subsidiary (OpenAI LP)</div>
+        <div class="oai-evo-detail">Returns capped at 100×. Microsoft invests $1B (≈half in Azure credits). <span class="oai-evo-val">~13 months after Musk left</span></div>
+      </div>
+    </div>
+    <div class="oai-evo-step">
+      <div class="oai-evo-dot"></div>
+      <div class="oai-evo-year">2023</div>
+      <div>
+        <div class="oai-evo-form">Microsoft adds $10B</div>
+        <div class="oai-evo-detail">Valuation: <span class="oai-evo-val">~$20B</span> after ChatGPT's public release. Musk founds xAI the same year.</div>
+      </div>
+    </div>
+    <div class="oai-evo-step">
+      <div class="oai-evo-dot"></div>
+      <div class="oai-evo-year">2025</div>
+      <div>
+        <div class="oai-evo-form">Public Benefit Corporation (OpenAI Group PBC)</div>
+        <div class="oai-evo-detail">Restructuring completed October. Nonprofit: 26%. Microsoft: 27%. CA &amp; DE AGs approve with safety conditions.</div>
+      </div>
+    </div>
+    <div class="oai-evo-step">
+      <div class="oai-evo-dot"></div>
+      <div class="oai-evo-year">2026</div>
+      <div>
+        <div class="oai-evo-form">Trial — Musk v. Altman (N.D. Cal.)</div>
+        <div class="oai-evo-detail">Two surviving claims of original 26. Reported valuation: <span class="oai-evo-val">~$850B–$1T</span>. IPO expected later in 2026.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="phantom-wrap">
+  <canvas class="musk-altman-openai-trial-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>The Naming</strong> — A legal frame draws itself in teal and tries to contain a shape. The shape mutates, escapes, fragments. The frame strobes, fails, dissolves. Another frame draws in with different proportions and tries again. The cycle never resolves.</p>
+
+<section class="section" id="courtroom">
+  <h2><span class="num">03 — The Courtroom</span>Twenty-Six Claims, Two Survivors</h2>
+  <p>The case caption on the docket is <em>Musk v. Altman et al.</em>, No. 4:24-cv-04722-YGR. The court is the U.S. District Court for the Northern District of California, Oakland Division. The presiding judge is Yvonne Gonzalez Rogers. The defendants are Sam Altman, Greg Brockman, the OpenAI corporate family in its current and historical forms (OpenAI Inc., OAI Corporation LLC, OpenAI GP LLC, OpenAI Global LLC, OpenAI Holdings LLC, OpenAI OpCo LLC, OpenAI Startup Fund GP), and Microsoft Corporation. Microsoft is named for aiding and abetting breach of charitable trust.</p>
+  <p>The legal narrowing that produced the trial is itself part of the story. Musk filed first in San Francisco Superior Court on February 29, 2024, voluntarily dismissed that case, then refiled in federal court on August 5, 2024. By the eve of trial the operative complaint contained 26 claims. In February 2025, Judge Gonzalez Rogers had said Musk's irreparable-harm claim was "a stretch" and denied a preliminary injunction against the nonprofit-to-for-profit conversion. In May 2025, the court trimmed claims for false advertising and breach of fiduciary duty. On April 24, 2026 — three days before opening statements — the judge dismissed the fraud and constructive fraud claims with prejudice at Musk's own request, a streamlining move the parties characterized as removing the harder-to-prove claims to focus the jury. What survived to trial were two: breach of charitable trust, and unjust enrichment.</p>
+  <p>A nine-person advisory jury was seated on April 27 after a selection process in which prospective jurors who described Musk as "greedy" or "a piece of garbage," or who said they had been affected by DOGE, were struck. Musk's lead attorney Steven Molo used all five peremptory strikes; OpenAI's lead attorney William Savitt used four. The advisory jury's verdict is non-binding under Federal Rule 39(c); Judge Gonzalez Rogers retains authority on the equitable claims. The trial is structured in two phases — Phase 1 on liability with the advisory jury, Phase 2 on remedies before the judge alone, expected to begin around May 18 with evidence presentation concluding by May 21.</p>
+
+  <div class="oai-transcript">
+    <div class="oai-transcript-header">U.S. District Court — Northern District of California</div>
+    <div class="oai-transcript-case">Musk v. Altman et al. — Case No. 4:24-cv-04722-YGR — April 28, 2026 — Opening Statements</div>
+    <div class="oai-transcript-block oai-plaintiff">
+      <div class="oai-transcript-speaker">For the Plaintiff — Steven Molo</div>
+      <div class="oai-transcript-quote">"They stole a charity… converted OpenAI from an altruistic nonprofit into a profit-seeking juggernaut."</div>
+    </div>
+    <div class="oai-transcript-block oai-defendant">
+      <div class="oai-transcript-speaker">For OpenAI — William Savitt</div>
+      <div class="oai-transcript-quote">"We are here because Mr. Musk didn't get his way at OpenAI. That's what happened. He quit, saying they would fail for sure. But my clients had the nerve to go on and succeed without him."</div>
+    </div>
+    <div class="oai-transcript-footer">Two narratives. The advisory jury is being asked to choose one. The judge is not bound by what they choose.</div>
+  </div>
+
+  <p>Musk's two-hour direct examination on April 28 covered familiar ground: that he conceived OpenAI, came up with the name, recruited the team. OpenAI's filings characterize him as one of several co-founders, not the sole creator, and note the broader $1 billion pledge. Musk also renounced any personal benefit from damages, stating that any monetary award should go to the OpenAI nonprofit foundation. Reporting from the courtroom describes Judge Gonzalez Rogers admonishing him for social media posts referring to Altman as "Scam Altman," urging him to "try to control your propensity to use social media to make things worse." Both sides agreed to minimize online activity for the duration of proceedings.</p>
+  <p>What has not happened yet is most of the trial. Musk's cross-examination by OpenAI's lawyers was scheduled for April 29. Sam Altman has not yet testified; his testimony is expected to run more than two hours. Greg Brockman is expected for roughly 2.5 hours. Microsoft CEO Satya Nadella is expected for about an hour. Ilya Sutskever is expected for thirty minutes. Mira Murati's testimony will be presented as a videotaped deposition. Shivon Zilis — the former OpenAI board member who sent the for-profit options email, and who is the mother of four of Musk's children — is expected for approximately three hours. Stuart Russell of UC Berkeley is being called as a technical expert; David Schizer, dean emeritus of Columbia Law School, as a charitable-trust expert.</p>
+</section>
+
+<section class="section" id="naming">
+  <h2><span class="num">04 — What Cannot Be Named</span>The Categories the Law Has Are the Wrong Shape</h2>
+  <p>The two surviving claims are themselves a naming problem. The legal categories the system would normally reach for — fraud, fiduciary duty, breach of contract — have all been dismissed from this case. What is left is the law's thinnest pair: a claim that asks whether a charity can be held to its founding mission, and a claim that asks whether the people who run it have been unjustly enriched by the way it has changed. Neither claim has a clean precedent for the entity OpenAI has become.</p>
+  <p>The standing question hangs over both. Charitable mission is normally enforced by attorneys general, not individual donors. California AG Rob Bonta declined to join Musk's case, and his office approved the PBC conversion in October 2025 with binding conditions of its own. Northwestern Law professor Jill Horwitz has flagged Musk's standing as a donor-competitor as legally unusual: he is asking the federal court to recognize an enforcement right that traditionally belongs to the state, against an entity the state has already chosen to bless rather than block. The court has not resolved the standing question; the trial proceeds on the working assumption that Musk has standing to bring the charitable trust claim. The assumption is not the same as a ruling.</p>
+  <p>OpenAI's defense theory does not deny the structural arc — it denies the standing of the person describing it. The for-profit pivot, in OpenAI's framing, is not contested. What is contested is that Musk, who attempted his own version of the same pivot in 2017 and has founded a competing AI company, has any business asking a federal court to undo it. The 2023 text exchange between the two men, surfaced in OpenAI's pretrial filings, sits oddly inside this framing. "You're my hero," Altman wrote. "I don't think OpenAI would have happened without you — and it really [expletive] hurts when you publicly attack OpenAI." Musk replied: "the fate of civilization is at stake."</p>
+  <p>The naming problem that survives all of this is structural, not personal. OpenAI is not a nonprofit. It is not a traditional corporation. It is a Public Benefit Corporation that was a nonprofit, partially owned by another nonprofit, partly owned by a publicly traded American company, and partly owned by employees and outside investors who together command roughly half the equity. The legal categories being applied to it — charitable trust, unjust enrichment — were written for a world in which charities stayed charities and corporations were always corporations. The court is being asked to find a name for what OpenAI became, using the words that existed before the thing existed. It has not found one yet.</p>
+</section>
+
+  </div>
+</StoryLayout>
+
+<script is:inline>
+(() => {
+  const canvas = document.querySelector('.musk-altman-openai-trial-canvas');
+  if (!(canvas instanceof HTMLCanvasElement)) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let bgColor = '#0d0d0d';
+  let storyColor = '#5eead4';
+  try {
+    const cs = getComputedStyle(document.documentElement);
+    const bg = cs.getPropertyValue('--bg').trim();
+    const sc = cs.getPropertyValue('--story').trim();
+    if (bg) bgColor = bg;
+    if (sc) storyColor = sc;
+  } catch (_) {}
+
+  let dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  let W = 0, H = 0;
+  function resize() {
+    const rect = canvas.getBoundingClientRect();
+    W = Math.max(1, Math.floor(rect.width));
+    H = Math.max(1, Math.floor(rect.height));
+    canvas.width = Math.floor(W * dpr);
+    canvas.height = Math.floor(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+  const ro = new ResizeObserver(resize);
+  ro.observe(canvas);
+
+  const FRAME_PROPORTIONS = [
+    { wRatio: 0.42, hRatio: 0.55 },
+    { wRatio: 0.55, hRatio: 0.45 },
+    { wRatio: 0.32, hRatio: 0.62 },
+    { wRatio: 0.50, hRatio: 0.50 }
+  ];
+  const CYCLE_FRAMES = 18 * 60;
+  const PARTICLE_CAP = 70;
+
+  let t = 0;
+  let cycleIndex = 0;
+  let particles = [];
+
+  function makeParticles(seed) {
+    const arr = [];
+    const count = 36 + Math.floor((Math.sin(seed) + 1) * 12);
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2 + seed;
+      arr.push({
+        baseAngle: angle,
+        radius: 18 + Math.random() * 28,
+        wobble: Math.random() * 0.6 + 0.2,
+        wobblePhase: Math.random() * Math.PI * 2,
+        size: 1.2 + Math.random() * 1.8,
+        alpha: 0.4 + Math.random() * 0.4
+      });
+    }
+    return arr.slice(0, PARTICLE_CAP);
+  }
+  particles = makeParticles(0);
+
+  function hexToRgba(hex, alpha) {
+    const m = hex.replace('#', '');
+    const v = m.length === 3
+      ? m.split('').map(c => parseInt(c + c, 16))
+      : [parseInt(m.slice(0, 2), 16), parseInt(m.slice(2, 4), 16), parseInt(m.slice(4, 6), 16)];
+    return 'rgba(' + v[0] + ',' + v[1] + ',' + v[2] + ',' + alpha + ')';
+  }
+
+  function drawFrame(ts) {
+    const cx = W / 2;
+    const cy = H / 2;
+    const cycleT = (ts % CYCLE_FRAMES) / CYCLE_FRAMES;
+    const proportionIndex = Math.floor(ts / CYCLE_FRAMES) % FRAME_PROPORTIONS.length;
+    const prop = FRAME_PROPORTIONS[proportionIndex];
+
+    if (Math.floor(ts / CYCLE_FRAMES) !== cycleIndex) {
+      cycleIndex = Math.floor(ts / CYCLE_FRAMES);
+      particles = makeParticles(cycleIndex * 1.7);
+    }
+
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, W, H);
+
+    const fadeIn = Math.min(1, cycleT * 6);
+    const fadeOut = cycleT > 0.85 ? 1 - (cycleT - 0.85) / 0.15 : 1;
+    const frameAlpha = Math.min(fadeIn, fadeOut);
+
+    const escapePhase = Math.max(0, (cycleT - 0.35) / 0.35);
+    const escapeAmount = escapePhase < 1 ? Math.sin(escapePhase * Math.PI) * 1.0 : 0;
+
+    const strobePhase = cycleT > 0.78 && cycleT < 0.86 ? 1 : 0;
+    const strobe = strobePhase ? Math.sin((cycleT - 0.78) / 0.08 * Math.PI) : 0;
+
+    const fW = W * prop.wRatio;
+    const fH = H * prop.hRatio;
+    const fx = cx - fW / 2;
+    const fy = cy - fH / 2;
+
+    ctx.save();
+    ctx.strokeStyle = storyColor;
+    ctx.globalAlpha = frameAlpha * (0.45 + strobe * 0.5);
+    ctx.lineWidth = 1 + strobe * 1.5;
+    ctx.beginPath();
+    ctx.rect(fx, fy, fW, fH);
+    ctx.stroke();
+    ctx.restore();
+
+    const cornerLen = 14 + strobe * 8;
+    ctx.save();
+    ctx.strokeStyle = storyColor;
+    ctx.globalAlpha = frameAlpha * 0.85;
+    ctx.lineWidth = 1.5;
+    [[fx, fy, 1, 1], [fx + fW, fy, -1, 1], [fx, fy + fH, 1, -1], [fx + fW, fy + fH, -1, -1]].forEach(c => {
+      ctx.beginPath();
+      ctx.moveTo(c[0] + c[2] * cornerLen, c[1]);
+      ctx.lineTo(c[0], c[1]);
+      ctx.lineTo(c[0], c[1] + c[3] * cornerLen);
+      ctx.stroke();
+    });
+    ctx.restore();
+
+    const breathe = Math.sin(cycleT * Math.PI * 2) * 0.15 + 1;
+    const fragmenting = cycleT > 0.7;
+    const reassembling = cycleT < 0.15;
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      const wobble = Math.sin(ts * 0.03 + p.wobblePhase) * p.wobble;
+      let r = p.radius * breathe + wobble * 6;
+      let a = p.baseAngle + ts * 0.003;
+
+      if (escapeAmount > 0) r += escapeAmount * (35 + p.radius * 0.8);
+      if (fragmenting) {
+        const frag = (cycleT - 0.7) / 0.15;
+        r += frag * 50;
+        a += frag * 0.6 * (i % 2 === 0 ? 1 : -1);
+      }
+      if (reassembling) r *= 0.4 + cycleT * 4;
+
+      const x = cx + Math.cos(a) * r;
+      const y = cy + Math.sin(a) * r * 0.85;
+
+      let alpha = p.alpha * frameAlpha;
+      if (fragmenting) alpha *= Math.max(0, 1 - (cycleT - 0.7) / 0.2);
+
+      ctx.fillStyle = storyColor;
+      ctx.globalAlpha = alpha;
+      ctx.beginPath();
+      ctx.arc(x, y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    if (!fragmenting && !reassembling && escapeAmount < 0.3) {
+      ctx.save();
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(fW, fH) * 0.6);
+      grad.addColorStop(0, hexToRgba(storyColor, 0.10 * frameAlpha));
+      grad.addColorStop(1, hexToRgba(storyColor, 0));
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+    }
+
+    if (strobe > 0.5) {
+      ctx.save();
+      ctx.fillStyle = storyColor;
+      ctx.globalAlpha = (strobe - 0.5) * 0.18;
+      ctx.fillRect(fx - 6, fy - 6, fW + 12, fH + 12);
+      ctx.restore();
+    }
+  }
+
+  let rafId = 0;
+  let running = false;
+  function loop() {
+    if (!running) return;
+    drawFrame(t);
+    t++;
+    rafId = requestAnimationFrame(loop);
+  }
+  function start() {
+    if (running) return;
+    running = true;
+    rafId = requestAnimationFrame(loop);
+  }
+  function stop() {
+    running = false;
+    if (rafId) cancelAnimationFrame(rafId);
+  }
+
+  if (reducedMotion) {
+    drawFrame(CYCLE_FRAMES * 0.25);
+  } else {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(e => { e.isIntersecting ? start() : stop(); });
+    }, { threshold: 0.05 });
+    io.observe(canvas);
+    window.addEventListener('pagehide', stop, { once: true });
+  }
+})();
+</script>
