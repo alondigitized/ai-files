@@ -1,0 +1,548 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'sullivan-cromwell-ai-hallucinations')!;
+---
+
+<style is:global>
+  /* ── Reenactment 1: S&C AI Practice Page ── */
+  .scah-firmpage { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .scah-firmpage-header { background: var(--surface2); padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .scah-firmpage-header .scah-logo { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--story); font-weight: 700; }
+  .scah-firmpage-header .scah-url { font-size: 0.68rem; color: var(--muted); font-family: 'Courier New', monospace; }
+  .scah-firmpage-body { padding: 1.5rem 1.25rem; }
+  .scah-firmpage-title { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; }
+  .scah-firmpage-block { padding: 1rem 1.25rem; border-left: 3px solid var(--story); background: rgba(255,255,255,0.02); margin-bottom: 1rem; border-radius: 0 0.5rem 0.5rem 0; }
+  .scah-firmpage-block:last-child { margin-bottom: 0; }
+  .scah-firmpage-block .scah-block-label { font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--story); font-weight: 700; margin-bottom: 0.4rem; }
+  .scah-firmpage-block .scah-block-text { font-size: 0.88rem; color: var(--text); line-height: 1.6; }
+  .scah-firmpage-block .scah-block-text em { color: var(--muted); font-style: italic; }
+  .scah-firmpage-block.scah-policy { border-left-color: var(--accent); }
+  .scah-firmpage-block.scah-policy .scah-block-label { color: var(--accent); }
+  .scah-firmpage-divider { height: 1px; background: var(--border); margin: 0.75rem 0; }
+  .scah-firmpage-footer { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1.25rem 0.75rem; border-top: 1px solid var(--border); background: var(--surface2); }
+
+  /* ── Reenactment 2: Schedule A Excerpt ── */
+  .scah-schedule { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; font-family: 'Courier New', monospace; }
+  .scah-schedule-header { background: var(--surface2); padding: 0.6rem 1.25rem; border-bottom: 1px solid var(--border); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .scah-schedule-body { padding: 0; }
+  .scah-sched-row { padding: 0.9rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 0.35rem; }
+  .scah-sched-row:last-child { border-bottom: none; }
+  .scah-sched-filing { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .scah-sched-cite { font-size: 0.82rem; color: var(--text); text-decoration: line-through; text-decoration-color: var(--accent); opacity: 0.7; }
+  .scah-sched-correction { font-size: 0.78rem; color: var(--accent); font-style: italic; }
+  .scah-schedule-footer { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1.25rem 0.75rem; border-top: 1px solid var(--border); background: var(--surface2); }
+
+  /* ── Reenactment 3: The Saturday Letter ── */
+  .scah-letter { background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--story); border-radius: 0 0 0.75rem 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .scah-letter-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); text-align: center; }
+  .scah-letter-firm { font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--story); font-weight: 700; margin-bottom: 0.25rem; }
+  .scah-letter-date { font-size: 0.72rem; color: var(--muted); }
+  .scah-letter-date .scah-saturday { color: var(--accent); font-weight: 700; }
+  .scah-letter-body { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 0.9rem; }
+  .scah-letter-salutation { font-size: 0.88rem; color: var(--text); font-style: italic; }
+  .scah-letter-line { font-size: 0.85rem; color: var(--text); line-height: 1.7; padding: 0.5rem 0.75rem; border-left: 3px solid var(--border); background: rgba(255,255,255,0.02); border-radius: 0 0.4rem 0.4rem 0; }
+  .scah-letter-line.admission { border-left-color: var(--accent); background: rgba(255,77,77,0.04); }
+  .scah-letter-line.admission strong { color: var(--accent); }
+  .scah-letter-line.regret { border-left-color: var(--story); }
+  .scah-letter-attachment { font-size: 0.72rem; color: var(--muted); padding: 0.5rem 1.5rem 0.75rem; border-top: 1px solid var(--border); background: var(--surface2); font-family: 'Courier New', monospace; }
+
+  /* ── Canvas ── */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .sullivan-cromwell-ai-hallucinations-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="context">
+      <h2><span class="num">01 — Context</span>The Firm That Counsels the Lab</h2>
+
+      <p>On Saturday, April 18, 2026, Andrew Dietderich — a Sullivan &amp; Cromwell partner with nearly thirty years at the firm — sat down to write a letter to a federal bankruptcy judge in Manhattan. The letter ran three pages. Its attachment, Schedule A, ran another three pages, single-spaced. The letter conceded that an emergency motion the firm had filed nine days earlier contained AI-fabricated case citations — and that the firm's "comprehensive policies and training requirements governing the use of AI tools" had not been followed in the motion's preparation. It asked the court not to hold it against them.</p>
+
+      <p>Sullivan &amp; Cromwell is a 145-year-old Wall Street law firm. It advised J.P. Morgan during the Panic of 1907. It structured Goldman Sachs's IPO. When a transaction is large enough and complicated enough that the parties want the most expensive lawyers in New York, Sullivan &amp; Cromwell is on the short list.</p>
+
+      <p>On its AI practice page, the firm prominently lists OpenAI as a client. According to the page, Sullivan &amp; Cromwell "advised OpenAI… in its novel and highly impactful partnership with Microsoft." The firm describes its role in counseling AI companies on partnerships, licensing, and the ethical considerations surrounding artificial intelligence deployment. It is not merely a law firm that uses AI tools. It is a law firm that counsels the company that builds them.</p>
+
+      <p>Internally, according to Dietderich's later disclosure to the court, Sullivan &amp; Cromwell maintained what it described as "comprehensive policies and training requirements governing the use of AI tools in legal work." Two mandatory training modules had to be completed before any attorney could access the firm's AI tools. The firm's Office Manual required independent verification of all AI-generated outputs. The stated principle, as Dietderich would later quote it: "trust nothing and verify everything."</p>
+
+      <p>Two statements from the same institution. One, public-facing: we advise the AI lab. The other, internal: verify everything the AI produces. Both were true. Neither prevented what happened next.</p>
+
+      <div class="scah-firmpage">
+        <div class="scah-firmpage-header">
+          <span class="scah-logo">Sullivan &amp; Cromwell LLP</span>
+          <span class="scah-url">sullcrom.com/practices/artificial-intelligence</span>
+        </div>
+        <div class="scah-firmpage-body">
+          <div class="scah-firmpage-title">Artificial Intelligence Practice</div>
+          <div class="scah-firmpage-block">
+            <div class="scah-block-label">Client Representation</div>
+            <div class="scah-block-text">"S&amp;C advised <strong>OpenAI</strong>… in its novel and highly impactful partnership with Microsoft."</div>
+          </div>
+          <div class="scah-firmpage-divider"></div>
+          <div class="scah-firmpage-block scah-policy">
+            <div class="scah-block-label">Internal AI Policy (from Dietderich letter)</div>
+            <div class="scah-block-text">"Trust nothing and verify everything."<br><em>— Office Manual requirement for independent verification of all AI outputs</em></div>
+          </div>
+        </div>
+        <div class="scah-firmpage-footer">From Sullivan &amp; Cromwell's AI practice page (client representation) and Andrew Dietderich's April 18, 2026 letter to Chief Bankruptcy Judge Martin Glenn (internal policy).</div>
+      </div>
+    </section>
+
+    <section class="section" id="what-happened">
+      <h2><span class="num">02 — What Happened</span>Thirty Entities, One Motion, Zero Verification</h2>
+
+      <p>The case was enormous. In October 2025, the Department of Justice indicted Chen Zhi, chairman of Prince Group, for operating Cambodian forced-labor scam compounds — networks that trafficked people and forced them to run cryptocurrency fraud schemes known as "pig butchering." The DOJ filed a civil forfeiture complaint for 127,271 bitcoin, valued at more than $15 billion at the time — the largest forfeiture action in U.S. history. OFAC, FinCEN, HM Treasury, and other authorities sanctioned 146 entities associated with Prince Group.</p>
+
+      <p>On April 8, 2026, Joint Provisional Liquidators of 30 BVI-incorporated Prince Group entities filed Chapter 15 petitions in the U.S. Bankruptcy Court for the Southern District of New York, seeking recognition of BVI insolvency proceedings. Sullivan &amp; Cromwell represented the liquidators. The S&amp;C team included Dietderich, Alexa Kranzley, Sharon Cohen Levin, Chris Dunne, Jake Croke, and Samantha Rosenthal, all from the firm's New York office.</p>
+
+      <p>The next day, April 9, S&amp;C filed an emergency motion seeking ex parte and provisional relief under Section 1519 of the Bankruptcy Code. The motion was filed in case number 1:26-bk-10769 before Chief Bankruptcy Judge Martin Glenn.</p>
+
+      <p>The motion contained fabricated case citations. Misquoted authorities. Non-existent legal sources. Wrong pin cites. Wrong volume numbers. Parenthetical quotes attributed to cases that did not contain those words. These were not formatting errors or typos. They were hallucinations — content generated by an AI tool that looked exactly like real legal authority and was not.</p>
+
+      <div class="scah-schedule">
+        <div class="scah-schedule-header">Schedule A — Corrections (excerpt, representative)</div>
+        <div class="scah-schedule-body">
+          <div class="scah-sched-row">
+            <div class="scah-sched-filing">Emergency Motion — Section 1519 Relief</div>
+            <div class="scah-sched-cite">In re Suntech Power Holdings Co., 520 B.R. 399, 417 (Bankr. S.D.N.Y. 2014)</div>
+            <div class="scah-sched-correction">Correct citation: different volume and page number. Parenthetical language does not appear in cited opinion.</div>
+          </div>
+          <div class="scah-sched-row">
+            <div class="scah-sched-filing">Emergency Motion — Section 1519 Relief</div>
+            <div class="scah-sched-cite">In re Loy's Holdings Ltd., No. 14-12316, 2014 WL 7238879 (Bankr. S.D.N.Y. Dec. 19, 2014)</div>
+            <div class="scah-sched-correction">No such case exists.</div>
+          </div>
+          <div class="scah-sched-row">
+            <div class="scah-sched-filing">Verified Petition</div>
+            <div class="scah-sched-cite">In re Bear Stearns High-Grade Structured Credit Strategies Fund, 374 B.R. 122 (Bankr. S.D.N.Y. 2007)</div>
+            <div class="scah-sched-correction">Correct case exists but pin cite and quoted language are fabricated.</div>
+          </div>
+        </div>
+        <div class="scah-schedule-footer">Schedule A listed corrections across the emergency motion and related filings. Error categories per Dietderich's letter; case names above are illustrative — exact Schedule A entries were not fully reproduced in public coverage.</div>
+      </div>
+
+      <p>Boies Schiller Flexner — opposing counsel, representing Chen Zhi — identified the errors. Matthew Schwartz, the firm's chair, led BSF's team. BSF brought the fabricated citations to Sullivan &amp; Cromwell's attention.</p>
+
+      <p>Dietderich stated in his letter that he learned of the errors on Thursday, April 17. Sullivan &amp; Cromwell filed a corrected version of the emergency motion the same day. But the correction was not the end. The errors had already been filed with the court, assigned a docket number, and entered into the record. The question was no longer whether the citations were wrong. It was what the court would do about it.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="sullivan-cromwell-ai-hallucinations-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Checkpoint</strong> — Citation particles stream through three glowing gate barriers that pulse and scan but block nothing. Gold hallucinated particles pass unimpeded alongside legitimate ones. A red flash from outside the system tags the fakes after they have already cleared every gate.</p>
+
+    <section class="section" id="mechanism">
+      <h2><span class="num">03 — Mechanism</span>Comprehensive Policies, Zero Friction</h2>
+
+      <p>On Saturday, April 18, 2026, Dietderich sat down and wrote a letter to Judge Glenn.</p>
+
+      <div class="scah-letter">
+        <div class="scah-letter-header">
+          <div class="scah-letter-firm">Sullivan &amp; Cromwell LLP</div>
+          <div class="scah-letter-date">April 18, 2026 <span class="scah-saturday">(Saturday)</span></div>
+        </div>
+        <div class="scah-letter-body">
+          <div class="scah-letter-salutation">Dear Judge Glenn:</div>
+          <div class="scah-letter-line">"The errors in the motion include AI 'hallucinations' — instances in which artificial intelligence tools fabricate case citations, misquote authorities, or generate non-existent legal sources."</div>
+          <div class="scah-letter-line admission">"Our safeguards <strong>are designed to prevent exactly this situation</strong>."</div>
+          <div class="scah-letter-line admission">"Regrettably, <strong>this review process did not identify the inaccurate citations generated by AI.</strong>"</div>
+          <div class="scah-letter-line regret">"We deeply regret that this has occurred."</div>
+        </div>
+        <div class="scah-letter-attachment">Encl: Schedule A — Corrections (3 pages, single-spaced)</div>
+      </div>
+
+      <p>The letter's structure was methodical. Dietderich described the firm's AI policies in detail: two mandatory training modules, the Office Manual's independent verification requirement, the "trust nothing and verify everything" principle. He characterized the policies as "both clear and rigorous." Then he stated what the policies had failed to do: "Comprehensive policies and training requirements governing the use of AI tools in legal work were not followed in connection with the preparation of the motion."</p>
+
+      <p>That sentence is the spine of the incident. The policies existed. They were written down. They required training before access. They mandated independent verification. And someone at the firm used an AI tool to draft the emergency motion and did not verify the citations before filing. The policies created no friction. They could be bypassed without triggering any gate.</p>
+
+      <p>Dietderich took personal responsibility. He did not name the individual who used the AI tool. David Lat, writing in his Original Jurisdiction newsletter, speculated that an associate was likely responsible, but no source identifies who. The letter also did not name which AI tool was used. According to the Financial Times, cited by Futurism, Sullivan &amp; Cromwell holds an enterprise license for OpenAI's ChatGPT — but no source connects that license to this specific filing.</p>
+
+      <p>S&amp;C described its remedial response: a full review of how the errors occurred, a re-review of all filings in the Prince matter. The re-review confirmed that no other filings contained AI-related errors, though some non-substantive clerical errors were separately identified and corrected. According to Mo Lawyers Media, Dietderich also called Boies Schiller Flexner directly to apologize.</p>
+
+      <p>The letter was three pages long. Schedule A was three pages, single-spaced.</p>
+    </section>
+
+    <section class="section" id="consequence">
+      <h2><span class="num">04 — Consequence</span>The Docket and the Silence</h2>
+
+      <p>As of late April 2026, Judge Glenn had not imposed sanctions or publicly ruled on the AI errors. A status hearing was scheduled, but its date was not publicly reported. The court's options include sanctions under Bankruptcy Rule 9011, the analog of Federal Rule of Civil Procedure 11, as well as the court's inherent authority.</p>
+
+      <p>Above the Law published its headline on April 21: "Sullivan &amp; Cromwell Files Emergency 'Please Don't Sanction Us for All These AI Hallucinations' Letter." Bloomberg Law, CNN, Reason, Decrypt, the Global Legal Post, Mo Lawyers Media, and David Lat's Original Jurisdiction newsletter followed within days. The ATL characterization was editorial — the letter itself did not use the word "sanctions." But the legal industry understood what a three-page correction and a Saturday apology letter signified.</p>
+
+      <p>David Lat, the founder of Above the Law and now publisher of the Original Jurisdiction newsletter, called Dietderich "the most prominent partner to be associated with an AI screw-up" in the legal profession. Lat — who disclosed his board membership at BriefCatch, a company that sells a product designed to catch AI hallucinations in legal briefs — also noted an irony in the opposing counsel dynamic. Boies Schiller Flexner, the firm that caught Sullivan &amp; Cromwell's errors, had itself previously been what Lat described as "the reigning champion of Elite Law Firms Guilty of AI Fails." BSF partner John Kucera had previously acknowledged AI-related errors in a separate case.</p>
+
+      <p>Bloomberg Law's database has tracked more than 330 documented instances of AI hallucination in legal filings. Sullivan &amp; Cromwell is now one of them. The error count in the S&amp;C matter depends on how you count: Decrypt reported "at least 28 erroneous citations"; Above the Law described "roughly 40 corrections" across all filings in Schedule A; the Global Legal Post reported 42 inaccuracies. The discrepancy likely reflects that Schedule A includes both AI-hallucinated citations and non-AI clerical errors separately identified during S&amp;C's re-review.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">05 — Signal</span>The Graduation</h2>
+
+      <p>In June 2023, New York solo practitioner Steven Schwartz was sanctioned $5,000 after filing a brief containing six entirely fabricated case citations generated by ChatGPT in <em>Mata v. Avianca</em>. The judge called it an "unprecedented circumstance." In early 2026, a Nebraska attorney was suspended after submitting AI-generated filings with fictitious citations. Both cases fit a pattern the profession could absorb: individual lawyers, small practices, insufficient technical sophistication, no institutional safeguards.</p>
+
+      <p>Sullivan &amp; Cromwell does not fit that pattern. Dietderich is a Chambers Band 1-rated restructuring partner who has been at the firm for nearly thirty years. The firm had mandatory training. It had a written policy requiring verification. It had an Office Manual provision. It had the principle — "trust nothing and verify everything" — codified and distributed. It had every structural advantage the profession's response to Schwartz assumed would prevent exactly this. And it produced the same outcome: fabricated citations in a federal court filing.</p>
+
+      <p>The profession's instinct after Schwartz was to say: the fix is policy. Train lawyers. Write it down. Make it mandatory. Sullivan &amp; Cromwell had done all of that. The fix did not work — not because the policies were poorly designed, but because written policies that depend on individual compliance at the point of production are functionally identical to no policies at all when compliance is not enforced by the tool, the workflow, or the filing system itself. The only safeguard that caught the errors was not a policy, not a training module, not an Office Manual provision. It was opposing counsel doing what opposing counsel has always done: reading the citations.</p>
+
+      <p>That is not a scalable verification system. It depends on someone on the other side caring enough and knowing enough to check. In default judgments, uncontested motions, pro se proceedings — the vast majority of filings that no opposing counsel scrutinizes — there is no one reading the brief. Bloomberg's 330-plus documented instances are the ones that were caught. The denominator is unknown.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.sullivan-cromwell-ai-hallucinations-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const cs = getComputedStyle(document.documentElement);
+  const BG_COLOR = cs.getPropertyValue('--bg').trim() || '#0d0d0d';
+  const STORY_COLOR = cs.getPropertyValue('--story').trim() || '#d4a44e';
+  const RED = '#ff4d4d';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+
+  const [gR, gG, gB] = hexToRgb(STORY_COLOR.startsWith('#') ? STORY_COLOR : '#d4a44e');
+  const [rR, rG, rB] = hexToRgb(RED);
+  const bgDark = (hexToRgb(BG_COLOR.startsWith('#') ? BG_COLOR : '#0d0d0d')[0]) < 128;
+  const DIM_V = bgDark ? 232 : 60;
+
+  function goldA(a: number) { return `rgba(${gR},${gG},${gB},${Math.max(0, Math.min(1, a))})`; }
+  function dimA(a: number) { return `rgba(${DIM_V},${DIM_V},${DIM_V},${Math.max(0, Math.min(1, a))})`; }
+  function redA(a: number) { return `rgba(${rR},${rG},${rB},${Math.max(0, Math.min(1, a))})`; }
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W = 0, H = 0, rafId = 0, frame = 0;
+
+  const SPEED = 0.4;
+  const NUM_LANES = 5;
+  const MAX_PARTICLES = 80;
+  const PARTICLE_RADIUS = 2.5;
+  const SPAWN_INTERVAL = 8;
+
+  const PHASE_STREAM = 720;
+  const PHASE_CLEAR = 820;
+  const PHASE_RED_SWEEP = 920;
+  const PHASE_HOLD = 1140;
+  const PHASE_FADE = 1260;
+  const PHASE_RESET = 1320;
+
+  const GATE_FRACS = [0.25, 0.45, 0.65];
+
+  interface Gate { xFrac: number; pulseAlpha: number; scanY: number; scanAlpha: number; }
+  const gates: Gate[] = GATE_FRACS.map(f => ({ xFrac: f, pulseAlpha: 0, scanY: -1, scanAlpha: 0 }));
+
+  interface Particle {
+    x: number; y: number; speed: number; alpha: number; lane: number;
+    active: boolean; isHallucinated: boolean; tagged: boolean;
+    tagRingAlpha: number; tagRingRadius: number;
+    tagRing2Alpha: number; tagRing2Radius: number;
+    tagRing3Alpha: number; tagRing3Radius: number;
+    fadeOut: boolean; fadeAlpha: number; pulseOffset: number;
+  }
+
+  const particles: Particle[] = [];
+  for (let i = 0; i < MAX_PARTICLES; i++) {
+    particles.push({
+      x: 0, y: 0, speed: 0, alpha: 0, lane: 0, active: false, isHallucinated: false,
+      tagged: false, tagRingAlpha: 0, tagRingRadius: 0, tagRing2Alpha: 0, tagRing2Radius: 0,
+      tagRing3Alpha: 0, tagRing3Radius: 0, fadeOut: false, fadeAlpha: 1, pulseOffset: 0,
+    });
+  }
+
+  let spawnCounter = 0;
+  let totalSpawned = 0;
+  let hallucinatedIndices: number[] = [];
+  let redSweepX = 0;
+  let redSweepActive = false;
+  let globalFade = 1;
+
+  function laneY(lane: number): number {
+    const margin = H * 0.18;
+    const usable = H - margin * 2;
+    return margin + (lane + 0.5) * (usable / NUM_LANES);
+  }
+
+  function spawnParticle(isHallucinated: boolean) {
+    let p: Particle | null = null;
+    for (let i = 0; i < particles.length; i++) {
+      if (!particles[i].active) { p = particles[i]; break; }
+    }
+    if (!p) return;
+    const lane = Math.floor(Math.random() * NUM_LANES);
+    p.x = -8 - Math.random() * 20;
+    p.y = laneY(lane) + (Math.random() - 0.5) * 10;
+    p.speed = SPEED + (Math.random() - 0.5) * 0.1;
+    p.alpha = 0.35 + Math.random() * 0.2;
+    p.lane = lane;
+    p.active = true;
+    p.isHallucinated = isHallucinated;
+    p.tagged = false;
+    p.tagRingAlpha = 0; p.tagRingRadius = 0;
+    p.tagRing2Alpha = 0; p.tagRing2Radius = 0;
+    p.tagRing3Alpha = 0; p.tagRing3Radius = 0;
+    p.fadeOut = false; p.fadeAlpha = 1;
+    p.pulseOffset = Math.random() * Math.PI * 2;
+  }
+
+  function resetCycle() {
+    frame = 0; spawnCounter = 0; totalSpawned = 0;
+    redSweepActive = false; redSweepX = 0; globalFade = 1;
+    const numHallucinated = 3 + Math.floor(Math.random() * 2);
+    hallucinatedIndices = [];
+    const totalExpected = Math.floor(PHASE_STREAM / SPAWN_INTERVAL);
+    for (let i = 0; i < numHallucinated; i++) {
+      let idx: number;
+      do { idx = 5 + Math.floor(Math.random() * (totalExpected - 10)); }
+      while (hallucinatedIndices.includes(idx));
+      hallucinatedIndices.push(idx);
+    }
+    hallucinatedIndices.sort((a, b) => a - b);
+    for (let i = 0; i < particles.length; i++) {
+      particles[i].active = false; particles[i].fadeAlpha = 1;
+      particles[i].fadeOut = false; particles[i].tagged = false;
+    }
+    for (let g = 0; g < gates.length; g++) {
+      gates[g].pulseAlpha = 0; gates[g].scanY = -1; gates[g].scanAlpha = 0;
+    }
+  }
+
+  function update() {
+    const cycleFrame = frame;
+    if (cycleFrame < PHASE_STREAM) {
+      spawnCounter++;
+      if (spawnCounter >= SPAWN_INTERVAL) {
+        spawnCounter = 0;
+        const isH = hallucinatedIndices.includes(totalSpawned);
+        spawnParticle(isH);
+        totalSpawned++;
+      }
+    }
+    for (let g = 0; g < gates.length; g++) {
+      if (gates[g].pulseAlpha > 0) {
+        gates[g].pulseAlpha *= 0.93;
+        if (gates[g].pulseAlpha < 0.003) gates[g].pulseAlpha = 0;
+      }
+      if (gates[g].scanY >= 0 && gates[g].scanY <= 1) {
+        gates[g].scanY += 0.02;
+        gates[g].scanAlpha *= 0.985;
+        if (gates[g].scanY > 1) { gates[g].scanY = -1; gates[g].scanAlpha = 0; }
+      }
+    }
+    if (cycleFrame >= PHASE_CLEAR && cycleFrame < PHASE_RED_SWEEP && !redSweepActive) {
+      redSweepActive = true; redSweepX = W + 20;
+    }
+    if (redSweepActive && redSweepX > -30) { redSweepX -= 2.5; }
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      if (!p.active) continue;
+      const prevX = p.x;
+      if (!p.tagged || cycleFrame < PHASE_HOLD) { p.x += p.speed; }
+      for (let g = 0; g < gates.length; g++) {
+        const gx = gates[g].xFrac * W;
+        if (prevX < gx && p.x >= gx) {
+          gates[g].pulseAlpha = Math.max(gates[g].pulseAlpha, 0.3);
+          if (gates[g].scanY < 0 || gates[g].scanY > 1) {
+            gates[g].scanY = 0; gates[g].scanAlpha = 0.35;
+          }
+        }
+      }
+      if (redSweepActive && p.isHallucinated && !p.tagged && redSweepX <= p.x) {
+        p.tagged = true;
+        p.tagRingAlpha = 0.8; p.tagRingRadius = 3;
+        p.tagRing2Alpha = 0.6; p.tagRing2Radius = 2;
+        p.tagRing3Alpha = 0.4; p.tagRing3Radius = 1;
+        p.speed = 0;
+      }
+      if (p.tagged) {
+        p.tagRingRadius += 0.5; p.tagRingAlpha *= 0.985;
+        if (p.tagRingAlpha < 0.005) p.tagRingAlpha = 0;
+        p.tagRing2Radius += 0.35; p.tagRing2Alpha *= 0.982;
+        if (p.tagRing2Alpha < 0.005) p.tagRing2Alpha = 0;
+        p.tagRing3Radius += 0.25; p.tagRing3Alpha *= 0.979;
+        if (p.tagRing3Alpha < 0.005) p.tagRing3Alpha = 0;
+      }
+      if (!p.isHallucinated && p.x > W + 10) p.fadeOut = true;
+      if (p.isHallucinated && !p.tagged && p.x > W + 10) p.fadeOut = true;
+      if (p.fadeOut) {
+        p.fadeAlpha -= 0.04;
+        if (p.fadeAlpha <= 0) { p.active = false; p.fadeAlpha = 1; p.fadeOut = false; }
+      }
+    }
+    if (cycleFrame >= PHASE_HOLD) {
+      const fadeProgress = (cycleFrame - PHASE_HOLD) / (PHASE_FADE - PHASE_HOLD);
+      globalFade = Math.max(0, 1 - fadeProgress);
+    }
+    if (cycleFrame >= PHASE_RESET) resetCycle();
+  }
+
+  function draw() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, W, H);
+    for (let g = 0; g < gates.length; g++) {
+      const gx = gates[g].xFrac * W;
+      const gateTop = H * 0.12;
+      const gateBot = H * 0.88;
+      const gateHeight = gateBot - gateTop;
+      ctx.beginPath(); ctx.moveTo(gx, gateTop); ctx.lineTo(gx, gateBot);
+      ctx.strokeStyle = dimA(0.06 * globalFade); ctx.lineWidth = 3; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(gx - 1.5, gateTop); ctx.lineTo(gx - 1.5, gateBot);
+      ctx.strokeStyle = goldA(0.08 * globalFade); ctx.lineWidth = 0.5; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(gx + 1.5, gateTop); ctx.lineTo(gx + 1.5, gateBot);
+      ctx.strokeStyle = goldA(0.08 * globalFade); ctx.lineWidth = 0.5; ctx.stroke();
+      const pulseBoost = gates[g].pulseAlpha;
+      if (pulseBoost > 0.003) {
+        ctx.beginPath(); ctx.moveTo(gx, gateTop); ctx.lineTo(gx, gateBot);
+        ctx.strokeStyle = goldA(pulseBoost * globalFade); ctx.lineWidth = 2; ctx.stroke();
+        const grad = ctx.createLinearGradient(gx - 20, 0, gx + 20, 0);
+        grad.addColorStop(0, goldA(0));
+        grad.addColorStop(0.5, goldA(pulseBoost * 0.12 * globalFade));
+        grad.addColorStop(1, goldA(0));
+        ctx.fillStyle = grad; ctx.fillRect(gx - 20, gateTop, 40, gateHeight);
+      }
+      if (gates[g].scanY >= 0 && gates[g].scanY <= 1) {
+        const sy = gateTop + gates[g].scanY * gateHeight;
+        const scanW = 18;
+        ctx.beginPath(); ctx.moveTo(gx - scanW, sy); ctx.lineTo(gx + scanW, sy);
+        ctx.strokeStyle = goldA(gates[g].scanAlpha * globalFade); ctx.lineWidth = 1; ctx.stroke();
+        const scanGlow = ctx.createRadialGradient(gx, sy, 0, gx, sy, 6);
+        scanGlow.addColorStop(0, goldA(gates[g].scanAlpha * 0.5 * globalFade));
+        scanGlow.addColorStop(1, goldA(0));
+        ctx.fillStyle = scanGlow;
+        ctx.beginPath(); ctx.arc(gx, sy, 6, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      if (!p.active) continue;
+      const drawAlpha = p.alpha * p.fadeAlpha * globalFade;
+      if (drawAlpha < 0.003) continue;
+      const wobbleY = Math.sin(p.x * 0.015 + p.lane * 2.1) * 3;
+      const py = p.y + wobbleY;
+      if (p.isHallucinated) {
+        const pulse = 0.15 * Math.sin(frame * 0.06 + p.pulseOffset);
+        const baseA = drawAlpha + pulse;
+        const glow = ctx.createRadialGradient(p.x, py, 0, p.x, py, 7);
+        glow.addColorStop(0, goldA(baseA * 0.3));
+        glow.addColorStop(1, goldA(0));
+        ctx.fillStyle = glow;
+        ctx.beginPath(); ctx.arc(p.x, py, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(p.x, py, PARTICLE_RADIUS, 0, Math.PI * 2);
+        ctx.fillStyle = goldA(baseA); ctx.fill();
+        if (p.tagged) {
+          if (p.tagRingAlpha > 0.003) {
+            ctx.beginPath(); ctx.arc(p.x, py, p.tagRingRadius, 0, Math.PI * 2);
+            ctx.strokeStyle = redA(p.tagRingAlpha * globalFade); ctx.lineWidth = 1.2; ctx.stroke();
+          }
+          if (p.tagRing2Alpha > 0.003) {
+            ctx.beginPath(); ctx.arc(p.x, py, p.tagRing2Radius, 0, Math.PI * 2);
+            ctx.strokeStyle = redA(p.tagRing2Alpha * globalFade); ctx.lineWidth = 0.8; ctx.stroke();
+          }
+          if (p.tagRing3Alpha > 0.003) {
+            ctx.beginPath(); ctx.arc(p.x, py, p.tagRing3Radius, 0, Math.PI * 2);
+            ctx.strokeStyle = redA(p.tagRing3Alpha * globalFade); ctx.lineWidth = 0.6; ctx.stroke();
+          }
+          ctx.beginPath(); ctx.arc(p.x, py, PARTICLE_RADIUS + 3, 0, Math.PI * 2);
+          ctx.strokeStyle = redA(0.35 * globalFade); ctx.lineWidth = 0.8; ctx.stroke();
+        }
+      } else {
+        ctx.beginPath(); ctx.arc(p.x, py, PARTICLE_RADIUS, 0, Math.PI * 2);
+        ctx.fillStyle = dimA(drawAlpha); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(p.x, py); ctx.lineTo(p.x - 6, py);
+        ctx.strokeStyle = dimA(drawAlpha * 0.12); ctx.lineWidth = 1; ctx.stroke();
+      }
+    }
+    if (redSweepActive && redSweepX > -30 && redSweepX < W + 30) {
+      const sweepAlpha = 0.45 * globalFade;
+      ctx.beginPath(); ctx.moveTo(redSweepX, 0); ctx.lineTo(redSweepX, H);
+      ctx.strokeStyle = redA(sweepAlpha); ctx.lineWidth = 1.5; ctx.stroke();
+      const sweepGrad = ctx.createLinearGradient(redSweepX, 0, redSweepX + 40, 0);
+      sweepGrad.addColorStop(0, redA(sweepAlpha * 0.2));
+      sweepGrad.addColorStop(1, redA(0));
+      ctx.fillStyle = sweepGrad; ctx.fillRect(redSweepX, 0, 40, H);
+    }
+  }
+
+  function drawStatic() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, W, H);
+    for (let g = 0; g < gates.length; g++) {
+      const gx = gates[g].xFrac * W;
+      const gateTop = H * 0.12;
+      const gateBot = H * 0.88;
+      ctx.beginPath(); ctx.moveTo(gx, gateTop); ctx.lineTo(gx, gateBot);
+      ctx.strokeStyle = dimA(0.06); ctx.lineWidth = 3; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(gx - 1.5, gateTop); ctx.lineTo(gx - 1.5, gateBot);
+      ctx.strokeStyle = goldA(0.08); ctx.lineWidth = 0.5; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(gx + 1.5, gateTop); ctx.lineTo(gx + 1.5, gateBot);
+      ctx.strokeStyle = goldA(0.08); ctx.lineWidth = 0.5; ctx.stroke();
+      if (g === 1) {
+        ctx.beginPath(); ctx.moveTo(gx, gateTop); ctx.lineTo(gx, gateBot);
+        ctx.strokeStyle = goldA(0.18); ctx.lineWidth = 2; ctx.stroke();
+      }
+    }
+    const staticCount = 20;
+    for (let i = 0; i < staticCount; i++) {
+      const t = (i + 0.5) / staticCount;
+      const px = W * 0.04 + t * W * 0.88;
+      const lane = i % NUM_LANES;
+      const py = laneY(lane) + Math.sin(i * 2.1) * 4;
+      const alpha = 0.3 + Math.sin(i * 1.3) * 0.12;
+      const isH = (i === 7 || i === 14);
+      if (isH) {
+        const glow = ctx.createRadialGradient(px, py, 0, px, py, 7);
+        glow.addColorStop(0, goldA(alpha * 0.3)); glow.addColorStop(1, goldA(0));
+        ctx.fillStyle = glow;
+        ctx.beginPath(); ctx.arc(px, py, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(px, py, PARTICLE_RADIUS, 0, Math.PI * 2);
+        ctx.fillStyle = goldA(alpha); ctx.fill();
+        if (t > 0.7) {
+          ctx.beginPath(); ctx.arc(px, py, PARTICLE_RADIUS + 3, 0, Math.PI * 2);
+          ctx.strokeStyle = redA(0.3); ctx.lineWidth = 0.8; ctx.stroke();
+          ctx.beginPath(); ctx.arc(px, py, 14, 0, Math.PI * 2);
+          ctx.strokeStyle = redA(0.15); ctx.lineWidth = 0.6; ctx.stroke();
+        }
+      } else {
+        ctx.beginPath(); ctx.arc(px, py, PARTICLE_RADIUS, 0, Math.PI * 2);
+        ctx.fillStyle = dimA(alpha); ctx.fill();
+      }
+    }
+  }
+
+  function tick() { frame++; update(); draw(); rafId = requestAnimationFrame(tick); }
+
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth; H = canvas!.offsetHeight;
+    canvas!.width = W * dpr; canvas!.height = H * dpr;
+    ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (prefersReduced) drawStatic();
+  });
+  ro.observe(canvas);
+
+  const dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth; H = canvas.offsetHeight;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  if (prefersReduced) {
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    resetCycle();
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(rafId); rafId = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+    window.addEventListener('pagehide', () => { cancelAnimationFrame(rafId); io.disconnect(); ro.disconnect(); });
+  }
+})();
+</script>
