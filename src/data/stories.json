@@ -2450,5 +2450,69 @@
       "Outperformed OpenAI CLIP, Microsoft LLaVA, BioMedCLIP, Med-Flamingo by more than 30%.",
       "No FDA clearance, no clinical deployment; code and weights open-source on GitHub."
     ]
+  },
+  {
+    "slug": "varnet-pasadena-student",
+    "side": "light",
+    "chapter": 14,
+    "volume": 3,
+    "title": "The Student Who Read the Sky",
+    "deck": "NASA's NEOWISE archive held 189 billion infrared detections, public for a decade. What was missing was not a telescope but a tool fast enough to pay attention.",
+    "date": "December 2024 – June 2026",
+    "isoDate": "2026-06-01",
+    "readTime": "9 min",
+    "emoji": "🔭",
+    "tags": [
+      "Astronomy",
+      "Open Data",
+      "Neural Networks",
+      "Time-Domain Science"
+    ],
+    "story": "#e2703a",
+    "storyDark": "#3d1d0e",
+    "verifyText": "Primary sources: Paz 2024, 'A Sub-Millisecond Fourier and Wavelet Based Model to Extract Variable Candidates from the NEOWISE Single-Exposure Database,' AJ 168, 241 (arXiv:2409.15499); and Paz, Kirkpatrick, Uttamchandani, Raen & Cutri 2026, 'VarWISE: Infrared Variability via NEOWISE Single Exposure Photometry,' ApJS 284, 41 (arXiv:2605.19059). Catalogs public at NASA/IPAC IRSA, DOIs 10.26131/IRSA656–658.",
+    "sources": [
+      {
+        "label": "Paz 2024 — VARnet model paper (AJ 168, 241 / arXiv:2409.15499)",
+        "url": "https://arxiv.org/abs/2409.15499"
+      },
+      {
+        "label": "Paz et al. 2026 — VarWISE catalog paper (ApJS 284, 41 / arXiv:2605.19059)",
+        "url": "https://arxiv.org/abs/2605.19059"
+      },
+      {
+        "label": "IPAC — 2026ApJS..284...41P publication record",
+        "url": "https://www.ipac.caltech.edu/publication/2026ApJS..284...41P"
+      },
+      {
+        "label": "NASA/IPAC IRSA — VarWISE catalog overview and data access",
+        "url": "https://irsa.ipac.caltech.edu/data/WISE/VarWISE/overview.html"
+      },
+      {
+        "label": "Caltech — Exploring Space with AI",
+        "url": "https://www.caltech.edu/about/news/exploring-space-with-AI"
+      },
+      {
+        "label": "Society for Science — Regeneron STS 2025 top awards",
+        "url": "https://www.societyforscience.org/blog/regeneron-sts-top-awards-2025/"
+      },
+      {
+        "label": "NEOWISE / IPAC — project news",
+        "url": "https://neowise.ipac.caltech.edu/news/neowise20250411/"
+      },
+      {
+        "label": "Steward Observatory — PhD alum mentors teen (Kirkpatrick profile)",
+        "url": "https://astro.arizona.edu/news/steward-phd-alum-mentors-teen-who-wins-250k-using-ai-discover-15-million-hidden-objects-space"
+      }
+    ],
+    "llmsDescription": "VARnet (Paz 2024, AJ 168, 241) is a sub-millisecond neural network for classifying infrared variable sources in NASA's NEOWISE Single-Exposure Database, which contains 188.9 billion detections accumulated over 10.5 years. VarWISE (Paz, Kirkpatrick, Uttamchandani, Raen, and Cutri 2026, ApJS 284, 41) applied VARnet at full-sky scale, producing a catalog of 1,918,082 variable objects — approximately 82% with no prior variable-source designation in the SIMBAD astronomical database. Matteo Paz, a Pasadena High School student and IPAC staff researcher, won first place and $250,000 at the 84th Regeneron Science Talent Search on March 11, 2025. Both catalogs are publicly available at NASA/IPAC IRSA with permanent DOIs.",
+    "abstract": [
+      "VARnet (Paz 2024, AJ 168, 241): single-author CNN classifying infrared variable sources in under 53 microseconds per object; F1 = 0.914 four-class, 0.974 binary.",
+      "VarWISE (Paz et al. 2026, ApJS 284, 41): five-author full-sky catalog of 1,918,082 variable objects; 82.02% had no prior SIMBAD variable or AGN designation.",
+      "Matteo Paz won first place ($250,000) at the 84th Regeneron Science Talent Search on March 11, 2025; the VarWISE catalog paper was published June 2026, over a year later.",
+      "Authors disclosed class-specific contamination: 9% of supernova classifications were solid candidates; 92% of cataclysmic-variable classifications were actually young stellar object outbursts.",
+      "Both catalogs are publicly hosted at NASA/IPAC IRSA (DOIs 10.26131/IRSA656, IRSA657, IRSA658)."
+    ],
+    "whatIf": "The number to hold onto is not 1,918,082. It is twenty minutes — roughly what it costs on a single GPU to evaluate every source in a ten-year, all-sky infrared survey. That number is not going up. Now let it fall by another two orders of magnitude and point it at everything: the Rubin Observatory's nightly alert stream, sixty years of seismograph rolls, every archived genome, every buoy in every ocean, every hospital's imaging vault. Sweeping an archive becomes cheaper than deciding whether to sweep it. Every dormant dataset gets read, and each one returns a catalog of candidates measured in millions. Then notice what does not scale with it. Confirming that a flagged source is genuinely an eclipsing binary and not an artifact of survey cadence requires photons — a telescope pointed at one object on one night, a resource that has grown by a few percent a decade and cannot be parallelized by buying more GPUs. Flagging is now effectively free. Confirmation is still physical. The gap between them does not narrow; it compounds, forever, in one direction. And notice what produced this story's integrity. The VarWISE authors could tell you that 92 percent of their cataclysmic-variable classifications were actually young stellar objects, and that four of eighty-one long-period variables were false positives, because human beings sat down and inspected samples by hand. The honest ledger was hand-made. It is the only part of the enterprise that runs at human speed, and it is the first thing that breaks when one archive becomes ten thousand. There will be no one to check the eighty-one. What replaces them is the obvious thing: a second model, trained to rank which of the first model's guesses deserve a night of telescope time. The triage of what humanity looks at gets delegated to the same class of system that generated the backlog — and the contamination rate becomes an estimate produced by software rather than a count produced by a person, which means it can drift for years without anyone noticing, because noticing was the job we automated. This is the good version of the future. The archives really are full, the objects really are there, and an instrument of attention really did find them. But if the discovery frontier becomes a list too long for anyone to read, ordered by a system no one has independently audited, then what exactly do we know? And who would be able to tell us that we don't?"
   }
 ]
