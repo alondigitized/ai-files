@@ -1,0 +1,904 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'gtig-ai-zero-day')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .gtig-ai-zero-day-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* === Reenactment #1: Annotated Exploit-Code Mockup === */
+  .gtig-code-mockup {
+    background: #0c0c0c;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 2rem 0;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.82rem;
+    line-height: 1.6;
+  }
+  .gtig-code-header {
+    background: var(--surface2);
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .gtig-code-dot { width: 10px; height: 10px; border-radius: 50%; background: #333; }
+  .gtig-code-dot.r { background: #ff4d4d; }
+  .gtig-code-dot.y { background: #fbbf24; }
+  .gtig-code-dot.g { background: #00ff88; }
+  .gtig-code-filename { color: var(--muted); font-size: 0.75rem; margin-left: auto; }
+  .gtig-code-body { padding: 1rem 1.2rem; overflow-x: auto; }
+  .gtig-code-body pre { margin: 0; white-space: pre; color: #c8c8c8; font-family: inherit; }
+  .gtig-code-line { display: block; padding: 1px 0; }
+  .gtig-code-comment { color: #6a9955; }
+  .gtig-code-keyword { color: #569cd6; }
+  .gtig-code-string { color: #ce9178; }
+  .gtig-code-func { color: #dcdcaa; }
+  .gtig-code-class { color: #4ec9b0; }
+  .gtig-code-param { color: #9cdcfe; }
+  .gtig-code-annotation {
+    display: block;
+    background: rgba(90, 136, 175, 0.14);
+    border-left: 3px solid var(--story);
+    margin: 0.4rem 0;
+    padding: 0.4rem 0.8rem;
+    color: var(--story);
+    font-family: -apple-system, 'Segoe UI', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.5;
+  }
+  .gtig-code-annotation-warn {
+    display: block;
+    background: rgba(255, 77, 77, 0.08);
+    border-left: 3px solid var(--accent);
+    margin: 0.4rem 0;
+    padding: 0.4rem 0.8rem;
+    color: var(--accent);
+    font-family: -apple-system, 'Segoe UI', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.5;
+  }
+  .gtig-code-footer {
+    background: #111;
+    border-top: 1px solid var(--border);
+    padding: 0.6rem 1rem;
+    font-family: -apple-system, 'Segoe UI', sans-serif;
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-align: center;
+  }
+  .gtig-code-footer strong { color: var(--text); }
+
+  /* === Reenactment #2: Side-by-Side Timeline === */
+  .gtig-timeline-wrap {
+    background: #0c0c0c;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 2rem 0;
+    padding: 1.5rem;
+  }
+  .gtig-timeline-title {
+    text-align: center;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+  .gtig-timeline-grid {
+    display: grid;
+    grid-template-columns: 1fr 50px 1fr;
+    gap: 0;
+    align-items: start;
+  }
+  .gtig-timeline-col { display: flex; flex-direction: column; gap: 0.75rem; }
+  .gtig-timeline-col-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.25rem;
+  }
+  .gtig-timeline-col-label.defender { color: var(--story); }
+  .gtig-timeline-col-label.attacker { color: var(--accent); }
+  .gtig-timeline-entry {
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    border: 1px solid #1e1e1e;
+    background: #111;
+  }
+  .gtig-timeline-entry-date {
+    font-size: 0.65rem;
+    color: #858585;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+  }
+  .gtig-timeline-entry-text {
+    font-size: 0.78rem;
+    color: #c8c8c8;
+    line-height: 1.45;
+  }
+  .gtig-timeline-entry.highlight-blue {
+    border-color: var(--story);
+    background: rgba(90, 136, 175, 0.08);
+  }
+  .gtig-timeline-entry.highlight-red {
+    border-color: var(--accent);
+    background: rgba(255, 77, 77, 0.06);
+  }
+  .gtig-timeline-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 220px;
+    position: relative;
+  }
+  .gtig-timeline-line {
+    width: 2px;
+    flex: 1;
+    background: linear-gradient(to bottom, var(--story), #666, var(--accent));
+    border-radius: 1px;
+  }
+  .gtig-timeline-connector {
+    background: #111;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.5rem 0.4rem;
+    margin: 0.5rem 0;
+    text-align: center;
+    font-size: 0.7rem;
+    color: #aaa;
+    line-height: 1.4;
+    min-width: 160px;
+  }
+  .gtig-timeline-connector em {
+    color: var(--story);
+    font-style: normal;
+    font-weight: 600;
+  }
+  .gtig-timeline-footer {
+    margin-top: 1.25rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .gtig-timeline-footer strong { color: var(--text); font-style: normal; }
+
+  /* === Reenactment #3: GTIG Disclosure Flow === */
+  .gtig-flow-wrap {
+    background: #0c0c0c;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 2rem 0;
+    padding: 1.5rem;
+  }
+  .gtig-flow-title {
+    text-align: center;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+  }
+  .gtig-flow-steps { display: flex; flex-direction: column; gap: 0; }
+  .gtig-flow-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    padding: 0.75rem 0;
+  }
+  .gtig-flow-step + .gtig-flow-step { border-top: 1px solid #1a1a1a; }
+  .gtig-flow-num {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--story);
+  }
+  .gtig-flow-step.gtig-flow-dim .gtig-flow-num { color: #808080; border-color: #2a2a2a; }
+  .gtig-flow-content { flex: 1; }
+  .gtig-flow-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--story);
+    margin-bottom: 0.2rem;
+  }
+  .gtig-flow-step.gtig-flow-dim .gtig-flow-label { color: #808080; }
+  .gtig-flow-desc { font-size: 0.82rem; color: #b0b0b0; line-height: 1.5; }
+  .gtig-flow-step.gtig-flow-dim .gtig-flow-desc { color: #808080; font-style: italic; }
+  .gtig-flow-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 0.18rem 0.45rem;
+    border-radius: 3px;
+    margin-top: 0.35rem;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    letter-spacing: 0.05em;
+  }
+  .gtig-flow-tag.ok { background: rgba(90, 136, 175, 0.14); color: var(--story); }
+  .gtig-flow-tag.warn { background: rgba(255, 77, 77, 0.12); color: var(--accent); }
+  .gtig-flow-footer {
+    margin-top: 0.75rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  @media (max-width: 600px) {
+    .gtig-timeline-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .gtig-timeline-center { display: none; }
+    .gtig-code-body { font-size: 0.72rem; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="disclosure">
+      <h2><span class="num">01 — Disclosure</span>The Report</h2>
+      <p>On May 11, 2026, Google's Threat Intelligence Group published its fourth AI Threat Tracker report. One sentence in it landed differently from the rest: <em>"For the first time, GTIG has identified a threat actor using a zero-day exploit that we believe was developed with AI."</em></p>
+
+      <p>The exploit was a Python script. It targeted a popular open-source, web-based system administration tool — which GTIG declined to name. The vulnerability was a two-factor authentication bypass: not a buffer overflow, not an injection flaw, but a semantic logic error. A hardcoded trust assumption in the 2FA enforcement logic created a gap between what the code was supposed to do and what it actually did. The script required valid user credentials to work. Its intended use, according to GTIG, was a <em>"mass vulnerability exploitation event"</em> orchestrated by criminal threat actors — not a nation-state operation.</p>
+
+      <p>GTIG's attribution language was precise and hedged. The report stated that Google assessed <em>"with high confidence that the actor likely leveraged an AI model to support the discovery and weaponization of this vulnerability."</em> This is not certainty. No model logs were intercepted. No API call records were obtained. The assessment rested entirely on artifacts found in the code itself — patterns that, in GTIG's judgment, bore the hallmarks of large language model output.</p>
+
+      <p>GTIG coordinated with the affected vendor before publishing. The vulnerability was patched. The report's own phrasing on the disruption was carefully qualified: GTIG's <em>"proactive counter discovery may have prevented"</em> the mass exploitation event. Whether any targets were compromised before disruption remains ambiguous. GTIG did not say the attack was stopped. It said it may have been.</p>
+
+      <p>The scoping matters. GTIG wrote <em>"for the first time, GTIG has identified"</em> — a statement about its own detection history. Several secondary outlets broadened this to "first-ever AI-generated zero-day" or "first AI-powered cyberattack." The primary report made no such universal claim.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="gtig-ai-zero-day-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Fingerprint</strong> — Two ghost-AI particles drift toward a shared code structure from opposite sides of a mirror axis. On contact, bright forensic artifacts scatter outward. Each successive cycle dims the artifacts further until none remain. The exploit still happens. The detection surface has vanished.</p>
+
+    <section class="section" id="precedent">
+      <h2><span class="num">02 — Precedent</span>Big Sleep</h2>
+      <p>Eighteen months before the criminal 2FA bypass surfaced, Google's own AI had already found a zero-day — on the other side of the line.</p>
+
+      <p>In early October 2024, Big Sleep, an AI agent built as a collaboration between Google DeepMind and Project Zero, discovered a stack buffer underflow vulnerability in SQLite, one of the most widely deployed database engines in the world. The flaw was patched the same day it was reported. In November 2024, Project Zero published the finding and called it <em>"the first public example of an AI agent finding a previously unknown exploitable memory-safety issue in widely used real-world software."</em></p>
+
+      <p>The Big Sleep vulnerability and the criminal 2FA bypass are different classes of bug. Big Sleep found a memory-safety error — the kind fuzzers are designed to catch, though this one had eluded them. The criminal zero-day exploited a semantic logic flaw — a hardcoded trust assumption that contradicted the system's own 2FA enforcement. The connection between the two cases is not at the level of the bug. It is at the level of the capability.</p>
+
+      <p>GTIG's May 2026 report articulated the link directly: frontier LLMs excel at identifying <em>"high-level semantic logic flaws and hardcoded static anomalies"</em> because they possess <em>"an increasing ability to perform contextual reasoning, effectively reading the developer's intent."</em> Traditional fuzzers and static analysis tools are optimized to detect sinks and crashes. They do not reason about what a developer meant the code to do. LLMs do.</p>
+
+      <p>John Hultquist, GTIG's chief analyst, made the connection explicit. He referenced the Big Sleep disclosure as the watershed moment — "two years ago" — that proved AI-developed exploits were possible. <em>"We finally uncovered some evidence this is happening,"</em> he told CyberScoop. The evidence was the 2FA bypass script. The capability was the same one Big Sleep had demonstrated from the defender's chair.</p>
+    </section>
+
+    <section class="section" id="forensics">
+      <h2><span class="num">03 — Forensics</span>The Fingerprints</h2>
+      <p>GTIG's attribution rested on what was inside the Python script. Not on intercepted communications. Not on model API logs. On the code.</p>
+
+      <p>The script contained five categories of artifact that GTIG assessed as characteristic of LLM-generated output: educational docstrings that explained the script's own attack logic step by step, a hallucinated CVSS severity score (Common Vulnerability Scoring System — the industry-standard 0–10 severity rating) that had not been assigned by any standards body, structured textbook-Pythonic formatting, detailed help menus, and a clean ANSI color class for terminal output. Taken individually, any of these could appear in human-written code. Taken together, in the same script, they form a pattern.</p>
+
+      <div class="gtig-code-mockup">
+        <div class="gtig-code-header">
+          <span class="gtig-code-dot r"></span>
+          <span class="gtig-code-dot y"></span>
+          <span class="gtig-code-dot g"></span>
+          <span class="gtig-code-filename">exploit_2fa_bypass.py — ILLUSTRATIVE RECONSTRUCTION</span>
+        </div>
+        <div class="gtig-code-body">
+<pre><span class="gtig-code-line"><span class="gtig-code-comment"># CVSS: 9.1 (Critical) — Authentication Bypass via Trust Assumption</span></span></pre>
+          <div class="gtig-code-annotation-warn">LLM ARTIFACT — Hallucinated severity score. No standards body assigned this CVSS rating. The model generated it because its training data associates exploit code with severity metadata.</div>
+<pre><span class="gtig-code-line"><span class="gtig-code-keyword">class</span> <span class="gtig-code-class">AnsiColors</span>:</span>
+<span class="gtig-code-line">    <span class="gtig-code-string">"""Terminal color constants for formatted output."""</span></span>
+<span class="gtig-code-line">    HEADER = <span class="gtig-code-string">'\033[95m'</span></span>
+<span class="gtig-code-line">    OK_GREEN = <span class="gtig-code-string">'\033[92m'</span></span>
+<span class="gtig-code-line">    WARNING = <span class="gtig-code-string">'\033[93m'</span></span>
+<span class="gtig-code-line">    FAIL = <span class="gtig-code-string">'\033[91m'</span></span>
+<span class="gtig-code-line">    END = <span class="gtig-code-string">'\033[0m'</span></span></pre>
+          <div class="gtig-code-annotation">LLM ARTIFACT — Clean ANSI color class. Textbook structure, comprehensive docstring, named constants — the formatting of a tutorial, not an operational tool.</div>
+<pre><span class="gtig-code-line"><span class="gtig-code-keyword">def</span> <span class="gtig-code-func">bypass_2fa_enforcement</span>(<span class="gtig-code-param">session</span>, <span class="gtig-code-param">target_host</span>, <span class="gtig-code-param">credentials</span>):</span>
+<span class="gtig-code-line">    <span class="gtig-code-string">"""</span></span>
+<span class="gtig-code-line">    <span class="gtig-code-string">Bypasses the two-factor authentication enforcement by exploiting</span></span>
+<span class="gtig-code-line">    <span class="gtig-code-string">a hardcoded trust assumption in the session validation logic.</span></span>
+<span class="gtig-code-line">    <span class="gtig-code-string"></span></span>
+<span class="gtig-code-line">    <span class="gtig-code-string">The application checks whether 2FA is required based on a static</span></span>
+<span class="gtig-code-line">    <span class="gtig-code-string">list of trusted source identifiers. If the session presents a</span></span>
+<span class="gtig-code-line">    <span class="gtig-code-string">matching identifier, the 2FA check is skipped entirely.</span></span>
+<span class="gtig-code-line">    <span class="gtig-code-string">"""</span></span></pre>
+          <div class="gtig-code-annotation">LLM ARTIFACT — Educational docstring. The script explains its own attack logic in pedagogical detail. A human attacker writing an operational exploit does not narrate the attack mid-script. The model cannot help itself.</div>
+<pre><span class="gtig-code-line">    <span class="gtig-code-comment"># Step 1: Authenticate with valid credentials</span></span>
+<span class="gtig-code-line">    <span class="gtig-code-comment"># Step 2: Intercept 2FA enforcement check</span></span>
+<span class="gtig-code-line">    <span class="gtig-code-comment"># Step 3: Inject trusted source identifier</span></span>
+<span class="gtig-code-line">    <span class="gtig-code-comment"># Step 4: Replay modified session token</span></span>
+<span class="gtig-code-line">    ...</span></pre>
+        </div>
+        <div class="gtig-code-footer">
+          <strong>NOTE</strong> — Illustrative reconstruction based on the artifact categories described in the GTIG report. Not the actual exploit script. Functional exploit logic has been omitted.
+        </div>
+      </div>
+
+      <p>The pattern is distinctive because of what it reveals about the generation process. An LLM writes code the way it was trained to — pedagogically. It documents as it builds. It invents metadata because its training data associates exploit code with severity scores. It formats like a textbook because that is what it learned from. A human attacker writing an operational tool typically strips comments, minimizes structure, and does not explain the attack to anyone who might read the source. The GTIG script did all of these things. It explained itself.</p>
+
+      <p>Rob Joyce, former NSA cybersecurity director, told TechStartups: <em>"It is the closest thing yet to a fingerprint at the crime scene."</em> The word "yet" carries weight.</p>
+
+      <p>GTIG explicitly excluded its own Gemini model from the attribution. According to CyberScoop, Google also excluded Anthropic's Mythos — though this claim does not appear in the primary GTIG report and may reflect a separate statement or editorial inference. The specific model used remains unknown. No competing threat-intelligence firm has independently analyzed the Python script. This is, at present, a single-organization forensic assessment.</p>
+    </section>
+
+    <section class="section" id="firewall">
+      <h2><span class="num">04 — Separation</span>The Firewall</h2>
+      <p>The criminal 2FA bypass was one finding in a report that covered considerably more ground. Conflating the threads distorts the picture.</p>
+
+      <p>The same May 2026 report documented PROMPTSPY, an Android backdoor that uses Google's own Gemini API — specifically the gemini-2.5-flash-lite model — for autonomous device interaction. It described HONESTCUE, a malware family that calls the Gemini API at runtime to generate obfuscated VBScript, enabling just-in-time self-modification to evade signature-based detection (GTIG did not associate HONESTCUE with any known threat cluster). It detailed PRC-nexus actor UNC2814 using expert persona prompts ("senior security auditor," "C/C++ binary security expert") for vulnerability research into TP-Link firmware. And it documented APT45, a DPRK-nexus group, sending thousands of repetitive prompts to analyze CVEs and build exploit arsenals using agentic tools called OpenClaw and OneClaw.</p>
+
+      <p>These are separate operations by separate actors with separate objectives. OpenClaw and OneClaw appear only in the APT45 nation-state context. They have no connection to the criminal 2FA bypass. The criminal actors are not identified by name or alias. The nation-state observations are not part of the zero-day forensic case. The report treats them in distinct sections, and so must any accurate account.</p>
+
+      <div class="gtig-timeline-wrap">
+        <div class="gtig-timeline-title">THE MIRROR TIMELINE</div>
+        <div class="gtig-timeline-grid">
+          <div class="gtig-timeline-col">
+            <div class="gtig-timeline-col-label defender">DEFENDER</div>
+            <div class="gtig-timeline-entry highlight-blue">
+              <div class="gtig-timeline-entry-date">OCT 2024</div>
+              <div class="gtig-timeline-entry-text">Big Sleep AI agent discovers stack-buffer-underflow zero-day in SQLite. Patched same day.</div>
+            </div>
+            <div class="gtig-timeline-entry">
+              <div class="gtig-timeline-entry-date">NOV 2024</div>
+              <div class="gtig-timeline-entry-text">Project Zero publishes finding: "first public example of an AI agent finding a previously unknown exploitable memory-safety issue in widely used real-world software."</div>
+            </div>
+          </div>
+          <div class="gtig-timeline-center">
+            <div class="gtig-timeline-line"></div>
+            <div class="gtig-timeline-connector"><em>LLMs read developer intent.</em><br/>Traditional tools cannot.</div>
+            <div class="gtig-timeline-line"></div>
+          </div>
+          <div class="gtig-timeline-col">
+            <div class="gtig-timeline-col-label attacker">ATTACKER</div>
+            <div class="gtig-timeline-entry">
+              <div class="gtig-timeline-entry-date">JAN 2025</div>
+              <div class="gtig-timeline-entry-text">GTIG: "Current LLMs on their own are unlikely to enable breakthrough capabilities for threat actors."</div>
+            </div>
+            <div class="gtig-timeline-entry">
+              <div class="gtig-timeline-entry-date">FEB 2026</div>
+              <div class="gtig-timeline-entry-text">GTIG: experimentation and continued integration observed. No breakthrough autonomous capabilities.</div>
+            </div>
+            <div class="gtig-timeline-entry highlight-red">
+              <div class="gtig-timeline-entry-date">MAY 2026</div>
+              <div class="gtig-timeline-entry-text">"For the first time, GTIG has identified a threat actor using a zero-day exploit that we believe was developed with AI."</div>
+            </div>
+          </div>
+        </div>
+        <div class="gtig-timeline-footer"><strong>Hultquist:</strong> "The game's already begun and we expect the capability trajectory is pretty sharp."</div>
+      </div>
+
+      <p>The trajectory across GTIG's own report series tells a story of calibrated reassessment. In January 2025, the first tracker concluded that <em>"current LLMs on their own are unlikely to enable breakthrough capabilities for threat actors."</em> The February 2026 tracker documented experimentation and continued integration but still observed no breakthrough autonomous capabilities. The May 2026 tracker described something new: <em>"a maturing transition from nascent AI-enabled operations to the industrial-scale application of generative models within adversarial workflows."</em></p>
+
+      <p>Ryan Dewhurst, head of threat intelligence at watchTowr, framed it plainly: <em>"This is today's reality: discovery, weaponization, and exploitation are faster. We're not heading toward compressed timelines; we've been watching the timelines compress for years."</em> Hultquist put it more bluntly: <em>"There's a misconception that the AI vulnerability race is imminent. The reality is that it's already begun."</em></p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">05 — Signal</span>What the Fingerprints Reveal</h2>
+      <p>The forensic indicators that allowed GTIG to identify this exploit as AI-generated are artifacts of inexperience. The criminals used the LLM's output with minimal cleanup. The docstrings stayed in. The hallucinated CVSS score stayed in. The textbook formatting stayed in. These artifacts are the detection surface — and they are temporary.</p>
+
+      <div class="gtig-flow-wrap">
+        <div class="gtig-flow-title">DETECTION-TO-DISCLOSURE PIPELINE</div>
+        <div class="gtig-flow-steps">
+          <div class="gtig-flow-step">
+            <div class="gtig-flow-num">1</div>
+            <div class="gtig-flow-content">
+              <div class="gtig-flow-label">GTIG Detection</div>
+              <div class="gtig-flow-desc">Exploit script identified via code-artifact analysis. LLM fingerprints flagged: educational docstrings, hallucinated CVSS, textbook-Pythonic structure.</div>
+              <span class="gtig-flow-tag ok">ARTIFACTS PRESENT</span>
+            </div>
+          </div>
+          <div class="gtig-flow-step">
+            <div class="gtig-flow-num">2</div>
+            <div class="gtig-flow-content">
+              <div class="gtig-flow-label">Attribution</div>
+              <div class="gtig-flow-desc">"High confidence...likely leveraged an AI model." Criminal threat actor. Gemini excluded by GTIG.</div>
+            </div>
+          </div>
+          <div class="gtig-flow-step">
+            <div class="gtig-flow-num">3</div>
+            <div class="gtig-flow-content">
+              <div class="gtig-flow-label">Vendor Coordination</div>
+              <div class="gtig-flow-desc">Responsible disclosure to affected vendor. Vulnerability patched before mass deployment.</div>
+            </div>
+          </div>
+          <div class="gtig-flow-step">
+            <div class="gtig-flow-num">4</div>
+            <div class="gtig-flow-content">
+              <div class="gtig-flow-label">Public Report</div>
+              <div class="gtig-flow-desc">May 11, 2026. Fourth GTIG AI Threat Tracker. Criminal zero-day disclosed alongside PROMPTSPY, HONESTCUE, and nation-state observations.</div>
+            </div>
+          </div>
+          <div class="gtig-flow-step gtig-flow-dim">
+            <div class="gtig-flow-num">?</div>
+            <div class="gtig-flow-content">
+              <div class="gtig-flow-label">[Next Time]</div>
+              <div class="gtig-flow-desc">No docstrings. No hallucinated CVSS. No textbook formatting. Same capability. Same vulnerability class.</div>
+              <span class="gtig-flow-tag warn">NO ARTIFACTS</span>
+            </div>
+          </div>
+        </div>
+        <div class="gtig-flow-footer">The pipeline worked this time. Step 5 is why it might not work next time.</div>
+      </div>
+
+      <p>Joyce's "closest thing yet to a fingerprint" formulation points directly at the problem. <em>"Yet"</em> acknowledges a shelf life. A single post-processing step — strip comments, remove hallucinated metadata, randomize variable names — eliminates every indicator GTIG cited. This is not a speculative claim from the GTIG report. It is a logical inference from the evidence: the fingerprints are incidental to the capability, not intrinsic to it. The LLM does not need to leave docstrings behind in order to find a hardcoded trust assumption in 2FA enforcement logic.</p>
+
+      <p>GTIG's own capability claim works symmetrically. If frontier LLMs excel at identifying semantic logic flaws that traditional fuzzers miss — because LLMs can reason about what a developer intended, not just what the code does — then defenders with LLMs gain a new detection surface, and attackers with LLMs gain access to a vulnerability class that was previously hard to find at scale. The race is structural. It runs on the same engine.</p>
+
+      <p>Hultquist acknowledged the imbalance: <em>"For every zero-day we can trace back to AI, there are probably many more out there."</em> GTIG caught this one because the script explained itself. The capability that found the flaw does not require the flaw-finder to narrate its work. The next zero-day built this way will not explain itself. The detection pipeline that worked in May 2026 depended on artifacts that a marginally more sophisticated attacker would never have left behind.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.gtig-ai-zero-day-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
+  const storyColor = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#4f7ca3';
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function parseHex(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const [sR, sG, sB] = parseHex(storyColor);
+
+  function cobaltA(a: number) { return `rgba(${sR},${sG},${sB},${Math.max(0, Math.min(1, a))})`; }
+  function dimA(a: number)    { return `rgba(232,232,232,${Math.max(0, Math.min(1, a))})`; }
+
+  const SUB_APPROACH = 180;
+  const SUB_FLASH = 10;
+  const SUB_LINGER = 100;
+  const SUB_ARTIFACT_FADE = 40;
+  const SUB_EXIT = 40;
+  const SUB_PAUSE = 20;
+  const SUB_LEN = SUB_APPROACH + SUB_FLASH + SUB_LINGER + SUB_ARTIFACT_FADE + SUB_EXIT + SUB_PAUSE;
+  const NUM_SUB = 4;
+  const HOLD_FRAMES = 180;
+  const FLASH_RESET = 8;
+  const FULL_CYCLE = SUB_LEN * NUM_SUB + HOLD_FRAMES + FLASH_RESET;
+  const ARTIFACT_OPACITIES = [0.9, 0.55, 0.2, 0.0];
+  const NUM_ARTIFACTS = 6;
+  const NUM_CODE_LINES = 5;
+  const NUM_BG_PARTICLES = 16;
+  const CODE_SPREAD = 40;
+  const CODE_WIDTHS  = [75, 60, 85, 50, 70];
+  const CODE_OFFSETS = [-8, 12, -5, 15, 2];
+
+  let W = 0, H = 0, frame = 0, rafId = 0;
+
+  interface CodeLine { x: number; y: number; width: number; flashAlpha: number; }
+  interface Artifact { x: number; y: number; vx: number; vy: number; alpha: number; maxAlpha: number; active: boolean; angle: number; }
+  interface BgParticle { x: number; y: number; vx: number; vy: number; alpha: number; }
+
+  let codeLines: CodeLine[] = [];
+  let artifacts: Artifact[] = [];
+  let bgParticles: BgParticle[] = [];
+  let defenderX = 0, defenderY = 0;
+  let attackerX = 0, attackerY = 0;
+  let defenderAlpha = 0, attackerAlpha = 0;
+
+  function buildCodeLines() {
+    const cx = W / 2, cy = H / 2;
+    const startY = cy - CODE_SPREAD / 2;
+    if (codeLines.length === 0) {
+      for (let i = 0; i < NUM_CODE_LINES; i++) {
+        codeLines.push({ x: 0, y: 0, width: CODE_WIDTHS[i], flashAlpha: 0 });
+      }
+    }
+    for (let i = 0; i < NUM_CODE_LINES; i++) {
+      codeLines[i].x = cx + CODE_OFFSETS[i] - CODE_WIDTHS[i] / 2;
+      codeLines[i].y = startY + i * (CODE_SPREAD / (NUM_CODE_LINES - 1));
+      codeLines[i].flashAlpha = 0;
+    }
+  }
+
+  function buildArtifacts() {
+    if (artifacts.length === 0) {
+      for (let i = 0; i < NUM_ARTIFACTS; i++) {
+        artifacts.push({ x: 0, y: 0, vx: 0, vy: 0, alpha: 0, maxAlpha: 0, active: false, angle: 0 });
+      }
+    }
+    for (let i = 0; i < NUM_ARTIFACTS; i++) {
+      artifacts[i].active = false;
+      artifacts[i].alpha = 0;
+    }
+  }
+
+  function buildBgParticles() {
+    if (bgParticles.length === 0) {
+      for (let i = 0; i < NUM_BG_PARTICLES; i++) {
+        bgParticles.push({ x: 0, y: 0, vx: 0, vy: 0, alpha: 0 });
+      }
+    }
+    for (let i = 0; i < NUM_BG_PARTICLES; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      bgParticles[i].x = Math.random() * W;
+      bgParticles[i].y = Math.random() * H;
+      bgParticles[i].vx = Math.cos(angle) * 0.15;
+      bgParticles[i].vy = Math.sin(angle) * 0.15;
+      bgParticles[i].alpha = 0.03 + Math.random() * 0.02;
+    }
+  }
+
+  function resetState() {
+    frame = 0;
+    buildCodeLines();
+    buildArtifacts();
+    buildBgParticles();
+    defenderAlpha = 0;
+    attackerAlpha = 0;
+  }
+
+  function getSubCycle(f: number): { subIndex: number; subFrame: number; phase: string } {
+    const loopFrame = f % FULL_CYCLE;
+    const subEnd = SUB_LEN * NUM_SUB;
+    if (loopFrame >= subEnd + HOLD_FRAMES) {
+      return { subIndex: -1, subFrame: loopFrame - subEnd - HOLD_FRAMES, phase: 'reset-flash' };
+    }
+    if (loopFrame >= subEnd) {
+      return { subIndex: -1, subFrame: loopFrame - subEnd, phase: 'dark-hold' };
+    }
+    const subIndex = Math.floor(loopFrame / SUB_LEN);
+    const subFrame = loopFrame % SUB_LEN;
+    let phase: string;
+    if (subFrame < SUB_APPROACH) phase = 'approach';
+    else if (subFrame < SUB_APPROACH + SUB_FLASH) phase = 'flash';
+    else if (subFrame < SUB_APPROACH + SUB_FLASH + SUB_LINGER) phase = 'linger';
+    else if (subFrame < SUB_APPROACH + SUB_FLASH + SUB_LINGER + SUB_ARTIFACT_FADE) phase = 'artifact-fade';
+    else if (subFrame < SUB_APPROACH + SUB_FLASH + SUB_LINGER + SUB_ARTIFACT_FADE + SUB_EXIT) phase = 'exit';
+    else phase = 'pause';
+    return { subIndex, subFrame, phase };
+  }
+
+  const WOBBLE_PERIOD = Math.PI * 2 / 200;
+
+  function update() {
+    const { subIndex, subFrame, phase } = getSubCycle(frame);
+    const cx = W / 2;
+    const cy = H / 2;
+    const defBaseY = cy - H * 0.08;
+    const atkBaseY = cy + H * 0.08;
+    const leftEdge = W * 0.06;
+    const rightEdge = W * 0.94;
+
+    for (let i = 0; i < NUM_BG_PARTICLES; i++) {
+      const p = bgParticles[i];
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W;
+      if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H;
+      if (p.y > H) p.y = 0;
+    }
+
+    if (phase === 'approach') {
+      const t = subFrame / SUB_APPROACH;
+      defenderX = leftEdge + (cx - leftEdge) * t;
+      defenderY = defBaseY + Math.sin(subFrame * WOBBLE_PERIOD) * 8;
+      defenderAlpha = Math.min(1, t * 3);
+      attackerX = rightEdge - (rightEdge - cx) * t;
+      attackerY = atkBaseY + Math.sin(subFrame * WOBBLE_PERIOD + Math.PI) * 8;
+      attackerAlpha = Math.min(1, t * 3);
+      for (let i = 0; i < NUM_ARTIFACTS; i++) { artifacts[i].active = false; artifacts[i].alpha = 0; }
+      for (let i = 0; i < NUM_CODE_LINES; i++) { codeLines[i].flashAlpha = 0; }
+    } else if (phase === 'flash') {
+      defenderX = cx;
+      defenderY = defBaseY + Math.sin(SUB_APPROACH * WOBBLE_PERIOD) * 8;
+      attackerX = cx;
+      attackerY = atkBaseY + Math.sin(SUB_APPROACH * WOBBLE_PERIOD + Math.PI) * 8;
+      defenderAlpha = 1; attackerAlpha = 1;
+      const flashT = (subFrame - SUB_APPROACH) / SUB_FLASH;
+      const flashI = flashT < 0.3 ? flashT / 0.3 : 1 - (flashT - 0.3) / 0.7;
+      for (let i = 0; i < NUM_CODE_LINES; i++) { codeLines[i].flashAlpha = flashI * 0.7; }
+      const cycleOpacity = ARTIFACT_OPACITIES[subIndex];
+      if (cycleOpacity > 0 && flashT < 0.2) {
+        for (let i = 0; i < NUM_ARTIFACTS; i++) {
+          const a = artifacts[i];
+          if (!a.active) {
+            a.active = true;
+            a.x = cx + (Math.sin(i * 7.3) * 5);
+            a.y = cy + (Math.cos(i * 4.9) * 5);
+            a.angle = (i / NUM_ARTIFACTS) * Math.PI * 2 + Math.sin(i * 2.1) * 0.4;
+            a.vx = Math.cos(a.angle) * 1.2;
+            a.vy = Math.sin(a.angle) * 1.2;
+            a.maxAlpha = cycleOpacity;
+            a.alpha = cycleOpacity;
+          }
+        }
+      }
+    } else if (phase === 'linger') {
+      const lingerFrame = subFrame - SUB_APPROACH - SUB_FLASH;
+      const lingerT = lingerFrame / SUB_LINGER;
+      const drift = lingerT * lingerT * 0.3;
+      defenderX = cx + (rightEdge - cx) * drift;
+      defenderY = defBaseY + Math.sin(subFrame * WOBBLE_PERIOD) * (8 - lingerT * 4);
+      attackerX = cx - (cx - leftEdge) * drift;
+      attackerY = atkBaseY + Math.sin(subFrame * WOBBLE_PERIOD + Math.PI) * (8 - lingerT * 4);
+      defenderAlpha = 1; attackerAlpha = 1;
+      for (let i = 0; i < NUM_CODE_LINES; i++) {
+        codeLines[i].flashAlpha = Math.max(0, codeLines[i].flashAlpha - 0.015);
+      }
+      for (let i = 0; i < NUM_ARTIFACTS; i++) {
+        const a = artifacts[i];
+        if (!a.active) continue;
+        const decelT = Math.min(1, lingerFrame / 60);
+        const speed = 1.2 * (1 - decelT) + 0.1 * decelT;
+        a.vx = Math.cos(a.angle) * speed;
+        a.vy = Math.sin(a.angle) * speed;
+        a.x += a.vx; a.y += a.vy;
+      }
+    } else if (phase === 'artifact-fade') {
+      const fadeFrame = subFrame - SUB_APPROACH - SUB_FLASH - SUB_LINGER;
+      const fadeT = fadeFrame / SUB_ARTIFACT_FADE;
+      const drift = 0.3 + fadeT * 0.35;
+      defenderX = cx + (rightEdge - cx) * drift;
+      defenderY = defBaseY + Math.sin(subFrame * WOBBLE_PERIOD) * 6;
+      attackerX = cx - (cx - leftEdge) * drift;
+      attackerY = atkBaseY + Math.sin(subFrame * WOBBLE_PERIOD + Math.PI) * 6;
+      defenderAlpha = 1; attackerAlpha = 1;
+      for (let i = 0; i < NUM_ARTIFACTS; i++) {
+        const a = artifacts[i];
+        if (!a.active) continue;
+        a.x += a.vx * 0.3;
+        a.y += a.vy * 0.3;
+        a.alpha = a.maxAlpha * (1 - fadeT);
+        if (a.alpha < 0.005) { a.active = false; a.alpha = 0; }
+      }
+      for (let i = 0; i < NUM_CODE_LINES; i++) { codeLines[i].flashAlpha = 0; }
+    } else if (phase === 'exit') {
+      const exitFrame = subFrame - SUB_APPROACH - SUB_FLASH - SUB_LINGER - SUB_ARTIFACT_FADE;
+      const exitT = exitFrame / SUB_EXIT;
+      const drift = 0.65 + exitT * 0.35;
+      defenderX = cx + (rightEdge - cx) * drift;
+      defenderY = defBaseY + Math.sin(subFrame * WOBBLE_PERIOD) * 6;
+      attackerX = cx - (cx - leftEdge) * drift;
+      attackerY = atkBaseY + Math.sin(subFrame * WOBBLE_PERIOD + Math.PI) * 6;
+      defenderAlpha = Math.max(0, 1 - exitT * 2);
+      attackerAlpha = Math.max(0, 1 - exitT * 2);
+      for (let i = 0; i < NUM_ARTIFACTS; i++) { artifacts[i].active = false; artifacts[i].alpha = 0; }
+    } else if (phase === 'pause') {
+      defenderAlpha = 0; attackerAlpha = 0;
+      for (let i = 0; i < NUM_ARTIFACTS; i++) { artifacts[i].active = false; artifacts[i].alpha = 0; }
+    } else if (phase === 'dark-hold') {
+      defenderAlpha = 0; attackerAlpha = 0;
+      for (let i = 0; i < NUM_ARTIFACTS; i++) { artifacts[i].active = false; artifacts[i].alpha = 0; }
+      for (let i = 0; i < NUM_CODE_LINES; i++) { codeLines[i].flashAlpha = 0; }
+    } else if (phase === 'reset-flash') {
+      const flashT = subFrame / FLASH_RESET;
+      const flashI = flashT < 0.3 ? flashT / 0.3 : 1 - (flashT - 0.3) / 0.7;
+      for (let i = 0; i < NUM_CODE_LINES; i++) { codeLines[i].flashAlpha = flashI * 0.5; }
+      defenderAlpha = 0; attackerAlpha = 0;
+    }
+  }
+
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = bgColor;
+    ctx!.fillRect(0, 0, W, H);
+    const cx = W / 2;
+    ctx!.strokeStyle = dimA(0.06);
+    ctx!.lineWidth = 1;
+    ctx!.beginPath();
+    ctx!.moveTo(cx, 0);
+    ctx!.lineTo(cx, H);
+    ctx!.stroke();
+    for (let i = 0; i < NUM_BG_PARTICLES; i++) {
+      const p = bgParticles[i];
+      ctx!.beginPath();
+      ctx!.arc(p.x, p.y, 1 + (i & 1) * 0.5, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(p.alpha);
+      ctx!.fill();
+    }
+    for (let i = 0; i < NUM_CODE_LINES; i++) {
+      const cl = codeLines[i];
+      ctx!.strokeStyle = dimA(0.08);
+      ctx!.lineWidth = 1;
+      ctx!.beginPath();
+      ctx!.moveTo(cl.x, cl.y);
+      ctx!.lineTo(cl.x + cl.width, cl.y);
+      ctx!.stroke();
+      if (cl.flashAlpha > 0.005) {
+        ctx!.strokeStyle = cobaltA(cl.flashAlpha);
+        ctx!.lineWidth = 1.5;
+        ctx!.beginPath();
+        ctx!.moveTo(cl.x, cl.y);
+        ctx!.lineTo(cl.x + cl.width, cl.y);
+        ctx!.stroke();
+      }
+    }
+    for (let i = 0; i < NUM_ARTIFACTS; i++) {
+      const a = artifacts[i];
+      if (!a.active || a.alpha < 0.005) continue;
+      ctx!.beginPath();
+      ctx!.arc(a.x, a.y, 3, 0, Math.PI * 2);
+      ctx!.fillStyle = cobaltA(a.alpha);
+      ctx!.fill();
+      if (a.alpha > 0.08) {
+        const gr = ctx!.createRadialGradient(a.x, a.y, 0, a.x, a.y, 8);
+        gr.addColorStop(0, cobaltA(a.alpha * 0.4));
+        gr.addColorStop(1, cobaltA(0));
+        ctx!.beginPath();
+        ctx!.arc(a.x, a.y, 8, 0, Math.PI * 2);
+        ctx!.fillStyle = gr;
+        ctx!.fill();
+      }
+    }
+    if (defenderAlpha > 0.005) {
+      const dgr = ctx!.createRadialGradient(defenderX, defenderY, 0, defenderX, defenderY, 12);
+      dgr.addColorStop(0, cobaltA(0.35 * defenderAlpha));
+      dgr.addColorStop(0.5, cobaltA(0.1 * defenderAlpha));
+      dgr.addColorStop(1, cobaltA(0));
+      ctx!.beginPath();
+      ctx!.arc(defenderX, defenderY, 12, 0, Math.PI * 2);
+      ctx!.fillStyle = dgr;
+      ctx!.fill();
+      ctx!.beginPath();
+      ctx!.arc(defenderX, defenderY, 3, 0, Math.PI * 2);
+      ctx!.fillStyle = cobaltA(0.9 * defenderAlpha);
+      ctx!.fill();
+    }
+    if (attackerAlpha > 0.005) {
+      const agr = ctx!.createRadialGradient(attackerX, attackerY, 0, attackerX, attackerY, 10);
+      agr.addColorStop(0, dimA(0.25 * attackerAlpha));
+      agr.addColorStop(0.5, dimA(0.08 * attackerAlpha));
+      agr.addColorStop(1, dimA(0));
+      ctx!.beginPath();
+      ctx!.arc(attackerX, attackerY, 10, 0, Math.PI * 2);
+      ctx!.fillStyle = agr;
+      ctx!.fill();
+      ctx!.beginPath();
+      ctx!.arc(attackerX, attackerY, 3, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(0.5 * attackerAlpha);
+      ctx!.fill();
+    }
+  }
+
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = bgColor;
+    ctx!.fillRect(0, 0, W, H);
+    const cx = W / 2;
+    const cy = H / 2;
+    ctx!.strokeStyle = dimA(0.06);
+    ctx!.lineWidth = 1;
+    ctx!.beginPath();
+    ctx!.moveTo(cx, 0);
+    ctx!.lineTo(cx, H);
+    ctx!.stroke();
+    for (let i = 0; i < NUM_BG_PARTICLES; i++) {
+      const px = ((i * 97 + 31) % 100) / 100 * W;
+      const py = ((i * 73 + 47) % 100) / 100 * H;
+      ctx!.beginPath();
+      ctx!.arc(px, py, 1 + (i & 1) * 0.5, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(0.04);
+      ctx!.fill();
+    }
+    const startY = cy - CODE_SPREAD / 2;
+    for (let i = 0; i < NUM_CODE_LINES; i++) {
+      const lx = cx + CODE_OFFSETS[i] - CODE_WIDTHS[i] / 2;
+      const ly = startY + i * (CODE_SPREAD / (NUM_CODE_LINES - 1));
+      ctx!.strokeStyle = dimA(0.08);
+      ctx!.lineWidth = 1;
+      ctx!.beginPath();
+      ctx!.moveTo(lx, ly);
+      ctx!.lineTo(lx + CODE_WIDTHS[i], ly);
+      ctx!.stroke();
+    }
+    const defX = cx - 4;
+    const defY = cy - H * 0.08;
+    const dgr = ctx!.createRadialGradient(defX, defY, 0, defX, defY, 12);
+    dgr.addColorStop(0, cobaltA(0.35));
+    dgr.addColorStop(0.5, cobaltA(0.1));
+    dgr.addColorStop(1, cobaltA(0));
+    ctx!.beginPath();
+    ctx!.arc(defX, defY, 12, 0, Math.PI * 2);
+    ctx!.fillStyle = dgr;
+    ctx!.fill();
+    ctx!.beginPath();
+    ctx!.arc(defX, defY, 3, 0, Math.PI * 2);
+    ctx!.fillStyle = cobaltA(0.9);
+    ctx!.fill();
+    const atkX = cx + 4;
+    const atkY = cy + H * 0.08;
+    const agr = ctx!.createRadialGradient(atkX, atkY, 0, atkX, atkY, 10);
+    agr.addColorStop(0, dimA(0.25));
+    agr.addColorStop(0.5, dimA(0.08));
+    agr.addColorStop(1, dimA(0));
+    ctx!.beginPath();
+    ctx!.arc(atkX, atkY, 10, 0, Math.PI * 2);
+    ctx!.fillStyle = agr;
+    ctx!.fill();
+    ctx!.beginPath();
+    ctx!.arc(atkX, atkY, 3, 0, Math.PI * 2);
+    ctx!.fillStyle = dimA(0.5);
+    ctx!.fill();
+    for (let i = 0; i < NUM_ARTIFACTS; i++) {
+      const angle = (i / NUM_ARTIFACTS) * Math.PI * 2;
+      const dist = 35 + i * 8;
+      const ax = cx + Math.cos(angle) * dist;
+      const ay = cy + Math.sin(angle) * dist;
+      ctx!.beginPath();
+      ctx!.arc(ax, ay, 3, 0, Math.PI * 2);
+      ctx!.fillStyle = cobaltA(0.9);
+      ctx!.fill();
+      const sgr = ctx!.createRadialGradient(ax, ay, 0, ax, ay, 8);
+      sgr.addColorStop(0, cobaltA(0.36));
+      sgr.addColorStop(1, cobaltA(0));
+      ctx!.beginPath();
+      ctx!.arc(ax, ay, 8, 0, Math.PI * 2);
+      ctx!.fillStyle = sgr;
+      ctx!.fill();
+    }
+  }
+
+  function tick() {
+    frame++;
+    if (frame >= FULL_CYCLE) frame = 0;
+    update();
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth;
+    H = canvas!.offsetHeight;
+    canvas!.width = W * dpr;
+    canvas!.height = H * dpr;
+    ctx!.scale(dpr, dpr);
+    if (prefersReduced) {
+      drawStatic();
+    } else {
+      buildCodeLines();
+      buildBgParticles();
+    }
+  });
+  ro.observe(canvas);
+
+  const dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth;
+  H = canvas.offsetHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  if (prefersReduced) {
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    resetState();
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(rafId); rafId = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+    window.addEventListener('pagehide', () => { cancelAnimationFrame(rafId); io.disconnect(); ro.disconnect(); });
+  }
+})();
+</script>
