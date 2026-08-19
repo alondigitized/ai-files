@@ -1,0 +1,381 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'claude-watermark')!;
+---
+
+<style is:global>
+  /* ── Canvas ── */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .claude-watermark-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* ── Reenactment #1: Documentation Mockup (cw-doc-) ── */
+  .cw-doc-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .cw-doc-header { background: var(--surface2); padding: 0.65rem 1rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.75rem; color: var(--muted); letter-spacing: 0.04em; }
+  .cw-doc-header .cw-doc-icon { font-size: 0.85rem; }
+  .cw-doc-body { padding: 1.2rem 1.4rem; }
+  .cw-doc-title { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.3rem; }
+  .cw-doc-subtitle { font-size: 0.78rem; color: var(--muted); margin-bottom: 1.2rem; }
+  .cw-doc-callout { background: rgba(255,255,255,0.03); border-left: 3px solid var(--story); padding: 0.7rem 1rem; margin-bottom: 0.75rem; border-radius: 0 0.4rem 0.4rem 0; font-size: 0.85rem; line-height: 1.55; color: var(--text); }
+  .cw-doc-callout:last-of-type { margin-bottom: 0; }
+  .cw-doc-callout em { color: var(--muted); font-style: normal; font-size: 0.72rem; display: block; margin-top: 0.3rem; letter-spacing: 0.03em; }
+  .cw-doc-footer { font-size: 0.78rem; color: var(--muted); padding: 0.65rem 1.4rem; border-top: 1px solid var(--border); background: var(--surface2); line-height: 1.55; }
+
+  /* ── Reenactment #2: Word Choice Diagram (cw-mech-) ── */
+  .cw-mech-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  @media (max-width: 600px) { .cw-mech-wrap { grid-template-columns: 1fr; } }
+  .cw-mech-panel { background: var(--surface); padding: 1.1rem 1.3rem; }
+  .cw-mech-label { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem; }
+  .cw-mech-label.standard { color: var(--muted); }
+  .cw-mech-label.keyed { color: var(--story); }
+  .cw-mech-sentence { font-size: 0.92rem; line-height: 1.7; color: var(--text); }
+  .cw-mech-sentence .cw-pick { background: color-mix(in srgb, var(--story) 14%, transparent); border-bottom: 2px solid var(--story); padding: 0.05em 0.15em; border-radius: 2px; }
+  .cw-mech-sentence .cw-pick-std { background: rgba(255,255,255,0.06); border-bottom: 2px solid var(--muted); padding: 0.05em 0.15em; border-radius: 2px; }
+  .cw-mech-footer { grid-column: 1 / -1; background: var(--surface2); padding: 0.7rem 1.3rem; }
+  .cw-mech-footer p { font-size: 0.82rem; color: var(--muted); line-height: 1.55; margin: 0; }
+  .cw-mech-footer p strong { color: var(--text); font-weight: 600; }
+  .cw-mech-footer .cw-mech-cite { font-size: 0.72rem; color: var(--muted); margin-top: 0.5rem; font-style: italic; display: block; }
+
+  /* ── Reenactment #3: Detection Result Mockup (cw-detect-) ── */
+  .cw-detect-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  @media (max-width: 600px) { .cw-detect-wrap { grid-template-columns: 1fr; } }
+  .cw-detect-panel { background: var(--surface); padding: 1.1rem 1.3rem; }
+  .cw-detect-label { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; margin-bottom: 0.85rem; }
+  .cw-detect-label.signal { color: var(--story); }
+  .cw-detect-label.nosignal { color: var(--accent); }
+  .cw-detect-line { font-family: 'Courier New', Courier, monospace; font-size: 0.8rem; line-height: 1.65; color: var(--text); padding: 0.2rem 0; }
+  .cw-detect-line .cw-key { color: var(--muted); }
+  .cw-detect-line .cw-val { color: var(--story); }
+  .cw-detect-line .cw-val-note { color: var(--muted); font-style: italic; font-family: inherit; }
+  .cw-detect-denied { display: flex; align-items: flex-start; gap: 0.5rem; font-size: 0.82rem; line-height: 1.5; color: var(--muted); padding: 0.25rem 0; }
+  .cw-detect-denied .cw-x { color: var(--accent); font-weight: 700; display: inline-block; flex-shrink: 0; }
+  .cw-detect-denied del { text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+  .cw-detect-footer { grid-column: 1 / -1; background: var(--surface2); padding: 0.65rem 1.3rem; font-size: 0.72rem; color: var(--muted); font-style: italic; line-height: 1.55; }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="the-mark">
+      <h2><span class="num">01 — The Mark</span>What Anthropic Shipped, and What It Said the Mark Means</h2>
+
+      <p>On August 11, 2026, Anthropic published a support page announcing it had woven an invisible watermark into every word Claude generates. The mark covers all Claude products — the API, the consumer chatbot, Claude Code, Claude Cowork, and Claude Tag — in every country, with no opt-out. Models launched on or after August 2, 2026, carry it at launch. Older models are being retrofitted. In the same document, Anthropic disclosed what the mark actually proves.</p>
+
+      <p>The scope is total. The watermark is applied at the model level. It is present regardless of which product or surface the text comes from. It travels with the text when copied and pasted, and may persist through some editing. There is no setting to disable it. Every Claude user in the world is generating watermarked text whether they know it or not.</p>
+
+      <p>What follows in Anthropic's documentation, however, is a set of hedges unusual for a feature announcement. Four disclaimers, published on the same support page, narrow the watermark's meaning until almost nothing definitive remains.</p>
+
+      <div class="cw-doc-wrap">
+        <div class="cw-doc-header"><span class="cw-doc-icon">&#128196;</span> support.claude.com — How Claude marks AI-generated content</div>
+        <div class="cw-doc-body">
+          <div class="cw-doc-title">How Claude marks AI-generated content</div>
+          <div class="cw-doc-subtitle">Published August 11, 2026</div>
+          <div class="cw-doc-callout">
+            "If a supported mark is found, it indicates that the content <strong>may have been processed</strong> by Claude."
+            <em>What "processed" means is not defined. Proofreading is processing. Translation is processing. Writing from scratch is processing.</em>
+          </div>
+          <div class="cw-doc-callout">
+            "A detected mark provides a signal that content was processed by Claude, but is <strong>not fully conclusive</strong>."
+            <em>The mark is evidence, not proof.</em>
+          </div>
+          <div class="cw-doc-callout">
+            "Lack of a detected mark <strong>doesn't mean the content wasn't AI-generated</strong> or processed."
+            <em>Absence of a watermark proves nothing about absence of AI.</em>
+          </div>
+          <div class="cw-doc-callout">
+            "Claude <strong>may not be the original author</strong>. People often use Claude to proofread, translate, summarize, or convert files."
+            <em>The mark cannot distinguish a writer from a prompter.</em>
+          </div>
+        </div>
+        <div class="cw-doc-footer">Four consecutive disclaimers in one support document. Each narrows what the watermark can claim. This is Anthropic's own published language — not a critic's paraphrase.</div>
+      </div>
+
+      <p>Read together, the disclaimers establish that the watermark is neither necessary nor sufficient evidence of AI authorship. The mark cannot distinguish between a human who used Claude to write something and a human who wrote something and used Claude to polish it.</p>
+
+      <p>Erick Erickson, a conservative radio host and blogger, was among the first to identify the false-positive scenario publicly. "I had ditched Grammarly for Claude for proofreading because it does a better job," Erickson posted on X the day of the announcement. "But now the stuff I've written will be watermarked that Claude did the work. This is ridiculous." Erickson's complaint is not hypothetical. Under the watermark's logic, every document that touches Claude in any capacity — proofreading, grammar correction, summarization, file conversion — carries the same invisible mark as a document Claude generated entirely from a prompt. The watermark cannot tell the difference because the watermark does not encode the difference.</p>
+    </section>
+
+    <section class="section" id="the-trigger">
+      <h2><span class="num">02 — The Trigger</span>Why Now, and Why Not Sooner</h2>
+
+      <p>The proximate cause is a regulation. Anthropic's support page explicitly references signing the EU AI Act's Article 50(2) Code of Practice on Transparency of AI-Generated Content. The Code was finalized at its Closing Plenary on June 10, 2026. The European Commission and the AI Board confirmed it as adequate in early July. Transparency obligations under Article 50 became legally enforceable on August 2, 2026 — the same date Claude models began shipping with watermarks.</p>
+
+      <p>Roughly 190 organizations signed the Code by the end of July, with 82 joining as Section 1 signatories, the providers carrying marking obligations. The list includes Anthropic, Google, Meta, Microsoft, and OpenAI. Non-compliance carries penalties of up to €15 million or 3% of worldwide annual turnover, whichever is greater, according to legal analysis of the AI Act's Article 99 by the law firm Faegre Drinker. Pre-existing AI systems have until December 2, 2026 to comply.</p>
+
+      <p>But the technology is not new. The Wall Street Journal reported in August 2024 that OpenAI had built a text-watermarking tool that internal documents described as "99.9% effective" at detecting ChatGPT output. OpenAI shelved it. According to the Journal's reporting, an internal survey found approximately 30% of ChatGPT users said they would use the service less if watermarking was deployed and a competing product did not watermark. OpenAI chose market share over marking. As of August 2026, OpenAI has deployed image watermarking (C2PA and SynthID) and audio watermarking (SynthID), but has not shipped text watermarking for ChatGPT.</p>
+
+      <p>Google moved first on text. Google DeepMind published "Scalable watermarking for identifying large language model outputs" — SynthID-Text — in <em>Nature</em> in October 2024, open-sourced the algorithm, and integrated it into Hugging Face Transformers. Google deployed SynthID on Gemini for text, images, audio, and video. Suno, the AI music generator, announced audio watermarking on August 6, 2026, five days before Anthropic's announcement. The compliance wave was already moving.</p>
+
+      <p>The result is an asymmetric landscape. As of mid-August 2026, only two major providers have confirmed text watermarking deployments: Anthropic and Google. OpenAI, Microsoft Copilot, and Meta's Llama models have not. Forbes contributor Anisha Sircar reported that xAI has not signed the EU Code of Practice. Open-weight models carry no watermark at all and, by design, cannot be forced to. A student generating text through Llama or Mistral's open models produces output indistinguishable from human writing. A student generating text through Claude produces output carrying an invisible probabilistic mark. The watermark, deployed globally, marks only the users of the companies that chose to comply.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="claude-watermark-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Tell</strong> — 55 identical off-white particles drift rightward; every 15 seconds a pale-blue detection sweep passes through the field, briefly revealing which particles carry the invisible mark; the glow decays unevenly, false flickers appear on unmarked particles, and a verdict halo tries to form but dissolves before it can resolve; the field returns to uniform indistinguishability.</p>
+
+    <section class="section" id="the-mechanism">
+      <h2><span class="num">03 — The Mechanism</span>The Mark Is Not in the Text. The Mark Is the Text.</h2>
+
+      <p>Three days after the feature announcement, Anthropic published a blog post explaining how the watermark works. The core sentence: the watermark "only changes the source of the randomness used to pick among words."</p>
+
+      <p>Every large language model generates text one token at a time. At each step, the model produces a probability distribution over its vocabulary — thousands of plausible next words, ranked by likelihood. In standard generation, the model picks from that distribution using an arbitrary random-number generator. The selection is genuinely random within the probability weights. In watermarked generation, the random-number generator is replaced by a keyed pseudorandom function. The key and a few preceding words determine which word the model selects. The output reads identically. The meaning is the same. The quality, by Anthropic's account, is the same. But the sequence of choices is now statistically consistent with a pattern that only someone holding the key can detect.</p>
+
+      <div class="cw-mech-wrap">
+        <div class="cw-mech-panel">
+          <div class="cw-mech-label standard">&#9675; Standard generation (arbitrary randomness)</div>
+          <p class="cw-mech-sentence">The report <span class="cw-pick-std">found</span> significant <span class="cw-pick-std">flaws</span> in the current <span class="cw-pick-std">process</span>.</p>
+        </div>
+        <div class="cw-mech-panel">
+          <div class="cw-mech-label keyed">&#9679; Watermarked generation (keyed randomness)</div>
+          <p class="cw-mech-sentence">The report <span class="cw-pick">identified</span> significant <span class="cw-pick">weaknesses</span> in the current <span class="cw-pick">procedure</span>.</p>
+        </div>
+        <div class="cw-mech-footer">
+          <p><strong>Same meaning. Same quality. Different coin flips.</strong> The detector does not search for something hidden — it checks whether the coin was Claude's.</p>
+          <span class="cw-mech-cite">"The watermark only changes the source of the randomness used to pick among words." — Anthropic, August 14, 2026</span>
+        </div>
+      </div>
+
+      <p>There is no hidden payload. No steganographic insertion. No extra characters or invisible Unicode. Alex Cui, GPTZero's CTO, put it plainly: "There is no sequence to search for, no suspicious character to isolate." The text itself is the watermark. A detector does not find something added to the prose. It determines whether the sequence of word choices is statistically consistent with the choices Claude would make using its key.</p>
+
+      <p>The intellectual lineage is short. In late 2022, Scott Aaronson, then a guest researcher at OpenAI, publicly proposed cryptographic text watermarking for language models, using pseudorandom token selection with a secret key. Hendrik Kirchner, an OpenAI engineer, built a working prototype. In 2023, Kirchenbauer et al. published "A Watermark for Large Language Models" at ICML, introducing a green-list/red-list framework that partitions vocabulary using a pseudorandom function dependent on preceding tokens. In October 2024, Google DeepMind published SynthID-Text in <em>Nature</em>, scaling the concept. Anthropic's blog states that its watermark is "a version of the SynthID-Text approach" in "a family of approaches that go back to a proposal by Scott Aaronson in 2022."</p>
+
+      <p>The watermark has acknowledged constraints. Code, which often must be exact, carries "generally less watermarking than some other forms of text," per Anthropic's blog. Very short passages do not contain enough text for a reliable detection signal, and Anthropic has not specified a minimum word or token threshold. The watermark carries no identifying information. It "can't be traced to a specific person, organization, or chat." The mark says Claude was involved. It does not say who was using Claude, or what they asked.</p>
+
+      <p>Anthropic claims the watermark has "no impact on the content, level of creativity, or readability" of Claude's output and "negligible impact on the speed of models," with "no extra tokens." Those claims cite Google DeepMind's testing of SynthID-Text, which found "no statistically significant differences from the unwatermarked model" across nearly 20 million Gemini users. No independent third party has published quality benchmarks for Anthropic's specific implementation on Claude. Anthropic has said it will share "details on detection mechanisms in forthcoming technical documentation." As of August 15, 2026, that documentation has not appeared.</p>
+
+      <p>For image and file outputs, Anthropic uses a separate standard: C2PA, the Coalition for Content Provenance and Authenticity, attaching signed provenance metadata to .svg, .png, and .jpg files. Unlike the text watermark, C2PA metadata can be stripped by format conversion, re-saving, or screenshots.</p>
+    </section>
+
+    <section class="section" id="the-interpreters">
+      <h2><span class="num">04 — The Interpreters</span>What Happens When Institutions Read a Probabilistic Signal</h2>
+
+      <p>The watermark was designed to be probabilistic. The institutions that will consume it operate in binary.</p>
+
+      <p>Forbes contributor Dan Fitzpatrick identified the core problem two days after the announcement. A writer spends two days drafting an essay, then asks Claude to correct the grammar. The returned version carries the watermark. A student translates a foreign-language source through Claude. The translation carries the watermark. A visually impaired user asks Claude to summarize an article for accessibility. The summary carries the watermark. In each case, the human did the substantive intellectual work. In each case, the output is marked as having been "processed by Claude." Erickson's proofreading complaint is only the most obvious instance of a structural problem the watermark cannot solve: it marks contact with Claude, not authorship by Claude, and no downstream consumer of the signal has a way to distinguish between the two.</p>
+
+      <p>The false-negative side is equally fraught. Anthropic's documentation lists conditions under which the watermark becomes undetectable: the text has been heavily edited, paraphrased, translated, or mixed into other writing; the passage is very short; or the file's metadata was stripped through format conversion. Paraphrasing tools, translation roundtrips, and reprocessing through a different language model can degrade or remove the mark. Anthropic has not published quantitative robustness data under adversarial conditions. Open-weight models — Meta's Llama, Mistral's open releases, and others — produce entirely unmarked text. A determined bad actor can evade the watermark. A careful student who runs her own words through Claude for a grammar check cannot.</p>
+
+      <p>The mark is live. The detector is not. Anthropic stated on August 14 that it "will soon be offering a watermark detection API" but is "in the process of working out the details of its implementation." No public detection tool exists as of August 15, 2026. Who will have access to the API — schools, employers, courts, individual users — has not been disclosed. Whether it will be free, paid, or rate-limited is unknown. The watermark is being embedded in every Claude output worldwide, and the mechanism to read it does not yet exist in any publicly accessible form.</p>
+
+      <div class="cw-detect-wrap">
+        <div class="cw-detect-panel">
+          <div class="cw-detect-label signal">What the signal says</div>
+          <div class="cw-detect-line"><span class="cw-key">RESULT: </span><span class="cw-val">Statistical patterns consistent with Claude's watermark detected.</span></div>
+          <div class="cw-detect-line"><span class="cw-key">CONFIDENCE: </span><span class="cw-val">Moderate</span></div>
+          <div class="cw-detect-line"><span class="cw-val-note">"A detected mark provides a signal that content was processed by Claude, but is not fully conclusive."</span></div>
+        </div>
+        <div class="cw-detect-panel">
+          <div class="cw-detect-label nosignal">What the signal does not say</div>
+          <div class="cw-detect-denied"><span class="cw-x" aria-hidden="true">&#10005;</span> <del>This text was written by AI</del></div>
+          <div class="cw-detect-denied"><span class="cw-x" aria-hidden="true">&#10005;</span> <del>This text was not written by a human</del></div>
+          <div class="cw-detect-denied"><span class="cw-x" aria-hidden="true">&#10005;</span> <del>The author used AI dishonestly</del></div>
+          <div class="cw-detect-denied"><span class="cw-x" aria-hidden="true">&#10005;</span> <del>The identity of the user</del></div>
+          <div class="cw-detect-denied"><span class="cw-x" aria-hidden="true">&#10005;</span> <del>The originating conversation</del></div>
+        </div>
+        <div class="cw-detect-footer">"Watermarking carries no identifying information and can't be traced to a specific person, organization, or chat." — Anthropic, August 14, 2026</div>
+      </div>
+
+      <p>When the API does ship, it will deliver a probabilistic signal to decision-makers who need a yes or no. Writing in <em>Fortune</em>, Beatrice Nolan observed that such a flat "AI" label risks treating someone generating a thousand fake news videos the same as a writer using Claude to clean up a paragraph. The watermark cannot encode intent, degree of use, or the nature of the human contribution. It reports contact. Institutions will read authorship.</p>
+
+      <p>Chris Best, Substack's CEO, articulated a related framing in a July 2026 Substack post — before the watermark was announced, and in a different context, addressing what he called "Claudefishing" on the platform. "The core problem is not people using AI," Best wrote. "The problem is when there is a mismatch between a reader's expectation and reality." The watermark does not resolve that mismatch. It introduces a new signal into an environment that has no shared framework for interpreting it.</p>
+
+      <p>Platforms are already building detection infrastructure. On July 21, 2026, Substack launched an AI-writing detector powered by Pangram, allowing readers to scan posts, notes, and comments over 100 words for an estimate of AI versus human authorship. Forbes contributor Lance Eliot has warned that AI detection tools remain unreliable, with problematic false-positive and false-negative rates. The watermark enters an ecosystem where the tools to read it are incomplete, the institutions that will use those tools have no interpretive framework, and the documentation that explains the mark's limits is a support page most of those institutions will never visit.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">05 — Signal</span>The Documentation Nobody Will Read</h2>
+
+      <p>Anthropic did something unusual. It shipped a capability and simultaneously published, in plain language on the same support page, a disclaimer that the capability proves nothing definitive. The hedging is not buried in fine print or legal boilerplate. It is the substance of the document. "May have been processed." "Not fully conclusive." "Lack of a detected mark doesn't mean the content wasn't AI-generated or processed." "Claude may not be the original author."</p>
+
+      <p>It will not matter. The mark will be read by automated detectors, institutional policies, and human decision-makers operating at a distance from the documentation. Schools will adopt AI detection workflows that treat a positive watermark signal as evidence of cheating. Employers screening applicants will flag watermarked writing samples. Content platforms will build moderation rules around machine-readable signals they can process at scale. None of these systems will reproduce the four disclaimers alongside the result. The gap is not between the mark and its documentation. The gap is between the documentation and the world's capacity to read it. Sagar Pandya, described by Forbes as an AI company co-founder, observed that enterprise clients were already exploring open-weight alternatives to avoid watermarked outputs entirely — a regulatory arbitrage that the mark's existence makes rational.</p>
+
+      <p>Anthropic wrote the caveats. They are public. They are verbatim. They are unambiguous. The watermark "may" indicate processing. It is "not fully conclusive." Absence proves nothing. The question is not whether the documentation exists. It is whether a single support page can outrun the institutional demand for a machine that says yes or no.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+  (function () {
+    const canvas = document.querySelector('.claude-watermark-canvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const ACCENT = '#bae6fd';
+    const ACCENT_RGB = '186,230,253';
+    const VERDICT = '#ff4d4d';
+    const bgOf = () =>
+      getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
+
+    let W = 0, H = 0, dpr = 1;
+    const COUNT = 55;
+
+    type P = {
+      x: number; y: number; baseY: number; r: number; vx: number;
+      marked: boolean; phase: number; period: number; amp: number;
+      glow: number; decay: number; swept: boolean; falseUntil: number; falseGlow: number;
+    };
+    let parts: P[] = [];
+
+    const rand = (a: number, b: number) => a + Math.random() * (b - a);
+
+    function build() {
+      parts = [];
+      for (let i = 0; i < COUNT; i++) {
+        const by = rand(0.08, 0.92) * H;
+        parts.push({
+          x: rand(0, W), y: by, baseY: by, r: rand(3, 4), vx: rand(0.25, 0.35),
+          marked: Math.random() < 0.55,
+          phase: rand(0, Math.PI * 2), period: rand(400, 600), amp: rand(8, 12),
+          glow: 0, decay: rand(0.006, 0.03), swept: false, falseUntil: -1, falseGlow: 0,
+        });
+      }
+    }
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const rect = canvas.getBoundingClientRect();
+      W = rect.width; H = rect.height;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      if (!parts.length) build();
+    }
+
+    // Cycle: 900 frames. Sweep 0-180. Hold to 270. Decay to 510. Verdict 510-600. Quiet to 900.
+    const CYCLE = 900, SWEEP_END = 180, HOLD_END = 270, DECAY_END = 510,
+          V_START = 510, V_PEAK = 570, V_END = 600;
+    let f = 0, raf = 0, running = false;
+
+    function drawParticle(p: P) {
+      const g = Math.max(p.glow, p.falseGlow);
+      if (g > 0.01) {
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(${ACCENT_RGB},${(g * 0.18).toFixed(3)})`;
+        ctx.arc(p.x, p.y, p.r + 12 * g, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(${ACCENT_RGB},${(g * 0.6).toFixed(3)})`;
+        ctx.arc(p.x, p.y, p.r + 2 * g, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.beginPath();
+        ctx.fillStyle = 'rgba(232,232,232,0.07)';
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function frame(staticMode: boolean) {
+      ctx.fillStyle = bgOf();
+      ctx.fillRect(0, 0, W, H);
+
+      const sweepX = f <= SWEEP_END ? (f / SWEEP_END) * W : -1;
+
+      if (sweepX >= 0) {
+        const grad = ctx.createLinearGradient(sweepX - 40, 0, sweepX + 40, 0);
+        grad.addColorStop(0, `rgba(${ACCENT_RGB},0)`);
+        grad.addColorStop(0.5, `rgba(${ACCENT_RGB},0.15)`);
+        grad.addColorStop(1, `rgba(${ACCENT_RGB},0)`);
+        ctx.fillStyle = grad;
+        ctx.fillRect(sweepX - 40, 0, 80, H);
+      }
+
+      for (const p of parts) {
+        if (!staticMode) {
+          p.x += p.vx;
+          if (p.x - p.r > W) { p.x = -p.r; p.swept = false; }
+          p.phase += (Math.PI * 2) / p.period;
+          p.y = p.baseY + Math.sin(p.phase) * p.amp;
+
+          if (sweepX >= 0 && !p.swept && p.x <= sweepX) {
+            p.swept = true;
+            if (p.marked) p.glow = 0.0001;
+          }
+          if (p.glow > 0) {
+            if (f < HOLD_END) p.glow = Math.min(0.6, p.glow + 0.03);
+            else if (f < DECAY_END) p.glow = Math.max(0, p.glow - p.decay);
+            else p.glow = 0;
+          }
+          if (f === HOLD_END + 5 && !p.marked && Math.random() < 0.06) {
+            p.falseUntil = f + rand(50, 70);
+          }
+          if (p.falseUntil > f) p.falseGlow = Math.min(0.3, p.falseGlow + 0.02);
+          else p.falseGlow = Math.max(0, p.falseGlow - 0.012);
+        }
+        drawParticle(p);
+      }
+
+      if (!staticMode && f >= V_START && f <= V_END) {
+        const t = (f - V_START) / (V_PEAK - V_START);
+        const rad = 60 * Math.min(1, t);
+        const op = f <= V_PEAK ? 0.2 * t : 0.2 * (1 - (f - V_PEAK) / (V_END - V_PEAK));
+        const cx = W * 0.82, cy = H * 0.5;
+        const isFlick = f === V_PEAK || f === V_PEAK + 1;
+        const rg = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(rad, 1));
+        const col = isFlick ? '255,77,77' : ACCENT_RGB;
+        rg.addColorStop(0, `rgba(${col},${Math.max(op, 0).toFixed(3)})`);
+        rg.addColorStop(1, `rgba(${col},0)`);
+        ctx.fillStyle = rg;
+        ctx.beginPath();
+        ctx.arc(cx, cy, Math.max(rad, 1), 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      if (!staticMode) { f = (f + 1) % CYCLE; }
+    }
+
+    function loop() {
+      frame(false);
+      raf = requestAnimationFrame(loop);
+    }
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    function start() {
+      if (running || reduced.matches) return;
+      running = true;
+      raf = requestAnimationFrame(loop);
+    }
+    function stop() {
+      if (!running) return;
+      running = false;
+      cancelAnimationFrame(raf);
+    }
+
+    function staticFrame() {
+      // Mid-sweep still: marked particles lit, unmarked dim, no verdict halo.
+      f = HOLD_END - 1;
+      for (const p of parts) { p.glow = p.marked ? 0.6 : 0; p.falseGlow = 0; }
+      frame(true);
+    }
+
+    const ro = new ResizeObserver(() => {
+      resize();
+      if (reduced.matches) staticFrame();
+    });
+    ro.observe(canvas);
+    resize();
+
+    let io: IntersectionObserver | null = null;
+    if (reduced.matches) {
+      staticFrame();
+    } else {
+      io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) start(); else stop();
+        }
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+    }
+
+    window.addEventListener('pagehide', () => {
+      stop();
+      ro.disconnect();
+      if (io) io.disconnect();
+    });
+  })();
+</script>
