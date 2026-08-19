@@ -1,0 +1,589 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'fli-safety-index-goalposts')!;
+---
+
+<style is:global>
+  /* === Reenactment 1: Document Diff (Anthropic RSP v1.0 vs v3.0) === */
+  .gp-diff-wrap {
+    margin: 2rem 0;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .gp-diff-panel {
+    padding: 1.25rem 1.5rem;
+  }
+  .gp-diff-old {
+    background: #1a1a1a;
+    border-bottom: 1px solid #2a2a2a;
+  }
+  .gp-diff-new {
+    background: #161616;
+  }
+  .gp-diff-label {
+    font-family: 'SF Mono', 'Fira Code', 'Fira Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .gp-diff-old .gp-diff-label {
+    color: #ff8080;
+  }
+  .gp-diff-new .gp-diff-label {
+    color: var(--story, #a5b4fc);
+  }
+  .gp-diff-text {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    margin: 0;
+    color: #e8e8e8;
+  }
+  .gp-diff-old .gp-diff-text {
+    text-decoration: line-through;
+    text-decoration-color: #ff8080;
+    text-decoration-thickness: 2px;
+    color: #c0c0c0;
+  }
+  .gp-diff-note {
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: #b0b0b0;
+    font-style: italic;
+  }
+  .gp-diff-source {
+    padding: 0.75rem 1.5rem;
+    background: #111111;
+    border-top: 1px solid #2a2a2a;
+    font-size: 0.8rem;
+    color: #909090;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* === Reenactment 2: Clause Callout (OpenAI PF v2) === */
+  .gp-clause-wrap {
+    margin: 2rem 0;
+    background: #161616;
+    border: 1px solid #2a2a2a;
+    border-left: 3px solid var(--story, #a5b4fc);
+    border-radius: 4px;
+    padding: 1.5rem 1.5rem 1.25rem;
+  }
+  .gp-clause-label {
+    font-family: 'SF Mono', 'Fira Code', 'Fira Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--story, #a5b4fc);
+    margin-bottom: 1rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .gp-clause-text {
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: #e8e8e8;
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+  .gp-clause-highlight {
+    background: #1e1f30;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+  .gp-clause-annotation {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #2a2a2a;
+    font-size: 0.85rem;
+    color: #ff8080;
+    font-weight: 600;
+  }
+
+  /* === Reenactment 3: Four-Lab Comparison Grid === */
+  .gp-compare-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    margin: 2rem 0;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #2a2a2a;
+  }
+  .gp-compare-col {
+    background: #161616;
+    padding: 1.25rem;
+  }
+  .gp-compare-header {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--story, #a5b4fc);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #2a2a2a;
+    line-height: 1.4;
+  }
+  .gp-compare-version {
+    display: block;
+    font-weight: 400;
+    font-size: 0.8rem;
+    color: #b0b0b0;
+    margin-top: 0.25rem;
+  }
+  .gp-compare-body {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: #e8e8e8;
+  }
+  .gp-compare-key {
+    color: var(--story, #a5b4fc);
+    font-weight: 600;
+  }
+  .gp-compare-footer {
+    grid-column: 1 / -1;
+    background: #111111;
+    padding: 1rem 1.25rem;
+  }
+  .gp-compare-footer p {
+    font-size: 0.8rem;
+    color: #909090;
+    margin: 0.35rem 0;
+    line-height: 1.5;
+  }
+  @media (max-width: 768px) {
+    .gp-compare-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* === Canvas === */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .fli-safety-index-goalposts-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+<section class="section" id="context">
+  <h2><span class="num">01 — Context</span>The Line That Held</h2>
+  <p>In September 2023, Anthropic published a sentence in its Responsible Scaling Policy: a "public commitment not to train or deploy models capable of causing catastrophic harm unless we have implemented safety and security measures that will keep risks below acceptable levels." By February 2026, that sentence was gone.</p>
+  <p>Between September 2023 and May 2024, three frontier AI labs published voluntary safety frameworks containing the same structural feature: an unconditional commitment to halt. Anthropic's RSP v1.0 was first. As reproduced in Slade Byrd's policy comparison, it pledged to "pause the scaling and/or delay the deployment of new models whenever our scaling ability outstrips our ability to comply with the safety procedures for the corresponding ASL." OpenAI followed in December 2023 with its Preparedness Framework. According to a contemporaneous LessWrong summary of the document, models receiving a "critical" post-mitigation risk designation required halting development — "stop developing it until implementing mitigations such that it drops to High." Google DeepMind published its Frontier Safety Framework v1.0 in May 2024, stating that if a model reached evaluation thresholds before mitigations were ready, "we would put on hold further deployment or development."</p>
+  <p>The frameworks differed in architecture — Anthropic used tiered ASL levels, OpenAI built risk scorecards, DeepMind defined Critical Capability Levels — but each contained a version of the same sentence: if a model crosses this line, we stop. The commitments did not reference competitor behavior. They did not condition the halt on market position. The stopping rule stood on its own. This was the strongest form of voluntary safety commitment available absent regulation: a public promise to halt, regardless.</p>
+</section>
+
+<div class="phantom-wrap">
+  <canvas class="fli-safety-index-goalposts-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>The Reference</strong> — Four accent-colored horizontal lines sit at staggered heights, each a safety commitment. Sensor nodes on each periodically scan the others' positions. Whenever one detects a neighbor has drifted lower it drops to match. All four quietly descend in sequence while faint gridlines mark where they started.</p>
+
+<section class="section" id="what-changed">
+  <h2><span class="num">02 — What Changed</span>The Rewrite</h2>
+  <p>On February 24, 2026, Anthropic published RSP v3.0. The unconditional pause commitment was gone. In its place, the company wrote: "We now separate our plans as a company — those which we expect to achieve regardless of what any other company does — from our more ambitious industry-wide recommendations."</p>
+  <p>The new framework conditions a pause or delay on two requirements, both of which must be met simultaneously: Anthropic's leadership must judge that the company is the leader in the AI race, and they must assess that the risk of catastrophe is material. Binding internal pauses were replaced with "Frontier Safety Roadmaps" — documents Anthropic's own announcement describes as "nonbinding but publicly-declared targets." As reproduced in Slade Byrd's comparison of RSP versions, Appendix A of the new policy contains "competitor-contingent commitments aimed at staying in line with these recommendations in scenarios where we can be confident that other relevant AI developers are doing the same."</p>
+  <p>Five weeks later, Anthropic published RSP v3.1, adding a clarification: "we remain free to take measures such as pausing the development of our AI systems in any circumstances in which we deem them appropriate." This is a statement of permission, not commitment. It says Anthropic can pause if it wants to. The original RSP said it would.</p>
+
+  <div class="gp-diff-wrap">
+    <div class="gp-diff-panel gp-diff-old">
+      <div class="gp-diff-label">RSP v1.0 — September 2023</div>
+      <p class="gp-diff-text"><del>"Anthropic's commitment to follow the ASL scheme thus implies that we commit to pause the scaling and/or delay the deployment of new models whenever our scaling ability outstrips our ability to comply with the safety procedures for the corresponding ASL."</del></p>
+    </div>
+    <div class="gp-diff-panel gp-diff-new">
+      <div class="gp-diff-label">RSP v3.0 — February 2026</div>
+      <p class="gp-diff-text">"We now separate our plans as a company — those which we expect to achieve regardless of what any other company does — from our more ambitious industry-wide recommendations."</p>
+      <p class="gp-diff-note">Frontier Safety Roadmaps: "nonbinding but publicly-declared targets"</p>
+    </div>
+    <p class="gp-diff-source">v1.0 text as reproduced in Slade Byrd's policy comparison; v3.0 text from Anthropic's official announcement.</p>
+  </div>
+
+  <p>On April 15, 2025, OpenAI published version 2 of its Preparedness Framework. It added a single sentence that had no equivalent in the original:</p>
+
+  <div class="gp-clause-wrap">
+    <div class="gp-clause-label">Preparedness Framework v2 — April 15, 2025</div>
+    <p class="gp-clause-text"><span class="gp-clause-highlight">"If another frontier AI model developer releases a high-risk system without comparable safeguards, we may adjust our requirements."</span></p>
+    <div class="gp-clause-annotation">Added in v2. No equivalent in v1.</div>
+  </div>
+
+  <p>In Zvi Mowshowitz's reading of the framework, the clause comes with three conditions: OpenAI must assess that the adjustment does not meaningfully increase overall risk, must publicly acknowledge the adjustment, and must keep its safeguards more protective than the competitor's. Mowshowitz also noted that under the revised framework, leadership holds final decision authority, including the ability to override the Safety Advisory Group — which, per his analysis, "does not have the ability to filibuster." In Mowshowitz's analysis, the framework also simplified its risk tiers from four levels to two and removed the Persuasion category from tracked capabilities entirely.</p>
+  <p>Google DeepMind published its Frontier Safety Framework v2.0 on February 4, 2025. The halt commitment softened. Where v1.0 said DeepMind "would put on hold further deployment or development," v2.0 said the response plan "may involve putting deployment or further development on hold." Per ETO's AGORA analysis of FSF v2.0, the framework now considers "whether another (non-Google) publicly deployed model is at the same CCL and has mitigations that are less effective" — in which case "the deployment of this model is less likely to materially increase risk." The framework also factors in whether a model possesses "capabilities meaningfully different from other widely available models." DeepMind published FSF v3.0 in September 2025 and updated it to v3.1 in April 2026, adding a manipulation domain and expanded misalignment protocols. Whether v3.0 retained, strengthened, or removed the v2.0 comparable-deployment language is unknown — the underlying PDF was not accessible for this review.</p>
+  <p>Meta published its Frontier AI Framework in February 2025. It was Meta's first such document. There was no prior version to compare — no pledge to weaken. But the framework was born with a structural feature that drew immediate criticism. According to a LessWrong analysis of the framework, the halt commitment triggers only for risks a model "uniquely enables," assessed "relative to existing resources, such as textbooks, the internet, and existing AI models." If another AI model can produce the same harm, Meta's framework considers the risk non-unique and may not trigger the halt provision. Analyst Zvi Mowshowitz, reviewing the same document, concluded that the structure effectively permits "whatever we want" absent demonstrably catastrophic scenarios with no parallel in existing technology. Meta did not weaken a prior commitment. It built its first framework with a structural condition that critics say renders the pause commitment inoperative from the start.</p>
+
+  <div class="gp-compare-grid">
+    <div class="gp-compare-col">
+      <div class="gp-compare-header">Anthropic<span class="gp-compare-version">RSP v3.0 — Feb 2026</span></div>
+      <div class="gp-compare-body">"<span class="gp-compare-key">competitor-contingent</span> commitments aimed at staying in line with these recommendations in scenarios where we can be confident that <span class="gp-compare-key">other relevant AI developers are doing the same</span>"</div>
+    </div>
+    <div class="gp-compare-col">
+      <div class="gp-compare-header">OpenAI<span class="gp-compare-version">PF v2 — Apr 2025</span></div>
+      <div class="gp-compare-body">"If <span class="gp-compare-key">another frontier AI model developer</span> releases a high-risk system without comparable safeguards, we <span class="gp-compare-key">may adjust our requirements</span>."</div>
+    </div>
+    <div class="gp-compare-col">
+      <div class="gp-compare-header">Google DeepMind<span class="gp-compare-version">FSF v2.0 — Feb 2025</span></div>
+      <div class="gp-compare-body">"whether <span class="gp-compare-key">another (non-Google) publicly deployed model</span> is at the same CCL and has mitigations that are less effective...the deployment of this model is <span class="gp-compare-key">less likely to materially increase risk</span>"</div>
+    </div>
+    <div class="gp-compare-col">
+      <div class="gp-compare-header">Meta<span class="gp-compare-version">FAF v1 — Feb 2025</span></div>
+      <div class="gp-compare-body">Halt triggers only for risks a model "<span class="gp-compare-key">uniquely enables</span>" — assessed relative to "<span class="gp-compare-key">existing AI models</span>"</div>
+    </div>
+    <div class="gp-compare-footer">
+      <p>DeepMind: FSF v2.0 language shown. Whether v3.0/v3.1 retains this language is unknown.</p>
+      <p>Meta: First framework published. No prior version to compare.</p>
+      <p>Anthropic text from Slade Byrd's policy comparison. Meta text from LessWrong analysis of the framework. OpenAI and DeepMind text confirmed from primary and institutional sources.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="rationale">
+  <h2><span class="num">03 — The Rationale</span>The Case for Crossing</h2>
+  <p>Anthropic's stated rationale deserves a serious hearing. In an exclusive interview with TIME following the RSP v3.0 announcement, Anthropic Chief Science Officer Jared Kaplan said: "We felt that it wouldn't actually help anyone for us to stop training AI models." The logic: if competitors are "blazing ahead," a responsible lab's unilateral pause does not reduce total risk — it transfers market position to the lab with the weakest safety culture. "We didn't really feel, with the rapid advance of AI, that it made sense for us to make unilateral commitments ... if competitors are blazing ahead."</p>
+  <p>Kaplan elaborated: "If all of our competitors are transparently doing the right thing when it comes to catastrophic risk, we are committed to doing as well or better. But we don't think it makes sense for us to stop engaging with AI research, AI safety, and most likely lose relevance as an innovator who understands the frontier of the technology, in a scenario where others are going ahead and we're not actually contributing any additional risk to the ecosystem." Anthropic cited three forces that made the original framework untenable: a "zone of ambiguity" muddling the case for risk at capability thresholds, an increasingly anti-regulatory political climate, and requirements at higher safety levels that are very hard to meet without industry-wide coordination.</p>
+  <p>GovAI analysts Sophie Williams and Jonas Freund reached a balanced conclusion. Dropping the unconditional pause commitment "makes it more likely Anthropic will deploy models with unacceptable risks," they wrote, but the change reflects "pragmatism about real constraints rather than safety negligence." The coordination problem Anthropic describes is real. A unilateral halt in a competitive race may not reduce total risk if it transfers capability leadership to the least cautious actor. None of the other three labs — OpenAI, Google DeepMind, or Meta — arrived at a structurally different answer. Each framework now contains language that points to the same logic: what we do depends on what they do.</p>
+</section>
+
+<section class="section" id="scorecard">
+  <h2><span class="num">04 — The Scorecard</span>The Naming</h2>
+  <p>In July 2026, the Future of Life Institute published its AI Safety Index Summer 2026, the fourth edition of a report now covering nine frontier AI companies. Seven independent panelists — including Stuart Russell of UC Berkeley, Robert Trager of the Oxford Centre for the Governance of AI, and researchers from the University of Montreal, HEC Montreal, the University of Wisconsin-Madison, Renmin University, and the advocacy organization Encode — graded the companies across six domains and 37 indicators using publicly available evidence collected through June 3, 2026. The report named the pattern: what FLI's reviewers called "moving goalpost."</p>
+  <p>No company scored above C+. Anthropic led at 2.66 out of 4.0 (C+), followed by OpenAI at 2.28 (C), Google DeepMind at 2.01 (C), Meta at 1.32 (D+), Z.ai at 0.88 (D-), Alibaba Cloud at 0.87 (D-), xAI at 0.65 (F), DeepSeek at 0.47 (F), and Mistral at 0.33 (F). No company scored above D in the Existential Safety domain for the second consecutive edition. FLI's report stated that "Anthropic, OpenAI, Google DeepMind, and Meta have weakened or voided pledges to pause unilaterally if redlines are approached, some citing competitor-contingent conditions."</p>
+  <p>FLI is a safety-advocacy organization, and the index should be read with that context. FLI co-founder Jaan Tallinn led Anthropic's $124 million Series A funding round and serves as a board observer at the company — Anthropic received the highest grade. According to public records, FLI co-founder Viktoriya Krakovna is a Google DeepMind research scientist — Google DeepMind received a C. Neither connection is disclosed in the index. The seven review panelists, not FLI's board, assigned the grades. No company except Mistral, which challenged the methodology as structurally penalizing open-weight models, publicly responded to the Summer 2026 edition. Anthropic's RSP v3.0 rationale, articulated by Kaplan to TIME, predates the index but constitutes the company's stated reasoning.</p>
+  <p>The weight of the pattern does not rest on FLI alone. The International AI Safety Report 2026, led by Yoshua Bengio with over 100 expert authors from more than 30 countries, independently found that AI companies have "inconsistently fulfilled previous voluntary commitments" and identified a gap in evidence about the degree to which those commitments are being met. Isaak Mengesha's academic paper on coordination gaps in frontier AI safety policies identified the same structural problem. Chris Painter, Director of Policy at the safety evaluation organization METR, described a "frog-boiling effect" — incremental changes that are hard to register individually but that transform the landscape in aggregate. GovAI reached its own conclusions through independent analysis. ETO's AGORA analysis at Georgetown confirmed the DeepMind softening separately. These are distinct assessments, not coverage of the FLI report.</p>
+  <p>In July 2026, outside safety experts Nathan Calvin of Encode, Tyler Johnson of the Midas Project, and Peter Wildeford of the AI Policy Network argued that OpenAI models appeared to have reached the "critical" risk threshold as defined in the Preparedness Framework, but that OpenAI designated them as "High" — avoiding the development halt the framework would require at the Critical level. Wildeford stated: "If this doesn't cross the line into Critical, OpenAI needs to say much more about what's going on." OpenAI has not confirmed or denied the characterization. The episode illustrates what can happen when the lines themselves are movable, but it is an allegation by named outside experts, not a confirmed violation.</p>
+</section>
+
+<section class="section" id="signal">
+  <h2><span class="num">05 — Signal</span>The Equilibrium</h2>
+  <p>A red line that binds only if no one else crosses it first is not a red line. It is a coordination problem with a document attached. Every major frontier AI lab's safety framework now references, in some form, what competitors are doing. Anthropic conditions its pause on being the race leader and seeing material catastrophic risk. OpenAI reserves the right to adjust requirements if a competitor ships without comparable safeguards. DeepMind — at least as of FSF v2.0 — assesses deployment risk relative to other publicly available models. Meta's first framework was designed from inception to filter for risks no other AI model can produce. Each framework points outward.</p>
+  <p>Mengesha identified the structural consequence: in Anthropic's framework, "required safeguards can be lowered if another actor passes a capability threshold without them" — a "relaxation of commitments rather than improving mitigation." The International AI Safety Report 2026 found that the degree to which voluntary commitments are being met is itself unmeasured. Max Tegmark, FLI's president and an interested party, stated that "voluntary commitments alone are not enough." The observation does not depend on who makes it.</p>
+  <p>When every lab in a race has committed to stop only if its competitors stop first, the commitment is not to stop. It is to keep going, with a document that explains why. The question is not whether any single company acted irrationally. Each company's reasoning is internally coherent — Anthropic's Jared Kaplan stated it as plainly as anyone could. The question is whether a system in which every rational actor has pre-committed to continue contains any mechanism to produce a halt. The documents reviewed for this story do not contain one.</p>
+</section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.fli-safety-index-goalposts-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  /* ── colours from CSS ── */
+  const cs = getComputedStyle(document.documentElement);
+  const ACCENT = cs.getPropertyValue('--story').trim() || '#a5b4fc';
+  const BG_RAW = cs.getPropertyValue('--bg').trim() || '#0d0d0d';
+
+  function hexRgb(h: string): [number, number, number] {
+    const s = h.replace('#', '');
+    return [parseInt(s.slice(0, 2), 16), parseInt(s.slice(2, 4), 16), parseInt(s.slice(4, 6), 16)];
+  }
+  const [aR, aG, aB] = hexRgb(ACCENT);
+  const isDark = parseInt(BG_RAW.replace('#', '').slice(0, 2), 16) < 128;
+  const dC = isDark ? 232 : 60;
+
+  /* ── layout constants ── */
+  const INIT_Y = [0.15, 0.25, 0.35, 0.45];
+  const SENS_X = [0.28, 0.48, 0.68, 0.38];
+  const SENS_PH = [0, 1.57, 3.14, 4.71];
+  const LX0 = 0.15;
+  const LX1 = 0.85;
+  const SR = 4;
+  const NDUST = 20;
+
+  /* ── timing (frames @ 60 fps) ── */
+  const PH0 = 120;
+  const PH1 = 180;
+  const RND_F = 150;
+  const SUB_F = 37;
+  const NRND = 6;
+  const PH2 = PH1 + RND_F * NRND;
+  const HOLD = 120;
+  const PH3 = PH2 + HOLD;
+  const RST = 30;
+  const TOT = PH3 + RST;
+  const SUB_ORD = [1, 2, 3, 0];
+  const DASH = [4, 8];
+  const NO_DASH: number[] = [];
+
+  /* ── state ── */
+  let W = 0, H = 0, rafId = 0, frame = 0;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const curY = new Float64Array(4);
+  const tgtY = new Float64Array(4);
+  const orgY = new Float64Array(4);
+  const rstY = new Float64Array(4);
+  const sBrt = new Float64Array(4);
+
+  let bFrom = -1, bTo = -1, bAlpha = 0;
+  let prevRnd = -1, prevSub = -1;
+  let rstSnap = false;
+
+  /* ── dust (pre-allocated typed arrays) ── */
+  const dX = new Float64Array(NDUST);
+  const dY = new Float64Array(NDUST);
+  const dVX = new Float64Array(NDUST);
+  const dVY = new Float64Array(NDUST);
+  const dA = new Float64Array(NDUST);
+  const dR = new Float64Array(NDUST);
+
+  function seedDust() {
+    for (let i = 0; i < NDUST; i++) {
+      dX[i] = Math.random() * W;
+      dY[i] = Math.random() * H;
+      dVX[i] = (Math.random() - 0.5) * 0.3;
+      dVY[i] = (Math.random() - 0.5) * 0.3;
+      dA[i] = 0.04 + Math.random() * 0.04;
+      dR[i] = 1 + Math.random() * 1.5;
+    }
+  }
+
+  function resetLines() {
+    for (let i = 0; i < 4; i++) {
+      orgY[i] = INIT_Y[i] * H;
+      curY[i] = orgY[i];
+      tgtY[i] = orgY[i];
+    }
+    prevRnd = -1;
+    prevSub = -1;
+    bFrom = -1;
+    bTo = -1;
+    bAlpha = 0;
+    rstSnap = false;
+  }
+
+  /* ── resize ── */
+  function resize() {
+    W = canvas!.offsetWidth;
+    H = canvas!.offsetHeight;
+    canvas!.width = W * devicePixelRatio;
+    canvas!.height = H * devicePixelRatio;
+    ctx!.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    frame = 0;
+    resetLines();
+    seedDust();
+  }
+
+  const ro = new ResizeObserver(resize);
+  ro.observe(canvas);
+  resize();
+
+  /* ── helpers ── */
+  function easeOut(t: number): number {
+    return 1 - (1 - t) * (1 - t) * (1 - t);
+  }
+
+  function lowestOtherIdx(idx: number): number {
+    let maxY = -1, maxI = 0;
+    for (let i = 0; i < 4; i++) {
+      if (i !== idx && curY[i] > maxY) { maxY = curY[i]; maxI = i; }
+    }
+    return maxI;
+  }
+
+  function dropAmount(round: number, idx: number): number {
+    const base = 8 + round * 2;
+    const otherIdx = lowestOtherIdx(idx);
+    const gap = curY[otherIdx] - curY[idx];
+    const cf = 0.15 + round * 0.05;
+    return base + (gap > 0 ? gap * cf : 0);
+  }
+
+  /* ── draw primitives ── */
+  function drawLine(y: number, alpha: number) {
+    ctx!.beginPath();
+    ctx!.moveTo(LX0 * W, y);
+    ctx!.lineTo(LX1 * W, y);
+    ctx!.strokeStyle = `rgba(${aR},${aG},${aB},${alpha})`;
+    ctx!.lineWidth = 1.5;
+    ctx!.stroke();
+  }
+
+  function drawSensor(x: number, y: number, b: number) {
+    const g = ctx!.createRadialGradient(x, y, 0, x, y, SR * 3);
+    g.addColorStop(0, `rgba(${aR},${aG},${aB},${0.3 * b})`);
+    g.addColorStop(1, `rgba(${aR},${aG},${aB},0)`);
+    ctx!.beginPath();
+    ctx!.arc(x, y, SR * 3, 0, Math.PI * 2);
+    ctx!.fillStyle = g;
+    ctx!.fill();
+    ctx!.beginPath();
+    ctx!.arc(x, y, SR, 0, Math.PI * 2);
+    ctx!.fillStyle = `rgba(${aR},${aG},${aB},${b})`;
+    ctx!.fill();
+  }
+
+  function drawBeam(fi: number, ti: number, a: number) {
+    if (a <= 0) return;
+    ctx!.beginPath();
+    ctx!.moveTo(SENS_X[fi] * W, curY[fi]);
+    ctx!.lineTo(SENS_X[ti] * W, curY[ti]);
+    ctx!.strokeStyle = `rgba(${aR},${aG},${aB},${a * 0.25})`;
+    ctx!.lineWidth = 1;
+    ctx!.stroke();
+  }
+
+  function stepDust(animate: boolean) {
+    for (let i = 0; i < NDUST; i++) {
+      if (animate) {
+        dX[i] += dVX[i];
+        dY[i] += dVY[i];
+        if (dX[i] < 0) dX[i] = W;
+        if (dX[i] > W) dX[i] = 0;
+        if (dY[i] < 0) dY[i] = H;
+        if (dY[i] > H) dY[i] = 0;
+      }
+      ctx!.beginPath();
+      ctx!.arc(dX[i], dY[i], dR[i], 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(${dC},${dC},${dC},${dA[i]})`;
+      ctx!.fill();
+    }
+  }
+
+  /* ── static frame (reduced motion) ── */
+  function drawStatic() {
+    if (!ctx || W === 0) return;
+    ctx.clearRect(0, 0, W, H);
+    for (let i = 0; i < 4; i++) {
+      drawLine(orgY[i], 0.6);
+      drawSensor(SENS_X[i] * W, orgY[i], 0.8);
+    }
+    stepDust(false);
+  }
+
+  /* ── main loop ── */
+  function tick() {
+    if (W === 0 || H === 0) { rafId = requestAnimationFrame(tick); return; }
+    frame++;
+    const c = frame % TOT;
+    ctx!.clearRect(0, 0, W, H);
+
+    if (c === 0) resetLines();
+
+    for (let i = 0; i < 4; i++) sBrt[i] = 0.6;
+    bAlpha = 0;
+    let activeLine = -1;
+
+    /* ── Phase 0: establishing (2 s) ── */
+    if (c < PH0) {
+      for (let i = 0; i < 4; i++) {
+        sBrt[i] = 0.6 + 0.4 * Math.sin(c * 0.05 + SENS_PH[i]);
+      }
+
+    /* ── Phase 1: perturbation (1 s) ── */
+    } else if (c < PH1) {
+      tgtY[0] = orgY[0] + 3;
+
+    /* ── Phase 2: six rounds of sequential checking (~15 s) ── */
+    } else if (c < PH2) {
+      const pf = c - PH1;
+      const ri = Math.min(NRND - 1, Math.floor(pf / RND_F));
+      const rf = pf - ri * RND_F;
+      const si = Math.min(3, Math.floor(rf / SUB_F));
+      const sf = rf - si * SUB_F;
+      activeLine = SUB_ORD[si];
+
+      if (ri !== prevRnd || si !== prevSub) {
+        prevRnd = ri;
+        prevSub = si;
+        tgtY[activeLine] = curY[activeLine] + dropAmount(ri, activeLine);
+        bFrom = activeLine;
+        bTo = lowestOtherIdx(activeLine);
+      }
+
+      for (let i = 0; i < 4; i++) {
+        sBrt[i] = 0.5 + 0.2 * Math.sin(c * 0.04 + SENS_PH[i]);
+      }
+      sBrt[activeLine] = sf < 10 ? 0.6 + 0.4 * (sf / 10) : 1.0;
+
+      if (sf >= 8 && sf < 25) {
+        const bt = (sf - 8) / 17;
+        bAlpha = bt < 0.35 ? bt / 0.35 : 1 - (bt - 0.35) / 0.65;
+      }
+
+    /* ── Phase 3: hold (2 s) ── */
+    } else if (c < PH3) {
+      for (let i = 0; i < 4; i++) {
+        sBrt[i] = 0.5 + 0.3 * Math.sin(c * 0.04 + SENS_PH[i]);
+      }
+
+    /* ── Reset (~0.5 s) ── */
+    } else {
+      if (!rstSnap) {
+        rstSnap = true;
+        for (let i = 0; i < 4; i++) rstY[i] = curY[i];
+      }
+      const t = easeOut(Math.min(1, (c - PH3) / RST));
+      for (let i = 0; i < 4; i++) {
+        curY[i] = rstY[i] + (orgY[i] - rstY[i]) * t;
+      }
+    }
+
+    /* ease all lines toward targets (skip during reset which sets directly) */
+    if (c < PH3) {
+      for (let i = 0; i < 4; i++) {
+        curY[i] += (tgtY[i] - curY[i]) * 0.08;
+      }
+    }
+
+    /* ── Draw ── */
+
+    /* ambient dust (background layer) */
+    stepDust(true);
+
+    /* ghost gridlines at original heights */
+    if (c >= PH1) {
+      let gAlpha = 0.04;
+      if (c >= PH3) gAlpha *= Math.max(0, 1 - (c - PH3) / RST);
+      ctx!.setLineDash(DASH);
+      ctx!.lineWidth = 1;
+      for (let i = 0; i < 4; i++) {
+        if (Math.abs(curY[i] - orgY[i]) > 3) {
+          ctx!.beginPath();
+          ctx!.moveTo(LX0 * W, orgY[i]);
+          ctx!.lineTo(LX1 * W, orgY[i]);
+          ctx!.strokeStyle = `rgba(${dC},${dC},${dC},${gAlpha})`;
+          ctx!.stroke();
+        }
+      }
+      ctx!.setLineDash(NO_DASH);
+    }
+
+    /* scanning beam */
+    if (bAlpha > 0 && bFrom >= 0 && bTo >= 0) drawBeam(bFrom, bTo, bAlpha);
+
+    /* commitment lines */
+    for (let i = 0; i < 4; i++) drawLine(curY[i], 0.6);
+
+    /* sensor nodes */
+    for (let i = 0; i < 4; i++) drawSensor(SENS_X[i] * W, curY[i], sBrt[i]);
+
+    rafId = requestAnimationFrame(tick);
+  }
+
+  /* ── visibility ── */
+  const io = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) {
+      if (!rafId) rafId = requestAnimationFrame(tick);
+    } else {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+  }, { threshold: 0.01 });
+
+  if (reduced) {
+    drawStatic();
+  } else {
+    io.observe(canvas);
+  }
+
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(rafId);
+    ro.disconnect();
+    io.disconnect();
+  });
+})();
+</script>
