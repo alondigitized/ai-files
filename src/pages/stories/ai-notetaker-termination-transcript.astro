@@ -1,0 +1,714 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'ai-notetaker-termination-transcript')!;
+---
+
+<style is:global>
+  /* ── Canvas ── */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+.ai-notetaker-termination-transcript-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+/* ── Reenactment #1: Transcript Email Mockup ── */
+.nt-email { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+.nt-email-header { background: var(--surface2); padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.78rem; color: var(--muted); display: flex; flex-direction: column; gap: 0.3rem; }
+.nt-email-field { display: flex; gap: 0.5rem; }
+.nt-email-label { color: var(--muted); min-width: 60px; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.68rem; padding-top: 1px; }
+.nt-email-value { color: var(--text); font-size: 0.8rem; }
+.nt-email-from { color: var(--story); }
+.nt-email-body { padding: 1rem 1.2rem; }
+.nt-email-segment { margin-bottom: 1rem; padding: 0.75rem 1rem; border-radius: 0.5rem; }
+.nt-email-segment.meeting { background: rgba(232,232,232,0.03); border-left: 2px solid var(--border); }
+.nt-email-segment.post-departure { background: rgba(255,77,77,0.04); border-left: 2px solid var(--accent); }
+.nt-email-segment-label { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem; }
+.nt-email-segment-label .nt-time { font-family: 'Courier New', monospace; font-size: 0.7rem; }
+.nt-email-segment.post-departure .nt-email-segment-label { color: var(--accent); }
+.nt-email-redacted { height: 10px; background: rgba(232,232,232,0.06); border-radius: 3px; margin: 0.4rem 0; }
+.nt-email-redacted.short { width: 45%; }
+.nt-email-redacted.medium { width: 70%; }
+.nt-email-redacted.long { width: 90%; }
+.nt-email-quote { font-size: 0.88rem; color: var(--accent); font-style: italic; padding: 0.5rem 0; line-height: 1.6; }
+.nt-email-footer { font-size: 0.7rem; color: var(--muted); font-style: italic; padding: 0.6rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); line-height: 1.5; }
+
+/* ── Reenactment #2: Defaults Settings Panel ── */
+.nt-defaults { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+.nt-defaults-header { background: var(--surface2); padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.78rem; color: var(--muted); display: flex; align-items: center; gap: 0.5rem; }
+.nt-defaults-header .nt-icon { font-size: 0.9rem; }
+.nt-defaults-body { padding: 0; }
+.nt-defaults-row { display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.04); gap: 0.75rem; }
+.nt-defaults-row:last-child { border-bottom: none; }
+.nt-defaults-label { font-size: 0.82rem; color: var(--text); font-weight: 600; min-width: 140px; }
+.nt-defaults-value { font-size: 0.8rem; color: var(--muted); flex: 1; font-family: 'Courier New', monospace; }
+.nt-defaults-tag { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; color: var(--story); background: rgba(232,232,232,0.06); border: 1px solid rgba(232,232,232,0.1); border-radius: 3px; padding: 0.15rem 0.45rem; white-space: nowrap; }
+.nt-defaults-footer { font-size: 0.7rem; color: var(--muted); font-style: italic; padding: 0.6rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); line-height: 1.5; }
+@media (max-width: 600px) {
+  .nt-defaults-row { flex-wrap: wrap; }
+  .nt-defaults-label { min-width: 100%; margin-bottom: 0.2rem; }
+}
+
+/* ── Reenactment #3: Docket Comparison Table ── */
+.nt-docket { margin: 2rem 0; border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; }
+.nt-docket-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.nt-docket-table thead th { background: var(--surface2); color: var(--muted); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); font-weight: 600; }
+.nt-docket-table tbody td { padding: 0.6rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text); vertical-align: top; }
+.nt-docket-table tbody tr:last-child td { border-bottom: none; }
+.nt-docket-table tbody tr.nt-docket-privacy td { color: var(--muted); }
+.nt-docket-table tbody tr.nt-docket-witness { background: rgba(232,232,232,0.03); }
+.nt-docket-table tbody tr.nt-docket-witness td { color: var(--text); font-weight: 500; }
+.nt-docket-role-accused { color: var(--accent); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.nt-docket-role-witness { color: var(--story); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.nt-docket-table tbody tr.nt-docket-privacy:last-of-type td { border-bottom: 2px solid var(--border); }
+.nt-docket-caption { caption-side: bottom; text-align: left; font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.6rem 1rem; background: var(--surface2); border-top: 1px solid var(--border); line-height: 1.5; }
+@media (max-width: 700px) {
+  .nt-docket { overflow-x: auto; }
+  .nt-docket-table { min-width: 600px; }
+}
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="s01">
+      <h2><span class="num">01 — CONTEXT</span>The Transcript</h2>
+      <p>After Lindsay Waninger was terminated from Marathon Engineering during a video call, the Fireflies AI notetaker emailed her a link to the transcript. The transcript included a section from after she had dropped off the line.</p>
+      <p>According to the complaint, that section contained a supervisor's description of the ideal replacement: "[h]opefully a relatively strapping young man."</p>
+      <p>Waninger, an environmental scientist, had worked at Marathon Engineering — an environmental engineering firm in Logan Township, New Jersey — for fewer than three months before her termination. The termination meeting was conducted over video conference. A Fireflies AI bot was present in the call.</p>
+<div class="nt-email">
+  <div class="sr-only">Reconstructed email: a Fireflies.ai meeting recap with most of the transcript redacted. Only one quoted fragment from the section after the plaintiff left the call is visible.</div>
+  <div class="nt-email-header">
+    <div class="nt-email-field">
+      <span class="nt-email-label">From:</span>
+      <span class="nt-email-value nt-email-from">Fireflies.ai</span>
+    </div>
+    <div class="nt-email-field">
+      <span class="nt-email-label">Subject:</span>
+      <span class="nt-email-value">Meeting recap: [Meeting Title Redacted]</span>
+    </div>
+  </div>
+  <div class="nt-email-body">
+    <div class="nt-email-segment meeting">
+      <div class="nt-email-segment-label"><span class="nt-time">--:-- - --:--</span> Meeting in progress</div>
+      <div aria-hidden="true" class="nt-email-redacted long"></div>
+      <div aria-hidden="true" class="nt-email-redacted medium"></div>
+      <div aria-hidden="true" class="nt-email-redacted short"></div>
+      <div aria-hidden="true" class="nt-email-redacted long"></div>
+      <div aria-hidden="true" class="nt-email-redacted medium"></div>
+    </div>
+    <div class="nt-email-segment post-departure">
+      <div class="nt-email-segment-label"><span class="nt-time">--:-- - --:--</span> After plaintiff left the call</div>
+      <div aria-hidden="true" class="nt-email-redacted medium"></div>
+      <div aria-hidden="true" class="nt-email-redacted short"></div>
+      <div class="nt-email-quote">"[h]opefully a relatively strapping young man"</div>
+      <div aria-hidden="true" class="nt-email-redacted long"></div>
+      <div aria-hidden="true" class="nt-email-redacted short"></div>
+    </div>
+  </div>
+  <div class="nt-email-footer">As alleged in the complaint, Waninger v. Marathon Engineering (N.J. state court, filed Aug. 12, 2026). The transcript is an AI-generated summary, not a verbatim recording.</div>
+</div>
+      <p>On August 12, 2026, Waninger filed a gender-discrimination lawsuit against Marathon Engineering & Environmental Services Inc. in New Jersey state court. The Fireflies transcript is her primary evidence.</p>
+      <p>The alleged remark is quoted from the complaint as reported by Law360, and reproduced by Ford & Harrison attorney Mark Saloman in an analysis published on Mondaq. Those two accounts are the whole record available outside the courthouse. The complaint itself is not publicly accessible online, the two sources may derive from a single reading of it, and no independent third account of its contents was identified.</p>
+      <p>One layer of mediation matters here. The transcript Waninger received is not a verbatim recording. Saloman states explicitly that it is a "non-verbatim AI-generated summary." The alleged remark passed through a model's interpretation before it reached the plaintiff. Whether the AI's paraphrase is a reliable representation of what was said is itself an open question — one the case will need to resolve.</p>
+      <p>Marathon Engineering has not responded to the allegations. The complaint is seven days old and unanswered. In New Jersey state court, defendants typically have 35 days after service to file an answer.</p>
+    </section>
+
+  </div>
+
+  <div class="phantom-wrap">
+    <canvas class="ai-notetaker-termination-transcript-canvas" aria-hidden="true"></canvas>
+  </div>
+  <p class="canvas-note"><strong>The Emission</strong> — A recording node pulses alone after its surrounding meeting cluster goes dark one by one; its signal fans out to every original position, where one node absorbs the evidence and another recoils from the violation.</p>
+
+  <div class="container">
+
+    <section class="section" id="s02">
+      <h2><span class="num">02 — MECHANISM</span>The Defaults</h2>
+      <p>Three factory settings in Fireflies' product documentation explain how the transcript was generated and delivered. Each is confirmed by the manufacturer's own knowledge base.</p>
+      <p><strong>Auto-join.</strong> By default, the Fireflies bot joins every calendar event that has a web conference link. No per-meeting approval is required. If the meeting is on the calendar and has a Zoom, Teams, or Google Meet URL, the bot attends.</p>
+      <p><strong>Email recap.</strong> By default, Fireflies sends the completed transcript to "everyone on the invite" — every person on the original calendar invitation, internal or external. The distribution is not limited to the bot's owner or the meeting organizer.</p>
+      <p><strong>Session duration.</strong> The bot stays in a meeting for up to two to four hours, depending on the user's plan. It waits ten to fifteen minutes for a meeting to start before leaving. The documentation describes the session in terms of elapsed time only — it says nothing about tracking who is still in the room.</p>
+<div class="nt-defaults">
+  <div class="nt-defaults-header"><span class="nt-icon">&#9881;</span> Fireflies.ai — Settings</div>
+  <div class="nt-defaults-body">
+    <div class="nt-defaults-row">
+      <span class="nt-defaults-label">Auto-join meetings</span>
+      <span class="nt-defaults-value">All calendar events with web conference link</span>
+      <span class="nt-defaults-tag">DEFAULT</span>
+    </div>
+    <div class="nt-defaults-row">
+      <span class="nt-defaults-label">Send recap to</span>
+      <span class="nt-defaults-value">Everyone on the invite</span>
+      <span class="nt-defaults-tag">DEFAULT</span>
+    </div>
+    <div class="nt-defaults-row">
+      <span class="nt-defaults-label">Stay in meeting for up to</span>
+      <span class="nt-defaults-value">2-4 hours</span>
+      <span class="nt-defaults-tag">DEFAULT</span>
+    </div>
+  </div>
+  <div class="nt-defaults-footer">Source: Fireflies.ai product documentation. These are the factory settings — no administrator action required.</div>
+</div>
+      <p>These are not settings an administrator configured for the Waninger meeting. They are the factory state. The gap between "I added a productivity tool" and "I created a permanent, automatically distributed record of every meeting" is zero configuration steps.</p>
+      <p>Two links in the chain are inferences rather than record. The bot appears to have kept recording after Waninger left the call — the transcript captured remarks made after her departure, and the documentation confirms the bot stays for up to four hours — but no source states that this default was in effect for this meeting. The same gap applies to delivery: the default sends transcripts to all calendar invitees, and Waninger received a link, but whether that was the default firing or someone manually triggering the share is not documented anywhere.</p>
+      <p>This failure mode is not new. In September 2024, ML engineer Alex Bilzerian had a Zoom meeting with a venture capital firm that used Otter AI. After the meeting ended, the Otter bot stayed on the line, recorded several more hours of the VCs' private conversation — including discussion of what Bilzerian described as "strategic failures and cooked metrics" — and emailed the transcript to all participants, including Bilzerian. His post on X about the incident reached over five million views. Otter CEO Sam Liang's response: "If you want AI to help, you need to put AI in the meetings."</p>
+      <p>Different vendor. Different year. Same mechanical sequence: the bot persisted after participants believed the meeting was over, captured conversation the speakers assumed was private, and distributed the transcript to someone who was not meant to see it.</p>
+    </section>
+
+    <section class="section" id="s03">
+      <h2><span class="num">03 — THE DOCKET</span>Four Courtrooms</h2>
+      <p>While the Waninger transcript was being generated, four separate lawsuits were working their way through federal courts, each targeting AI notetaker vendors for recording without consent. The complaints are different. The default behaviors at issue are the same.</p>
+      <p><strong>In re Otter.AI Privacy Litigation</strong> (No. 5:25-cv-06911, N.D. Cal.). Filed August 15, 2025. Four class actions consolidated before Judge Eumi K. Lee. The plaintiffs allege Otter's bot joins meetings uninvited, records without meaningful consent, and transmits recordings to Otter's servers. A motion-to-dismiss hearing was held May 20, 2026; the ruling is under submission.</p>
+      <p><strong>Cruz v. Fireflies.AI Corp.</strong> (C.D. Ill.). Filed December 18, 2025. The plaintiff alleges Fireflies collected biometric voiceprints during virtual meetings without written consent, in violation of the Illinois Biometric Information Privacy Act. This case, too, traced to a single account — one published by a company that competes with Fireflies.</p>
+      <p><strong>Basich et al. v. Microsoft Corporation</strong> (No. 2:26-cv-00422, W.D. Wash.). Filed February 5, 2026 by five Illinois residents who allege Microsoft Teams' live transcription feature creates biometric voiceprints in violation of BIPA. Unlike the other three, this case was traced to only one account — an analysis published by a litigation-funding platform — so the docket number and the filing details rest on a single source.</p>
+      <p><strong>Chamberlain v. Granola, Inc.</strong> (No. 3:26-cv-07926, N.D. Cal.). Filed July 30, 2026. The plaintiff alleges Granola — a notetaker that markets itself as "bot-free" — secretly records conversations and uses them to train its AI models.</p>
+      <p>The common thread: the tools record too much, distribute too freely, and do not obtain adequate consent. The complaint in each case is about the default behavior.</p>
+      <p>These are not fringe products. Otter.ai reported $100 million in annual recurring revenue and 35 million users by late 2025, according to the company's own press release. Fireflies claims, per its August 2026 press release, that teams at 75 percent of Fortune 500 companies use the product. (The phrasing "teams at" is the company's — it could mean one team at each company.) Granola raised $125 million at a $1.5 billion valuation in March 2026, per TechCrunch.</p>
+      <p>Legal analysts have identified the broader risk category, though none of their published analyses discuss the Waninger case specifically. Littler Mendelson, in a February 2026 article by attorneys Zoe M. Argento and Bradford J. Kelley, identified AI notetaker default behaviors as an employer blind spot, noting discrimination and disparate-impact risks including potential systemic inaccuracies affecting individuals with accents or speech impediments. Mayer Brown, in a June 2026 analysis, identified privilege-waiver and admissibility risks created by AI notetaker outputs. Both analyses predate the Waninger filing by months.</p>
+<div class="nt-docket">
+  <table class="nt-docket-table">
+    <caption class="nt-docket-caption">In four courtrooms, the notetaker's behavior is the complaint. In a fifth, it is the evidence.</caption>
+    <thead>
+      <tr>
+        <th scope="col">Case</th>
+        <th scope="col">Filed</th>
+        <th scope="col">Court</th>
+        <th scope="col">Defendant</th>
+        <th scope="col">Theory</th>
+        <th scope="col">Notetaker's Role</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="nt-docket-privacy">
+        <td>In re Otter.AI Privacy Litigation</td>
+        <td>Aug 2025</td>
+        <td>N.D. Cal.</td>
+        <td>Otter.ai</td>
+        <td>Recording without consent</td>
+        <td><span class="nt-docket-role-accused">The accused</span></td>
+      </tr>
+      <tr class="nt-docket-privacy">
+        <td>Cruz v. Fireflies</td>
+        <td>Dec 2025</td>
+        <td>C.D. Ill.</td>
+        <td>Fireflies</td>
+        <td>BIPA voiceprint violations</td>
+        <td><span class="nt-docket-role-accused">The accused</span></td>
+      </tr>
+      <tr class="nt-docket-privacy">
+        <td>Basich v. Microsoft</td>
+        <td>Feb 2026</td>
+        <td>W.D. Wash.</td>
+        <td>Microsoft</td>
+        <td>BIPA voiceprint violations</td>
+        <td><span class="nt-docket-role-accused">The accused</span></td>
+      </tr>
+      <tr class="nt-docket-privacy">
+        <td>Chamberlain v. Granola</td>
+        <td>Jul 2026</td>
+        <td>N.D. Cal.</td>
+        <td>Granola</td>
+        <td>Secret recording / training data</td>
+        <td><span class="nt-docket-role-accused">The accused</span></td>
+      </tr>
+      <tr class="nt-docket-witness">
+        <td>Waninger v. Marathon Engineering</td>
+        <td>Aug 2026</td>
+        <td>N.J. state</td>
+        <td>Marathon Engineering (employer)</td>
+        <td>Gender discrimination</td>
+        <td><span class="nt-docket-role-witness">The witness</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+      <p>Waninger v. Marathon Engineering appears to be the first employment-discrimination case in which an AI meeting transcript serves as the plaintiff's primary evidence. No prior case of this type was identified in research — though the absence of evidence is not definitive. The case arrives amid a broader wave of privacy litigation against notetaker vendors, but it belongs to a different category entirely. In the vendor suits, the notetaker is the defendant's product. In Waninger, it is the plaintiff's witness.</p>
+    </section>
+
+    <section class="section" id="s04">
+      <h2><span class="num">04 — SIGNAL</span>The Bind</h2>
+      <p>The design behavior being sued as a privacy violation in four courtrooms is the same design behavior that produced the plaintiff's evidence in a fifth. Auto-join. Auto-distribute. Persist for hours. In the vendor suits, these defaults are the injury. In Waninger, they are the windfall.</p>
+      <p>This is the story's central structural observation, and it is worth stating as such: no source explicitly argues this connection. The privacy suits and the discrimination case exist in separate courts, with different parties, under different legal theories. The link is that they are consequences of the same factory settings — documented in the manufacturer's own knowledge base, scored at the highest confidence level by the source material.</p>
+      <p>The bind is this: any product change that reduces recording to satisfy the privacy plaintiffs — requiring explicit per-meeting consent, limiting session duration, restricting distribution to the meeting organizer — also eliminates the tool's capacity to serve as an impartial witness. If Fireflies had required opt-in recording, the bot might not have been in the termination call. If it had stopped recording when participants dropped off, it would not have captured the post-departure conversation. If it had sent the transcript only to the bot's owner, Waninger would never have received it.</p>
+      <p>The inverse holds equally. Any design that preserves the witnessing function — the bot stays, the bot records everything, the bot distributes to everyone — perpetuates the privacy exposure that four separate lawsuits are trying to stop.</p>
+      <p>This is not an AI failure story. The tool did exactly what it was configured to do in every case. In the vendor suits, the design is the complaint. In Waninger, the design is the windfall. The notetaker did one thing. The legal system received it as two opposite things. No settings page resolves this. The archive has told stories about algorithms that discriminated (Amazon's resume screener screened out women). This is a story about an algorithm that witnessed alleged discrimination — and is simultaneously being sued, in other courtrooms, for the very behavior that made the witnessing possible.</p>
+    </section>
+
+    <section class="section" id="s05">
+      <h2><span class="num">05 — CONSEQUENCE</span>The Open Record</h2>
+      <p>Before the Waninger transcript could reach a jury, it would need to survive a question no court has answered: whether a non-verbatim AI-generated summary is admissible as evidence.</p>
+      <p>Ford & Harrison attorney Mark Saloman, writing on Mondaq, states that "a Frye hearing will be helpful for all parties to assess the reliability of the Fireflies app" and that "a potentially significant issue will be whether a non-verbatim AI-generated summary is admissible in court." The transcript is not a recording. It is a model's interpretation of what was said — filtered through whatever summarization and paraphrasing logic Fireflies applies. The fidelity of the alleged remark to the actual words spoken is itself untested.</p>
+      <p>Courts are actively grappling with the evidentiary status of AI-generated materials, though no ruling on meeting transcripts exists. In United States v. Heppner (S.D.N.Y., February 2026), the court declined to extend attorney-client privilege to materials a defendant had prepared using a consumer-grade AI platform. Mayer Brown's June 2026 analysis identifies AI notetaker outputs specifically as creating novel privilege and admissibility questions. The legal terrain is forming, but no court has tested AI meeting transcripts specifically.</p>
+      <p>New Jersey is a one-party consent state for recording under the New Jersey Wiretapping and Electronic Surveillance Control Act (N.J.S.A. 2A:156A-2, -3, -4), as confirmed by the Reporters Committee for Freedom of the Press. The recording itself is likely lawful under current New Jersey law if any one participant — or the bot's operator — consented. The legal question in Waninger is not whether the recording was lawful. It is whether the AI's paraphrase of it is admissible.</p>
+      <p>No answer has been filed. No Frye hearing has been scheduled. The case is seven days old. What is known: the same default behavior sits in five courtrooms under five different legal theories. In four, it is the injury. In one, it is the remedy. No product update resolves this. The tool records everything or it records nothing. There is no setting for "record only the parts that will help and not the parts that will hurt."</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.ai-notetaker-termination-transcript-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const cs = getComputedStyle(document.documentElement);
+  const bgColor = cs.getPropertyValue('--bg').trim() || '#0d0d0d';
+  const storyHex = cs.getPropertyValue('--story').trim() || '#94a3b8';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex);
+    if (!m) return [148, 163, 184];
+    return [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)];
+  }
+
+  const [sR, sG, sB] = hexToRgb(storyHex);
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function storyA(a: number): string { return `rgba(${sR},${sG},${sB},${Math.max(0, Math.min(1, a))})`; }
+  function dimA(a: number): string   { return `rgba(232,232,232,${Math.max(0, Math.min(1, a))})`; }
+  function redA(a: number): string   { return `rgba(255,77,77,${Math.max(0, Math.min(1, a))})`; }
+
+  /* ── Phase boundaries (60fps x 16s = 960 frames) ── */
+  const P1 = 240;    /* Meeting end       */
+  const P2 = 480;    /* Departure end     */
+  const P3 = 600;    /* Persistence end   */
+  const P4 = 780;    /* Distribution end  */
+  const P5 = 900;    /* Hold end          */
+  const CYCLE = 960; /* Fade + snap reset */
+
+  /* ── Constants ── */
+  const N = 8;
+  const RING_INT = 60;
+  const RING_SPD = 0.3;
+  const RING_MAX = 120;
+  const MAX_RINGS = 10;
+  const N_AMB = 20;
+  const N_SCAT = 6;
+  const SIG_DUR = 50;
+  const ORBIT_K = 0.25;
+  const DRIFT_V = 0.4;
+  const EV = 3;
+  const VIO = 7;
+
+  /* ── Interfaces ── */
+  interface PNode {
+    ha: number; orf: number; ang: number; aspd: number;
+    x: number; y: number; a: number;
+    dep: boolean; dvx: number; dvy: number;
+    sigArr: boolean; glow: number; rfl: number; rsc: number;
+  }
+  interface Ring  { r: number; a: number; on: boolean; }
+  interface Sig   { tx: number; ty: number; p: number; on: boolean; arr: boolean; }
+  interface Scat  { x: number; y: number; vx: number; vy: number; a: number; on: boolean; }
+  interface Amb   { x: number; y: number; vx: number; vy: number; a: number; }
+
+  /* ── State ── */
+  let W = 0, H = 0, frame = 0, rafId = 0;
+  let cx = 0, cy = 0, gFade = 1;
+  const nodes: PNode[] = [];
+  const rings: Ring[]  = [];
+  const sigs: Sig[]    = [];
+  const scats: Scat[]  = [];
+  const ambs: Amb[]    = [];
+
+  function oR(): number { return Math.min(W, H) * ORBIT_K; }
+
+  /* ── Init helpers ── */
+  function initNodes() {
+    nodes.length = 0;
+    const or = oR();
+    for (let i = 0; i < N; i++) {
+      const base = (i / N) * Math.PI * 2;
+      const jit  = Math.sin(i * 7.3) * 0.06;
+      const ha   = base + jit;
+      const orf  = 0.88 + (Math.sin(i * 4.1 + 2.7) * 0.5 + 0.5) * 0.24;
+      const aspd = 0.0018 + (Math.sin(i * 5.9) * 0.5 + 0.5) * 0.0012;
+      nodes.push({
+        ha, orf, ang: ha, aspd,
+        x: cx + Math.cos(ha) * orf * or,
+        y: cy + Math.sin(ha) * orf * or,
+        a: 0.15, dep: false, dvx: 0, dvy: 0,
+        sigArr: false, glow: 0, rfl: 0, rsc: 1,
+      });
+    }
+  }
+
+  function initRings() {
+    rings.length = 0;
+    for (let i = 0; i < MAX_RINGS; i++) rings.push({ r: 0, a: 0, on: false });
+  }
+
+  function initSigs() {
+    sigs.length = 0;
+    for (let i = 0; i < N; i++) sigs.push({ tx: 0, ty: 0, p: 0, on: false, arr: false });
+  }
+
+  function initScats() {
+    scats.length = 0;
+    for (let i = 0; i < N_SCAT; i++) scats.push({ x: 0, y: 0, vx: 0, vy: 0, a: 0, on: false });
+  }
+
+  function initAmbs() {
+    ambs.length = 0;
+    for (let i = 0; i < N_AMB; i++) {
+      ambs.push({
+        x: Math.random() * (W || 800),
+        y: Math.random() * (H || 380),
+        vx: (Math.random() - 0.5) * 0.12,
+        vy: (Math.random() - 0.5) * 0.12,
+        a: 0.03 + Math.random() * 0.015,
+      });
+    }
+  }
+
+  function resetState() {
+    frame = 0; gFade = 1;
+    cx = W / 2; cy = H / 2;
+    initNodes(); initRings(); initSigs(); initScats();
+    if (ambs.length === 0) initAmbs();
+  }
+
+  function spawnRing() {
+    for (const r of rings) {
+      if (!r.on) { r.r = 6; r.a = 0.3; r.on = true; return; }
+    }
+  }
+
+  function ph(f: number): number {
+    if (f < P1) return 0;
+    if (f < P2) return 1;
+    if (f < P3) return 2;
+    if (f < P4) return 3;
+    if (f < P5) return 4;
+    return 5;
+  }
+
+  /* ── Update ── */
+  function update() {
+    const p = ph(frame);
+
+    /* Rings — CONSTANT TEMPO: the recorder is indifferent */
+    if (frame % RING_INT === 0) spawnRing();
+    for (const r of rings) {
+      if (!r.on) continue;
+      r.r += RING_SPD;
+      r.a = 0.3 * Math.max(0, 1 - r.r / RING_MAX);
+      if (r.a <= 0) r.on = false;
+    }
+
+    /* Ambients */
+    for (const a of ambs) {
+      a.x += a.vx; a.y += a.vy;
+      if (a.x < 0) a.x += W; if (a.x > W) a.x -= W;
+      if (a.y < 0) a.y += H; if (a.y > H) a.y -= H;
+    }
+
+    const or = oR();
+
+    if (p === 0) {
+      /* Meeting: nodes orbit loosely */
+      for (const n of nodes) {
+        n.ang += n.aspd;
+        n.x = cx + Math.cos(n.ang) * n.orf * or;
+        n.y = cy + Math.sin(n.ang) * n.orf * or;
+        n.a = 0.12 + 0.04 * Math.sin(frame * 0.03 + n.ha * 2);
+      }
+
+    } else if (p === 1) {
+      /* Departure: one node fades every 30 frames */
+      for (let i = 0; i < N; i++) {
+        const n = nodes[i];
+        const depF = P1 + i * 30;
+        if (!n.dep && frame >= depF) {
+          n.dep = true;
+          const dx = n.x - cx, dy = n.y - cy;
+          const d = Math.sqrt(dx * dx + dy * dy) || 1;
+          n.dvx = (dx / d) * DRIFT_V;
+          n.dvy = (dy / d) * DRIFT_V;
+        }
+        if (n.dep) {
+          n.x += n.dvx; n.y += n.dvy;
+          n.a += (0.04 - n.a) * 0.04;
+        } else {
+          n.ang += n.aspd;
+          n.x = cx + Math.cos(n.ang) * n.orf * or;
+          n.y = cy + Math.sin(n.ang) * n.orf * or;
+          n.a = 0.12 + 0.04 * Math.sin(frame * 0.03 + n.ha * 2);
+        }
+      }
+
+    } else if (p === 2) {
+      /* Persistence: center alone, ghosts drifting slowly */
+      for (const n of nodes) {
+        n.x += n.dvx * 0.15; n.y += n.dvy * 0.15;
+        n.a += (0.04 - n.a) * 0.02;
+      }
+
+    } else if (p === 3) {
+      /* Distribution: signal burst */
+      const df = frame - P3;
+
+      if (df === 0) {
+        for (let i = 0; i < N; i++) {
+          const hx = cx + Math.cos(nodes[i].ha) * nodes[i].orf * or;
+          const hy = cy + Math.sin(nodes[i].ha) * nodes[i].orf * or;
+          sigs[i].tx = hx; sigs[i].ty = hy;
+          sigs[i].p = 0; sigs[i].on = true; sigs[i].arr = false;
+        }
+      }
+
+      /* All signals arrive simultaneously */
+      const sp = Math.min(1, df / SIG_DUR);
+      for (let i = 0; i < N; i++) {
+        const s = sigs[i];
+        if (!s.on) continue;
+        s.p = sp;
+        if (sp >= 1 && !s.arr) {
+          s.arr = true; s.on = false;
+          nodes[i].sigArr = true;
+          if (i === EV) {
+            nodes[i].glow = 0.8;
+          } else if (i === VIO) {
+            nodes[i].rfl = 0.7;
+            const hx = s.tx, hy = s.ty;
+            for (let j = 0; j < 5 && j < scats.length; j++) {
+              const ang = (j / 5) * Math.PI * 2 + Math.sin(j * 3.7) * 0.4;
+              const spd = 0.5 + Math.abs(Math.sin(j * 2.3)) * 0.8;
+              scats[j].x = hx; scats[j].y = hy;
+              scats[j].vx = Math.cos(ang) * spd;
+              scats[j].vy = Math.sin(ang) * spd;
+              scats[j].a = 0.6; scats[j].on = true;
+            }
+          } else {
+            nodes[i].glow = 0.1;
+          }
+        }
+      }
+
+      for (const sc of scats) {
+        if (!sc.on) continue;
+        sc.x += sc.vx; sc.y += sc.vy;
+        sc.a = Math.max(0, sc.a - 0.008);
+        if (sc.a <= 0) sc.on = false;
+      }
+
+      if (nodes[EV].sigArr) {
+        nodes[EV].rsc = Math.min(1.5, nodes[EV].rsc + 0.017);
+      }
+      for (let i = 0; i < N; i++) {
+        if (i === EV || i === VIO) continue;
+        if (nodes[i].glow > 0) nodes[i].glow = Math.max(0, nodes[i].glow - 0.004);
+      }
+
+    } else if (p === 4) {
+      /* Hold: evidence steady, violation pulses twice */
+      const hf = frame - P4;
+
+      nodes[EV].glow = 0.8;
+
+      const vn = nodes[VIO];
+      if (hf < 30) {
+        vn.rfl = 0.5 * Math.sin((hf / 30) * Math.PI);
+      } else if (hf < 45) {
+        vn.rfl = 0;
+      } else if (hf < 75) {
+        vn.rfl = 0.3 * Math.sin(((hf - 45) / 30) * Math.PI);
+      } else {
+        vn.rfl = Math.max(0, vn.rfl - 0.015);
+      }
+
+      for (let i = 0; i < N; i++) {
+        if (i === EV || i === VIO) continue;
+        nodes[i].glow = Math.max(0, nodes[i].glow - 0.003);
+      }
+
+      for (const sc of scats) {
+        if (!sc.on) continue;
+        sc.x += sc.vx * 0.3; sc.y += sc.vy * 0.3;
+        sc.a = Math.max(0, sc.a - 0.01);
+        if (sc.a <= 0) sc.on = false;
+      }
+
+    } else {
+      /* Fade */
+      gFade = Math.max(0, 1 - (frame - P5) / (CYCLE - P5));
+    }
+  }
+
+  /* ── Draw ── */
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = bgColor;
+    ctx!.fillRect(0, 0, W, H);
+
+    const gf = gFade;
+    const or = oR();
+    const p = ph(frame);
+
+    /* Ambients */
+    for (const a of ambs) {
+      if (a.a * gf < 0.003) continue;
+      ctx!.beginPath(); ctx!.arc(a.x, a.y, 1.5, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(a.a * gf); ctx!.fill();
+    }
+
+    /* Signal lines */
+    if (p === 3 || p === 4) {
+      for (const s of sigs) {
+        if (s.p <= 0) continue;
+        const dx = s.tx - cx, dy = s.ty - cy;
+        const ex = cx + dx * s.p, ey = cy + dy * s.p;
+        const la = s.on ? 0.5 : Math.max(0.04, 0.4 - (frame - P3 - SIG_DUR) * 0.002);
+        if (la * gf < 0.003) continue;
+        ctx!.beginPath(); ctx!.moveTo(cx, cy); ctx!.lineTo(ex, ey);
+        ctx!.strokeStyle = storyA(la * gf); ctx!.lineWidth = 0.8; ctx!.stroke();
+      }
+    }
+
+    /* Ghost nodes at drift positions */
+    for (const n of nodes) {
+      if (n.a * gf < 0.003) continue;
+      ctx!.beginPath(); ctx!.arc(n.x, n.y, 4, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(n.a * gf); ctx!.fill();
+    }
+
+    /* Reaction effects at HOME positions */
+    for (let i = 0; i < N; i++) {
+      const n = nodes[i];
+      if (!n.sigArr) continue;
+      const hx = cx + Math.cos(n.ha) * n.orf * or;
+      const hy = cy + Math.sin(n.ha) * n.orf * or;
+
+      if (i === EV && n.glow > 0.01) {
+        const evR = 4 * n.rsc;
+        const gr = ctx!.createRadialGradient(hx, hy, 0, hx, hy, evR * 4);
+        gr.addColorStop(0, storyA(n.glow * 0.5 * gf));
+        gr.addColorStop(1, storyA(0));
+        ctx!.beginPath(); ctx!.arc(hx, hy, evR * 4, 0, Math.PI * 2);
+        ctx!.fillStyle = gr; ctx!.fill();
+        ctx!.beginPath(); ctx!.arc(hx, hy, evR, 0, Math.PI * 2);
+        ctx!.fillStyle = storyA(n.glow * gf); ctx!.fill();
+      }
+
+      if (i === VIO && n.rfl > 0.01) {
+        const rg = ctx!.createRadialGradient(hx, hy, 0, hx, hy, 20);
+        rg.addColorStop(0, redA(n.rfl * 0.4 * gf));
+        rg.addColorStop(1, redA(0));
+        ctx!.beginPath(); ctx!.arc(hx, hy, 20, 0, Math.PI * 2);
+        ctx!.fillStyle = rg; ctx!.fill();
+        ctx!.beginPath(); ctx!.arc(hx, hy, 4, 0, Math.PI * 2);
+        ctx!.fillStyle = redA(n.rfl * gf); ctx!.fill();
+      }
+
+      if (i !== EV && i !== VIO && n.glow > 0.01) {
+        ctx!.beginPath(); ctx!.arc(hx, hy, 4, 0, Math.PI * 2);
+        ctx!.fillStyle = dimA(n.glow * gf); ctx!.fill();
+      }
+    }
+
+    /* Scatter particles */
+    for (const sc of scats) {
+      if (!sc.on || sc.a * gf < 0.003) continue;
+      ctx!.beginPath(); ctx!.arc(sc.x, sc.y, 2, 0, Math.PI * 2);
+      ctx!.fillStyle = redA(sc.a * gf); ctx!.fill();
+    }
+
+    /* Central node — ALWAYS the same visual. The indifference is the thesis. */
+    const cr = 6;
+    const cGlow = ctx!.createRadialGradient(cx, cy, 0, cx, cy, cr * 4);
+    cGlow.addColorStop(0, storyA(0.35 * gf));
+    cGlow.addColorStop(0.5, storyA(0.1 * gf));
+    cGlow.addColorStop(1, storyA(0));
+    ctx!.beginPath(); ctx!.arc(cx, cy, cr * 4, 0, Math.PI * 2);
+    ctx!.fillStyle = cGlow; ctx!.fill();
+    ctx!.beginPath(); ctx!.arc(cx, cy, cr, 0, Math.PI * 2);
+    ctx!.fillStyle = storyA(0.9 * gf); ctx!.fill();
+
+    /* Pulse rings — on top */
+    for (const r of rings) {
+      if (!r.on || r.a * gf < 0.003) continue;
+      ctx!.beginPath(); ctx!.arc(cx, cy, r.r, 0, Math.PI * 2);
+      ctx!.strokeStyle = storyA(r.a * gf); ctx!.lineWidth = 0.8; ctx!.stroke();
+    }
+  }
+
+  /* ── Static frame (reduced motion) ── */
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = bgColor; ctx!.fillRect(0, 0, W, H);
+    cx = W / 2; cy = H / 2;
+    const or = oR();
+
+    for (let i = 0; i < N_AMB; i++) {
+      const ax = W * (0.08 + 0.84 * ((i * 7 + 3) % N_AMB) / N_AMB);
+      const ay = H * (0.08 + 0.84 * ((i * 11 + 5) % N_AMB) / N_AMB);
+      ctx!.beginPath(); ctx!.arc(ax, ay, 1.5, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(0.04); ctx!.fill();
+    }
+
+    for (let i = 0; i < N; i++) {
+      const ang = (i / N) * Math.PI * 2;
+      const rf  = 0.88 + (Math.sin(i * 4.1 + 2.7) * 0.5 + 0.5) * 0.24;
+      const hx  = cx + Math.cos(ang) * rf * or;
+      const hy  = cy + Math.sin(ang) * rf * or;
+      ctx!.beginPath(); ctx!.moveTo(cx, cy); ctx!.lineTo(hx, hy);
+      ctx!.strokeStyle = storyA(0.06); ctx!.lineWidth = 0.5; ctx!.stroke();
+      ctx!.beginPath(); ctx!.arc(hx, hy, 4, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(0.08); ctx!.fill();
+    }
+
+    const cg = ctx!.createRadialGradient(cx, cy, 0, cx, cy, 24);
+    cg.addColorStop(0, storyA(0.35)); cg.addColorStop(0.5, storyA(0.1)); cg.addColorStop(1, storyA(0));
+    ctx!.beginPath(); ctx!.arc(cx, cy, 24, 0, Math.PI * 2);
+    ctx!.fillStyle = cg; ctx!.fill();
+    ctx!.beginPath(); ctx!.arc(cx, cy, 6, 0, Math.PI * 2);
+    ctx!.fillStyle = storyA(0.9); ctx!.fill();
+
+    ctx!.beginPath(); ctx!.arc(cx, cy, 35, 0, Math.PI * 2);
+    ctx!.strokeStyle = storyA(0.15); ctx!.lineWidth = 0.8; ctx!.stroke();
+    ctx!.beginPath(); ctx!.arc(cx, cy, 70, 0, Math.PI * 2);
+    ctx!.strokeStyle = storyA(0.07); ctx!.lineWidth = 0.8; ctx!.stroke();
+  }
+
+  /* ── Loop ── */
+  function tick() {
+    frame++;
+    if (frame >= CYCLE) resetState();
+    update(); draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  /* ── Resize ── */
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth; H = canvas!.offsetHeight;
+    canvas!.width = W * dpr; canvas!.height = H * dpr;
+    ctx!.scale(dpr, dpr);
+    cx = W / 2; cy = H / 2;
+    if (prefersReduced) drawStatic();
+  });
+  ro.observe(canvas);
+
+  /* ── Initial setup ── */
+  const dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth; H = canvas.offsetHeight;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  if (prefersReduced) {
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    resetState();
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(rafId); rafId = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+      ro.disconnect();
+    });
+  }
+})();
+</script>
