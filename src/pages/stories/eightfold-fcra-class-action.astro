@@ -1,0 +1,525 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'eightfold-fcra-class-action')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .eightfold-fcra-class-action-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* -- REENACTMENT 1: Match Score Card -- */
+  .ef-score-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 2rem 0 0.5rem; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.82rem; }
+  .ef-panel-employer, .ef-panel-applicant { padding: 1.25rem; }
+  .ef-panel-employer { background: var(--surface); border-right: 1px solid var(--border); }
+  .ef-panel-applicant { background: var(--bg); display: flex; flex-direction: column; justify-content: center; align-items: center; color: var(--muted); font-style: italic; }
+  .ef-panel-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 1rem; font-family: system-ui, sans-serif; }
+  .ef-score-big { font-size: 1.6rem; font-weight: 700; color: var(--story); margin-bottom: 0.75rem; }
+  .ef-score-big span { font-size: 0.9rem; color: var(--muted); font-weight: 400; }
+  .ef-score-row { display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px solid var(--border); color: var(--text); gap: 1rem; }
+  .ef-score-row:last-of-type { border-bottom: none; }
+  .ef-bar-wrap { width: 80px; height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; flex-shrink: 0; }
+  .ef-bar-fill { height: 100%; background: var(--story); border-radius: 3px; }
+  .ef-rank { margin-top: 0.75rem; font-size: 0.75rem; color: var(--muted); }
+  .ef-applicant-msg { font-size: 0.85rem; text-align: center; line-height: 1.5; }
+  .ef-context { font-size: 0.75rem; color: var(--muted); margin: 0.25rem 0 2.5rem; line-height: 1.5; font-style: italic; }
+  @media (max-width: 600px) {
+    .ef-score-panel { grid-template-columns: 1fr; }
+    .ef-panel-employer { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+
+  /* -- REENACTMENT 2: FCRA Compliance Checklist -- */
+  .ef-checklist { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin: 2rem 0 0.5rem; background: var(--surface); }
+  .ef-checklist-header { background: var(--surface2); padding: 0.75rem 1.25rem; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); border-bottom: 1px solid var(--border); font-family: 'SF Mono', 'Fira Code', monospace; }
+  .ef-check-row { display: flex; justify-content: space-between; align-items: center; padding: 0.65rem 1.25rem; border-bottom: 1px solid var(--border); font-size: 0.82rem; color: var(--text); gap: 1rem; }
+  .ef-check-row:last-child { border-bottom: none; }
+  .ef-check-label { flex: 1; line-height: 1.4; }
+  .ef-check-status { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.72rem; color: var(--accent); white-space: nowrap; font-weight: 600; }
+
+  /* -- REENACTMENT 3: Docket Timeline -- */
+  .ef-docket { margin: 2rem 0 0.5rem; padding: 0; list-style: none; position: relative; }
+  .ef-docket::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: var(--border); }
+  .ef-docket-item { display: flex; align-items: flex-start; gap: 1rem; padding: 0.5rem 0; position: relative; }
+  .ef-docket-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--story); flex-shrink: 0; margin-top: 2px; z-index: 1; }
+  .ef-docket-item.ef-hollow .ef-docket-dot { background: transparent; border: 2px dashed var(--muted); }
+  .ef-docket-date { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.72rem; color: var(--muted); white-space: nowrap; min-width: 100px; }
+  .ef-docket-text { font-size: 0.85rem; color: var(--text); line-height: 1.4; }
+  .ef-hollow .ef-docket-text { color: var(--muted); font-style: italic; }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="application">
+      <h2><span class="num">01 — THE APPLICATION</span>Scored in the Dark</h2>
+
+      <p>Sruti Bhaumik applied for a position called Senior Technical Program Manager — Responsible AI at Microsoft in July 2025. She held a bachelor's degree in chemistry from Bryn Mawr College, a master's from the University of Pittsburgh, and over ten years of experience in project management focused on data and AI. Two days later, she received an automated rejection. She was never interviewed. She was never told why. According to the complaint later filed on her behalf, she was never informed that a third-party system had scored her on a scale of zero to five.</p>
+
+      <p>When Bhaumik submitted her application through Microsoft's website, the sign-in process routed through a domain controlled by Eightfold AI, a Santa Clara-based company founded in 2016. Erin Kistler applied and was rejected the same way. In December 2025, Kistler — a Los Angeles resident with a computer science degree from Ohio State and roughly nineteen years of product and project management experience — applied for two senior product manager positions at PayPal. The application URLs included "eightfold.ai/careers" in the address. She was not interviewed. She received no offer.</p>
+
+      <p>Neither woman received a standalone disclosure that a consumer report would be obtained. Neither received a summary of her consumer protection rights. Neither was told Eightfold existed.</p>
+
+      <div class="pull-quote">
+        I've applied to hundreds of jobs, but it feels like an unseen force is stopping me from being fairly considered.
+        <cite>— Erin Kistler, in a statement released by her attorneys at Outten &amp; Golden</cite>
+      </div>
+
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-num">0</div>
+          <div class="stat-label">Disclosures received by either plaintiff</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">2 days</div>
+          <div class="stat-label">Time before Bhaumik's auto-rejection</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">100+</div>
+          <div class="stat-label">Eightfold's self-reported employer customers</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="phantom-wrap">
+    <canvas class="eightfold-fcra-class-action-canvas" aria-hidden="true"></canvas>
+  </div>
+  <p class="canvas-note"><strong>The Glass</strong> — Identical off-white particles drift rightward through a vertical membrane. On the left they are uniform and undifferentiated. As each crosses, a cold indigo score ring appears — bright for some, barely visible for others — and the particle stratifies by rank. Every eighteen seconds the membrane flares bright, and ghost rings bleed backward through the glass to the left side. Both sides can see. Then the flare dies, the left goes dark, and the blind flow continues.</p>
+
+  <div class="container">
+
+    <section class="section" id="score">
+      <h2><span class="num">02 — THE SCORE</span>What the Machine Sees</h2>
+
+      <p>The complaint, filed January 20, 2026, alleges that Eightfold's platform produces something called a Match Score. According to the filing, the score ranges from zero to five in half-point increments and predicts the fit between a candidate and a job. It ranks applicants in a list. The scoring considers three factors, the complaint states: skill overlap between the applicant and the role, title progression and seniority fit — including a measure the company calls "hireability," or the predicted likelihood a candidate will join — and similarity to profiles of ideal candidates and high performers at the hiring company.</p>
+
+      <p>The complaint alleges the system draws on five categories of data: the candidate's resume, supplemental data gathered from public sources such as blogs, publications, conferences, and prior job application history, data about comparable employees at other companies, predictions and inferences about the candidate's personality and future, and the data used to train Eightfold's AI model.</p>
+
+      <p>Eightfold's privacy policy, quoted in the complaint, states that the platform ingests professional data from third-party sources including LinkedIn, Stack Overflow, and GitHub. It describes the personal data collected as including "inferences drawn from any of [the various sources] to create a profile about [the job applicant] reflecting the [applicant's] preferences, characteristics, predispositions, behavior, attitudes, intelligence, abilities, and aptitudes." Eightfold's own engineering blog describes a three-step algorithm: extract deep semantic embeddings from unstructured data, add interpretable features, then perform fast explainable inference of match scores. The model, the blog states, is trained on "tens of millions of historical candidate-position pairs with known outcomes." The complaint reproduces Eightfold's marketing materials, which cite "more than 1.5 billion global data points" and "profiles of more than 1 billion people."</p>
+
+      <p>Eightfold disputes this characterization. Spokesperson Kurt Foeller stated publicly that "this characterization about our products is factually incorrect." He said Eightfold "does not 'lurk' or scrape personal web history, social media or the like to build 'secret dossiers'" and that "Eightfold's platform operates on data submitted by candidates to our customers or provided by our customers." Foeller stated that Eightfold "believes the allegations are without merit." The complaint's description of Eightfold's data practices and Foeller's denial create a factual dispute the court has not resolved.</p>
+
+      <div class="ef-score-panel">
+        <div class="ef-panel-employer">
+          <div class="ef-panel-label">Employer View</div>
+          <div class="ef-score-big">3.5 <span>/ 5.0</span></div>
+          <div class="ef-score-row">
+            <span>Skill Overlap: 72%</span>
+            <div class="ef-bar-wrap"><div class="ef-bar-fill" style="width: 72%"></div></div>
+          </div>
+          <div class="ef-score-row">
+            <span>Seniority Fit: 65%</span>
+            <div class="ef-bar-wrap"><div class="ef-bar-fill" style="width: 65%"></div></div>
+          </div>
+          <div class="ef-score-row">
+            <span>Hireability: 58%</span>
+            <div class="ef-bar-wrap"><div class="ef-bar-fill" style="width: 58%"></div></div>
+          </div>
+          <div class="ef-rank">Rank: 14 of 238 applicants</div>
+        </div>
+        <div class="ef-panel-applicant">
+          <div class="ef-panel-label">Applicant View</div>
+          <div class="ef-applicant-msg">Application received.<br />We will be in touch.</div>
+        </div>
+      </div>
+      <p class="ef-context">Illustrative reconstruction based on the complaint's description of Eightfold's Match Score system (complaint paras. 59–74). The actual interface is not public. The applicant view is not alleged — it is the absence the complaint describes.</p>
+    </section>
+
+    <section class="section" id="vacuum">
+      <h2><span class="num">03 — THE VACUUM</span>The Answer That Disappeared</h2>
+
+      <p>On October 24, 2024, the Consumer Financial Protection Bureau issued Circular 2024-06, titled "Background Dossiers and Algorithmic Scores for Hiring, Promotion, and Other Employment Decisions." It stated that an entity could qualify as a consumer reporting agency under the Fair Credit Reporting Act if it collected consumer data to train an algorithm that produced scores or assessments about workers for employers. The circular was specific: a third party providing scores to companies for employment purposes could be "assembling" or "evaluating" consumer information, triggering the full FCRA framework — disclosure, authorization, accuracy obligations, dispute rights. The complaint filed against Eightfold cited the circular at paragraphs 13, 15, and 16.</p>
+
+      <p>On May 12, 2025, the CFPB withdrew Circular 2024-06. It was one of 67 guidance documents rescinded in a single Federal Register notice. No replacement guidance was issued. The withdrawal did not change the text of the FCRA itself — the statute Congress enacted in 1970 and strengthened with employment-specific protections in 1996 remains in force. But the agency interpretation that said "this law applies to AI hiring scores" no longer exists as active guidance.</p>
+
+      <p>The FTC addressed a related question in 2013, when it settled an enforcement action against Filiquarian Publishing and wrote: "If a company meets the legal definition of a consumer reporting agency, it's a consumer reporting agency. Including a disclaimer that says 'But we're not a CRA!' won't change that." That principle remains on the books. The question of whether it reaches AI-generated hiring scores is now before a federal court, with no regulatory guidance behind it.</p>
+    </section>
+
+    <section class="section" id="dispute">
+      <h2><span class="num">04 — THE DISPUTE</span>Software or Bureau</h2>
+
+      <p>The case — captioned <em>Kistler et al. v. Eightfold AI Inc.</em>, No. 3:26-cv-01768 — asserts three claims: violation of the FCRA, violation of California's Investigative Consumer Reporting Agencies Act, and violation of the state's Unfair Competition Law. The plaintiffs' theory is that Eightfold's Match Scores are consumer reports under the FCRA's statutory definition, and that Eightfold is a consumer reporting agency. If that theory holds, the FCRA required Eightfold to provide standalone disclosures to applicants before compiling a report, obtain written authorization, furnish a summary of consumer rights, deliver pre-adverse-action notices with a copy of the report, and offer applicants an opportunity to dispute or correct the information. The complaint alleges none of this happened.</p>
+
+      <div class="ef-checklist">
+        <div class="ef-checklist-header">FCRA Employment Provisions — Compliance Status</div>
+        <div class="ef-check-row">
+          <span class="ef-check-label">Standalone disclosure that a consumer report will be obtained</span>
+          <span class="ef-check-status"><span aria-hidden="true">&#x2717;</span> NOT PROVIDED</span>
+        </div>
+        <div class="ef-check-row">
+          <span class="ef-check-label">Written authorization from applicant before report compiled</span>
+          <span class="ef-check-status"><span aria-hidden="true">&#x2717;</span> NOT PROVIDED</span>
+        </div>
+        <div class="ef-check-row">
+          <span class="ef-check-label">Summary of consumer rights provided to applicant</span>
+          <span class="ef-check-status"><span aria-hidden="true">&#x2717;</span> NOT PROVIDED</span>
+        </div>
+        <div class="ef-check-row">
+          <span class="ef-check-label">Pre-adverse-action notice with copy of report</span>
+          <span class="ef-check-status"><span aria-hidden="true">&#x2717;</span> NOT PROVIDED</span>
+        </div>
+        <div class="ef-check-row">
+          <span class="ef-check-label">Opportunity to dispute or correct information before decision</span>
+          <span class="ef-check-status"><span aria-hidden="true">&#x2717;</span> NOT PROVIDED</span>
+        </div>
+        <div class="ef-check-row">
+          <span class="ef-check-label">Identity of reporting agency disclosed to applicant</span>
+          <span class="ef-check-status"><span aria-hidden="true">&#x2717;</span> NOT PROVIDED</span>
+        </div>
+      </div>
+      <p class="ef-context">Based on complaint paras. 87–88 and 104–105. These are the FCRA's employment provisions under 15 U.S.C. § 1681b(b). The complaint alleges none were satisfied.</p>
+
+      <p>Eightfold disagrees. In its motion to dismiss, filed April 20, 2026, the company argues it is "an AI company that creates software that employers integrate into their HR systems for their own internal use, not a consumer reporting agency subject to the FCRA." Its position is explicit: "The statute does not cover every party or software that touches consumer information. Adding [artificial intelligence] to the mix does not change this."</p>
+
+      <p>The statutory damages exposure, if the plaintiffs' theory holds, is significant: the FCRA provides $100 to $1,000 per willful violation, plus punitive damages; California's ICRAA provides the greater of actual damages or $10,000 per violation, plus punitive damages. The complaint proposes two classes — all U.S. residents and all California residents subjected to Eightfold's evaluation tools — each with "more than 100 members." The actual class size, the complaint notes, is "presently within Eightfold's sole control."</p>
+
+      <p>The plaintiffs' legal team includes Jenny R. Yang, former chair of the Equal Employment Opportunity Commission, now a partner at Outten &amp; Golden. "AI hiring tools are being adopted very quickly," Yang and co-counsel Christopher McNerney told <em>Fortune</em>, "often faster than companies are building the compliance, auditing, and governance structures needed to use them responsibly. That creates real risk — not only of inaccurate decisions, but also of hidden discrimination." The case sits before Chief Judge Yvonne Gonzalez Rogers in the Northern District of California. The procedural record is complete. The silence that follows it is not.</p>
+
+      <ul class="ef-docket" role="list">
+        <li class="ef-docket-item">
+          <div class="ef-docket-dot"></div>
+          <span class="ef-docket-date">Jan 20, 2026</span>
+          <span class="ef-docket-text">Filed, Contra Costa County Superior Court</span>
+        </li>
+        <li class="ef-docket-item">
+          <div class="ef-docket-dot"></div>
+          <span class="ef-docket-date">Mar 2, 2026</span>
+          <span class="ef-docket-text">Removed to N.D. Cal.</span>
+        </li>
+        <li class="ef-docket-item">
+          <div class="ef-docket-dot"></div>
+          <span class="ef-docket-date">Apr 20, 2026</span>
+          <span class="ef-docket-text">Motion to dismiss filed</span>
+        </li>
+        <li class="ef-docket-item">
+          <div class="ef-docket-dot"></div>
+          <span class="ef-docket-date">Jun 18, 2026</span>
+          <span class="ef-docket-text">Opposition filed</span>
+        </li>
+        <li class="ef-docket-item">
+          <div class="ef-docket-dot"></div>
+          <span class="ef-docket-date">Jul 9, 2026</span>
+          <span class="ef-docket-text">Reply filed</span>
+        </li>
+        <li class="ef-docket-item">
+          <div class="ef-docket-dot"></div>
+          <span class="ef-docket-date">Jul 24, 2026</span>
+          <span class="ef-docket-text">Hearing vacated</span>
+        </li>
+        <li class="ef-docket-item ef-hollow">
+          <div class="ef-docket-dot"></div>
+          <span class="ef-docket-date">Aug 7, 2026</span>
+          <span class="ef-docket-text">No ruling</span>
+        </li>
+      </ul>
+      <p class="ef-context"><em>Kistler et al. v. Eightfold AI Inc.</em>, No. 3:26-cv-01768 (N.D. Cal.). Docket via PacerMonitor.</p>
+    </section>
+
+    <section class="section" id="gap">
+      <h2><span class="num">05 — THE GAP</span>What No One Is Answering</h2>
+
+      <p>According to a 2023 <em>New York Times</em> report cited in the filing, nearly two-thirds of large companies use AI technology to screen out job candidates their platforms deem unlikely to be qualified. If the court sides with Eightfold — if an AI system that compiles data, generates scores, and furnishes those scores to employers for hiring decisions is not a consumer reporting agency — then the FCRA's employment protections have a hole in them exactly the size of the AI hiring industry. No applicant scored by such a system would have a legal right to see the score, challenge the data, or correct an error. The guidance that could have filled that gap was withdrawn. No replacement has been issued. The statute itself has not changed, but no authority is currently saying it applies.</p>
+
+      <p>A federal judge in Oakland has been asked whether an AI system that scores job applicants is a consumer reporting agency under a statute Congress enacted fifty-six years ago. The hearing was scheduled. Then it was vacated. No ruling has been issued. Until one is, the millions of people scored by AI hiring tools have no established legal right to know their number.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.eightfold-fcra-class-action-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const cs = getComputedStyle(canvas);
+  const bgColor = cs.getPropertyValue('--bg').trim() || '#0d0d0d';
+  const storyHex = cs.getPropertyValue('--story').trim() || '#818cf8';
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const sR = parseInt(storyHex.slice(1, 3), 16) || 129;
+  const sG = parseInt(storyHex.slice(3, 5), 16) || 140;
+  const sB = parseInt(storyHex.slice(5, 7), 16) || 248;
+
+  function accentA(a: number): string { return `rgba(${sR},${sG},${sB},${Math.max(0, Math.min(1, a))})`; }
+  function dimA(a: number): string { return `rgba(232,232,232,${Math.max(0, Math.min(1, a))})`; }
+  function clamp(v: number, lo: number, hi: number): number { return v < lo ? lo : v > hi ? hi : v; }
+
+  const NUM_PARTICLES = 40;
+  const NUM_AMBIENT = 15;
+  const RADIUS = 3;
+  const RING_RADIUS = 7;
+  const DRIFT = 0.3;
+  const CYCLE = 1080;
+  const FLARE_START = 840;
+  const FLARE_RAMP_END = 870;
+  const FLARE_HOLD_END = 960;
+  const MEM_BASE = 0.12;
+  const MEM_PEAK = 0.5;
+
+  let W = 0, H = 0, frame = 0, rafId = 0;
+  let memX = 0;
+
+  interface Particle {
+    x: number; y: number; vx: number; vy: number;
+    score: number; scored: boolean; sineOff: number;
+  }
+  interface Ambient {
+    x: number; y: number; vx: number; vy: number;
+  }
+
+  const particles: Particle[] = [];
+  const ambients: Ambient[] = [];
+
+  for (let i = 0; i < NUM_PARTICLES; i++) {
+    particles.push({ x: 0, y: 0, vx: 0, vy: 0, score: 0, scored: false, sineOff: 0 });
+  }
+  for (let i = 0; i < NUM_AMBIENT; i++) {
+    ambients.push({ x: 0, y: 0, vx: 0, vy: 0 });
+  }
+
+  function resetParticle(p: Particle, scatter: boolean): void {
+    if (scatter) {
+      p.x = Math.random() * W * 0.96 + W * 0.02;
+    } else {
+      p.x = -2 - Math.random() * 10;
+    }
+    p.y = H * 0.08 + Math.random() * H * 0.84;
+    p.vx = DRIFT + (Math.random() - 0.5) * 0.06;
+    p.vy = 0;
+    p.score = 0.2 + Math.random() * 0.7;
+    p.sineOff = Math.random() * Math.PI * 2;
+    p.scored = scatter && p.x >= memX;
+    if (p.scored) {
+      if (p.score > 0.6) p.y = H * 0.08 + Math.random() * H * 0.35;
+      else if (p.score < 0.4) p.y = H * 0.57 + Math.random() * H * 0.35;
+    }
+  }
+
+  function initState(): void {
+    memX = W * 0.5;
+    for (let i = 0; i < NUM_PARTICLES; i++) resetParticle(particles[i], true);
+    for (let i = 0; i < NUM_AMBIENT; i++) {
+      const a = ambients[i];
+      a.x = Math.random() * W;
+      a.y = Math.random() * H;
+      a.vx = (Math.random() - 0.5) * 0.2;
+      a.vy = (Math.random() - 0.5) * 0.2;
+    }
+    frame = 0;
+  }
+
+  function getMemAlpha(f: number): number {
+    const cf = f % CYCLE;
+    if (cf < FLARE_START) return MEM_BASE;
+    if (cf < FLARE_RAMP_END) return MEM_BASE + (MEM_PEAK - MEM_BASE) * ((cf - FLARE_START) / 30);
+    if (cf < FLARE_HOLD_END) return MEM_PEAK;
+    return MEM_PEAK - (MEM_PEAK - MEM_BASE) * ((cf - FLARE_HOLD_END) / 120);
+  }
+
+  function getFlareI(f: number): number {
+    const cf = f % CYCLE;
+    if (cf < FLARE_START) return 0;
+    if (cf < FLARE_RAMP_END) return (cf - FLARE_START) / 30;
+    if (cf < FLARE_HOLD_END) return 1;
+    return Math.max(0, 1 - (cf - FLARE_HOLD_END) / 120);
+  }
+
+  function update(): void {
+    memX = W * 0.5;
+    for (let i = 0; i < NUM_PARTICLES; i++) {
+      const p = particles[i];
+      p.x += p.vx;
+
+      if (!p.scored) {
+        p.vy = Math.sin(frame * 0.015 + p.sineOff) * 0.05;
+        p.y += p.vy;
+        if (p.x >= memX) p.scored = true;
+      } else {
+        const target = p.score > 0.6 ? -0.08 : p.score < 0.4 ? 0.08 : 0;
+        p.vy += (target - p.vy) * 0.03;
+        p.y += p.vy;
+      }
+
+      p.y = clamp(p.y, H * 0.05, H * 0.95);
+      if (p.x > W + 10) resetParticle(p, false);
+    }
+
+    for (let i = 0; i < NUM_AMBIENT; i++) {
+      const a = ambients[i];
+      a.x += a.vx;
+      a.y += a.vy;
+      if (a.x < 0 || a.x > W) a.vx *= -1;
+      if (a.y < 0 || a.y > H) a.vy *= -1;
+      a.x = clamp(a.x, 0, W);
+      a.y = clamp(a.y, 0, H);
+    }
+  }
+
+  function draw(): void {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, W, H);
+
+    memX = W * 0.5;
+    const mAlpha = getMemAlpha(frame);
+    const fI = getFlareI(frame);
+
+    ctx.strokeStyle = accentA(mAlpha);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(memX, 0);
+    ctx.lineTo(memX, H);
+    ctx.stroke();
+
+    if (mAlpha > MEM_BASE + 0.02) {
+      const gw = 30 * (mAlpha / MEM_PEAK);
+      const lg = ctx.createLinearGradient(memX - gw, 0, memX + gw, 0);
+      lg.addColorStop(0, accentA(0));
+      lg.addColorStop(0.5, accentA(mAlpha * 0.12));
+      lg.addColorStop(1, accentA(0));
+      ctx.fillStyle = lg;
+      ctx.fillRect(memX - gw, 0, gw * 2, H);
+    }
+
+    for (let i = 0; i < NUM_AMBIENT; i++) {
+      const a = ambients[i];
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, 1.2, 0, Math.PI * 2);
+      ctx.fillStyle = dimA(0.03);
+      ctx.fill();
+    }
+
+    for (let i = 0; i < NUM_PARTICLES; i++) {
+      const p = particles[i];
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, RADIUS, 0, Math.PI * 2);
+      ctx.fillStyle = dimA(0.06);
+      ctx.fill();
+
+      if (p.scored) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, RING_RADIUS, 0, Math.PI * 2);
+        ctx.strokeStyle = accentA(p.score);
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      } else if (fI > 0) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, RING_RADIUS, 0, Math.PI * 2);
+        ctx.strokeStyle = accentA(0.12 * fI);
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+  }
+
+  function drawStatic(): void {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, W, H);
+
+    memX = W * 0.5;
+
+    ctx.strokeStyle = accentA(0.25);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(memX, 0);
+    ctx.lineTo(memX, H);
+    ctx.stroke();
+
+    const lg = ctx.createLinearGradient(memX - 12, 0, memX + 12, 0);
+    lg.addColorStop(0, accentA(0));
+    lg.addColorStop(0.5, accentA(0.04));
+    lg.addColorStop(1, accentA(0));
+    ctx.fillStyle = lg;
+    ctx.fillRect(memX - 12, 0, 24, H);
+
+    for (let i = 0; i < 18; i++) {
+      const px = W * 0.06 + Math.abs(Math.sin(i * 5.3 + 1.7)) * (memX - W * 0.12);
+      const py = H * 0.1 + (i / 18) * H * 0.8 + Math.sin(i * 3.1) * H * 0.04;
+      ctx.beginPath();
+      ctx.arc(px, py, RADIUS, 0, Math.PI * 2);
+      ctx.fillStyle = dimA(0.06);
+      ctx.fill();
+    }
+
+    for (let i = 0; i < 18; i++) {
+      const score = 0.2 + (i / 17) * 0.7;
+      const px = memX + W * 0.04 + Math.abs(Math.sin(i * 7.1 + 2.3)) * (W * 0.4);
+      const py = H * 0.12 + (1 - score) * H * 0.76;
+      ctx.beginPath();
+      ctx.arc(px, py, RADIUS, 0, Math.PI * 2);
+      ctx.fillStyle = dimA(0.06);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(px, py, RING_RADIUS, 0, Math.PI * 2);
+      ctx.strokeStyle = accentA(score);
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    for (let i = 0; i < NUM_AMBIENT; i++) {
+      const ax = Math.abs(Math.sin(i * 8.3 + 0.5)) * W;
+      const ay = Math.abs(Math.cos(i * 5.7 + 1.2)) * H;
+      ctx.beginPath();
+      ctx.arc(ax, ay, 1.2, 0, Math.PI * 2);
+      ctx.fillStyle = dimA(0.03);
+      ctx.fill();
+    }
+  }
+
+  function tick(): void {
+    frame++;
+    update();
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function sizeCanvas(): void {
+    if (!canvas || !ctx) return;
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = Math.max(1, Math.round(W * dpr));
+    canvas.height = Math.max(1, Math.round(H * dpr));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    memX = W * 0.5;
+  }
+
+  const ro = new ResizeObserver(() => {
+    sizeCanvas();
+    if (prefersReduced) drawStatic();
+  });
+  ro.observe(canvas);
+
+  sizeCanvas();
+
+  if (prefersReduced) {
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    initState();
+    const io = new IntersectionObserver((entries) => {
+      const e = entries[0];
+      if (!e) return;
+      if (e.isIntersecting) {
+        if (!rafId) rafId = requestAnimationFrame(tick);
+      } else {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+      ro.disconnect();
+    });
+  }
+})();
+</script>
