@@ -1,0 +1,512 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'phillips-parlade-judicial-immunity')!;
+---
+
+<style is:global>
+  /* Reenactment 1: Court Document Mockup */
+  .ppji-filing-wrap { margin: 2rem 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; line-height: 1.6; }
+  .ppji-filing-panel { padding: 1.25rem 1.5rem; }
+  .ppji-filing-panel + .ppji-filing-panel { border-top: 1px solid var(--border); }
+  .ppji-filing-label { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
+  .ppji-filing-caption { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 0.75rem; color: var(--muted); text-align: center; padding: 0.5rem 1rem 0.75rem; border-top: 1px solid var(--border); }
+  .ppji-filing-line { display: flex; gap: 1rem; }
+  .ppji-filing-num { color: var(--muted); user-select: none; min-width: 2ch; text-align: right; flex-shrink: 0; }
+  .ppji-filing-text { color: var(--text); }
+  .ppji-filing-panel-b .ppji-filing-text { color: var(--story, var(--accent)); font-weight: 600; }
+
+  /* Reenactment 2: Four-Factor Meek Test */
+  .ppji-meek-wrap { margin: 2rem 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+  .ppji-meek-title { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 1rem 1.25rem 0.5rem; }
+  .ppji-meek-row { display: grid; grid-template-columns: 2.5rem 1fr auto auto; align-items: center; gap: 0.75rem; padding: 0.75rem 1.25rem; border-top: 1px solid var(--border); }
+  .ppji-meek-num { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-align: center; }
+  .ppji-meek-question { font-size: 0.88rem; color: var(--text); line-height: 1.4; }
+  .ppji-meek-examines { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+  .ppji-meek-status { font-size: 1rem; text-align: center; min-width: 2rem; }
+  .ppji-meek-check { color: var(--green); }
+  .ppji-meek-ghost { border-top: 2px dashed var(--border); }
+  .ppji-meek-ghost .ppji-meek-question { color: var(--muted); font-style: italic; }
+  .ppji-meek-ghost .ppji-meek-status { color: var(--accent); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; }
+  .ppji-meek-footer { font-size: 0.75rem; color: var(--muted); padding: 0.5rem 1.25rem 0.75rem; border-top: 1px solid var(--border); text-align: center; }
+
+  /* Reenactment 3: Detection-Channel Table */
+  .ppji-channels-wrap { margin: 2rem 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+  .ppji-channels-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; line-height: 1.5; }
+  .ppji-channels-table caption { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 1rem 1.25rem 0.5rem; text-align: left; caption-side: top; }
+  .ppji-channels-table thead th { font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 0.5rem 1rem; text-align: left; border-bottom: 2px solid var(--border); }
+  .ppji-channels-table tbody td { padding: 0.75rem 1rem; color: var(--text); border-bottom: 1px solid var(--border); vertical-align: top; }
+  .ppji-channels-table tbody tr:last-child td { border-bottom: none; }
+  .ppji-channels-table .ppji-channels-channel { font-weight: 600; white-space: nowrap; }
+  .ppji-channels-table .ppji-channels-detect { color: var(--accent); }
+  .ppji-channels-table .ppji-channels-gap { color: var(--muted); font-style: italic; }
+  .ppji-channels-summary { font-size: 0.8rem; color: var(--muted); padding: 0.75rem 1.25rem; text-align: center; border-top: 1px solid var(--border); font-style: italic; }
+
+  @media (max-width: 640px) {
+    .ppji-meek-row { grid-template-columns: 2rem 1fr; gap: 0.5rem; }
+    .ppji-meek-examines { display: none; }
+    .ppji-meek-status { grid-column: 2; text-align: left; }
+    .ppji-channels-table thead { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .ppji-channels-table tbody td { display: block; padding: 0.25rem 1rem; border-bottom: none; }
+    .ppji-channels-table tbody td:first-child { padding-top: 0.75rem; }
+    .ppji-channels-table tbody td:last-child { padding-bottom: 0.75rem; border-bottom: 1px solid var(--border); }
+    .ppji-channels-table tbody td::before { content: attr(data-label); display: block; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 0.15rem; }
+  }
+
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .phillips-parlade-judicial-immunity-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+  .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.6rem 0 0; padding: 0 1rem; line-height: 1.5; }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+<section class="section" id="allegation">
+  <h2><span class="num">01 — The Allegation</span>"Without Any Discretionary Human Thought"</h2>
+  <p>On August 12, 2026, U.S. District Judge Gloria Navarro assumed — for the sake of argument — that a Nevada state family court judge had relied wholly on artificial intelligence to issue a ruling, without any discretionary human thought. Then she held that it made no legal difference.</p>
+  <p>The case was <em>Phillips v. Parlade</em>, No. 2:25-cv-01464-GMN-NJK, in the U.S. District Court for the District of Nevada. T. Matthew Phillips had sued Judge Mari D. Parlade of the Eighth Judicial District Court, Family Division, Clark County — the judge assigned to his state custody case since Parlade took the bench in January 2023. The underlying dispute was a family law matter, <em>Phillips v. Phillips</em>, in which the Nevada Supreme Court had ruled on custody in April 2022. What Phillips challenged in federal court was a subsequent ruling by Parlade.</p>
+  <p>The case reached Judge Navarro on review of a Report and Recommendation by Magistrate Judge Nancy J. Koppe, who had recommended dismissal with prejudice. Phillips objected. The court reviewed those objections de novo (from scratch, without deference to the magistrate's recommendation). The objection that mattered was this: judicial immunity should not apply because, Phillips argued, the state judge had not performed a judicial act at all.</p>
+  <p>His language was specific. As the opinion recounts, Phillips argued "that judicial immunity does not apply in this matter because Defendant unlawfully delegated her official decision-making duties when she relied wholly on artificial intelligence to issue a judicial ruling, without any discretionary human thought, such that her actions cannot be considered a 'judicial act.'" He pressed the point further: "because Defendant delegated 100% of her decision-making duties, the rulings were in clear absence of all jurisdiction."</p>
+
+  <div class="ppji-filing-wrap">
+    <div class="ppji-filing-panel">
+      <div class="ppji-filing-label">Plaintiff's Objection (ECF No. 16, p.1 l.18 — p.2 l.2)</div>
+      <div class="ppji-filing-line">
+        <span class="ppji-filing-num">18</span>
+        <span class="ppji-filing-text">Plaintiff first objects to the judicial immunity analysis of the R&amp;R arguing that judicial</span>
+      </div>
+      <div class="ppji-filing-line">
+        <span class="ppji-filing-num">19</span>
+        <span class="ppji-filing-text">immunity does not apply in this matter because Defendant unlawfully delegated her official</span>
+      </div>
+      <div class="ppji-filing-line">
+        <span class="ppji-filing-num">20</span>
+        <span class="ppji-filing-text">decision-making duties when she relied wholly on artificial intelligence to issue a judicial</span>
+      </div>
+      <div class="ppji-filing-line">
+        <span class="ppji-filing-num">21</span>
+        <span class="ppji-filing-text">ruling, without any discretionary human thought, such that her actions cannot be considered a</span>
+      </div>
+      <div class="ppji-filing-line">
+        <span class="ppji-filing-num">1</span>
+        <span class="ppji-filing-text">"judicial act." [...] because Defendant delegated 100% of her decision-making duties, the</span>
+      </div>
+      <div class="ppji-filing-line">
+        <span class="ppji-filing-num">2</span>
+        <span class="ppji-filing-text">rulings were in clear absence of all jurisdiction.</span>
+      </div>
+    </div>
+    <div class="ppji-filing-panel ppji-filing-panel-b">
+      <div class="ppji-filing-label">Order of the Court (ECF No. 16, p.2 ll.15–16)</div>
+      <div class="ppji-filing-line">
+        <span class="ppji-filing-num">15</span>
+        <span class="ppji-filing-text">Issuing a judicial ruling is clearly a normal judicial function and the controversy at issue</span>
+      </div>
+      <div class="ppji-filing-line">
+        <span class="ppji-filing-num">16</span>
+        <span class="ppji-filing-text">centered around Plaintiff's state court case pending before Defendant.</span>
+      </div>
+    </div>
+    <div class="ppji-filing-caption">Three sentences of argument. One sentence of disposition. The doctrine did not struggle with this question.</div>
+  </div>
+
+  <p>No prior court appears to have addressed the question of whether a judge's alleged use of AI should overcome judicial immunity. No commentator who covered the opinion — including legal scholar Eugene Volokh, who published the first analysis on August 17, 2026 — identified a precedent. The argument was novel. The answer was not.</p>
+</section>
+
+<div class="phantom-wrap">
+  <canvas class="phillips-parlade-judicial-immunity-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>The Function</strong> — Rings drift in a dark field; some hold a faint inner light, some are hollow. A slow scan pulse sweeps outward and illuminates every outer edge identically, then fades. The test reads surfaces. What is inside each ring never changes, and the scan never reaches it.</p>
+
+<section class="section" id="doctrine">
+  <h2><span class="num">02 — The Doctrine</span>A 154-Year-Old Answer</h2>
+  <p>The court's answer came from a doctrine older than the telephone.</p>
+  <p>Judges enjoy absolute immunity from civil liability for acts performed in their judicial capacity. The standard, as the Navarro opinion restated it from <em>Meek v. County of Riverside</em> (9th Cir. 1999), is that judges are immune "even if their action was in error, done maliciously, or in excess of their authority." This language is not a novel pronouncement. It traces through <em>Stump v. Sparkman</em> (1978) to <em>Bradley v. Fisher</em> (1872) — 154 years of continuous doctrine. The court was applying settled law.</p>
+  <p>Two exceptions exist, both established in <em>Mireles v. Waco</em> (1991). Judicial immunity does not apply when the challenged conduct involves "a clear absence of all jurisdiction" or when the conduct is "not judicial in nature." Phillips tried to reach the first exception — his argument was that total delegation of decision-making constituted an absence of jurisdiction. To evaluate the second, the court applied a four-factor test from <em>Meek</em>, which asks whether challenged conduct is "judicial in nature."</p>
+  <p>The four factors examine: (1) whether the act is a normal judicial function, (2) whether the events occurred in the judge's chambers, (3) whether the controversy centered on a case pending before the judge, and (4) whether the events arose out of a confrontation with the judge in an official capacity.</p>
+
+  <div class="ppji-meek-wrap">
+    <div class="ppji-meek-title">Meek v. Cnty. of Riverside — Four-Factor Test for Judicial Acts</div>
+    <div class="ppji-meek-row">
+      <span class="ppji-meek-num">1</span>
+      <span class="ppji-meek-question">Is this a normal judicial function?</span>
+      <span class="ppji-meek-examines">The Act</span>
+      <span class="ppji-meek-status ppji-meek-check" role="img" aria-label="Satisfied">&#10003;</span>
+    </div>
+    <div class="ppji-meek-row">
+      <span class="ppji-meek-num">2</span>
+      <span class="ppji-meek-question">Did it occur in the judge's chambers?</span>
+      <span class="ppji-meek-examines">The Location</span>
+      <span class="ppji-meek-status ppji-meek-check" role="img" aria-label="Satisfied">&#10003;</span>
+    </div>
+    <div class="ppji-meek-row">
+      <span class="ppji-meek-num">3</span>
+      <span class="ppji-meek-question">Was there a case pending before the judge?</span>
+      <span class="ppji-meek-examines">The Context</span>
+      <span class="ppji-meek-status ppji-meek-check" role="img" aria-label="Satisfied">&#10003;</span>
+    </div>
+    <div class="ppji-meek-row">
+      <span class="ppji-meek-num">4</span>
+      <span class="ppji-meek-question">Did events arise from a confrontation in the judge's official capacity?</span>
+      <span class="ppji-meek-examines">The Parties</span>
+      <span class="ppji-meek-status ppji-meek-check" role="img" aria-label="Satisfied">&#10003;</span>
+    </div>
+    <div class="ppji-meek-row ppji-meek-ghost">
+      <span class="ppji-meek-num">&mdash;</span>
+      <span class="ppji-meek-question">Was human judgment exercised in reaching the decision?</span>
+      <span class="ppji-meek-examines">The Process</span>
+      <span class="ppji-meek-status">Not Asked</span>
+    </div>
+    <div class="ppji-meek-footer">The test is complete. The question the plaintiff cared about was never on it.</div>
+  </div>
+
+  <p>None of the four factors asks <em>how</em> the decision was reached. The test is functional: it examines what act was performed, never what process produced it. It asks about the nature of the output, not the nature of the reasoning.</p>
+  <p>The court's application was terse. "Issuing a judicial ruling is clearly a normal judicial function and the controversy at issue centered around Plaintiff's state court case pending before Defendant." On the jurisdiction exception, the court found that "Plaintiff provides no case law or authority to support a finding that the challenged conduct was accompanied by a clear absence of all jurisdiction." Immunity applied.</p>
+  <p>The court expressly did not determine whether Judge Parlade actually used AI. The opinion states only that "Plaintiff alleges that Defendant issued a judicial decision in his state court case by relying wholly on artificial intelligence." The word "alleges" does all the work. The allegation was assumed. The functional test was applied. The result was the same regardless.</p>
+  <p>The complaint was dismissed with prejudice — meaning it cannot be refiled.</p>
+</section>
+
+<section class="section" id="disconnect">
+  <h2><span class="num">03 — The Disconnect</span>Justified by What It Cannot Verify</h2>
+  <p>Absolute judicial immunity exists to protect the exercise of independent judgment. The doctrine's justification is specific: judges must be free to decide cases without fear that a disappointed litigant will retaliate through civil suit. If every ruling could expose a judge to personal liability, the argument goes, judges would decide not according to the law but according to the risk of being sued. The protection of discretion is not a side effect. It is the stated purpose.</p>
+  <p>Phillips located the exact seam in this justification. If judicial immunity protects the exercise of discretion, what does the doctrine protect when the discretion is alleged to be absent? If the entire justification rests on safeguarding human judgment, and the claim is that no human judgment occurred, then the shield and its rationale come apart. It is a structurally coherent argument.</p>
+  <p>The court's answer reveals a structural feature of the doctrine, not a flaw introduced by AI. The four-factor <em>Meek</em> test has never asked whether judgment was exercised. It has never examined the mental process behind a judicial decision. This is not an oversight. It is 154 years of deliberate design. Any test that inquired into <em>how</em> a judge reached a decision would itself become a vehicle for harassing judges through litigation. A losing party could allege that the judge did not think carefully enough, did not read the briefs, did not consider the evidence with sufficient attention. The doctrine forecloses that entire category of inquiry by refusing to ask the question at all.</p>
+  <p>The consequence is precise. The same design that prevents frivolous interrogation of judicial reasoning also prevents any inquiry into whether reasoning occurred. The doctrine protects the institution by making the judge's internal process unreachable — and that unreachability does not vary based on what the internal process was.</p>
+</section>
+
+<section class="section" id="plaintiff">
+  <h2><span class="num">04 — The Plaintiff</span>Almost Certainly Wrong</h2>
+  <p>The honest assessment of Phillips's AI allegation is that it was almost certainly wrong.</p>
+  <p>According to Above the Law, citing Magistrate Judge Koppe's Report and Recommendation, Phillips's evidence that Judge Parlade used AI consisted of the following: the judge read from a prepared script during proceedings, stumbled over words, and at one point said "appearance of any impartiality" when the phrase she appeared to be reading was "appearance of impropriety." Above the Law's own characterization of this evidence was direct: it is "weak." Judges routinely read from prepared remarks. Stumbling over a word is not evidence of anything other than speaking. Misreading "impropriety" as "impartiality" is a slip, not a signature of machine-generated text.</p>
+  <p>According to Above the Law's reporting on the Koppe R&amp;R, this was reportedly at least Phillips's tenth federal challenge to his state court custody case, with zero successful outcomes. The underlying dispute — <em>Phillips v. Phillips</em> — was decided by the Nevada Supreme Court in April 2022, awarding sole legal and primary physical custody to the respondent based on a domestic violence presumption. Phillips has been litigating its aftermath since. The Koppe R&amp;R was not independently accessed for this story; all characterization of Phillips's litigation history derives from Above the Law's reporting on that document.</p>
+  <p>Phillips was almost certainly wrong about the AI allegation. But "almost certainly" is the strongest conclusion the legal system can produce on this question, and it would remain the strongest conclusion even if he were right. The court did not investigate the allegation because the doctrine did not require it. No other body investigated it either. No mechanism exists that could move the system's answer from "probably not" to "certainly not" — or, if the facts were different, from "possibly" to "confirmed."</p>
+  <p>That is the structural point the case makes regardless of the plaintiff's credibility. Phillips identified a question the system cannot answer. The system responded — correctly, under existing doctrine — that it does not need to answer it. Both of those things are true at the same time.</p>
+</section>
+
+<section class="section" id="topology">
+  <h2><span class="num">05 — The Topology</span>What Nothing Can Detect</h2>
+  <p>If the doctrine will not ask whether a judge used AI, the question is whether anything else in the system can. Walk each accountability channel in turn.</p>
+  <p><strong>Appellate review</strong> examines whether a lower court applied the correct legal standard, evaluated the evidence properly, and reached a supportable conclusion. It reviews the output. A ruling that applies the right standard to the facts, reasons through them competently, and reaches a defensible conclusion will survive appellate review regardless of whether a human mind or a language model drafted the analysis. Appeal can detect legal error. It cannot detect the absence of human engagement with the merits.</p>
+  <p><strong>State judicial discipline</strong>, in Nevada, operates through the Commission on Judicial Discipline, which investigates violations of the Revised Nevada Code of Judicial Conduct and failure to perform duties of office. The commission has no AI-specific rules. Nevada has no AI disclosure requirement at any level of its state court system. The Nevada Supreme Court has not issued an administrative order on the subject. A complaint alleging undisclosed AI use would need to identify a rule that was violated. No such rule exists.</p>
+  <p><strong>Federal interim guidance</strong>, issued Judiciary-wide on July 31, 2025, by the Judicial Conference's AI Task Force, "cautions against delegating core judicial functions to AI, including decision-making or case adjudication." It "recommends that users exercise extreme caution especially if using AI to aid in addressing novel legal questions." On disclosure, it "recommends that AI users consider whether the use of AI should be disclosed." It "reminds judges and Judiciary users and those who approve the use of AI that they are accountable for all work performed with the assistance of AI." Every operative verb — cautions, recommends, reminds — is advisory. The guidance does not prohibit. It does not mandate. It does not create an enforceable disclosure obligation.</p>
+  <p><strong>National tracking</strong> does not exist. In an October 21, 2025, letter to Senate Judiciary Chairman Chuck Grassley, Robert J. Conrad Jr., Director of the Administrative Office of U.S. Courts, wrote that the judiciary is "aware anecdotally of incidents in which judges have taken official action ... relating to the integrity of court filings in which the use of AI tools was in question, although we currently do not systematically track such activity at the national level." The incidents Conrad referenced were litigant-side — judges sanctioning parties for AI-generated errors in filings, not judges' own use of AI. The federal judiciary does not systematically track AI-related incidents at any level. There is no infrastructure that would detect judicial-side AI use either.</p>
+
+  <div class="ppji-channels-wrap">
+    <table class="ppji-channels-table">
+      <caption>Accountability Channels for Undisclosed Judicial AI Use</caption>
+      <thead>
+        <tr>
+          <th scope="col">Channel</th>
+          <th scope="col">Reviews</th>
+          <th scope="col">Can Detect Undisclosed AI Use?</th>
+          <th scope="col">Gap</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="ppji-channels-channel" data-label="Channel">Appellate Review</td>
+          <td data-label="Reviews">Legal error in the decision</td>
+          <td class="ppji-channels-detect" data-label="Detect?">No — reviews output, not process. Plausible reasoning passes.</td>
+          <td class="ppji-channels-gap" data-label="Gap">Assumes errors are visible.</td>
+        </tr>
+        <tr>
+          <td class="ppji-channels-channel" data-label="Channel">State Judicial Discipline (NV)</td>
+          <td data-label="Reviews">Violations of judicial conduct code</td>
+          <td class="ppji-channels-detect" data-label="Detect?">No — no AI-specific rules exist. No disclosure requirement.</td>
+          <td class="ppji-channels-gap" data-label="Gap">No rule to violate.</td>
+        </tr>
+        <tr>
+          <td class="ppji-channels-channel" data-label="Channel">Federal Interim Guidance</td>
+          <td data-label="Reviews">Voluntary compliance with advisory recommendations</td>
+          <td class="ppji-channels-detect" data-label="Detect?">No — "recommends" disclosure; does not mandate or enforce it.</td>
+          <td class="ppji-channels-gap" data-label="Gap">Advisory, not mandatory.</td>
+        </tr>
+        <tr>
+          <td class="ppji-channels-channel" data-label="Channel">AO National Tracking</td>
+          <td data-label="Reviews">AI-related incidents (litigant-side only, anecdotally)</td>
+          <td class="ppji-channels-detect" data-label="Detect?">No — "do not systematically track" even litigant-side incidents.</td>
+          <td class="ppji-channels-gap" data-label="Gap">No infrastructure at any level.</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="ppji-channels-summary">Detection surface for undisclosed use that produces competent output: none.</div>
+  </div>
+
+  <p>A Northwestern University / Sedona Conference survey of federal judges, published March 30, 2026, found that more than 60 percent of responding judges already use at least one AI tool in their judicial work. The survey reached 112 of 502 randomly selected federal judges — a 22.3 percent response rate, which limits generalizability. One further figure from the same survey is worth isolating. Of the judges who responded, 45.5 percent said AI training was not provided by their court administration.</p>
+  <p>The ABA Task Force on Law and Artificial Intelligence published its Year 2 Report on December 15, 2025, which included guidelines for judicial officers. Its core principle: "AI may assist judges, but it can never replace judicial judgment; judges remain solely responsible for decisions issued in their names." These are professional guidelines. They are not enforceable rules with a detection mechanism.</p>
+  <p>The cases where AI use in federal court orders has been detected are instructive. U.S. District Judge Julien Xavier Neals of New Jersey issued an opinion in June 2025 containing fabricated case citations traced to a law school intern's use of ChatGPT. U.S. District Judge Henry T. Wingate of Mississippi had a law clerk use Perplexity as a drafting assistant, producing errors. Both orders were retracted. Both were detectable because the outputs contained hallucinated citations — errors that were checkable against the record. Undisclosed use that produces plausible output has no equivalent detection surface.</p>
+  <p>No mechanism in the current system is designed to detect undisclosed AI use by a judge. Every channel assumes either that errors will be visible in the output, that someone will file a complaint identifying a violated rule, or that the user will volunteer the information. None can reach undisclosed use that produces facially competent work.</p>
+</section>
+
+<section class="section" id="counterpoint">
+  <h2><span class="num">06 — The Counterpoint</span>The Only Source of Visibility</h2>
+  <p>Six days before Judge Navarro filed the Phillips opinion, on August 6, 2026, Connecticut Superior Court Judge Walter M. Spader Jr. did something no doctrine required. He disclosed his use of AI tools in a published decision.</p>
+  <p>The case was a sanctions motion. Matthew Elliott, a self-represented plaintiff in <em>Elliott v. New York Bariatric Group</em> (Case No. AAN-CV-25-6066141-S, Connecticut Superior Court), had embedded hidden prompt-injection text — white three-point font on a white background — in court filings. Spader sanctioned him. In the same decision, according to Volokh's reporting on the fourteen-page opinion, Spader disclosed that he had used Google's Gemini to produce a working English translation of a Brazilian court decision and used Westlaw's Precision AI review features to check authorities and legal principles. He noted that Microsoft Word and Google Docs spelling and grammar-checking features are themselves AI-powered. He disclosed those too.</p>
+  <p>Spader drew a line. "Judgment can never be delegated to a machine in any profession, but most importantly in the legal field," he wrote, according to the decision as reported by Volokh. "The judgment, reasoning and the decision remain the undersigned's."</p>
+  <p>Spader's disclosure was not a legal obligation. No rule in Connecticut or any other state requires it. It was a choice. Voluntary disclosure by individual judges is currently the only source of visibility the system has into judicial AI use. The accountability architecture that the Phillips opinion implicitly relies on — the notion that remedy lies in appeal and discipline — cannot produce this visibility. Only the judge can. Spader's disclosure and Navarro's ruling arrived within six days of each other. One judge chose to show his work. The other's ruling confirmed that no one can be made to.</p>
+  <p>The system's capacity to know whether a judge used AI depends entirely on the judge choosing to say so. <em>Phillips v. Parlade</em> confirms that the doctrine will not ask. The interim guidance recommends but does not require. The discipline commissions have no applicable rule. The appellate courts review the output, not the process. The only window is the one the judge opens voluntarily. And when the judge does not, the system's answer, at every level, is the same one Judge Navarro gave: we do not reach that question.</p>
+</section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.phillips-parlade-judicial-immunity-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
+  const storyColor = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#7b93b6';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const [sR, sG, sB] = hexToRgb(storyColor);
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W = 0, H = 0, rafId = 0, frame = 0;
+
+  // --- Phase timing (frames at 60fps) ---
+  const PULSE_ONE = 90;    // first scan begins
+  const PULSE_TWO = 810;   // second scan begins (~12s later)
+  const FADE_START = 1500; // soft fade before reset
+  const CYCLE = 1620;      // ~27s full loop
+
+  const PULSE_SPEED = 2;   // px per frame
+  const GLOW_FRAMES = 50;  // ring stays lit this long after the wavefront passes
+
+  const NUM_RINGS = 24;
+  const NUM_AMBIENT = 8;
+
+  interface Ring {
+    ox: number; oy: number;      // orbit centre
+    orad: number;                // orbit radius
+    ang: number; aspd: number;   // orbit angle + speed
+    r: number;                   // ring radius
+    solid: boolean;              // has inner luminance
+    x: number; y: number;
+    lit: number;                 // frame the wavefront reached it (-1 = not yet)
+  }
+  interface Dust { x: number; y: number; vx: number; vy: number; r: number; }
+
+  const rings: Ring[] = [];
+  const dust: Dust[] = [];
+
+  function initRings() {
+    rings.length = 0;
+    for (let i = 0; i < NUM_RINGS; i++) {
+      rings.push({
+        ox: Math.random(), oy: Math.random(),
+        orad: 8 + Math.random() * 22,
+        ang: Math.random() * Math.PI * 2,
+        aspd: (0.0016 + Math.random() * 0.0022) * (Math.random() < 0.5 ? -1 : 1),
+        r: 5 + Math.random() * 4,
+        solid: i % 5 !== 0 && i % 7 !== 0, // ~60% solid
+        x: 0, y: 0,
+        lit: -1,
+      });
+    }
+  }
+
+  function initDust() {
+    dust.length = 0;
+    for (let i = 0; i < NUM_AMBIENT; i++) {
+      dust.push({
+        x: Math.random(), y: Math.random(),
+        vx: (Math.random() - 0.5) * 0.14,
+        vy: (Math.random() - 0.5) * 0.14,
+        r: 0.8 + Math.random() * 1.4,
+      });
+    }
+  }
+
+  // Origin of the scan: fixed point slightly below centre
+  function originX() { return W * 0.5; }
+  function originY() { return H * 0.68; }
+
+  function resize() {
+    const rect = canvas.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    W = rect.width;
+    H = rect.height;
+    canvas.width = Math.max(1, Math.round(W * dpr));
+    canvas.height = Math.max(1, Math.round(H * dpr));
+    ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function ringPos(rg: Ring) {
+    const cx = rg.ox * W;
+    const cy = rg.oy * H;
+    return { x: cx + Math.cos(rg.ang) * rg.orad, y: cy + Math.sin(rg.ang) * rg.orad };
+  }
+
+  // How far the current wavefront has travelled, or -1 if no pulse active
+  function waveRadius(f: number): number {
+    if (f >= PULSE_ONE && f < PULSE_TWO) return (f - PULSE_ONE) * PULSE_SPEED;
+    if (f >= PULSE_TWO) return (f - PULSE_TWO) * PULSE_SPEED;
+    return -1;
+  }
+
+  function maxReach() {
+    const ox = originX(), oy = originY();
+    return Math.max(
+      Math.hypot(ox, oy),
+      Math.hypot(W - ox, oy),
+      Math.hypot(ox, H - oy),
+      Math.hypot(W - ox, H - oy)
+    );
+  }
+
+  function drawRing(rg: Ring, glow: number, globalAlpha: number) {
+    // Interior: solid rings hold a faint inner luminance; hollow rings stay background-dark.
+    // The scan never changes this — only the outer edge responds.
+    if (rg.solid) {
+      ctx!.beginPath();
+      ctx!.arc(rg.x, rg.y, rg.r - 1.6, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(${sR},${sG},${sB},${0.12 * globalAlpha})`;
+      ctx!.fill();
+    } else {
+      ctx!.beginPath();
+      ctx!.arc(rg.x, rg.y, rg.r - 1.6, 0, Math.PI * 2);
+      ctx!.fillStyle = bgColor;
+      ctx!.fill();
+    }
+
+    // Outer edge: identical response for both types.
+    ctx!.beginPath();
+    ctx!.arc(rg.x, rg.y, rg.r, 0, Math.PI * 2);
+    if (glow > 0) {
+      ctx!.strokeStyle = `rgba(${sR},${sG},${sB},${(0.14 + 0.41 * glow) * globalAlpha})`;
+      ctx!.lineWidth = 1 + glow * 0.6;
+    } else {
+      ctx!.strokeStyle = `rgba(232,232,232,${0.16 * globalAlpha})`;
+      ctx!.lineWidth = 1;
+    }
+    ctx!.stroke();
+  }
+
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+    if (W === 0 || H === 0) return;
+
+    const f = frame % CYCLE;
+    if (f === 0) { for (const rg of rings) rg.lit = -1; }
+
+    // Soft fade before the snap reset
+    const globalAlpha = f >= FADE_START ? Math.max(0, 1 - (f - FADE_START) / (CYCLE - FADE_START)) : 1;
+
+    // --- Ambient dust ---
+    for (const d of dust) {
+      d.x += d.vx / Math.max(W, 1);
+      d.y += d.vy / Math.max(H, 1);
+      if (d.x < 0) d.x = 1; if (d.x > 1) d.x = 0;
+      if (d.y < 0) d.y = 1; if (d.y > 1) d.y = 0;
+      ctx!.beginPath();
+      ctx!.arc(d.x * W, d.y * H, d.r, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(232,232,232,${0.05 * globalAlpha})`;
+      ctx!.fill();
+    }
+
+    // --- Scan wavefront ---
+    const wr = waveRadius(f);
+    const reach = maxReach();
+    if (wr >= 0 && wr <= reach) {
+      const falloff = 1 - wr / reach;
+      ctx!.beginPath();
+      ctx!.arc(originX(), originY(), wr, 0, Math.PI * 2);
+      ctx!.strokeStyle = `rgba(${sR},${sG},${sB},${0.3 * falloff * globalAlpha})`;
+      ctx!.lineWidth = 1.4;
+      ctx!.stroke();
+    }
+
+    // --- Rings ---
+    for (const rg of rings) {
+      rg.ang += rg.aspd;
+      const p = ringPos(rg);
+      rg.x = p.x; rg.y = p.y;
+
+      const dist = Math.hypot(rg.x - originX(), rg.y - originY());
+      if (wr >= 0 && rg.lit < 0 && wr >= dist) rg.lit = f;
+
+      let glow = 0;
+      if (rg.lit >= 0) {
+        const age = f - rg.lit;
+        if (age >= 0 && age < GLOW_FRAMES) glow = 1 - age / GLOW_FRAMES;
+      }
+      // Second pulse re-lights every ring — the same answer, twice.
+      if (f === PULSE_TWO) rg.lit = -1;
+
+      drawRing(rg, glow, globalAlpha);
+    }
+  }
+
+  function drawStatic() {
+    resize();
+    ctx!.clearRect(0, 0, W, H);
+    if (W === 0 || H === 0) return;
+    for (const d of dust) {
+      ctx!.beginPath();
+      ctx!.arc(d.x * W, d.y * H, d.r, 0, Math.PI * 2);
+      ctx!.fillStyle = 'rgba(232,232,232,0.05)';
+      ctx!.fill();
+    }
+    // A single mid-sweep scan ring, both ring types visible
+    const midR = maxReach() * 0.55;
+    ctx!.beginPath();
+    ctx!.arc(originX(), originY(), midR, 0, Math.PI * 2);
+    ctx!.strokeStyle = `rgba(${sR},${sG},${sB},0.22)`;
+    ctx!.lineWidth = 1.4;
+    ctx!.stroke();
+    for (const rg of rings) {
+      const p = ringPos(rg);
+      rg.x = p.x; rg.y = p.y;
+      const dist = Math.hypot(rg.x - originX(), rg.y - originY());
+      drawRing(rg, dist <= midR ? 0.7 : 0, 1);
+    }
+  }
+
+  function tick() {
+    frame++;
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  const ro = new ResizeObserver(() => {
+    resize();
+    if (reducedMotion) drawStatic();
+  });
+  ro.observe(canvas);
+
+  // --- Init ---
+  initRings();
+  initDust();
+  resize();
+
+  // --- IntersectionObserver ---
+  const io = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) {
+      if (!rafId && !reducedMotion) rafId = requestAnimationFrame(tick);
+    } else {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+  }, { threshold: 0.01 });
+
+  if (reducedMotion) {
+    requestAnimationFrame(() => drawStatic());
+  } else {
+    io.observe(canvas);
+  }
+
+  // --- Cleanup ---
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(rafId);
+    ro.disconnect();
+    io.disconnect();
+  });
+})();
+</script>
