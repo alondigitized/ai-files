@@ -1,0 +1,914 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'gema-suno-training-ruling')!;
+---
+
+<style is:global>
+  /* === CANVAS === */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .gema-suno-training-ruling-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* === REENACTMENT 1: Prompt Test === */
+  .gema-prompt-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 2rem 0;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  }
+  .gema-prompt-header {
+    background: var(--surface2);
+    padding: 0.75rem 1.25rem;
+    font-size: 0.8rem;
+    color: var(--story);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  .gema-prompt-header span {
+    color: var(--muted);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .gema-prompt-input {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .gema-prompt-field {
+    padding: 0.2rem 0;
+    font-size: 0.85rem;
+    color: var(--text);
+    display: flex;
+    gap: 0.75rem;
+  }
+  .gema-prompt-label {
+    color: var(--muted);
+    min-width: 110px;
+    flex-shrink: 0;
+  }
+  .gema-prompt-label::after { content: ':'; }
+  .gema-prompt-value { color: var(--text); }
+  .gema-prompt-none {
+    color: var(--muted);
+    font-style: italic;
+  }
+  .gema-prompt-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  .gema-prompt-table th {
+    text-align: left;
+    padding: 0.6rem 1.25rem;
+    color: var(--muted);
+    font-weight: 500;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  .gema-prompt-th-count { text-align: center; }
+  .gema-prompt-table td {
+    padding: 0.5rem 1.25rem;
+    color: var(--text);
+    border-bottom: 1px solid rgba(42, 42, 42, 0.4);
+    font-family: -apple-system, system-ui, sans-serif;
+    font-size: 0.85rem;
+  }
+  .gema-prompt-count {
+    color: var(--story);
+    font-weight: 700;
+    text-align: center;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.95rem;
+  }
+  .gema-prompt-finding {
+    color: var(--accent);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-weight: 600;
+  }
+  .gema-prompt-footer {
+    padding: 0.6rem 1.25rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    text-align: right;
+  }
+  @media (max-width: 600px) {
+    .gema-prompt-table th:nth-child(2),
+    .gema-prompt-table td:nth-child(2) { display: none; }
+    .gema-prompt-table th, .gema-prompt-table td { padding: 0.5rem 0.75rem; }
+    .gema-prompt-field { flex-direction: column; gap: 0.15rem; }
+    .gema-prompt-label { min-width: unset; }
+  }
+
+  /* === REENACTMENT 2: Four Prohibited Acts === */
+  .gema-acts-wrap {
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .gema-acts-bar {
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    align-items: center;
+    padding: 0.9rem 1.25rem;
+    gap: 0.75rem;
+  }
+  .gema-acts-bar + .gema-acts-bar { border-top: 1px solid rgba(42, 42, 42, 0.4); }
+  .gema-acts-num {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .gema-acts-desc {
+    font-size: 0.88rem;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .gema-acts-law {
+    font-size: 0.72rem;
+    text-align: right;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+  .gema-acts-law span {
+    font-weight: 400;
+    display: block;
+    font-size: 0.68rem;
+    margin-top: 0.15rem;
+    color: var(--muted);
+  }
+  .gema-acts-us {
+    background: rgba(77, 166, 255, 0.06);
+    border-left: 3px solid #4da6ff;
+  }
+  .gema-acts-us .gema-acts-num,
+  .gema-acts-us .gema-acts-law { color: #4da6ff; }
+  .gema-acts-divider {
+    height: 0;
+    border-top: 1px dashed var(--border);
+    position: relative;
+    margin: 0 1.25rem;
+  }
+  .gema-acts-divider-label {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--surface);
+    padding: 0 0.75rem;
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  .gema-acts-de {
+    background: color-mix(in srgb, var(--story) 6%, transparent);
+    border-left: 3px solid var(--story);
+  }
+  .gema-acts-de .gema-acts-num,
+  .gema-acts-de .gema-acts-law { color: var(--story); }
+  .gema-acts-label {
+    padding: 0.6rem 1.25rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: center;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    font-style: italic;
+  }
+  @media (max-width: 600px) {
+    .gema-acts-bar {
+      grid-template-columns: 1fr;
+      gap: 0.35rem;
+    }
+    .gema-acts-law { text-align: left; }
+  }
+
+  /* === REENACTMENT 3: Three Courts on Fair Use === */
+  .gema-courts-wrap {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin: 2rem 0;
+  }
+  .gema-courts-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .gema-courts-header {
+    padding: 0.65rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border-bottom: 1px solid var(--border);
+  }
+  .gema-courts-card-us .gema-courts-header {
+    background: rgba(77, 166, 255, 0.06);
+    color: #4da6ff;
+    border-left: 3px solid #4da6ff;
+  }
+  .gema-courts-card-de .gema-courts-header {
+    background: color-mix(in srgb, var(--story) 6%, transparent);
+    color: var(--story);
+    border-left: 3px solid var(--story);
+  }
+  .gema-courts-body {
+    padding: 0.65rem 0.9rem;
+    flex: 1;
+  }
+  .gema-courts-field { margin-bottom: 0.5rem; }
+  .gema-courts-field:last-child { margin-bottom: 0; }
+  .gema-courts-field-label {
+    color: var(--muted);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: block;
+    margin-bottom: 0.1rem;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  .gema-courts-field-value {
+    color: var(--text);
+    font-size: 0.8rem;
+    line-height: 1.35;
+    display: block;
+  }
+  .gema-courts-result {
+    padding: 0.55rem 0.9rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    border-top: 1px solid var(--border);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+    margin-top: auto;
+  }
+  .gema-courts-granted {
+    color: var(--green);
+    background: rgba(0, 255, 136, 0.04);
+  }
+  .gema-courts-denied {
+    color: var(--accent);
+    background: rgba(255, 77, 77, 0.04);
+  }
+  .gema-courts-mixed {
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.04);
+  }
+  .gema-courts-status {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.68rem;
+    color: var(--muted);
+    border-top: 1px solid rgba(42, 42, 42, 0.4);
+  }
+  .gema-courts-footer {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-style: italic;
+    padding: 0.75rem 0 0;
+  }
+  @media (max-width: 768px) {
+    .gema-courts-wrap { grid-template-columns: 1fr; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="context">
+      <h2><span class="num">01 — Context</span>The Repertoire</h2>
+      <p>GEMA's lawyers typed the title, lyrics, and musical style of "Atemlos durch die Nacht" into Suno's AI music generator. They specified no melody, no harmony, no rhythm, no arrangement. According to analysis of the judgment by the German IP law blog itmr-legal, they repeated this process 176 times for that single song. The 42nd Civil Chamber of the Landgericht München I found the outputs substantially similar to the original. GEMA's lawyers ran the same test on five more compositions: Big in Japan (124 prompts), Daddy Cool (14), Forever Young (12), Rasputin (8), and the refrain of Mambo No. 5 (4).</p>
+
+      <p>GEMA — Germany's performing rights organisation — is a collecting society representing composers, lyricists, and music publishers. It holds the right to enforce copyright on their behalf. Suno Inc. is a US-based company that operates an AI music generation tool. GEMA filed suit against Suno on 21 January 2025 at the Landgericht München I, targeting Suno's model versions v3.5 and v4.</p>
+
+      <p>The dispute covered six musical compositions only. Lyrics were expressly excluded. The works: Kristina Bach's "Atemlos durch die Nacht," Frank Farian's "Daddy Cool" and "Rasputin" (the latter co-written with Fred Jay and George Reyam), Marian Gold, Bernhard Lloyd, and Frank Mertens's "Big in Japan" and "Forever Young," and the refrain of David Lubega and Christian Pletschacher's "Mambo No. 5 (A Little Bit of)."</p>
+
+      <p>The evidentiary method was direct. GEMA's counsel at the Berlin law firm Raue — the collecting society's own lawyers — entered prompts containing original lyrics, musical style descriptions, and song titles into Suno's interface, with no melodic, harmonic, rhythmic, or arrangement specifications. According to itmr-legal's analysis of the judgment, 338 of the 3,779 total prompt entries were work-specific. GEMA's lawyers selected outputs they characterised as the most egregious from multiple generations. The court did not establish blind evaluation protocols, control groups, or a threshold for the percentage of attempts producing recognisable outputs.</p>
+
+      <div class="gema-prompt-wrap">
+        <div class="gema-prompt-header">Suno v3.5 / v4 — Prompt Log <span>(GEMA evidentiary submission)</span></div>
+        <div class="gema-prompt-input">
+          <div class="gema-prompt-field"><span class="gema-prompt-label">Lyrics</span><span class="gema-prompt-value" lang="de">"Atemlos durch die Nacht…"</span></div>
+          <div class="gema-prompt-field"><span class="gema-prompt-label">Style</span><span class="gema-prompt-value">German pop / Schlager</span></div>
+          <div class="gema-prompt-field"><span class="gema-prompt-label">Title</span><span class="gema-prompt-value" lang="de">"Atemlos durch die Nacht"</span></div>
+          <div class="gema-prompt-field"><span class="gema-prompt-label">Melody</span><span class="gema-prompt-none">[none specified]</span></div>
+          <div class="gema-prompt-field"><span class="gema-prompt-label">Harmony</span><span class="gema-prompt-none">[none specified]</span></div>
+          <div class="gema-prompt-field"><span class="gema-prompt-label">Rhythm</span><span class="gema-prompt-none">[none specified]</span></div>
+          <div class="gema-prompt-field"><span class="gema-prompt-label">Arrangement</span><span class="gema-prompt-none">[none specified]</span></div>
+        </div>
+        <table class="gema-prompt-table">
+          <caption class="sr-only">GEMA evidentiary submission: prompt counts per musical work entered into Suno v3.5 / v4, with the court's similarity finding for each.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Work</th>
+              <th scope="col">Composer(s)</th>
+              <th scope="col" class="gema-prompt-th-count">Prompts</th>
+              <th scope="col">Court finding</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Atemlos durch die Nacht</td>
+              <td>Kristina Bach</td>
+              <td class="gema-prompt-count">176</td>
+              <td class="gema-prompt-finding">substantially similar</td>
+            </tr>
+            <tr>
+              <td>Big in Japan</td>
+              <td>Gold / Lloyd / Mertens</td>
+              <td class="gema-prompt-count">124</td>
+              <td class="gema-prompt-finding">substantially similar</td>
+            </tr>
+            <tr>
+              <td>Daddy Cool</td>
+              <td>Frank Farian</td>
+              <td class="gema-prompt-count">14</td>
+              <td class="gema-prompt-finding">substantially similar</td>
+            </tr>
+            <tr>
+              <td>Forever Young</td>
+              <td>Gold / Lloyd / Mertens</td>
+              <td class="gema-prompt-count">12</td>
+              <td class="gema-prompt-finding">substantially similar</td>
+            </tr>
+            <tr>
+              <td>Rasputin</td>
+              <td>Farian / Jay / Reyam</td>
+              <td class="gema-prompt-count">8</td>
+              <td class="gema-prompt-finding">substantially similar</td>
+            </tr>
+            <tr>
+              <td>Mambo No. 5 (refrain)</td>
+              <td>Lubega / Pletschacher</td>
+              <td class="gema-prompt-count">4</td>
+              <td class="gema-prompt-finding">substantially similar</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="gema-prompt-footer">338 of 3,779 total prompt entries</div>
+      </div>
+
+      <p>The ruling landed in a legal landscape shaped by two US federal decisions and one prior GEMA case. On 23 June 2025, Judge William Alsup of the Northern District of California ruled in <em>Bartz v. Anthropic</em> that training a large language model on lawfully acquired books was "quintessentially transformative" and constituted fair use under 17 U.S.C. § 107. He denied fair use for a pirated library of over seven million books. The case settled for $1.5 billion — covering over 400,000 books — with final approval granted by Judge Araceli Martínez-Olguín on 22 July 2026.</p>
+
+      <p>Two days after Alsup's ruling, Judge Vince Chhabria of the same court granted partial summary judgment to Meta in <em>Kadrey v. Meta</em>, finding that use of copyrighted books to train the Llama model was fair use on the record before him. But Chhabria attached an explicit caveat: "This ruling does not stand for the proposition that Meta's use of copyrighted materials to train its language models is lawful. It stands only for the proposition that these plaintiffs made the wrong arguments." He stated further: "In many circumstances it will be illegal to copy copyright-protected works to train generative AI models without permission." In neither case did the court find that training-data memorisation produced substantially similar outputs.</p>
+
+      <p>GEMA had already won a first-instance ruling against OpenAI at the same Munich court on 11 November 2025 (case no. 42 O 14139/24). That case is on appeal before the Oberlandesgericht München, with no hearing date disclosed.</p>
+
+      <p>One fact in <em>GEMA v. Suno</em> was undisputed. Suno obtained its training data by ripping audio from YouTube, circumventing Rolling Cipher technical protection measures. Suno did not contest this.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="gema-suno-training-ruling-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Refraction</strong> — Two identical translucent lenses sit symmetrically. Falling particles pass cleanly through the left, bending gently and continuing their descent. Particles entering the right slow, shift to terracotta, and dissolve into its boundary until it glows dense with trapped material. At peak the heavy lens pulls particles from across the canvas. Snap reset.</p>
+
+    <section class="section" id="ruling">
+      <h2><span class="num">02 — What Happened</span>The Ruling</h2>
+      <p>According to itmr-legal's analysis of the judgment, the oral hearing on 9 March 2026 included playback of original musical works alongside Suno-generated outputs, plus notation excerpts. The verdict was originally scheduled for 12 June 2026 but postponed to 31 July <span lang="de">"aus dienstlichen Gründen"</span> — for service-related reasons. On that date, the 42nd Civil Chamber, presiding Judge Elke Schwager, ruled predominantly in GEMA's favour. The court's press release, authored by Vorsitzende Richterin Cornelia Kallert in her capacity as press spokesperson, announced four prohibited acts.</p>
+
+      <p>The court prohibited four separate acts: reproduction for training purposes in the United States; reproduction through memorisation in the model in Germany; communication to the public by offering the model; and reproduction and communication to the public through the outputs. The first act was governed by US copyright law. The remaining three were governed by German copyright law. One lawsuit produced a ruling under two legal systems simultaneously.</p>
+
+      <div class="gema-acts-wrap">
+        <div class="gema-acts-bar gema-acts-us">
+          <div class="gema-acts-num">ACT 1</div>
+          <div class="gema-acts-desc">Reproduction for training purposes</div>
+          <div class="gema-acts-law">US COPYRIGHT LAW<span>17 U.S.C. § 107</span></div>
+        </div>
+        <div class="gema-acts-divider"><span class="gema-acts-divider-label">jurisdictional split</span></div>
+        <div class="gema-acts-bar gema-acts-de">
+          <div class="gema-acts-num">ACT 2</div>
+          <div class="gema-acts-desc">Reproduction through memorisation in the model</div>
+          <div class="gema-acts-law">GERMAN COPYRIGHT LAW<span>§ 16 UrhG</span></div>
+        </div>
+        <div class="gema-acts-bar gema-acts-de">
+          <div class="gema-acts-num">ACT 3</div>
+          <div class="gema-acts-desc">Communication to the public by offering the model</div>
+          <div class="gema-acts-law">GERMAN COPYRIGHT LAW<span>§ 15(2) UrhG</span></div>
+        </div>
+        <div class="gema-acts-bar gema-acts-de">
+          <div class="gema-acts-num">ACT 4</div>
+          <div class="gema-acts-desc">Reproduction and communication to the public through the outputs</div>
+          <div class="gema-acts-law">GERMAN COPYRIGHT LAW<span>§§ 15, 16 UrhG</span></div>
+        </div>
+        <div class="gema-acts-label">One lawsuit. Two legal systems. Four acts.</div>
+      </div>
+
+      <p>On memorisation, the court rejected Suno's argument that model weights contained only abstract mathematical patterns rather than memorised training data. According to the judgment, as analysed by itmr-legal, the court stated: <span lang="de">"Die Festlegung in bloßen Wahrscheinlichkeitswerten ist unerheblich"</span> — fixation in mere probability values is immaterial. The works were found to be <span lang="de">"reproduzierbar enthalten"</span> (reproducibly contained) in Suno's model versions v3.5 and v4. Multiple sources note the court used a burden-shifting approach (<em lang="de">Beweiserleichterung</em>), inferring memorisation from output similarity. itmr-legal calls this "the most attack-prone element of the judgment." The full reasoning sits in the unpublished judgment and may be challenged on appeal.</p>
+
+      <p>The court also held that infringing outputs were Suno's information, not the users'. According to the judgment as analysed by itmr-legal: <span lang="de">"Nicht die streitgegenständlichen Prompts, sondern die von der Beklagten betriebenen Modelle bestimmten den konkreten Inhalt der Outputs"</span> — not the prompts at issue but the defendant-operated models determined the concrete content of the outputs. Suno argued that output similarities were "prompt-induced constraints," that users had deliberately engineered memorisation through complex prompt inputs. The court's response, per itmr-legal's analysis: <span lang="de">"schlicht falsch"</span> — simply false. The court held that merely offering the model infringed the right of public communication under the unnamed right of § 15(2) UrhG. GEMA's separate claim under § 19a UrhG (the making-available right) was dismissed: the prompt-repetition requirement — up to 176 identical prompts — negated the "at times of the user's choosing" element.</p>
+
+      <p>The court rejected the Digital Services Act hosting safe harbour for Suno, holding that AI-generated outputs constitute the provider's own information — <span lang="de">"eigene Informationen der Beklagten"</span> — in which the defendant assumes an active role. It held that compliance with the EU AI Act does not constitute a defence to copyright infringement, characterising the AI Act as complementing rather than replacing EU copyright law.</p>
+
+      <p>Damages and disclosure were granted for four of the six works: Atemlos durch die Nacht, Daddy Cool, Rasputin, and Mambo No. 5. The claims for Big in Japan and Forever Young failed on this point due to co-author consent issues.</p>
+    </section>
+
+    <section class="section" id="mechanism">
+      <h2><span class="num">03 — The Mechanism</span>Someone Else's Law</h2>
+      <p>How did a German court reach a US company's training acts conducted on US servers? The answer begins with § 131 of the Verwertungsgesellschaftengesetz (VGG) — Germany's Collecting Societies Act. The statute provides that disputes over rights administered by a collecting society must be heard at the court where the infringing act occurred or where the infringer has its general venue. According to analysis of the judgment by Tobias Vossberg at the IP law blog itmr-legal, the court read this provision as <span lang="de">"doppelfunktional"</span> — dual-functional — meaning it conferred not only domestic but also international jurisdiction. That reading let GEMA pull Suno's US-based training acts into a Munich courtroom.</p>
+
+      <p>Jurisdiction determined where the case was heard. It did not determine which law applied. For that, the court turned to the <em lang="de">Schutzlandprinzip</em> — the country-of-protection principle. The court's press release confirms the application of this principle. According to itmr-legal's analysis of the judgment, the court grounded it in Article 8(1) of the Rome II Regulation, which directs that the applicable law follows the country whose territory requires protection. US copyright law applied to training conducted in the US. German copyright law applied to memorisation, offering, and outputs in Germany.</p>
+
+      <p>German courts are not limited to German law. According to itmr-legal's analysis, the court ascertained US copyright law under § 293 of the Zivilprozessordnung (ZPO) — Germany's Code of Civil Procedure — which authorises German courts to determine foreign law by their own investigation, without expert testimony. The court then conducted its own four-factor fair use analysis under 17 U.S.C. § 107.</p>
+
+      <p>The structural implication is precise. A collecting society used its domestic venue rule to assert jurisdiction over training acts conducted in a foreign country. The court then applied that foreign country's own copyright law and reached a different result from the foreign country's own courts — because it was looking at a different record. Neither the AI company nor any other party chose the forum in which American copyright law was interpreted.</p>
+    </section>
+
+    <section class="section" id="distinction">
+      <h2><span class="num">04 — The Distinction</span>Three Records, Three Results</h2>
+      <p>The Munich court expressly distinguished the two US rulings. The court's press release stated that <em>Bartz</em> and <em>Kadrey</em> were <span lang="de">"signifikant"</span> different because in those proceedings, training data <span lang="de">"nicht substanziell in Outputs zugänglich gemacht wurden"</span> — was not substantially made accessible in outputs. Here, Suno generated <span lang="de">"nach Eingabe von einfachen und ergebnisoffenen Prompts Outputs … die den Originalwerken wesentlich ähnlich seien"</span> — after entry of simple and open-ended prompts, outputs substantially similar to the originals. The press release uses the subjunctive <span lang="de">"seien,"</span> the convention of indirect speech in German: the press spokesperson rendering the court's finding rather than quoting it directly.</p>
+
+      <p>The court found all four fair use factors weighed against Suno. First, no transformation: the outputs served the same purpose as the originals. Second, musical works occupy the core of copyright protection. Third, complete recordings were used, and Suno showed no necessity for using these specific works. Fourth, the outputs functioned as substitutes — <span lang="de">"Substitutionsgut"</span> — freely accessible and substantially similar to the originals. The unlawful provenance of the training copies was additionally cited: stream-ripping from YouTube circumvented technical protection measures under § 95a(2) UrhG.</p>
+
+      <p>The court rejected the Text and Data Mining exception under § 44b of the German Copyright Act (UrhG) on two independent grounds. The court's press release stated: <span lang="de">"Die Memorisierung der streitgegenständlichen Musikwerke überschreitet eine solche Auswertung und ist daher kein bloßes Text und Data Mining"</span> — the memorisation of the musical works at issue exceeds such analysis and is therefore not mere text and data mining. And access was unlawful, because the Rolling Cipher circumvention defeated an effective technical measure.</p>
+
+      <blockquote class="pull-quote" lang="de">
+        Ein Geschäftsmodell, demzufolge sich ein Unternehmen kostenlos am (geistigen) Eigentum Dritter für den eigenen Profit bedienen darf, ist den genannten Rechtsordnungen unbekannt.
+        <cite lang="en">A business model allowing a company to help itself free of charge to others' intellectual property for its own profit is unknown to the referenced legal systems. — the judgment, as analysed by itmr-legal</cite>
+      </blockquote>
+
+      <p>The distinction the Munich court drew is factual, not doctrinal. Fair use under 17 U.S.C. § 107 is a fact-intensive inquiry. Judge Alsup in <em>Bartz</em> examined a record where a language model had been trained on lawfully acquired books and where no substantially similar outputs were demonstrated. Judge Chhabria in <em>Kadrey</em> examined a record where the plaintiffs — in his own words — "made the wrong arguments" and failed to show dilution or market harm. Chhabria explicitly cautioned that his ruling "does not stand for the proposition that Meta's use of copyrighted materials to train its language models is lawful." The Munich court examined a record where a music model, trained on stream-ripped audio, produced outputs substantially similar to the originals from simple prompts. Same statute. Different facts. Different results.</p>
+
+      <div class="gema-courts-wrap">
+        <div class="gema-courts-card gema-courts-card-us">
+          <div class="gema-courts-header">Bartz v. Anthropic</div>
+          <div class="gema-courts-body">
+            <div class="gema-courts-field">
+              <span class="gema-courts-field-label">Court</span>
+              <span class="gema-courts-field-value">N.D. Cal. (Judge William Alsup)</span>
+            </div>
+            <div class="gema-courts-field">
+              <span class="gema-courts-field-label">Date</span>
+              <span class="gema-courts-field-value">23 June 2025</span>
+            </div>
+            <div class="gema-courts-field">
+              <span class="gema-courts-field-label">Defendant</span>
+              <span class="gema-courts-field-value">Anthropic</span>
+            </div>
+            <div class="gema-courts-field">
+              <span class="gema-courts-field-label">Record</span>
+              <span class="gema-courts-field-value">Training on lawfully acquired books; no substantially similar outputs shown</span>
+            </div>
+          </div>
+          <div class="gema-courts-result gema-courts-mixed">Fair use: granted on lawful training / denied for pirated library</div>
+          <div class="gema-courts-status">Settlement: $1.5 billion (final approval 22 July 2026)</div>
+        </div>
+        <div class="gema-courts-card gema-courts-card-us">
+          <div class="gema-courts-header">Kadrey v. Meta</div>
+          <div class="gema-courts-body">
+            <div class="gema-courts-field">
+              <span class="gema-courts-field-label">Court</span>
+              <span class="gema-courts-field-value">N.D. Cal. (Judge Vince Chhabria)</span>
+            </div>
+            <div class="gema-courts-field">
+              <span class="gema-courts-field-label">Date</span>
+              <span class="gema-courts-field-value">25 June 2025</span>
+            </div>
+            <div class="gema-courts-field">
+              <span class="gema-courts-field-label">Defendant</span>
+              <span class="gema-courts-field-value">Meta</span>
+            </div>
+            <div class="gema-courts-field">
+              <span class="gema-courts-field-label">Record</span>
+              <span class="gema-courts-field-value">Training on copyrighted books; no substantially similar outputs shown</span>
+            </div>
+          </div>
+          <div class="gema-courts-result gema-courts-granted">Fair use: granted — "these plaintiffs made the wrong arguments"</div>
+          <div class="gema-courts-status">Partial summary judgment</div>
+        </div>
+        <div class="gema-courts-card gema-courts-card-de">
+          <div class="gema-courts-header">GEMA v. Suno</div>
+          <div class="gema-courts-body">
+            <div class="gema-courts-field">
+              <span class="gema-courts-field-label">Court</span>
+              <span class="gema-courts-field-value">LG München I (Judge Elke Schwager)</span>
+            </div>
+            <div class="gema-courts-field">
+              <span class="gema-courts-field-label">Date</span>
+              <span class="gema-courts-field-value">31 July 2026</span>
+            </div>
+            <div class="gema-courts-field">
+              <span class="gema-courts-field-label">Defendant</span>
+              <span class="gema-courts-field-value">Suno Inc.</span>
+            </div>
+            <div class="gema-courts-field">
+              <span class="gema-courts-field-label">Record</span>
+              <span class="gema-courts-field-value">Training via stream-ripping; outputs substantially similar from simple prompts</span>
+            </div>
+          </div>
+          <div class="gema-courts-result gema-courts-denied">Fair use: denied on all four factors; unlawful provenance additionally cited</div>
+          <div class="gema-courts-status">First instance, non-final</div>
+        </div>
+        <div class="gema-courts-footer">Same statute. Different records. Different results.</div>
+      </div>
+    </section>
+
+    <section class="section" id="consequence">
+      <h2><span class="num">05 — Consequence</span>First Instance</h2>
+      <p>The enforcement terms are specific. Up to €250,000 per violation in contempt penalties (<em lang="de">Ordnungsgeld</em>). Security deposits of €150,000 per injunction provision, €70,000 for accounting and damages claims, €10,000 for the publication order. Pre-litigation attorney fees of €5,049.70. Suno was represented by Latham &amp; Watkins.</p>
+
+      <p>Suno responded on the day of the ruling: "We disagree with today's ruling — which rests on a fundamental mischaracterization of how Suno's technology works, how it is used and how US law applies — and are evaluating all available options, including an appeal." The company has separately stated that it "built protections into our platform" and trained its models "to create new songs, not reproduce existing ones."</p>
+
+      <p>The judgment is first instance and not final. As of 18 August 2026, Suno has not confirmed filing an appeal. Under German procedure, the <em lang="de">Berufung</em> deadline runs from service of the fully reasoned judgment, which has not been publicly released. An appeal would go to the Oberlandesgericht München — the same court currently hearing the GEMA v. OpenAI appeal, for which no hearing date has been publicly established. The fully reasoned judgment (<em lang="de">Urteilsbegründung</em>) has not been made available in standard legal databases. The most detailed public analysis, by Tobias Vossberg at itmr-legal, appears to have accessed an officially released version of the judgment, but the text is not freely accessible for independent reader verification.</p>
+
+      <p>Two pending proceedings could alter the landscape. The CJEU preliminary reference in <em>Like Company v. Google</em> (C-250/25) — the first CJEU case on generative AI and copyright — held its first oral hearing on 10 March 2026. An Advocate General opinion is expected around September 2026. Either that case or the OpenAI appeal could reshape the legal framework before any Suno appeal is heard.</p>
+
+      <p>Eight days before the verdict, on 23 July 2026, GEMA launched PLAI by GEMA — described as Europe's first fully licensed AI music training dataset, comprising approximately 178,000 sound files across more than 60 genres with copyright and master rights clearances. GEMA is positioning itself simultaneously as enforcer and licensor. The International Federation of the Phonographic Industry stated: "This landmark decision by the Munich Court reinforces the principle that the use of music to develop commercial AI products requires authorisation from right holders."</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">06 — Signal</span>The Jurisdictional Fracture</h2>
+      <p>The ruling instantiates a structural pattern. A collecting society used its domestic venue rule to reach training conducted in a foreign country. The court asserted jurisdiction, applied that foreign country's own copyright law, and found infringement. The mechanism is replicable. Any collecting society in any jurisdiction with analogous venue rules can attempt the same.</p>
+
+      <p>There is concrete evidence the pattern is already spreading. The Danish collecting society Koda sued Suno in November 2025 over stream-ripping and unauthorised training. GEMA v. OpenAI, decided at first instance and now on appeal, extends the same logic to a different defendant. GEMA CEO Tobias Holzmüller stated on the day of the Suno ruling: <span lang="de">"Menschliche Kreativität ist die Grundlage jeder generativen KI"</span> — human creativity is the foundation of all generative AI.</p>
+
+      <p>The UK law firm Bristows, in its analysis of the decision, concluded that "offshoring training will not insulate against German collecting society claims" and identified memorisation as "a live commercial risk." The practical position, Bristows noted, remains unsettled pending the OpenAI appeal, CJEU guidance, and a potential Suno appeal. But the structural question this ruling surfaces does not depend on any single appeal. A model is one artifact — a single set of weights. It faces every court that can reach it. Each court applies its own choice-of-law rules to select potentially different national laws. Each court is correct within its own legal framework. The question is whether compliance with all of them simultaneously is possible, when you cannot selectively un-memorise one jurisdiction's repertoire from a set of weights without retraining the entire model.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.gema-suno-training-ruling-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  /* colours from CSS */
+  const cs = getComputedStyle(canvas);
+  const bgHex = cs.getPropertyValue('--bg').trim() || '#0d0d0d';
+  const storyHex = cs.getPropertyValue('--story').trim() || '#d4764e';
+
+  function hexRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    if (!/^[0-9a-fA-F]{6}$/.test(h)) return [212, 118, 78];
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const [sR, sG, sB] = hexRgb(storyHex);
+  const DR = 232, DG = 232, DB = 232;
+
+  /* timing constants */
+  const MAX      = 70;
+  const FALL_VY  = 0.3;
+  const SPAWN_IV = 3;
+  const P_CALM   = 720;
+  const P_GRAV   = 840;
+  const P_HOLD   = 880;
+  const CYCLE    = 900;
+
+  /* mutable state */
+  let W = 0, H = 0, rafId = 0, frame = 0, spawnClk = 0;
+  let lR = 50;
+  let llx = 0, lly = 0;
+  let rlx = 0, rly = 0;
+  let absorbN = 0, glowA = 0;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  interface Pt {
+    x: number; y: number; vx: number; vy: number;
+    a: number; r: number; st: number;
+    mix: number; orbA: number; orbR: number;
+    rDir: number; ent: number;
+  }
+
+  const pts: Pt[] = [];
+  for (let i = 0; i < MAX; i++) {
+    pts.push({ x: 0, y: 0, vx: 0, vy: 0, a: 0, r: 0, st: 0,
+               mix: 0, orbA: 0, orbR: 0, rDir: 0, ent: 0 });
+  }
+
+  function emit(p: Pt, y0?: number) {
+    p.x   = Math.random() * W;
+    p.y   = y0 !== undefined ? y0 : (-2 - Math.random() * 12);
+    p.vx  = (Math.random() - 0.5) * 0.1;
+    p.vy  = FALL_VY * (0.88 + Math.random() * 0.24);
+    p.a   = 0.09 + Math.random() * 0.15;
+    p.r   = 1.2 + Math.random() * 0.8;
+    p.st  = 1;
+    p.mix = 0;
+    p.orbA = Math.random() * 6.2832;
+    p.orbR = 0;
+    p.rDir = 0;
+    p.ent  = 0;
+  }
+
+  function lensPos() {
+    lR  = Math.min(W, H) * 0.14;
+    llx = W * 0.30;  lly = H * 0.40;
+    rlx = W * 0.70;  rly = H * 0.40;
+  }
+
+  function seed() {
+    const n = Math.min(18, MAX);
+    for (let i = 0; i < n; i++) emit(pts[i], Math.random() * H * 0.30);
+  }
+
+  function resetCycle() {
+    frame = 0; spawnClk = 0; absorbN = 0; glowA = 0;
+    for (let i = 0; i < MAX; i++) pts[i].st = 0;
+    seed();
+  }
+
+  function update() {
+    const cf = frame % CYCLE;
+    lensPos();
+    const lR2 = lR * lR;
+
+    const isCalm  = cf < P_CALM;
+    const isGrav  = cf >= P_CALM && cf < P_GRAV;
+    const isHold  = cf >= P_GRAV && cf < P_HOLD;
+    const isReset = cf >= P_HOLD;
+
+    if (isCalm || isGrav) {
+      if (++spawnClk >= SPAWN_IV) {
+        spawnClk = 0;
+        for (let j = 0; j < MAX; j++) {
+          if (pts[j].st === 0) { emit(pts[j]); break; }
+        }
+      }
+    }
+
+    const gS = isGrav ? ((cf - P_CALM) / (P_GRAV - P_CALM)) * 0.02
+             : isHold ? 0.02 : 0;
+
+    for (let i = 0; i < MAX; i++) {
+      const p = pts[i];
+      if (p.st === 0) continue;
+
+      if (p.st === 1) {
+        p.vx += Math.sin(p.y * 0.014 + i * 2.1 + frame * 0.007) * 0.002;
+        if (p.vx >  0.3) p.vx =  0.3;
+        if (p.vx < -0.3) p.vx = -0.3;
+
+        if (gS > 0) {
+          const dx = rlx - p.x, dy = rly - p.y;
+          const d  = Math.sqrt(dx * dx + dy * dy);
+          if (d > 5) {
+            const pull = gS * Math.min(1.0, 140 / d);
+            p.vx += (dx / d) * pull;
+            p.vy += (dy / d) * pull * 0.3;
+          }
+        }
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if ((frame - p.ent) > 60) {
+          const dxL = p.x - llx, dyL = p.y - lly;
+          if (dxL * dxL + dyL * dyL < lR2 && p.y < lly) {
+            p.st = 2; p.ent = frame;
+            p.rDir = dxL < 0 ? -1 : dxL > 0 ? 1 : (Math.random() < 0.5 ? -1 : 1);
+          }
+        }
+
+        const dxR = p.x - rlx, dyR = p.y - rly;
+        if (dxR * dxR + dyR * dyR < lR2) {
+          p.st = 3; p.ent = frame;
+        }
+
+        if (p.y > H + 15 || p.x < -25 || p.x > W + 25) p.st = 0;
+
+      } else if (p.st === 2) {
+        const el = frame - p.ent;
+        if (el < 25) {
+          p.vy = 0.15 + el * 0.002;
+          p.vx += p.rDir * 0.006;
+          if (p.vx >  0.4) p.vx =  0.4;
+          if (p.vx < -0.4) p.vx = -0.4;
+          if (gS > 0) {
+            const dxG = rlx - p.x, dyG = rly - p.y;
+            const dG  = Math.sqrt(dxG * dxG + dyG * dyG);
+            if (dG > 5) p.vx += (dxG / dG) * gS * Math.min(1, 140 / dG) * 0.5;
+          }
+        } else {
+          p.st = 1;
+          p.vy = FALL_VY;
+        }
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.y > H + 15 || el > 200) p.st = 0;
+
+      } else if (p.st === 3) {
+        const el3 = frame - p.ent;
+        p.vx *= 0.94;
+        p.vy *= 0.94;
+        const dxA = rlx - p.x, dyA = rly - p.y;
+        const dA  = Math.sqrt(dxA * dxA + dyA * dyA);
+        if (dA > 2) {
+          p.vx += (dxA / dA) * 0.018;
+          p.vy += (dyA / dA) * 0.018;
+        }
+        p.x += p.vx;
+        p.y += p.vy;
+        p.mix = Math.min(1, el3 / 30);
+        p.r   = Math.max(0.5, p.r - 0.008);
+        if (el3 > 40) {
+          p.st   = 4;
+          p.orbA = Math.atan2(p.y - rly, p.x - rlx);
+          p.orbR = lR * (0.45 + Math.random() * 0.42);
+          absorbN++;
+          glowA = Math.min(0.35, absorbN * 0.01);
+        }
+
+      } else if (p.st === 4) {
+        p.orbA += 0.002;
+        p.x   = rlx + Math.cos(p.orbA) * p.orbR;
+        p.y   = rly + Math.sin(p.orbA) * p.orbR;
+        p.mix = 1;
+        p.a   = Math.max(0.02, p.a - 0.0003);
+        p.r   = Math.max(0.3, p.r - 0.0004);
+      }
+    }
+
+    if (isReset) {
+      glowA *= 0.82;
+      for (let k = 0; k < MAX; k++) {
+        if (pts[k].st > 0) {
+          pts[k].a *= 0.82;
+          if (pts[k].a < 0.003) pts[k].st = 0;
+        }
+      }
+    }
+
+    if (cf >= CYCLE - 1) resetCycle();
+  }
+
+  function rings(cx: number, cy: number, r: number, alpha: number) {
+    ctx!.lineWidth = 1;
+    for (let k = 0; k < 3; k++) {
+      ctx!.beginPath();
+      ctx!.arc(cx, cy, r * (0.50 + k * 0.25), 0, 6.2832);
+      ctx!.strokeStyle = 'rgba(' + DR + ',' + DG + ',' + DB + ',' + alpha + ')';
+      ctx!.stroke();
+    }
+  }
+
+  function draw() {
+    ctx!.fillStyle = bgHex;
+    ctx!.fillRect(0, 0, W, H);
+
+    rings(llx, lly, lR, 0.06);
+    rings(rlx, rly, lR, 0.06 + glowA * 0.5);
+
+    if (glowA > 0.003) {
+      const gr = ctx!.createRadialGradient(rlx, rly, 0, rlx, rly, lR * 1.05);
+      gr.addColorStop(0,    'rgba(' + sR + ',' + sG + ',' + sB + ',' + glowA + ')');
+      gr.addColorStop(0.55, 'rgba(' + sR + ',' + sG + ',' + sB + ',' + (glowA * 0.35) + ')');
+      gr.addColorStop(1,    'rgba(' + sR + ',' + sG + ',' + sB + ',0)');
+      ctx!.beginPath();
+      ctx!.arc(rlx, rly, lR * 1.05, 0, 6.2832);
+      ctx!.fillStyle = gr;
+      ctx!.fill();
+    }
+
+    const cf = frame % CYCLE;
+    if (cf >= P_CALM && cf < P_HOLD) {
+      const gp = cf < P_GRAV ? (cf - P_CALM) / (P_GRAV - P_CALM) : 1;
+      const fR = lR * (1.3 + gp * 2.5);
+      const fA = gp * 0.035;
+      if (fA > 0.002) {
+        const gf = ctx!.createRadialGradient(rlx, rly, lR, rlx, rly, fR);
+        gf.addColorStop(0, 'rgba(' + sR + ',' + sG + ',' + sB + ',' + fA + ')');
+        gf.addColorStop(1, 'rgba(' + sR + ',' + sG + ',' + sB + ',0)');
+        ctx!.beginPath();
+        ctx!.arc(rlx, rly, fR, 0, 6.2832);
+        ctx!.fillStyle = gf;
+        ctx!.fill();
+      }
+    }
+
+    for (let i = 0; i < MAX; i++) {
+      const p = pts[i];
+      if (p.st === 0 || p.a < 0.003) continue;
+      const cr = (DR + (sR - DR) * p.mix) | 0;
+      const cg = (DG + (sG - DG) * p.mix) | 0;
+      const cb = (DB + (sB - DB) * p.mix) | 0;
+      ctx!.beginPath();
+      ctx!.arc(p.x, p.y, Math.max(0.3, p.r), 0, 6.2832);
+      ctx!.fillStyle = 'rgba(' + cr + ',' + cg + ',' + cb + ',' + p.a + ')';
+      ctx!.fill();
+    }
+  }
+
+  function drawStatic() {
+    lensPos();
+    ctx!.fillStyle = bgHex;
+    ctx!.fillRect(0, 0, W, H);
+
+    rings(llx, lly, lR, 0.06);
+    rings(rlx, rly, lR, 0.13);
+
+    const gr = ctx!.createRadialGradient(rlx, rly, 0, rlx, rly, lR);
+    gr.addColorStop(0,   'rgba(' + sR + ',' + sG + ',' + sB + ',0.12)');
+    gr.addColorStop(0.6, 'rgba(' + sR + ',' + sG + ',' + sB + ',0.04)');
+    gr.addColorStop(1,   'rgba(' + sR + ',' + sG + ',' + sB + ',0)');
+    ctx!.beginPath();
+    ctx!.arc(rlx, rly, lR, 0, 6.2832);
+    ctx!.fillStyle = gr;
+    ctx!.fill();
+
+    for (let i = 0; i < 20; i++) {
+      const px = (i / 20) * W + Math.sin(i * 4.3) * 10;
+      const py = H * 0.06 + Math.sin(i * 2.7) * H * 0.25 + H * 0.12;
+      ctx!.beginPath();
+      ctx!.arc(px, py, 1.2, 0, 6.2832);
+      ctx!.fillStyle = 'rgba(' + DR + ',' + DG + ',' + DB + ',0.09)';
+      ctx!.fill();
+    }
+
+    for (let j = 0; j < 4; j++) {
+      const ry = lly - lR * 0.35 + j * lR * 0.22;
+      const rx = llx + (j - 1.5) * 7;
+      ctx!.beginPath();
+      ctx!.arc(rx, ry, 1.1, 0, 6.2832);
+      ctx!.fillStyle = 'rgba(' + DR + ',' + DG + ',' + DB + ',0.10)';
+      ctx!.fill();
+    }
+
+    for (let j2 = 0; j2 < 3; j2++) {
+      const ty = lly + lR * 0.3 + j2 * lR * 0.28;
+      const tx = llx + (j2 + 1) * 9;
+      ctx!.beginPath();
+      ctx!.arc(tx, ty, 1.1, 0, 6.2832);
+      ctx!.fillStyle = 'rgba(' + DR + ',' + DG + ',' + DB + ',0.07)';
+      ctx!.fill();
+    }
+
+    for (let k = 0; k < 7; k++) {
+      const ang = (k / 7) * 6.2832;
+      const oR  = lR * (0.50 + (k % 3) * 0.15);
+      const ox  = rlx + Math.cos(ang) * oR;
+      const oy  = rly + Math.sin(ang) * oR;
+      ctx!.beginPath();
+      ctx!.arc(ox, oy, 0.9, 0, 6.2832);
+      ctx!.fillStyle = 'rgba(' + sR + ',' + sG + ',' + sB + ',0.14)';
+      ctx!.fill();
+    }
+  }
+
+  function tick() {
+    frame++;
+    update();
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth;
+    H = canvas!.offsetHeight;
+    canvas!.width  = Math.round(W * dpr);
+    canvas!.height = Math.round(H * dpr);
+    ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    lensPos();
+    if (reduced) drawStatic();
+  }
+
+  const ro = new ResizeObserver(resize);
+  ro.observe(canvas);
+
+  resize();
+
+  if (reduced) {
+    window.addEventListener('pagehide', function () { ro.disconnect(); });
+  } else {
+    seed();
+    const io = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) {
+        if (!rafId) rafId = requestAnimationFrame(tick);
+      } else {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+    window.addEventListener('pagehide', function () {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+      io.disconnect();
+      ro.disconnect();
+    });
+  }
+})();
+</script>
