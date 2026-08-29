@@ -1,0 +1,666 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'anthropic-bio-classifier-gap')!;
+---
+
+<style is:global>
+  /* ── Shared reenactment scaffolding ───────────────────────────── */
+  .abcg-block {
+    margin: 2.4rem 0;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    overflow: hidden;
+    font-size: 0.92rem;
+  }
+  .abcg-mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .abcg-cap {
+    margin: 0.7rem 0 0;
+    font-size: 0.78rem;
+    line-height: 1.65;
+    color: var(--muted);
+  }
+
+  /* ── R1 — Two ways to turn a safeguard off ────────────────────── */
+  .abcg-diff-head,
+  .abcg-diff-row {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+  }
+  .abcg-diff-head {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .abcg-diff-col {
+    padding: 0.9rem 1rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    line-height: 1.5;
+    color: var(--muted);
+    border-left: 1px solid var(--border);
+  }
+  .abcg-diff-col:first-child { border-left: none; }
+  .abcg-diff-col.abcg-col-ok   { color: var(--story); }
+  .abcg-diff-col.abcg-col-bad  { color: var(--accent); }
+  .abcg-diff-row { border-top: 1px solid var(--border); }
+  .abcg-diff-label {
+    padding: 0.85rem 1rem;
+    color: var(--text);
+  }
+  .abcg-diff-cell {
+    padding: 0.85rem 1rem;
+    border-left: 1px solid var(--border);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.95rem;
+  }
+  .abcg-on  { color: var(--story); font-weight: 600; }
+  .abcg-off { color: var(--accent); font-weight: 600; }
+  .abcg-unknown {
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-style: italic;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .abcg-diff-note {
+    padding: 0.9rem 1rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.65;
+  }
+
+  /* ── R2 — What the review queue received ──────────────────────── */
+  .abcg-queue-head {
+    padding: 0.9rem 1rem 0.55rem;
+    background: var(--surface2);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--story);
+  }
+  .abcg-queue-sub {
+    padding: 0 1rem 0.9rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.76rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .abcg-queue-row {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    border-top: 1px solid var(--border);
+  }
+  .abcg-queue-row:first-of-type { border-top: none; }
+  .abcg-queue-src {
+    padding: 1rem;
+    color: var(--text);
+    font-size: 0.86rem;
+    line-height: 1.55;
+  }
+  .abcg-queue-meta {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.74rem;
+    color: var(--muted);
+  }
+  .abcg-queue-count {
+    padding: 1rem;
+    border-left: 1px solid var(--border);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--story);
+  }
+  .abcg-queue-empty {
+    padding: 1rem;
+    border-left: 1px solid var(--border);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    color: var(--accent);
+    background: repeating-linear-gradient(
+      135deg,
+      transparent 0 8px,
+      color-mix(in srgb, var(--accent) 6%, transparent) 8px 16px
+    );
+  }
+  .abcg-queue-foot {
+    padding: 0.9rem 1rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.65;
+  }
+
+  /* ── R3 — Time to notice ──────────────────────────────────────── */
+  .abcg-clock-banner {
+    padding: 0.75rem 1rem;
+    background: color-mix(in srgb, var(--accent) 12%, var(--surface2));
+    border-bottom: 1px solid var(--border);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    line-height: 1.6;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #ff6b6b;
+  }
+  .abcg-clock-banner::before {
+    content: '\26A0';
+    margin-right: 0.5rem;
+    font-family: inherit;
+  }
+  .abcg-clock-row {
+    padding: 1rem;
+    border-top: 1px solid var(--border);
+  }
+  .abcg-clock-row:first-of-type { border-top: none; }
+  .abcg-clock-state {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .abcg-clock-label {
+    margin: 0.25rem 0 0.6rem;
+    font-size: 0.86rem;
+    color: var(--text);
+  }
+  .abcg-clock-bar {
+    position: relative;
+    height: 10px;
+    border-radius: 5px;
+    background: var(--surface2);
+    overflow: hidden;
+  }
+  .abcg-clock-fill {
+    display: block;
+    height: 100%;
+    border-radius: 5px;
+    background: var(--story);
+  }
+  .abcg-clock-fill.abcg-clock-open {
+    border-radius: 5px 0 0 5px;
+    background: linear-gradient(
+      90deg,
+      var(--accent) 0%,
+      var(--accent) 72%,
+      color-mix(in srgb, var(--accent) 15%, transparent) 100%
+    );
+  }
+  .abcg-clock-dur {
+    margin-top: 0.55rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.8rem;
+    color: var(--story);
+  }
+  .abcg-clock-dur.abcg-clock-open-dur { color: var(--accent); font-weight: 600; }
+  .abcg-clock-foot {
+    padding: 0.9rem 1rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.65;
+  }
+
+  @media (max-width: 640px) {
+    .abcg-diff-head,
+    .abcg-diff-row,
+    .abcg-queue-row { grid-template-columns: 1fr; }
+    .abcg-diff-col,
+    .abcg-diff-cell,
+    .abcg-queue-count,
+    .abcg-queue-empty { border-left: none; }
+    .abcg-diff-cell,
+    .abcg-queue-count,
+    .abcg-queue-empty { border-top: 1px dashed var(--border); }
+    /* Stacked cells lose their column header — restore the association (WCAG 1.3.1 / 1.4.10) */
+    .abcg-diff-cell[data-col]::before,
+    .abcg-queue-count[data-col]::before,
+    .abcg-queue-empty[data-col]::before {
+      content: attr(data-col) ' — ';
+      display: block;
+      margin-bottom: 0.3rem;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.66rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      font-weight: 400;
+      font-style: normal;
+      color: var(--muted);
+    }
+  }
+
+  /* ── Canvas ───────────────────────────────────────────────────── */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .anthropic-bio-classifier-gap-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="context">
+      <h2><span class="num">01 — Context</span>The Only Account That Exists</h2>
+      <p>A flag on Anthropic's human-feedback platforms did two things at once. It stopped the company's biological classifiers from blocking anything, and it stopped them from writing down what they would have blocked. From May 2025 until April 2026, that flag governed around 133 million exchanges between a pool of roughly 50,000 contract workers and Anthropic's models, and none of what the classifiers flagged was recorded or sent anywhere.</p>
+      <p>This is disclosed in Anthropic's Risk Report of August 2026, at Section 4.5.8.2.2. It is the company's second such report — the previous one was published on 24 February 2026 — and the first published under version 3.4 of its Responsible Scaling Policy. Its coverage date is 15 July 2026. The report is redacted in places and says so; it states that its governing policy requires public disclosure, at a high level, of where redactions have been made. No redaction marker appears inside Section 4.5.8.2.2. The document prints no publication date of its own, though trade coverage datestamped it 14 August 2026. Anthropic publishes it under its own Responsible Scaling Policy. No outside body appears anywhere in the record as having required it.</p>
+      <p>Anthropic says it has fully remediated the issue, conducted a review to analyse potential impacts, and "found no evidence of concerning CB misuse stemming from this issue." It says it thinks it "very unlikely" that the vulnerability was used in a way that led to a meaningful increase in chemical and biological risk. It says the only unintended access was to unsafeguarded model conversations, and that no customer data, internal systems or model weights were accessed or exposed. The executive summary carries a footnote making the point flatly: "To be explicit, there was no impact on our customers." Those are Anthropic's findings about Anthropic's own traffic, and they are attributed here for the plain reason that there is no other way to carry them.</p>
+      <p>The report also explains why it describes incidents like this at all. Understanding their scope and duration, it says, is "necessary for assessing the overall risk our systems posed during the coverage period"; the incidents supply "some signal on our overall state of preparedness, including how quickly we detect and remediate failures"; and "we believe transparency on this topic serves the broader safety ecosystem, for example by prompting other AI developers to check their own systems for similar vulnerabilities." Before describing anything, the same passage states that "some rate of incidents like these is an expected feature of running complex safeguard systems across many models, platforms, and deployment surfaces." That is an interested party stating its reasoning. It is fair to quote and fair to credit. It is not evidence that the disclosure is complete.</p>
+      <p>Everything in this story comes from one place: Anthropic's account of Anthropic's gap, in a report the company published under its own policy. Zvi Mowshowitz wrote about it. BERI wrote about it. Jonas Freund's newsletter summarised it. Axios and SiliconANGLE covered the report the day it appeared. All of them read the same PDF, and none conducted independent reporting on the gap — none could have. There is no regulator finding here, no auditor's report, no vendor statement, no whistleblower, no leaked document. No outside party has seen one of those 133 million exchanges, and none ever will. The sources block at the foot of this page lists several URLs. They are downstream of one document.</p>
+    </section>
+
+    <section class="section" id="architecture">
+      <h2><span class="num">02 — The Architecture</span>What the Log Was For</h2>
+      <p>Anthropic's front-line chemical and biological safeguard is a set of real-time blocking classifiers. They head the executive summary's list of current CB-1 mitigations — "Real-time blocking classifiers assessed via bug bounties and other red-teaming" — ahead of jailbreak remediation, manual vetting of exempted users, universal-jailbreak search, and weight-theft controls. When one fires, the model's completion is blocked.</p>
+      <p>Some parties are exempted from that blocking, and how the exemption is written is the load-bearing fact of this story. Section 4.5.5, covering bioclassifier exemptions for trusted and vetted users: "Where data retention agreements permit, we still log classifier scores on traffic from the exempted party (but do not block model completions when the classifiers fire)." Section 4.5.5.2 restates it: "Our harmful biology classifiers still run on all traffic from these organizations, but do not block model outputs." The block comes off. The record stays on. On the reading this story takes, that is a design that treats the difference between a surface that is exempted and a surface that is unwatched as one worth preserving in writing.</p>
+      <p>The record is not paperwork attached to the control. Section 4.5.4 describes what it feeds. For exempted traffic that the classifiers flag but do not block, Anthropic runs "a weekly automated monitoring pipeline over all such traffic, which surfaces signals of various categories of concerning activity." Those reports are "surfaced for regular review by a limited pool of Anthropic employees," and a reviewer who finds something can escalate to the raw traffic and act on it. When Section 4.5.8.2.2 says that flagged traffic was "not recorded or propagated to any review mechanisms," it is naming the loss of a specific process that exists, is staffed, and runs every week.</p>
+
+      <div class="abcg-block">
+        <div class="abcg-diff-head">
+          <div class="abcg-diff-col">Two ways to turn a safeguard off</div>
+          <div class="abcg-diff-col abcg-col-ok">Sanctioned bioclassifier exemption<br />&sect;4.5.5</div>
+          <div class="abcg-diff-col abcg-col-bad">Flag meant only for internal use<br />&sect;4.5.8.2.2</div>
+        </div>
+        <div class="abcg-diff-row">
+          <div class="abcg-diff-label">Classifier fires</div>
+          <div class="abcg-diff-cell abcg-on" data-col="Sanctioned exemption">yes</div>
+          <div class="abcg-diff-cell abcg-unknown" data-col="Internal-use flag">report does not say</div>
+        </div>
+        <div class="abcg-diff-row">
+          <div class="abcg-diff-label">Model completion blocked</div>
+          <div class="abcg-diff-cell abcg-off" data-col="Sanctioned exemption">no</div>
+          <div class="abcg-diff-cell abcg-off" data-col="Internal-use flag">no</div>
+        </div>
+        <div class="abcg-diff-row">
+          <div class="abcg-diff-label">Classifier flag written to log</div>
+          <div class="abcg-diff-cell abcg-on" data-col="Sanctioned exemption">yes</div>
+          <div class="abcg-diff-cell abcg-off" data-col="Internal-use flag">no</div>
+        </div>
+        <div class="abcg-diff-row">
+          <div class="abcg-diff-label">Traffic reaches a review mechanism</div>
+          <div class="abcg-diff-cell abcg-on" data-col="Sanctioned exemption">yes</div>
+          <div class="abcg-diff-cell abcg-off" data-col="Internal-use flag">no</div>
+        </div>
+        <div class="abcg-diff-note">
+          Both regimes describe a surface where nothing gets blocked. Only the sanctioned exemption produces anything a person could later look at.
+        </div>
+      </div>
+
+      <p class="abcg-cap">Schematic drawn from the wording of Anthropic's August 2026 Risk Report, not from any Anthropic interface. The report is inconsistent about whether the classifiers ran on human-feedback vendor traffic and their output was discarded, or did not run at all; that row is left unresolved because the document leaves it unresolved.</p>
+
+      <p>Even the sanctioned regime's logging commitment is conditional, and Anthropic says so: "where data retention agreements permit." For zero-data-retention organisations — under 3% of active exemption seats — the report says Anthropic has "no ability to view flagged traffic, but still have visibility into the rate of classifier flags." So at its blindest, the exemption regime still keeps a number. It knows how often the classifiers fire even where it cannot see what made them fire. The flag on the human-feedback platforms left not even that.</p>
+    </section>
+  </div>
+
+  <div class="phantom-wrap">
+    <canvas class="anthropic-bio-classifier-gap-canvas" aria-hidden="true"></canvas>
+  </div>
+  <p class="canvas-note"><strong>The Ledger</strong> — pale traffic rises through a dim threshold; each flagged crossing is stopped and drops a thread that commits a blue tick to a record strip below; then one flag dims the threshold and the strip together, the crossings continue at exactly the same rate leaving nothing behind, and a monitoring scan sweeps the empty strip at unchanged speed and finds nothing to report.</p>
+
+  <div class="container">
+    <section class="section" id="the-flag">
+      <h2><span class="num">03 — What Happened</span>The Flag</h2>
+      <p>Section 4.5.8.2.2 is headed "All human feedback vendor traffic run without blocking biological classifiers." Its first sentence: "Since our last Risk Report, we discovered that our bio classifiers were not running for a substantial amount of time on our human feedback vendor traffic."</p>
+      <p>Then the scale. "From May 2025 (our first deployment of models with CB safeguards) until April 2026, all traffic through our systems for collecting human feedback data from contractors evaluating our models ran without blocking biological classifiers. This covered a pool of roughly 50,000 people, who were vetted only by our vendors … and totaled around 133M exchanges. The vast majority of this pool had general access to open-ended conversation with these models." The report gives no month count; close to a year is this story's arithmetic, not Anthropic's word. The roughly 50,000 is the size of the pool across that window, not a present-tense headcount — the report redacts the current scale of its contractor population as commercially sensitive. These were people hired to evaluate model outputs. The report names no vendor.</p>
+      <p>The mechanism is one sentence, and Anthropic wrote it itself: "This traffic was controlled by a flag meant only for internal use, which disabled not only the blocking behavior of the classifiers but also the logging of their flags; as such, traffic that would otherwise have been flagged was not recorded or propagated to any review mechanisms." A safeguard whose firings are not written down is, from the inside, indistinguishable from a safeguard that was never installed.</p>
+
+      <div class="abcg-block">
+        <div class="abcg-queue-head">Weekly automated monitoring — flagged-but-not-blocked traffic</div>
+        <div class="abcg-queue-sub">Surfaced for regular review by a limited pool of Anthropic employees · escalation to raw traffic available</div>
+        <div class="abcg-queue-row">
+          <div class="abcg-queue-src">Exempted-organisation traffic<br /><span class="abcg-queue-meta">classifier scores logged</span></div>
+          <div class="abcg-queue-count" data-col="Weekly monitoring received">weekly reports generated · reviewed · no concerning bio activity identified</div>
+        </div>
+        <div class="abcg-queue-row">
+          <div class="abcg-queue-src">Human feedback vendor traffic<br /><span class="abcg-queue-meta">May 2025 – April 2026 · ~133M exchanges</span></div>
+          <div class="abcg-queue-empty" data-col="Weekly monitoring received">— no records —</div>
+        </div>
+        <div class="abcg-queue-foot">
+          "traffic that would otherwise have been flagged was not recorded or propagated to any review mechanisms" — Anthropic, Risk Report August 2026, &sect;4.5.8.2.2
+        </div>
+      </div>
+
+      <p class="abcg-cap">A schematic of a process the report describes in prose. The report describes no review interface, and the weekly pipeline was never configured to cover the human-feedback platforms — that is the point. The pipeline exists and runs on logged traffic. This traffic never entered it.</p>
+
+      <p>What the report does not say is as load-bearing as what it does. It does not say how the gap was found: the words are "we discovered," and nothing follows them. It does not say who set the flag, why it was set on vendor traffic, whether by design, by inheritance or by misconfiguration, or whether anyone had ever reviewed it. It does not explain why a flag meant for internal use was built to kill the logging as well as the blocking, when the sanctioned exemption regime described elsewhere in the same document keeps them apart.</p>
+      <p>A second incident sits beside this one, and the relationship between them has to be stated exactly. In April 2026, acting on an external report, Anthropic confirmed that a small number of contractors at data-labeling vendors had exploited a flaw in one of its data collection platforms to obtain an API key and reach models outside the scope of their assigned tasks. Anthropic contained the activity within 90 minutes of learning of it and closed the access vector the day the report arrived. It describes that incident separately, it says, partly because the model reached "was among our most capable and was not running with blocking biological classifiers at the time (see Section 4.5.8.2.2)." That is Anthropic invoking the gap to explain the severity of the access incident. It is not Anthropic saying the access incident revealed the gap. Both are dated April 2026. Both concern the same vendor surface. The cross-reference runs one way only, and this story will not run it the other.</p>
+      <p>Remediation is stated plainly: "We corrected this issue shortly after learning of it in April 2026, and now run with biological classifiers enabled on the vast majority of our vendor traffic, with exceptions granted only for vendors with robust controls where merited by a specific project."</p>
+    </section>
+
+    <section class="section" id="the-sweep">
+      <h2><span class="num">04 — The Sweep</span>Going Back to Look</h2>
+      <p>A retrospective sweep is what an organisation is reduced to when the log is gone. There were no flags to review, so Anthropic went back and manufactured some: it screened the traffic it still had, after the fact, with a different model. It ran a prompted classifier model — Claude Sonnet 5 — over all human turns sent during the affected period, prompted to assess whether each turn "contained harmful information in line with a constitution for CB-1 biological harm."</p>
+      <p>The results, in the report's numbers: 1,197 transcripts flagged "high" for biological harm. Of those, 757 came from internal Anthropic teams using the same infrastructure as the external vendors. All but 62 of the remainder came from exercises in which Anthropic asked red-teamers to deliberately stress-test its systems. Anthropic manually reviewed all 62 of the flagged non-red-teaming transcripts, plus a random subset of 30 external red-teaming transcripts, and "did not observe clearly concerning CB misuse which could have provided meaningful uplift to a threat actor (though we identified a handful of potentially dual-use conversations, or red-teaming interactions at a fairly academic level)." The report gives no count for the handful.</p>
+      <p>The limits of the sweep are in the report too, volunteered rather than extracted. Footnote 74 records that the grader prompt "was originally designed for assessing if a multi-turn exchange provided detailed harmful information to a user, but was run on isolated human turns from this traffic" — and states, in the same footnote, why Anthropic accepted the mismatch: "from manual inspection of the reasoning of this prompted grader, we expect that it would have flagged a significant fraction of human turns including or requesting information at the level of detail and specificity that threat actors would require to see significant uplift." Two other limits follow from the numbers themselves. Roughly 348 red-teaming-flagged transcripts sat outside the 30-transcript sample — that is arithmetic on the report's own figures. And about 1% of the traffic ran on a platform where conversations the user did not submit were not retained.</p>
+      <p>Anthropic gives three reasons for believing the gap was not meaningfully exploited, and keeps its own hedge on them: it thinks it "very unlikely." First, that a threat actor building a bioweapon "could not have sent more than a few dozen detailed high-harm queries without our human review being very likely to examine at least one of the resulting conversations." Second, that the vast majority of the conversations were short. Third, that the extent of access needed to provide meaningful uplift means small volumes of traffic would be of limited use. That is the company's reasoning, reported as reasoning.</p>
+      <p>One further sentence belongs here because Anthropic wrote it about itself. Footnote 75: "we expect it would not have been particularly difficult (prior to April 2026) for threat actors to get hired in a red-teaming role by one of our vendors." That is counterfactual and hypothetical. Anthropic is stating what it expects would have been easy, not reporting that anyone did it. It is among the most striking lines in the document precisely because the company volunteered it.</p>
+    </section>
+
+    <section class="section" id="mechanism">
+      <h2><span class="num">05 — The Mechanism</span>Forty-Eight Hours</h2>
+      <p>The report's appendix of minor incidents contains one titled "Classifier blocks temporarily disabled on Opus 4 and Opus 4.1 on one deployment surface." Blocking failed; the classifiers went on flagging. The report describes "classifiers not blocking flagged Opus 4 or Opus 4.1 traffic," and records that the error "was resolved within 48 hours of the misconfiguration being deployed." Whether those flags were written to a log, it does not say.</p>
+      <p>On the human-feedback platforms, blocking and logging failed together, and the window ran from May 2025 until April 2026.</p>
+
+      <div class="abcg-block">
+        <div class="abcg-clock-banner">This comparison is the story's own. Anthropic never draws it.</div>
+        <div class="abcg-clock-row">
+          <div class="abcg-clock-state">Blocking OFF · traffic still flagged</div>
+          <div class="abcg-clock-label">Opus 4 / Opus 4.1, one deployment surface — configuration error</div>
+          <div class="abcg-clock-bar"><span class="abcg-clock-fill" style="width:4%"></span></div>
+          <div class="abcg-clock-dur">resolved within 48 hours of deployment</div>
+        </div>
+        <div class="abcg-clock-row">
+          <div class="abcg-clock-state">Blocking OFF · logging OFF</div>
+          <div class="abcg-clock-label">Opus 4.7 — updated classifier rolled out with the old threshold, found by Anthropic</div>
+          <div class="abcg-clock-bar"><span class="abcg-clock-fill" style="width:11%"></span></div>
+          <div class="abcg-clock-dur">5 days</div>
+        </div>
+        <div class="abcg-clock-row">
+          <div class="abcg-clock-state">Blocking OFF · logging OFF</div>
+          <div class="abcg-clock-label">Human feedback vendor platforms</div>
+          <div class="abcg-clock-bar"><span class="abcg-clock-fill abcg-clock-open" style="width:100%"></span></div>
+          <div class="abcg-clock-dur abcg-clock-open-dur">May 2025 → April 2026</div>
+        </div>
+        <div class="abcg-clock-foot">
+          Anthropic gives no month count for the third window. The report says only: "From May 2025 (our first deployment of models with CB safeguards) until April 2026." Bar lengths are indicative and assert no ratio.
+        </div>
+      </div>
+
+      <p>The juxtaposition is this story's reading, not a finding in the report. Anthropic never sets those durations beside each other. The incidents differ in surface, in model, and in circumstance, and detection time can have causes that have nothing to do with logging. What is confirmed is narrower and still worth holding: in one case the classifiers were still flagging the traffic and the error was closed within two days of being deployed; in the other the flags were never recorded at all, and it ran until April 2026.</p>
+      <p>The coupling also recurs, which is what makes it a failure mode rather than a one-off. Rolling out an updated classifier for Opus 4.7, Anthropic set the stage-1 probe threshold to the numerical value of the previous classifier's threshold, which was too high for the new one. The report: this led to some traffic "not being blocked or logged for offline monitoring for a period of 5 days." Anthropic assesses that risk as very low and estimates the block rate would have been around 3% higher without the misconfiguration. Same coupling. Same coverage period. Five days instead of close to a year — because someone found it. The appendix says of its own contents that "each of these issues was identified through our own testing and monitoring rather than surfaced by external exploitation." Section 4.5.8.2.2 is not in that appendix, and no equivalent sentence appears in it.</p>
+      <p>The generalisation the evidence supports is this story's, and it is small enough to state without inflation: in a safety estate, the log is not documentation attached to the control. It is the only thing that makes the control's existence checkable.</p>
+    </section>
+
+    <section class="section" id="the-silence">
+      <h2><span class="num">06 — The Silence</span>February Was Not Wrong</h2>
+      <p>Anthropic's previous Risk Report was published on 24 February 2026, and the gap was live underneath it. The August report says so: "This vulnerability was live when our previous Risk Report was published; that report did not consider our human feedback platforms as a risk surface or make claims one way or another about their controls."</p>
+      <p>Read that carefully, because the obvious accusation does not survive it. The February report was not inaccurate about the human-feedback platforms. It was silent about them. A risk report is bounded by the surfaces it treats as risk surfaces, and a surface nobody has classified as one produces no false statements. It produces no statements. That framing is this story's; Anthropic states only the fact.</p>
+      <p>What Anthropic did state is a correction, and its direction matters. Section 4.6.1: "We currently believe that the risk of catastrophic harm in this category from our AI models is low but not negligible. Based on the new information we learned regarding the vulnerability discussed in Section 4.5.8.2.2, we now also assess the risk posed by our models in February 2026 as low, rather than the 'very low' description we gave at the time in our previous risk report." That is a revision upward. Anthropic now assesses February's risk as higher than it said at the time, and withdraws the stronger reassurance it gave. Note what the two assessments do: current CB-1 risk is "low but not negligible," and February is now labelled "low" as well. The gap between them closed by February moving up, not by August moving down.</p>
+      <p>The executive summary puts it more sharply than the body does. The CB-1 overall risk assessment reads: "Low, but higher than our previous estimate due to the gap in our access controls for models without blocking classifiers described in Section 4.5.8.2.2. We have since remediated this gap, and our review found no evidence of misuse, but the discovery has reduced our confidence that no similar gaps exist."</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">07 — Signal</span>A Measurement of Its Own Ignorance</h2>
+      <p>That last clause is the strongest sentence in the document, and Anthropic wrote it twice. In Section 4.5.8.2.2: "The discovery of this gap, however, leads us to believe that there is an increased likelihood of other, similar issues unknown to us." In the executive summary: the discovery "has reduced our confidence that no similar gaps exist." A company found one silent control and revised upward its estimate of how many silent controls it has. On this story's reading, that is a measurement of its own ignorance — and it is not a number at all, and cannot be.</p>
+      <p>The remediation is real and its limits are stated. Classifiers now run on the vast majority of vendor traffic, with exceptions granted per project only to vendors with robust controls. The report says Anthropic requires vendors to perform consistent identity and background checks for every worker, and to meet its endpoint security and access control requirements including phishing-resistant multi-factor authentication. It says that historically, "our vetting process for human feedback data contractors was much weaker, and lacked many of the above requirements." And in the same passage, post-remediation and present-tense, it says of the strengthened controls that they "would likely not be robust against a well-resourced threat actor making a concerted effort to attain access via this route."</p>
+      <p>So the estate is better instrumented than it was, and Anthropic says it does not believe the instrumentation is sufficient against a determined adversary. Both of those are the company's own account of itself, and there is no second account.</p>
+      <p>Which returns to the one thing the report never says. Anthropic corrected the gap "shortly after learning of it in April 2026," and that is the entire description of the discovery. Not who, not when in the month, not in response to what. A control that fails silently cannot announce itself; it can only be stumbled into.</p>
+      <p>So the closest thing to a measurement here — how long a broken control ran before somebody noticed — has three values in this document, and they do not line up neatly. Two days when the classifiers were still flagging. Five days when they were neither blocking nor logging, and somebody found it anyway. May 2025 to April 2026 when they were neither blocking nor logging, and nobody did.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+  (() => {
+    const canvas = document.querySelector('.anthropic-bio-classifier-gap-canvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const STORY = '142,202,230';
+    const AMBIENT = '232,232,232';
+    const H = 380;
+    let W = canvas.clientWidth || 800;
+    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    const resize = () => {
+      W = canvas.clientWidth || 800;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+
+    const baseline = H - 22;
+    const ledgerTop = H - 64;
+    const threshY = H - 150;
+
+    const rand = (a: number, b: number) => a + Math.random() * (b - a);
+
+    type P = { x: number; y: number; r: number; a: number; vy: number; w: number; ph: number; flagged: boolean; mix: number; dying: number };
+    const parts: P[] = [];
+    const makeP = (staggered: boolean): P => ({
+      x: rand(0, W),
+      y: staggered ? rand(-6, ledgerTop - 4) : ledgerTop - 4,
+      r: rand(0.8, 1.8),
+      a: rand(0.045, 0.075),
+      vy: rand(0.22, 0.38),
+      w: rand(200, 400),
+      ph: rand(0, Math.PI * 2),
+      flagged: false,
+      mix: 0,
+      dying: -1,
+    });
+    for (let i = 0; i < 46; i++) parts.push(makeP(true));
+
+    type Thread = { x: number; prog: number; fade: number; committed: boolean };
+    const threads: Thread[] = [];
+    type Ripple = { x: number; life: number };
+    const ripples: Ripple[] = [];
+    type Tick = { x: number; h: number; flare: number };
+    const ticks: Tick[] = [];
+    let slot = 0;
+
+    let frame = 0;
+    let nextEvent = 20;
+    let K = 1;
+    let residual = 0.1;
+
+    const CYCLE = 1560;
+    const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
+    const scanWindows = [
+      [300, 500],
+      [700, 900],
+      [960, 1160],
+    ];
+
+    const drawFrame = (f: number) => {
+      // ── K, the single flag variable ──
+      if (f < 540) K = 1;
+      else if (f < 720) K = 1 - easeOutCubic((f - 540) / 180);
+      else if (f < 1380) K = 0;
+      else K = easeOutCubic(Math.min(1, (f - 1380) / 180));
+
+      if (f >= 720 && f < 1160) residual = 0.1;
+      else if (f >= 1160 && f < 1380) residual = 0.1 - 0.04 * ((f - 1160) / 220);
+      else if (f >= 1380) residual = Math.max(0, 0.06 * (1 - (f - 1380) / 60));
+
+      if (f === 0 || (f >= 1380 && ticks.length && K > 0.99)) { /* reset handled below */ }
+
+      ctx.clearRect(0, 0, W, H);
+
+      // ── threshold: an instrument trace ──
+      const thAlpha = 0.035 + 0.035 * K;
+      ctx.strokeStyle = `rgba(${AMBIENT},${thAlpha})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let x = 0; x <= W; x += 6) {
+        const y = threshY + 3 * Math.sin(x / 60.5 + f * 0.002);
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        const rp = ripples[i];
+        rp.life--;
+        if (rp.life <= 0) { ripples.splice(i, 1); continue; }
+        ctx.strokeStyle = `rgba(${AMBIENT},${0.16 * (rp.life / 20)})`;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(rp.x - 7, threshY + 3 * Math.sin((rp.x - 7) / 60.5 + f * 0.002));
+        ctx.lineTo(rp.x + 7, threshY + 3 * Math.sin((rp.x + 7) / 60.5 + f * 0.002));
+        ctx.stroke();
+      }
+
+      // ── ambient field: identical before and after ──
+      if (f >= nextEvent && parts.length) {
+        nextEvent = f + Math.round(rand(18, 26));
+        let best = -1, bestD = Infinity;
+        for (let i = 0; i < parts.length; i++) {
+          const p = parts[i];
+          if (p.flagged || p.y <= threshY) continue;
+          const d = p.y - threshY;
+          if (d < bestD) { bestD = d; best = i; }
+        }
+        if (best >= 0) parts[best].flagged = true;
+      }
+
+      for (let i = parts.length - 1; i >= 0; i--) {
+        const p = parts[i];
+        if (p.dying >= 0) {
+          p.dying--;
+          if (p.dying <= 0) { parts.splice(i, 1); parts.push(makeP(false)); continue; }
+        } else {
+          p.y -= p.vy;
+          p.x += 0.3 * Math.sin(f / p.w + p.ph);
+          if (p.y < -6) { parts.splice(i, 1); parts.push(makeP(false)); continue; }
+        }
+
+        const active = p.flagged && K > 0.5;
+        if (active) {
+          const dist = p.y - threshY;
+          if (dist < 30) p.mix = Math.min(1, p.mix + 1 / 20);
+          if (dist <= 0 && p.dying < 0) {
+            ripples.push({ x: p.x, life: 20 });
+            threads.push({ x: p.x, prog: 0, fade: 0, committed: false });
+            p.dying = 8;
+          }
+        }
+
+        const rr = p.dying >= 0 ? p.r * (p.dying / 8) : p.r;
+        const col = active && p.mix > 0 ? STORY : AMBIENT;
+        const al = active ? p.a + (0.35 - p.a) * p.mix : p.a;
+        ctx.fillStyle = `rgba(${col},${al})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, Math.max(0, rr), 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // ── commit threads ──
+      for (let i = threads.length - 1; i >= 0; i--) {
+        const t = threads[i];
+        if (t.prog < 1) {
+          t.prog += 1 / 14;
+          if (t.prog >= 1 && !t.committed) {
+            t.committed = true;
+            ticks.push({ x: 40 + slot * 8, h: rand(6, 20), flare: 0 });
+            slot++;
+            if (40 + slot * 8 > W - 40) slot = 0;
+          }
+        } else {
+          t.fade += 1 / 12;
+          if (t.fade >= 1) { threads.splice(i, 1); continue; }
+        }
+        const alpha = 0.18 * (t.prog < 1 ? 1 : 1 - t.fade);
+        const yEnd = threshY + (baseline - threshY) * Math.min(1, t.prog);
+        ctx.strokeStyle = `rgba(${STORY},${alpha})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(t.x, threshY);
+        ctx.lineTo(t.x, yEnd);
+        ctx.stroke();
+      }
+
+      // ── ledger baseline ──
+      const blMix = K;
+      const blR = Math.round(142 + (232 - 142) * (1 - blMix));
+      const blG = Math.round(202 + (232 - 202) * (1 - blMix));
+      const blB = Math.round(230 + (232 - 230) * (1 - blMix));
+      ctx.strokeStyle = `rgba(${blR},${blG},${blB},${0.05 + 0.23 * blMix})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(24, baseline + 0.5);
+      ctx.lineTo(W - 24, baseline + 0.5);
+      ctx.stroke();
+
+      // ── committed ticks ──
+      const tickAlpha = K > 0.5 ? 0.55 * K : Math.max(residual, 0.1 * K);
+      for (const t of ticks) {
+        let a = tickAlpha;
+        if (t.flare > 0) { a = Math.max(a, 0.9 * (t.flare / 12)); t.flare--; }
+        if (a <= 0.005) continue;
+        ctx.fillStyle = `rgba(${STORY},${a})`;
+        ctx.fillRect(t.x, baseline - t.h, 1.5, t.h);
+      }
+
+      // ── scan-line: no failure mode ──
+      for (const [s, e] of scanWindows) {
+        if (f >= s && f < e) {
+          const sx = ((f - s) / (e - s)) * W;
+          const g = ctx.createLinearGradient(sx - 20, 0, sx, 0);
+          g.addColorStop(0, `rgba(${STORY},0)`);
+          g.addColorStop(1, `rgba(${STORY},0.22)`);
+          ctx.fillStyle = g;
+          ctx.fillRect(sx - 20, ledgerTop, 20, baseline - ledgerTop + 2);
+          ctx.fillStyle = `rgba(${STORY},0.22)`;
+          ctx.fillRect(sx, ledgerTop, 1, baseline - ledgerTop + 2);
+          for (const t of ticks) {
+            if (tickAlpha > 0.2 && Math.abs(t.x - sx) < 2 && t.flare <= 0) t.flare = 12;
+          }
+        }
+      }
+    };
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let rafId = 0;
+    let running = false;
+
+    const loop = () => {
+      frame++;
+      if (frame >= CYCLE) { frame = 0; ticks.length = 0; slot = 0; threads.length = 0; ripples.length = 0; }
+      drawFrame(frame);
+      rafId = requestAnimationFrame(loop);
+    };
+
+    const staticFrame = () => {
+      // frame ~1100: the failed state — indistinguishable from a canvas where nothing happens
+      for (let i = 0; i < 1100; i++) {
+        for (const p of parts) { p.y -= p.vy; if (p.y < -6) { p.y = ledgerTop - 4; p.x = rand(0, W); } }
+      }
+      ticks.length = 0;
+      for (let i = 0; i < 26; i++) ticks.push({ x: 40 + i * 8, h: rand(6, 20), flare: 0 });
+      frame = 1100;
+      drawFrame(1100);
+    };
+
+    const start = () => {
+      if (running || reduced.matches) return;
+      running = true;
+      rafId = requestAnimationFrame(loop);
+    };
+    const stop = () => {
+      running = false;
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = 0;
+    };
+
+    const io = new IntersectionObserver((entries) => {
+      for (const en of entries) {
+        if (en.isIntersecting) start(); else stop();
+      }
+    }, { threshold: 0 });
+    io.observe(canvas);
+
+    const ro = new ResizeObserver(() => { resize(); if (reduced.matches) staticFrame(); });
+    ro.observe(canvas);
+
+    if (reduced.matches) staticFrame();
+
+    window.addEventListener('beforeunload', () => { stop(); io.disconnect(); ro.disconnect(); });
+  })();
+</script>

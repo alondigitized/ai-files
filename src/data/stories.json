@@ -2450,5 +2450,61 @@
       "Outperformed OpenAI CLIP, Microsoft LLaVA, BioMedCLIP, Med-Flamingo by more than 30%.",
       "No FDA clearance, no clinical deployment; code and weights open-source on GitHub."
     ]
+  },
+  {
+    "slug": "anthropic-bio-classifier-gap",
+    "side": "dark",
+    "chapter": 33,
+    "volume": 6,
+    "title": "The Flag That Turned Off the Record",
+    "deck": "A flag on Anthropic's human-feedback platforms switched off its biological classifiers and the record of what they flagged — from May 2025 until April 2026.",
+    "date": "August 2026",
+    "isoDate": "2026-08-14",
+    "readTime": "8 min",
+    "emoji": "🕳️",
+    "tags": [
+      "AI Safety",
+      "Anthropic",
+      "Disclosure",
+      "Monitoring"
+    ],
+    "story": "#8ecae6",
+    "storyDark": "#152b38",
+    "verifyText": "Every fact about this gap comes from a single source: Anthropic's own Risk Report of August 2026. No regulator, auditor, vendor or outside party has reviewed the traffic, and none ever will.",
+    "sources": [
+      {
+        "label": "Anthropic — Risk Report: August 2026",
+        "url": "https://www.anthropic.com/aug-2026-risk-report"
+      },
+      {
+        "label": "Anthropic — Risk Report: August 2026 (full PDF)",
+        "url": "https://www-cdn.anthropic.com/f61d49fa5596956a5dec75fea0e973bf6a6a8378/Redacted%20Risk%20Report%20August%202026%20.pdf"
+      },
+      {
+        "label": "Anthropic — Responsible Scaling Policy",
+        "url": "https://www.anthropic.com/responsible-scaling-policy"
+      },
+      {
+        "label": "Zvi Mowshowitz — Anthropic Risk Report: August 2026",
+        "url": "https://thezvi.wordpress.com/2026/08/18/anthropic-risk-report-august-2026/"
+      },
+      {
+        "label": "BERI — Anthropic's Evals Maxed Out",
+        "url": "https://www.beri.net/article/anthropic-august-2026-risk-report-eval-saturation-vendor-assurance"
+      },
+      {
+        "label": "Jonas Freund — AI Risk Management Newsletter #46",
+        "url": "https://jonasfreund.substack.com/p/ai-risk-management-newsletter-46"
+      }
+    ],
+    "llmsDescription": "Anthropic's August 2026 Risk Report disclosed that from May 2025 until April 2026, all traffic through its systems for collecting human feedback data from contractors ran without blocking biological classifiers. The report says the traffic was controlled by \"a flag meant only for internal use, which disabled not only the blocking behavior of the classifiers but also the logging of their flags,\" so flagged traffic was \"not recorded or propagated to any review mechanisms\"; the window covered a pool of roughly 50,000 vendor-vetted people and around 133 million exchanges. A retrospective sweep using Claude Sonnet 5 flagged 1,197 transcripts high for biological harm, 757 of them from internal Anthropic teams, and Anthropic says it found no evidence of concerning misuse. Anthropic revised its February 2026 CB-1 risk assessment upward from \"very low\" to \"low\" and said the discovery \"reduced our confidence that no similar gaps exist.\"",
+    "abstract": [
+      "Anthropic's August 2026 Risk Report discloses that from May 2025 until April 2026, all traffic through its systems for collecting human feedback data from contractors ran without blocking biological classifiers.",
+      "The report says the traffic was controlled by \"a flag meant only for internal use, which disabled not only the blocking behavior of the classifiers but also the logging of their flags\" — so flagged traffic \"was not recorded or propagated to any review mechanisms.\"",
+      "The window covered a pool of roughly 50,000 people, vetted only by Anthropic's vendors, and totalled around 133 million exchanges; most had open-ended conversation access.",
+      "Anthropic ran Claude Sonnet 5 as a prompted grader over the affected traffic: 1,197 transcripts flagged high for biological harm, 757 of them from internal Anthropic teams; the company says it found no evidence of concerning CB misuse.",
+      "Anthropic revised its February 2026 CB-1 risk assessment upward, from \"very low\" to \"low\", and said the discovery \"reduced our confidence that no similar gaps exist.\""
+    ],
+    "whatIf": "Every lab's safety estate is a product, not a list: models times deployment surfaces times internal tools times vendor environments times configuration flags inherited from systems that no longer exist. Each entry has two independent properties — whether the control works, and whether the control's failure emits a signal. Those two properties are built by different people, at different times, for different reasons, and only the first is ever tested. So every estate has a dark fraction: the share of its controls whose failure produces nothing at all. That fraction is not merely unknown. It is not enumerable, by construction, because enumerating it would require the very signal whose absence defines it. You cannot write the list. The list is the thing that is missing.\n\nNow watch the dark fraction travel upward. The log is the substrate everything above it consumes. Internal review consumes the log. The safety case consumes internal review. The public risk report consumes the safety case. Regulatory attestation consumes the risk report, and third-party audit, procurement assurance, insurance underwriting and treaty-level verification of frontier capability controls each consume the layer beneath. Remove the log at the bottom and every layer above it reports green. Not because anyone lied — because an auditor checks that a control is configured, and the flag is a configuration. It was set. It was documented. It was inherited. It was working exactly as written. A silent failure does not propagate upward as a failure. It propagates upward as a clean bill of health, gaining institutional weight at every layer, until it arrives at the top as a signed attestation that a control was in force across a period during which nobody on Earth could have known whether it was.\n\nThe same property hands an adversary their cheapest move. The expensive path to defeating a classifier is capability research — jailbreaks, obfuscation, novel phrasings — all of it adversarial, all of it leaving traces in exactly the systems built to catch traces. The cheap path requires no capability research at all. It requires patience and access: a vendor environment, an internal tool, a preview program, a red-teaming role that Anthropic itself expects would not have been particularly difficult to be hired into before April 2026. Its defining property is not that it is likelier to work. It is that success and failure look identical afterward, to the attacker and to the defender alike. There is no post-incident forensics on a surface with no record. There is no breach notification, because there is no observation of a breach.\n\nAnd almost nothing finds it. Monitoring cannot — that is what silent means. Auditing cannot: auditing reads the configuration, and the configuration is correct. What is left is coincidence, and manual inspection: a person going and looking at one specific control, by hand, because they happened to wonder. Manual inspection costs the same for every control and requires a human who already suspects. The estate grows combinatorially. Every new surface, every new vendor, every preview program, every flag inherited from a decommissioned system widens the distance between those two curves.\n\nEvery lab knows how many safeguards it runs. That number is in the report, in the safety case, in the attestation. The other number is the one nobody quotes: how long it would take to notice that one had stopped. One lab has published figures bearing on it, in a single document: two days when the failure left a trace, five days when it left none and was caught anyway, and May 2025 to April 2026 when it left none and was not. That last figure is not a measurement of how long the gap lasted. It is a measurement of how long it took for somebody to happen to look. So what is that number today, at your lab, for the control you would least like to have failed? And if it failed this morning, what exactly is supposed to tell you?"
   }
 ]
