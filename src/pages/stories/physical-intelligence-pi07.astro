@@ -1,0 +1,834 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'physical-intelligence-pi07')!;
+---
+
+<style is:global>
+  /* Canvas */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .physical-intelligence-pi07-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* Performance Comparison Terminal */
+  .pi07-terminal {
+    background: var(--surface);
+    border: 1px solid color-mix(in srgb, var(--story) 30%, transparent);
+    border-radius: 8px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    overflow: hidden;
+    margin: 2rem 0;
+    max-width: 720px;
+  }
+  .pi07-terminal-header {
+    background: color-mix(in srgb, var(--story) 12%, var(--surface));
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--story) 20%, transparent);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--story);
+  }
+  .pi07-terminal-body { padding: 1rem; }
+  .pi07-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .pi07-table th {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid color-mix(in srgb, var(--story) 15%, transparent);
+  }
+  .pi07-table td {
+    padding: 0.5rem 0.75rem;
+    color: var(--text);
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+  }
+  .pi07-table .pi07-val { color: var(--story); font-weight: 600; }
+  .pi07-table .pi07-baseline { color: var(--muted); }
+  .pi07-terminal-footer {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid color-mix(in srgb, var(--story) 15%, transparent);
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* Training Annotation Diagram */
+  .pi07-annotation {
+    background: var(--surface);
+    border: 1px solid color-mix(in srgb, var(--story) 25%, transparent);
+    border-radius: 8px;
+    margin: 2rem 0;
+    overflow: hidden;
+    max-width: 640px;
+  }
+  .pi07-annotation-header {
+    background: color-mix(in srgb, var(--story) 10%, var(--surface));
+    padding: 0.6rem 1rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    border-bottom: 1px solid color-mix(in srgb, var(--story) 15%, transparent);
+  }
+  .pi07-layer {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--border) 30%, transparent);
+  }
+  .pi07-layer:last-child { border-bottom: none; }
+  .pi07-layer-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-bottom: 0.35rem;
+  }
+  .pi07-layer-content {
+    font-size: 0.9rem;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .pi07-layer-content code {
+    background: color-mix(in srgb, var(--story) 12%, transparent);
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.8rem;
+    color: var(--story);
+  }
+  .pi07-subgoal-box {
+    border: 1px dashed color-mix(in srgb, var(--story) 40%, transparent);
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 0.25rem;
+  }
+  .pi07-annotation-footer {
+    background: color-mix(in srgb, var(--story) 8%, var(--surface));
+    padding: 0.75rem 1rem;
+    font-size: 0.78rem;
+    color: var(--text);
+    line-height: 1.5;
+    border-top: 1px solid color-mix(in srgb, var(--story) 15%, transparent);
+  }
+
+  /* Compositional Grid */
+  .pi07-grid-wrap { margin: 2rem 0; max-width: 640px; }
+  .pi07-grid-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .pi07-grid-subtitle {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    font-style: italic;
+  }
+  .pi07-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: color-mix(in srgb, var(--story) 20%, transparent);
+    border: 1px solid color-mix(in srgb, var(--story) 25%, transparent);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .pi07-cell { background: var(--surface); padding: 1rem; }
+  .pi07-cell-icon { font-size: 1.4rem; margin-bottom: 0.35rem; color: var(--story); }
+  .pi07-cell-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.25rem;
+  }
+  .pi07-cell-detail {
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .pi07-cell--trained {
+    border-left: 3px solid color-mix(in srgb, var(--story) 50%, transparent);
+  }
+  .pi07-cell--zeroshot {
+    border-left: 3px solid var(--story);
+    background: color-mix(in srgb, var(--story) 6%, var(--surface));
+  }
+
+  .pi07-quote {
+    border-left: 3px solid var(--story);
+    padding: 0.75rem 1.25rem;
+    margin: 1.5rem 0;
+    color: var(--text);
+    font-style: italic;
+    background: color-mix(in srgb, var(--story) 5%, transparent);
+    border-radius: 0 4px 4px 0;
+    font-size: 1.02rem;
+  }
+  .pi07-quote cite {
+    display: block;
+    margin-top: 0.5rem;
+    font-style: normal;
+    font-size: 0.75rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="intro">
+      <h2><span class="num">01 — Context</span>The Data Problem</h2>
+
+      <p>Robots learn from demonstrations. A human teleoperates a robotic arm through a task — folding a shirt, pouring coffee, opening a drawer — and the recording becomes training data. This is slow, expensive, and ruthlessly specific. A model trained on a Franka arm folding towels does not know how to fold towels on a UR5e arm. A model trained on opening kitchen cabinets does not know how to open bathroom cabinets with different handles. For fifty years, robotics operated this way: one task, one robot, one painstaking dataset at a time.</p>
+
+      <p>Physical Intelligence was founded in 2024 to attack this constraint. Led by Karol Hausman (CEO, ex-Google DeepMind) and Sergey Levine (Chief Scientist, UC Berkeley) — alongside co-founders drawn from Stanford and Google's robotics research orbit — the team set out to build a generalist robot policy: a single model that could control multiple robot platforms across multiple tasks. In October 2024, they published π0, a vision-language-action flow model trained on data from eight robot platforms with a 3-billion-parameter backbone. It was the first serious attempt at a general-purpose robotic foundation model.</p>
+
+      <p>The results, when independently tested, were sobering. The Penn PAL Lab at the University of Pennsylvania's GRASP Lab ran over 300 trials of π0 — specifically, the publicly available π0-FAST-DROID variant — on a Franka Research 3 arm. <strong>This evaluation tested π0, not π0.7.</strong> The results reflect the predecessor's capabilities. Average progress across tasks: 42.3%. Pick-and-place success: 24%. Fabric manipulation: 19.4%. Coffee machine operation: 8% progress, with no successful completions recorded. The model would freeze mid-task, leaving objects suspended in air until a human intervened. Prompt sensitivity was extreme: <em>"Close the toilet"</em> achieved 0% success; <em>"Close the white lid of the toilet"</em> achieved 100%. When given nonsense text, π0 defaulted to picking up marker pens — an action that accounted for roughly 16.67% of its DROID training data.</p>
+
+      <p>The Penn researchers still called it <em>"a major leap forward."</em> After fifty years of task-specific engineering, a model that succeeded at pick-and-place 24% of the time on hardware it had not been specifically trained for represented genuine progress. The baseline was that low. What happened next — the April 2026 release — is Physical Intelligence's claim that they found a way to move that baseline substantially, using an insight about training data that sounds almost too simple to matter.</p>
+    </section>
+
+    <section class="section" id="announcement">
+      <h2><span class="num">02 — What Changed</span>The Announcement</h2>
+
+      <p>On April 16, 2026, Physical Intelligence published π0.7, described as a steerable generalist robotic foundation model. The paper appeared on arXiv with 88 co-authors, all from Physical Intelligence. The headline claims: the model demonstrates what PI calls <em>"first signs of compositional generalization"</em> — recombining skills learned from different tasks and different robots to perform tasks on hardware combinations it has never seen.</p>
+
+      <p>The most vivid demonstration: π0.7 folded laundry on a UR5e bimanual system — two industrial UR5e arms fitted with Robotiq parallel jaw grippers. According to PI, no training data was collected for laundry folding on this specific hardware. The model had laundry-folding data from other robots and UR5e data from other tasks, but never the combination. It recombined. PI states the model's success rate matched the first-attempt success rate of expert human teleoperators — operators with a mean of 375 hours of general teleoperation experience — attempting laundry folding on the UR5e for the first time. The exact success-rate percentages are not published, and the comparison baseline — experts on unfamiliar hardware — is a lower bar than experts on familiar hardware. No independent replication exists.</p>
+
+      <p>PI also reports that the single π0.7 generalist model matches or exceeds its own RL-trained specialist models on throughput. The specialist, π*0.6, is PI's own prior model — a 5-billion-parameter system trained using reinforcement learning, published in November 2025. The comparison is internal. No standardized robotics benchmarks exist for this class of system, and no third-party model is included in the evaluation.</p>
+
+      <p>Inside that internal comparison, PI reports the generalist achieves approximately 1.2× the specialist's throughput on espresso making, approximately 2.0× on box building, approximately 1.2× on T-shirt laundry, and approximately 1.6× on the hardest laundry items. Success rates are approximately 100% on espresso, box building, and T-shirt laundry, and approximately 80–90% on the hardest laundry items. These are PI's numbers, measured against PI's own prior model.</p>
+
+      <div class="pi07-terminal">
+        <div class="pi07-terminal-header">Internal Benchmark — Physical Intelligence, April 2026</div>
+        <div class="pi07-terminal-body">
+          <table class="pi07-table">
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Throughput vs. Specialist</th>
+                <th>Success Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Espresso making</td>
+                <td><span class="pi07-val">~1.2×</span> <span class="pi07-baseline">vs. π*0.6</span></td>
+                <td><span class="pi07-val">~100%</span></td>
+              </tr>
+              <tr>
+                <td>Box building</td>
+                <td><span class="pi07-val">~2.0×</span> <span class="pi07-baseline">vs. π*0.6</span></td>
+                <td><span class="pi07-val">~100%</span></td>
+              </tr>
+              <tr>
+                <td>Laundry (T-shirts/shorts)</td>
+                <td><span class="pi07-val">~1.2×</span> <span class="pi07-baseline">vs. π*0.6</span></td>
+                <td><span class="pi07-val">~100%</span></td>
+              </tr>
+              <tr>
+                <td>Laundry (hardest items)</td>
+                <td><span class="pi07-val">~1.6×</span> <span class="pi07-baseline">vs. π*0.6</span></td>
+                <td><span class="pi07-val">~80–90%</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pi07-terminal-footer">
+          All comparisons are PI vs. PI. The specialist baseline (π*0.6) is Physical Intelligence's own RL-trained model from November 2025. No independent benchmark exists for generalist robot policies.
+        </div>
+      </div>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="physical-intelligence-pi07-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Annotation</strong> — Dim failure particles and bright successes fall from above. A horizontal annotation line catches the failures, tagging each with a teal ring. Tagged particles reverse and rise. Particles from different origin columns drift together and merge in accent flares. New particles keep falling. The cycle is continuous.</p>
+
+    <section class="section" id="mechanism">
+      <h2><span class="num">03 — The Mechanism</span>Learning from Failure</h2>
+
+      <p>The technical core of π0.7 is a training method PI calls <em>"diverse-context conditioning."</em> The name is deliberately bland. The idea is not.</p>
+
+      <p>Standard robot learning works like this: collect demonstrations of a task performed correctly, train the model on those demonstrations. If a teleoperator botches a fold, that recording is discarded. Only clean executions count. This means every clumsy attempt, every dropped object, every slow recovery is wasted labor — and in robotics, where each demonstration requires physical hardware, physical objects, and a human operator's time, wasted demonstrations are expensive.</p>
+
+      <p>Diverse-context conditioning changes what <em>"useful"</em> means. Instead of discarding suboptimal demonstrations, PI annotates them. Each training episode gets tagged with three layers of conditioning information. First: a language command describing the task — <em>"Fold the blue T-shirt."</em> Second: metadata about the demonstration's quality and speed — how well the operator performed, how fast, what control modality they used (joint-space control versus end-effector control). Third: visual subgoal images generated by a lightweight world model — images showing what the end of each sub-step should look like.</p>
+
+      <div class="pi07-annotation">
+        <div class="pi07-annotation-header">Training Demonstration — Annotated</div>
+        <div class="pi07-layer">
+          <div class="pi07-layer-label">Layer 1: Language Command</div>
+          <div class="pi07-layer-content">"Fold the blue T-shirt."</div>
+        </div>
+        <div class="pi07-layer">
+          <div class="pi07-layer-label">Layer 2: Performance Metadata</div>
+          <div class="pi07-layer-content">
+            <code>quality: 0.7</code> &nbsp; <code>speed: slow</code> &nbsp; <code>control: end-effector</code> &nbsp; <code>outcome: partial success</code>
+          </div>
+        </div>
+        <div class="pi07-layer">
+          <div class="pi07-layer-label">Layer 3: Visual Subgoal</div>
+          <div class="pi07-layer-content">
+            <div class="pi07-subgoal-box">[Generated image: what the fold should look like at the end of this sub-step]</div>
+          </div>
+        </div>
+        <div class="pi07-annotation-footer">
+          One demonstration. Three layers of context. The model learns what to do, how well it went, and what success looks like — even when the demonstration itself was a partial failure.
+        </div>
+      </div>
+
+      <p>The structural implication: PI can feed the model <em>"suboptimal data including failures."</em> A sloppy fold tagged as <code>quality: 0.3</code> teaches the model what a sloppy fold looks like. A fast, clean fold tagged as <code>quality: 1.0</code> teaches the model what to aim for. At inference time, PI sets the quality and speed targets high, and the model steers toward the best behavior it has seen — even if most of what it saw during training was mediocre.</p>
+
+      <p>This is not a new algorithm. It is a new relationship to data. In language models, the internet provides functionally unlimited text. In robotics, data is scarce because it must be physically enacted. Diverse-context conditioning does not solve the scarcity, but it changes the ratio. If annotated failures are as useful as successes, then every hour of teleoperator time produces training signal — not just the good hours. The bookkeeping layer — the metadata tags — is what makes the difference.</p>
+    </section>
+
+    <section class="section" id="composition">
+      <h2><span class="num">04 — Composition</span>Tasks It Was Never Taught</h2>
+
+      <div class="pi07-grid-wrap">
+        <div class="pi07-grid-title">What the model saw vs. what it did</div>
+        <div class="pi07-grid-subtitle">Compositional generalization = recombining known skills for unknown combinations</div>
+        <div class="pi07-grid">
+          <div class="pi07-cell pi07-cell--trained">
+            <div class="pi07-cell-icon">✓</div>
+            <div class="pi07-cell-label">Laundry folding</div>
+            <div class="pi07-cell-detail">Trained on other robot platforms</div>
+          </div>
+          <div class="pi07-cell pi07-cell--trained">
+            <div class="pi07-cell-icon">✓</div>
+            <div class="pi07-cell-label">UR5e bimanual operation</div>
+            <div class="pi07-cell-detail">Trained on other tasks</div>
+          </div>
+          <div class="pi07-cell pi07-cell--zeroshot">
+            <div class="pi07-cell-icon">★</div>
+            <div class="pi07-cell-label">Laundry folding ON UR5e bimanual</div>
+            <div class="pi07-cell-detail">Never trained. Zero-shot cross-embodiment.</div>
+          </div>
+          <div class="pi07-cell pi07-cell--zeroshot">
+            <div class="pi07-cell-icon">★</div>
+            <div class="pi07-cell-label">Air fryer loading</div>
+            <div class="pi07-cell-detail">2 episodes closing lids + DROID data. Near-zero-shot.</div>
+          </div>
+        </div>
+      </div>
+
+      <p>The UR5e laundry demonstration is the cleanest case. PI had laundry-folding data from other robots. PI had UR5e data from other tasks. PI had no data for folding laundry on a UR5e bimanual system with Robotiq grippers. According to PI, π0.7 performed the combination without additional training — zero-shot cross-embodiment generalization. The model recombined what it knew about the task with what it knew about the hardware.</p>
+
+      <p>The air fryer is messier and more revealing. PI trained the model with two episodes of closing air fryers and data from the open-source DROID dataset. With that, the model attempted to load a sweet potato into an air fryer — a task not represented in its training. According to PI researcher Lucy Shi, speaking to TechCrunch, the initial success rate was approximately 5%, improving to approximately 95% with refined language prompts. <strong>These specific percentages appear only in TechCrunch's reporting and are not published in PI's blog post or the arXiv paper.</strong> PI's own blog describes the zero-shot attempt as involving <em>"a few false starts."</em></p>
+
+      <p>The air fryer improvement cuts both ways. It demonstrates that π0.7 is steerable — its performance can be tuned through prompt engineering without additional training. It also raises a question the story cannot fully answer: when performance swings from 5% to 95% based on how you phrase the instruction, how much of the result is generalization and how much is prompt engineering? The Penn PAL Lab found the same sensitivity in the predecessor model, where <em>"Close the toilet"</em> yielded 0% and <em>"Close the white lid of the toilet"</em> yielded 100%. Whether π0.7 has reduced this brittleness remains untested by any independent lab.</p>
+    </section>
+
+    <section class="section" id="frontier">
+      <h2><span class="num">05 — The Frontier</span>What It Cannot Do</h2>
+
+      <p>Sergey Levine, PI's Chief Scientist, named the boundary himself.</p>
+
+      <div class="pi07-quote">
+        "You can't tell it, 'Hey, go make me some toast.'"
+        <cite>Sergey Levine, Chief Scientist, Physical Intelligence — to TechCrunch, April 2026</cite>
+      </div>
+
+      <p>π0.7 cannot execute multi-step tasks from a single high-level command. It requires step-by-step sub-task prompting — fold this, then pick that up, then place it here. The model recombines skills within a step. It does not yet plan across steps.</p>
+
+      <p>This is a specific, measurable limitation. The gap between <em>"fold laundry on hardware you have never touched"</em> and <em>"go make me some toast"</em> is the gap between compositional execution and autonomous planning. The first requires recombining known motor patterns. The second requires understanding a kitchen, sequencing sub-tasks in the right order, recovering from unexpected states, and knowing when to stop. π0.7 does the first. It does not do the second.</p>
+
+      <p>The prompt sensitivity documented in π0's Penn evaluation may or may not persist in π0.7. The air fryer's 5%-to-95% swing through prompt refinement echoes Penn's findings, but π0.7 is a different model with a different training methodology, and no independent lab has systematically tested its prompt robustness. The most important thing that does not exist in the evidence base is an independent evaluation of π0.7. Penn ran 300 trials on the predecessor. No equivalent evaluation has been published for the April 2026 release. Until that happens, every performance claim in this story is Physical Intelligence grading its own homework.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">06 — Signal</span>Why Failures Matter More Than Successes</h2>
+
+      <p>The numbers are interesting. The mechanism is more interesting.</p>
+
+      <p>If diverse-context conditioning works as described — and the arXiv paper's methodology is internally consistent, though unverified externally — it changes the economics of robotics data collection. Every failed demonstration becomes a training asset. Every sub-expert operator becomes a useful data source. The constraint that has bottlenecked robot learning for decades — that you need clean, expert-quality demonstrations — loosens. Not because the demonstrations got better, but because someone figured out how to label the bad ones and feed them back in.</p>
+
+      <p>Levine told TechCrunch that once the model crosses a threshold from <em>"only doing exactly the stuff that you collect the data for to actually remixing things in new ways, the capabilities are going up more than linearly with the amount of data."</em> This is an unverified claim — no quantitative data on the relationship between data volume and capability scaling is published in the paper. It is a verbal characterization from an interested party. But it names the bet PI is making: that compositional generalization, if real, creates a flywheel where more data of any quality produces disproportionate capability gains.</p>
+
+      <p>The 88-author paper, the $5.6 billion valuation from PI's November 2025 Series B, and the reported discussions in March 2026 for new funding at a reported $11 billion valuation — all of this is a wager on one idea. PI's framing, in the work itself, is that the bottleneck in robotics was never the hardware and never the algorithms — it was that nobody had figured out how to learn from the mess. Every claimed advance in π0.7 is self-graded. No independent lab has tested this model. The mechanism is elegant and the demonstrations are vivid. But until someone outside Physical Intelligence runs 300 trials the way Penn did for π0, the most important number in this announcement is the one that does not yet exist: someone else's.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+  (function () {
+    const canvas = document.querySelector('.physical-intelligence-pi07-canvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d')!;
+
+    // --- Palette (light-side, color-overridden) ---
+    const AC_R = 14, AC_G = 124, AC_B = 102;
+
+    // --- State ---
+    let W = 0, H = 0, raf = 0, frame = 0;
+    let visible = true;
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // --- Resize ---
+    const ro = new ResizeObserver(() => {
+      W = canvas.offsetWidth;
+      H = canvas.offsetHeight;
+      canvas.width = W * devicePixelRatio;
+      canvas.height = H * devicePixelRatio;
+      ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    });
+    ro.observe(canvas);
+
+    // --- Visibility ---
+    const io = new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+      if (visible && !prefersReduced && !raf) raf = requestAnimationFrame(tick);
+      if (!visible) { cancelAnimationFrame(raf); raf = 0; }
+    }, { threshold: 0.05 });
+    io.observe(canvas);
+
+    // --- Constants ---
+    const COLUMNS = [0.18, 0.38, 0.62, 0.82];
+    const ANNO_Y = 0.6;
+    const MAX_FALLING = 16;
+    const MAX_MERGING = 4;
+    const SPAWN_INTERVAL = 28;
+    const NUM_AMBIENT = 10;
+
+    const ST_FALLING = 0;
+    const ST_PAUSING = 1;
+    const ST_RISING = 2;
+    const ST_MERGING = 3;
+    const ST_MERGED = 4;
+    const ST_FADING_BELOW = 5;
+    const ST_DEAD = 6;
+
+    interface Particle {
+      x: number; y: number;
+      vx: number; vy: number;
+      r: number;
+      alpha: number;
+      baseAlpha: number;
+      col: number;
+      bright: boolean;
+      state: number;
+      pauseTimer: number;
+      ringAlpha: number;
+      ringRadius: number;
+      tagRingAlpha: number;
+      wobbleFreq: number;
+      wobblePhase: number;
+      mergePartner: number;
+      mergeTimer: number;
+      fadeTimer: number;
+      frameOffset: number;
+    }
+    interface Spark { x: number; y: number; vx: number; vy: number; alpha: number; life: number; }
+    interface Ambient { x: number; y: number; vx: number; vy: number; r: number; }
+
+    const particles: Particle[] = [];
+    const sparks: Spark[] = [];
+    const ambients: Ambient[] = [];
+
+    function makeDeadParticle(): Particle {
+      return {
+        x: 0, y: 0, vx: 0, vy: 0, r: 3, alpha: 0, baseAlpha: 0.15,
+        col: 0, bright: false, state: ST_DEAD, pauseTimer: 0,
+        ringAlpha: 0, ringRadius: 0, tagRingAlpha: 0,
+        wobbleFreq: 0.02 + Math.random() * 0.03,
+        wobblePhase: Math.random() * Math.PI * 2,
+        mergePartner: -1, mergeTimer: 0, fadeTimer: 0,
+        frameOffset: Math.random() * 1000,
+      };
+    }
+    for (let i = 0; i < 40; i++) particles.push(makeDeadParticle());
+    for (let i = 0; i < 24; i++) sparks.push({ x: 0, y: 0, vx: 0, vy: 0, alpha: 0, life: 0 });
+
+    function initAmbients() {
+      ambients.length = 0;
+      for (let i = 0; i < NUM_AMBIENT; i++) {
+        ambients.push({
+          x: Math.random() * (W || 800),
+          y: Math.random() * (H || 380),
+          vx: (Math.random() - 0.5) * 0.2,
+          vy: (Math.random() - 0.5) * 0.2,
+          r: 1.2 + Math.random() * 1.5,
+        });
+      }
+    }
+
+    function spawnParticle() {
+      let p: Particle | null = null;
+      for (const pp of particles) { if (pp.state === ST_DEAD) { p = pp; break; } }
+      if (!p) return;
+      const colIdx = Math.floor(Math.random() * COLUMNS.length);
+      const isBright = Math.random() < 0.25;
+      p.col = colIdx;
+      p.x = COLUMNS[colIdx] * (W || 800) + (Math.random() - 0.5) * 20;
+      p.y = -5 - Math.random() * 30;
+      p.vx = 0;
+      p.vy = 0.3 + Math.random() * 0.2;
+      p.bright = isBright;
+      p.baseAlpha = isBright ? 0.7 : (0.12 + Math.random() * 0.08);
+      p.alpha = p.baseAlpha;
+      p.r = 2.5 + Math.random() * 1;
+      p.state = ST_FALLING;
+      p.pauseTimer = 0;
+      p.ringAlpha = 0;
+      p.ringRadius = 0;
+      p.tagRingAlpha = 0;
+      p.wobbleFreq = 0.02 + Math.random() * 0.03;
+      p.wobblePhase = Math.random() * Math.PI * 2;
+      p.mergePartner = -1;
+      p.mergeTimer = 0;
+      p.fadeTimer = 0;
+      p.frameOffset = frame;
+    }
+
+    function spawnSpark(x: number, y: number) {
+      for (const s of sparks) {
+        if (s.life <= 0) {
+          s.x = x; s.y = y;
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 0.5 + Math.random() * 1;
+          s.vx = Math.cos(angle) * speed;
+          s.vy = Math.sin(angle) * speed;
+          s.alpha = 0.4;
+          s.life = 20;
+          return;
+        }
+      }
+    }
+
+    interface LinePulse { x: number; timer: number; }
+    const linePulses: LinePulse[] = [];
+    for (let i = 0; i < 8; i++) linePulses.push({ x: 0, timer: 0 });
+
+    function addLinePulse(x: number) {
+      for (const lp of linePulses) {
+        if (lp.timer <= 0) { lp.x = x; lp.timer = 6; return; }
+      }
+    }
+
+    function update() {
+      if (!W || !H) return;
+      const annoY = H * ANNO_Y;
+
+      if (frame % SPAWN_INTERVAL === 0) {
+        let falling = 0;
+        for (const p of particles) if (p.state === ST_FALLING) falling++;
+        if (falling < MAX_FALLING) {
+          spawnParticle();
+          if (Math.random() < 0.3) spawnParticle();
+        }
+      }
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        if (p.state === ST_DEAD) continue;
+
+        if (p.state === ST_FALLING) {
+          if (!p.bright) p.x += Math.sin((frame + p.frameOffset) * p.wobbleFreq) * 0.3;
+          p.y += p.vy;
+          if (p.y >= annoY) {
+            if (p.bright) {
+              p.state = ST_FADING_BELOW;
+              p.fadeTimer = 40;
+            } else {
+              p.y = annoY;
+              p.state = ST_PAUSING;
+              p.pauseTimer = 8 + Math.floor(Math.random() * 5);
+              p.ringAlpha = 0.3;
+              p.ringRadius = 0;
+              addLinePulse(p.x);
+            }
+          }
+          if (p.y > H + 20) p.state = ST_DEAD;
+        } else if (p.state === ST_FADING_BELOW) {
+          p.y += p.vy;
+          p.fadeTimer--;
+          p.alpha = p.baseAlpha * Math.max(0, p.fadeTimer / 40);
+          if (p.fadeTimer <= 0) p.state = ST_DEAD;
+        } else if (p.state === ST_PAUSING) {
+          p.ringRadius = Math.min(12, p.ringRadius + 1.2);
+          if (p.ringRadius >= 12) p.ringAlpha = Math.max(0, p.ringAlpha - 0.03);
+          p.alpha = Math.min(0.45, p.alpha + (0.45 - p.baseAlpha) / 15);
+          p.pauseTimer--;
+          if (p.pauseTimer <= 0) {
+            p.state = ST_RISING;
+            p.tagRingAlpha = 0.2;
+            p.vy = -(0.2 + Math.random() * 0.1);
+            p.ringAlpha = 0;
+            p.ringRadius = 0;
+          }
+        } else if (p.state === ST_RISING) {
+          p.y += p.vy;
+          p.x += Math.sin((frame + p.frameOffset) * p.wobbleFreq) * 0.08;
+
+          let nearDist = 999;
+          let nearIdx = -1;
+          for (let j = 0; j < particles.length; j++) {
+            if (j === i) continue;
+            const q = particles[j];
+            if (q.state !== ST_RISING || q.col === p.col) continue;
+            if (q.mergePartner >= 0) continue;
+            const dx = q.x - p.x;
+            const dy = q.y - p.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < nearDist) { nearDist = dist; nearIdx = j; }
+          }
+          if (nearIdx >= 0 && nearDist < 120) {
+            const q = particles[nearIdx];
+            const dx = q.x - p.x;
+            p.x += Math.sign(dx) * 0.1;
+          }
+          if (p.mergePartner < 0 && nearIdx >= 0 && nearDist < 15) {
+            const q = particles[nearIdx];
+            if (q.mergePartner < 0) {
+              let merging = 0;
+              for (const pp of particles) if (pp.state === ST_MERGING || pp.state === ST_MERGED) merging++;
+              if (merging < MAX_MERGING * 2) {
+                p.mergePartner = nearIdx;
+                q.mergePartner = i;
+                p.state = ST_MERGING;
+                q.state = ST_MERGING;
+                p.mergeTimer = 10;
+                q.mergeTimer = 10;
+              }
+            }
+          }
+          if (p.y < -20) p.state = ST_DEAD;
+        } else if (p.state === ST_MERGING) {
+          const partner = p.mergePartner >= 0 ? particles[p.mergePartner] : null;
+          if (partner && partner.state === ST_MERGING) {
+            const mx = (p.x + partner.x) / 2;
+            const my = (p.y + partner.y) / 2;
+            p.x += (mx - p.x) * 0.15;
+            p.y += (my - p.y) * 0.15;
+          }
+          p.mergeTimer--;
+          if (p.mergeTimer <= 0) {
+            if (p.mergePartner >= 0) {
+              const partner2 = particles[p.mergePartner];
+              if (partner2.state === ST_MERGING) {
+                p.state = ST_MERGED;
+                p.alpha = 0.6;
+                p.r = 4.5;
+                p.vy = -0.15;
+                p.fadeTimer = 80;
+                p.tagRingAlpha = 0;
+                p.mergePartner = -1;
+                for (let s = 0; s < 5; s++) spawnSpark(p.x, p.y);
+                partner2.state = ST_DEAD;
+                partner2.mergePartner = -1;
+              }
+            }
+          }
+        } else if (p.state === ST_MERGED) {
+          p.y += p.vy;
+          p.fadeTimer--;
+          p.alpha = 0.6 * Math.max(0, p.fadeTimer / 80);
+          p.r = 4.5;
+          if (p.fadeTimer <= 0 || p.y < -20) p.state = ST_DEAD;
+        }
+      }
+
+      for (const s of sparks) {
+        if (s.life <= 0) continue;
+        s.x += s.vx;
+        s.y += s.vy;
+        s.life--;
+        s.alpha = 0.4 * (s.life / 20);
+      }
+
+      for (const a of ambients) {
+        a.x += a.vx;
+        a.y += a.vy;
+        if (a.x < -10) a.x = W + 10;
+        if (a.x > W + 10) a.x = -10;
+        if (a.y < -10) a.y = H + 10;
+        if (a.y > H + 10) a.y = -10;
+      }
+
+      for (const lp of linePulses) if (lp.timer > 0) lp.timer--;
+    }
+
+    function draw() {
+      if (!W || !H) return;
+      ctx.clearRect(0, 0, W, H);
+      const annoY = H * ANNO_Y;
+
+      for (const a of ambients) {
+        ctx.beginPath();
+        ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${AC_R},${AC_G},${AC_B},0.04)`;
+        ctx.fill();
+      }
+
+      const linePulseBase = 0.08 + 0.035 * Math.sin(frame * 0.035);
+      ctx.beginPath();
+      ctx.moveTo(0, annoY);
+      ctx.lineTo(W, annoY);
+      ctx.strokeStyle = `rgba(${AC_R},${AC_G},${AC_B},${linePulseBase})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      for (const lp of linePulses) {
+        if (lp.timer <= 0) continue;
+        const pA = 0.25 * (lp.timer / 6);
+        const grad = ctx.createRadialGradient(lp.x, annoY, 0, lp.x, annoY, 30);
+        grad.addColorStop(0, `rgba(${AC_R},${AC_G},${AC_B},${pA})`);
+        grad.addColorStop(1, `rgba(${AC_R},${AC_G},${AC_B},0)`);
+        ctx.beginPath();
+        ctx.arc(lp.x, annoY, 30, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+      }
+
+      for (const p of particles) {
+        if (p.state === ST_DEAD) continue;
+        if (p.alpha <= 0.005) continue;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${AC_R},${AC_G},${AC_B},${p.alpha})`;
+        ctx.fill();
+
+        if (p.ringAlpha > 0.01 && p.ringRadius > 0) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.ringRadius, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(${AC_R},${AC_G},${AC_B},${p.ringAlpha})`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+
+        if (p.tagRingAlpha > 0.01) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(${AC_R},${AC_G},${AC_B},${p.tagRingAlpha})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+
+        if (p.state === ST_MERGING && p.mergeTimer < 5) {
+          const flashA = 0.8 * (1 - p.mergeTimer / 5);
+          const flashR = 4 + (10 - 4) * (1 - p.mergeTimer / 5);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, flashR, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${AC_R},${AC_G},${AC_B},${flashA * 0.3})`;
+          ctx.fill();
+        }
+
+        if (p.state === ST_MERGED) {
+          const glowR = p.r * 2.5;
+          const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
+          grad.addColorStop(0, `rgba(${AC_R},${AC_G},${AC_B},${p.alpha * 0.4})`);
+          grad.addColorStop(1, `rgba(${AC_R},${AC_G},${AC_B},0)`);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, glowR, 0, Math.PI * 2);
+          ctx.fillStyle = grad;
+          ctx.fill();
+        }
+      }
+
+      for (const s of sparks) {
+        if (s.life <= 0) continue;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, 1, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${AC_R},${AC_G},${AC_B},${s.alpha})`;
+        ctx.fill();
+      }
+    }
+
+    function drawStatic() {
+      if (!W || !H) return;
+      ctx.clearRect(0, 0, W, H);
+      const annoY = H * ANNO_Y;
+
+      for (const a of ambients) {
+        ctx.beginPath();
+        ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${AC_R},${AC_G},${AC_B},0.04)`;
+        ctx.fill();
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(0, annoY);
+      ctx.lineTo(W, annoY);
+      ctx.strokeStyle = `rgba(${AC_R},${AC_G},${AC_B},0.12)`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      const staticPositions: Array<{x:number;y:number;alpha:number;r:number;ring?:boolean;tagged?:boolean;merged?:boolean}> = [
+        { x: COLUMNS[0] * W, y: annoY * 0.3, alpha: 0.15, r: 3 },
+        { x: COLUMNS[1] * W + 5, y: annoY * 0.5, alpha: 0.7, r: 3 },
+        { x: COLUMNS[2] * W - 3, y: annoY * 0.2, alpha: 0.18, r: 2.8 },
+        { x: COLUMNS[3] * W, y: annoY * 0.6, alpha: 0.14, r: 3.2 },
+        { x: COLUMNS[1] * W - 10, y: annoY, alpha: 0.35, r: 3, ring: true },
+        { x: COLUMNS[0] * W + 15, y: annoY * 0.75, alpha: 0.45, r: 3, tagged: true },
+        { x: COLUMNS[2] * W - 8, y: annoY * 0.65, alpha: 0.42, r: 3, tagged: true },
+        { x: W * 0.5, y: annoY * 0.35, alpha: 0.5, r: 4.5, merged: true },
+        { x: COLUMNS[3] * W + 2, y: annoY + 30, alpha: 0.3, r: 3 },
+      ];
+
+      for (const sp of staticPositions) {
+        ctx.beginPath();
+        ctx.arc(sp.x, sp.y, sp.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${AC_R},${AC_G},${AC_B},${sp.alpha})`;
+        ctx.fill();
+
+        if (sp.ring) {
+          ctx.beginPath();
+          ctx.arc(sp.x, sp.y, 8, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(${AC_R},${AC_G},${AC_B},0.25)`;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        }
+        if (sp.tagged) {
+          ctx.beginPath();
+          ctx.arc(sp.x, sp.y, 5, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(${AC_R},${AC_G},${AC_B},0.2)`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+        if (sp.merged) {
+          const grad = ctx.createRadialGradient(sp.x, sp.y, 0, sp.x, sp.y, 11);
+          grad.addColorStop(0, `rgba(${AC_R},${AC_G},${AC_B},0.2)`);
+          grad.addColorStop(1, `rgba(${AC_R},${AC_G},${AC_B},0)`);
+          ctx.beginPath();
+          ctx.arc(sp.x, sp.y, 11, 0, Math.PI * 2);
+          ctx.fillStyle = grad;
+          ctx.fill();
+        }
+      }
+    }
+
+    initAmbients();
+
+    function tick() {
+      if (!visible) { raf = 0; return; }
+      frame++;
+      update();
+      draw();
+      raf = requestAnimationFrame(tick);
+    }
+
+    if (prefersReduced) {
+      requestAnimationFrame(() => { initAmbients(); drawStatic(); });
+    } else {
+      raf = requestAnimationFrame(tick);
+    }
+
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      io.disconnect();
+    });
+  })();
+</script>
