@@ -124,8 +124,9 @@ const story = stories.find(s => s.slug === 'anthropic-supply-chain-ruling')!;
     color: var(--text, #e8e8e8);
     flex: 1;
   }
+  /* Lightened from --muted so it still clears 4.5:1 after the opacity dimming below. */
   .ascr-shift-quote em {
-    color: var(--muted, #888);
+    color: #b0b0b0;
   }
   .ascr-shift-label {
     font-size: 0.72rem;
@@ -136,23 +137,28 @@ const story = stories.find(s => s.slug === 'anthropic-supply-chain-ruling')!;
     border-radius: 3px;
     width: fit-content;
   }
+  /* Non-colour cue for the narrowing progression (WCAG 1.4.1) */
+  .ascr-shift-label::before {
+    content: attr(data-tier) " · ";
+    opacity: 1;
+  }
   .ascr-shift-col:nth-child(1) .ascr-shift-label {
-    background: rgba(255, 77, 77, 0.15);
+    background: rgba(255, 77, 77, 0.10);
     color: var(--accent, #ff4d4d);
   }
   .ascr-shift-col:nth-child(2) .ascr-shift-label {
-    background: rgba(194, 112, 78, 0.15);
+    background: rgba(194, 112, 78, 0.10);
     color: var(--story, #c2704e);
   }
   .ascr-shift-col:nth-child(3) .ascr-shift-label {
-    background: rgba(136, 136, 136, 0.15);
-    color: var(--muted, #888);
+    background: rgba(160, 160, 160, 0.10);
+    color: #a0a0a0;
   }
   .ascr-shift-shrink .ascr-shift-quote {
-    opacity: 0.8;
+    opacity: 0.85;
   }
   .ascr-shift-smallest .ascr-shift-quote {
-    opacity: 0.65;
+    opacity: 0.75;
   }
   .ascr-shift-footer {
     grid-column: 1 / -1;
@@ -165,6 +171,13 @@ const story = stories.find(s => s.slug === 'anthropic-supply-chain-ruling')!;
   @media (max-width: 700px) {
     .ascr-shift-wrap {
       grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 520px) {
+    .ascr-memo-gap {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.4rem;
     }
   }
 
@@ -227,10 +240,30 @@ const story = stories.find(s => s.slug === 'anthropic-supply-chain-ruling')!;
   .ascr-statute-footer strong {
     color: var(--story, #c2704e);
   }
+  .ascr-statute-cell::before {
+    display: none;
+  }
   @media (max-width: 700px) {
     .ascr-statute-headers,
     .ascr-statute-row {
       grid-template-columns: 1fr;
+    }
+    /* Column headers no longer sit above their cells once stacked, so each cell
+       carries its own visible label (WCAG 1.3.1 / 1.4.10). */
+    .ascr-statute-headers {
+      display: none;
+    }
+    .ascr-statute-cell::before {
+      content: attr(data-col);
+      display: block;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.65rem;
+      font-weight: 700;
+      font-style: normal;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #a0a0a0;
+      margin-bottom: 0.35rem;
     }
     .ascr-statute-cell.ascr-statute-right {
       border-left: 3px solid var(--story, #c2704e);
@@ -305,17 +338,17 @@ const story = stories.find(s => s.slug === 'anthropic-supply-chain-ruling')!;
         <div class="ascr-shift-col">
           <div class="ascr-shift-date">March 17 Declaration</div>
           <div class="ascr-shift-quote">"reasonably likely that Anthropic's leadership would alter or even shut off DoW's use of Claude . . . before or during a military operation."</div>
-          <div class="ascr-shift-label">Real-time interference</div>
+          <div class="ascr-shift-label" data-tier="Broadest">Real-time interference</div>
         </div>
         <div class="ascr-shift-col ascr-shift-shrink">
           <div class="ascr-shift-date">March 24 Declaration</div>
           <div class="ascr-shift-quote"><em>[Claim abandoned.]</em> Discusses only "the risk inherent in model updates."</div>
-          <div class="ascr-shift-label">Model poisoning</div>
+          <div class="ascr-shift-label" data-tier="Narrowed">Model poisoning</div>
         </div>
         <div class="ascr-shift-col ascr-shift-smallest">
           <div class="ascr-shift-date">Summary Judgment</div>
           <div class="ascr-shift-quote">"Anthropic's technology is itself no riskier to the national security than any other 'black box' artificial intelligence model."</div>
-          <div class="ascr-shift-label">Public criticism</div>
+          <div class="ascr-shift-label" data-tier="Narrowest">Public criticism</div>
         </div>
         <div class="ascr-shift-footer">Within seven days, the government's core claim shrank from real-time interference to model updates. By summary judgment, the only factor unique to Anthropic was public criticism.</div>
       </div>
@@ -335,20 +368,20 @@ const story = stories.find(s => s.slug === 'anthropic-supply-chain-ruling')!;
           <div class="ascr-statute-header ascr-statute-right">What Anthropic Did</div>
         </div>
         <div class="ascr-statute-row">
-          <div class="ascr-statute-cell ascr-statute-left">"an adversary may sabotage"</div>
-          <div class="ascr-statute-cell ascr-statute-right">Publicly declined contract terms</div>
+          <div class="ascr-statute-cell ascr-statute-left" data-col="Statute — 10 U.S.C. § 3252(d)(4)">"an adversary may sabotage"</div>
+          <div class="ascr-statute-cell ascr-statute-right" data-col="What Anthropic Did">Publicly declined contract terms</div>
         </div>
         <div class="ascr-statute-row">
-          <div class="ascr-statute-cell ascr-statute-left">"maliciously introduce unwanted function"</div>
-          <div class="ascr-statute-cell ascr-statute-right">Published essay advocating AI safety guardrails</div>
+          <div class="ascr-statute-cell ascr-statute-left" data-col="Statute — 10 U.S.C. § 3252(d)(4)">"maliciously introduce unwanted function"</div>
+          <div class="ascr-statute-cell ascr-statute-right" data-col="What Anthropic Did">Published essay advocating AI safety guardrails</div>
         </div>
         <div class="ascr-statute-row">
-          <div class="ascr-statute-cell ascr-statute-left">"otherwise subvert the design, integrity . . . of a system"</div>
-          <div class="ascr-statute-cell ascr-statute-right">Spoke to the press about military AI policy</div>
+          <div class="ascr-statute-cell ascr-statute-left" data-col="Statute — 10 U.S.C. § 3252(d)(4)">"otherwise subvert the design, integrity . . . of a system"</div>
+          <div class="ascr-statute-cell ascr-statute-right" data-col="What Anthropic Did">Spoke to the press about military AI policy</div>
         </div>
         <div class="ascr-statute-row">
-          <div class="ascr-statute-cell ascr-statute-left">"so as to surveil, deny, disrupt, or otherwise degrade"</div>
-          <div class="ascr-statute-cell ascr-statute-right">Asked DoW to call before exceeding usage redlines</div>
+          <div class="ascr-statute-cell ascr-statute-left" data-col="Statute — 10 U.S.C. § 3252(d)(4)">"so as to surveil, deny, disrupt, or otherwise degrade"</div>
+          <div class="ascr-statute-cell ascr-statute-right" data-col="What Anthropic Did">Asked DoW to call before exceeding usage redlines</div>
         </div>
         <div class="ascr-statute-footer"><strong>Court finding:</strong> "The plain text of the statute is directed at covert acts or hacks, not overt, public positions regarding contract terms."</div>
       </div>
