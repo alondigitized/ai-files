@@ -1,0 +1,763 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'openai-nyt-discovery-sanctions')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .openai-nyt-discovery-sanctions-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* ── RE-1 · Docket ledger ───────────────────────────────────── */
+  .onds-dkt {
+    margin: 2.25rem 0;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 4px;
+    overflow: hidden;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .onds-dkt-head {
+    padding: 0.7rem 1rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.66rem;
+    line-height: 1.5;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .onds-dkt-row {
+    display: grid;
+    grid-template-columns: 96px 132px 1fr;
+    gap: 1rem;
+    align-items: baseline;
+    padding: 0.8rem 1rem;
+    border-top: 1px solid var(--border);
+  }
+  .onds-dkt-row:first-of-type { border-top: none; }
+  .onds-dkt-row.onds-dkt-turn { background: color-mix(in srgb, var(--story) 8%, transparent); }
+  .onds-dkt-date { font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+  .onds-dkt-num { font-size: 0.72rem; color: var(--story); white-space: nowrap; }
+  .onds-dkt-act { font-size: 0.82rem; line-height: 1.55; color: var(--text); }
+  .onds-dkt-foot {
+    padding: 0.65rem 1rem;
+    border-top: 1px solid var(--border);
+    background: var(--surface2);
+    font-size: 0.66rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  @media (max-width: 640px) {
+    .onds-dkt-row { grid-template-columns: 1fr; gap: 0.2rem; }
+  }
+
+  /* ── RE-2 · Query console ───────────────────────────────────── */
+  .onds-qry {
+    margin: 2.25rem 0 0.75rem;
+    border: 1px solid var(--border);
+    background: #0a0a0a;
+    border-radius: 4px;
+    overflow: hidden;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.8rem;
+  }
+  .onds-qry-store {
+    padding: 0.8rem 1rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+    line-height: 1.6;
+    font-size: 0.72rem;
+  }
+  .onds-qry-panel { padding: 0.9rem 1rem; border-top: 1px solid var(--border); }
+  .onds-qry-panel:first-of-type { border-top: none; }
+  .onds-qry-k {
+    display: inline-block;
+    min-width: 3.4em;
+    color: var(--story);
+    letter-spacing: 0.08em;
+  }
+  .onds-qry-line { color: var(--text); line-height: 1.7; word-break: break-word; }
+  .onds-qry-res {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    align-items: center;
+    margin-top: 0.45rem;
+    padding-left: 3.4em;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .onds-qry-chip {
+    margin-left: auto;
+    padding: 0.18rem 0.6rem;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+    font-size: 0.64rem;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+  }
+  .onds-qry-ok { color: var(--green); }
+  .onds-qry-no { color: var(--accent); }
+  .onds-cap {
+    margin: 0 0 2.25rem;
+    font-size: 0.74rem;
+    line-height: 1.6;
+    color: var(--muted);
+    font-style: italic;
+  }
+  @media (max-width: 640px) {
+    .onds-qry-res { padding-left: 0; }
+    .onds-qry-chip { margin-left: 0; }
+  }
+
+  /* ── RE-3 · Sealed-filing card ──────────────────────────────── */
+  .onds-seal {
+    position: relative;
+    margin: 2.25rem 0;
+    padding: 1.25rem 1.35rem 1rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .onds-seal-cap {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.66rem;
+    line-height: 1.7;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid var(--border);
+    max-width: 78%;
+  }
+  .onds-seal-stamp {
+    position: absolute;
+    top: 1.05rem;
+    right: 1rem;
+    transform: rotate(-7deg);
+    padding: 0.25rem 0.7rem;
+    border: 2px solid var(--accent);
+    border-radius: 3px;
+    color: var(--accent);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    opacity: 0.85;
+  }
+  .onds-seal-bars { margin: 1.1rem 0 0; }
+  .onds-seal-para { margin-bottom: 0.95rem; }
+  .onds-seal-bar {
+    display: block;
+    height: 0.62rem;
+    margin-bottom: 0.42rem;
+    border-radius: 2px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+  }
+  .onds-seal-w96 { width: 96%; }
+  .onds-seal-w88 { width: 88%; }
+  .onds-seal-w74 { width: 74%; }
+  .onds-seal-w62 { width: 62%; }
+  .onds-seal-w45 { width: 45%; }
+  .onds-seal-w31 { width: 31%; }
+  .onds-seal-open {
+    margin: 1.4rem 0 0.5rem;
+    padding: 0.9rem 1rem;
+    border-left: 2px solid var(--story);
+    background: color-mix(in srgb, var(--story) 6%, transparent);
+    color: var(--text);
+    font-size: 0.92rem;
+    line-height: 1.65;
+  }
+  .onds-seal-attr {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 1.1rem;
+  }
+  .onds-seal-foot {
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--border);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  @media (max-width: 640px) {
+    .onds-seal-cap { max-width: 100%; padding-right: 0; }
+    .onds-seal-stamp { position: static; display: inline-block; transform: none; margin-bottom: 0.8rem; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="intro">
+      <h2><span class="num">01 — Context</span>The Offer</h2>
+      <p>As of January 2025, OpenAI's data warehouse held more than 50 billion ChatGPT conversations. OpenAI can locate records in it by user and date; it has told a federal court it cannot readily search that corpus for a phrase.</p>
+      <p>Both of those statements come from the same document: OpenAI's brief in opposition to a motion for sanctions, filed under seal on 13 August 2026 and docketed in public redacted form on 14 August 2026 as Dkt. 1673. Everything in this story attributed to OpenAI comes from that fifty-page brief unless another source is named.</p>
+      <p>The proceeding is In re: OpenAI, Inc., Copyright Infringement Litigation, No. 25-md-3143, in the Southern District of New York, before District Judge Sidney H. Stein and Magistrate Judge Ona T. Wang. "News Plaintiffs" is the court's own defined term for the plaintiffs in five consolidated cases, the first of which is The New York Times Company's, filed in December 2023. A separate group, "Class Plaintiffs," covers five more.</p>
+      <p>The fight that produced the brief is about a sample of twenty million ChatGPT conversation logs. That number did not come from the publishers. It came from OpenAI. Judge Stein's own recital of the discovery history records what happened — the one place in this story where the source is a neutral third party rather than a litigant. In July 2025 News Plaintiffs moved to compel a sample of 120 million logs. OpenAI opposed that motion by noting it "ha[d] . . . proffered a 20 million conversation sample[,] . . . [which] is surely more than enough to conduct appropriate analyses relevant to Plaintiff's claim." News Plaintiffs accepted that proposal on 11 August 2025, while preserving their request for the larger sample.</p>
+      <p>One condition governs everything below. The publishers' motion for sanctions and its supporting memorandum were filed under seal on 9 July 2026, and as of publication no public redacted version of either exists. OpenAI's opposition is public. The publishers' reply is not due until 10 September 2026 — fifteen days after this piece was published. So the plaintiffs' argument reaches this page only through their opponent's brief, in fragments their opponent selected for rebuttal, and the publishers have had no public opportunity to answer the characterisations quoted here. No court has ruled on the motion. Where a sentence describes what the plaintiffs argue, it names the document the words came from. That is not decoration. It is the limit of what anyone outside the case can currently know.</p>
+    </section>
+
+    <section class="section" id="reversal">
+      <h2><span class="num">02 — What Happened</span>The Reversal</h2>
+      <p>On 14 October 2025, OpenAI informed News Plaintiffs that it would not produce the entirety of the twenty-million-log sample it had itself proffered. It proposed instead to run search terms across the sample and produce only the conversations implicating the plaintiffs' works, arguing this would better protect user privacy. News Plaintiffs moved to compel the full sample the next day.</p>
+      <p>Judge Wang granted that motion on 7 November 2025 and ordered the entire de-identified sample produced. She denied reconsideration on 2 December, holding that even output logs that do not contain reproductions of the plaintiffs' works "may still be relevant to OpenAI's fair use defense" — the court's stated reason for a discovery ruling, and the only point at which fair use enters this story. She found users' privacy interests "sincere" and "one factor in the proportionality analysis," but adequately addressed by three things: reducing the logs subject to discovery from tens of billions to twenty million, OpenAI's de-identification, and the protective order. On 5 December she extended the production to Class Plaintiffs.</p>
+      <p>Judge Stein affirmed on 5 January 2026. Wang's orders were "neither clearly erroneous nor contrary to law." He distinguished OpenAI's principal authority, <em>S.E.C. v. Rajaratnam</em>, on the ground that the privacy interest in a wiretapped phone call is not the privacy interest in "users' conversations with ChatGPT which users voluntarily disclosed to OpenAI and which OpenAI retains in the normal course of its business," and noted that "no party here contends that OpenAI illegally possesses the ChatGPT conversation logs." He rejected the least-burdensome-search argument outright: "OpenAI identifies no caselaw requiring a court to order the least burdensome discovery possible."</p>
+      <div class="onds-dkt">
+        <div class="onds-dkt-head">In re: OpenAI, Inc. Copyright Infringement Litigation · No. 1:25-md-03143 (S.D.N.Y.)</div>
+        <div class="onds-dkt-row">
+          <div class="onds-dkt-date">Jul 2025</div>
+          <div class="onds-dkt-num">Dkt. 436</div>
+          <div class="onds-dkt-act">OpenAI opposes a 120M-log sample and proffers 20M as "surely more than enough"</div>
+        </div>
+        <div class="onds-dkt-row">
+          <div class="onds-dkt-date">11 Aug 2025</div>
+          <div class="onds-dkt-num">—</div>
+          <div class="onds-dkt-act">News Plaintiffs accept the 20M proposal</div>
+        </div>
+        <div class="onds-dkt-row onds-dkt-turn">
+          <div class="onds-dkt-date">14 Oct 2025</div>
+          <div class="onds-dkt-num">—</div>
+          <div class="onds-dkt-act">OpenAI informs plaintiffs it will not produce the entirety of the 20M sample</div>
+        </div>
+        <div class="onds-dkt-row">
+          <div class="onds-dkt-date">15 Oct 2025</div>
+          <div class="onds-dkt-num">Dkt. 656</div>
+          <div class="onds-dkt-act">News Plaintiffs move to compel</div>
+        </div>
+        <div class="onds-dkt-row">
+          <div class="onds-dkt-date">7 Nov 2025</div>
+          <div class="onds-dkt-num">Dkt. 734</div>
+          <div class="onds-dkt-act">Wang orders the full de-identified 20M sample produced</div>
+        </div>
+        <div class="onds-dkt-row">
+          <div class="onds-dkt-date">2 Dec 2025</div>
+          <div class="onds-dkt-num">Dkt. 896</div>
+          <div class="onds-dkt-act">Reconsideration denied — non-reproducing logs "may still be relevant"</div>
+        </div>
+        <div class="onds-dkt-row">
+          <div class="onds-dkt-date">5 Jan 2026</div>
+          <div class="onds-dkt-num">MDL Dkt. 1021</div>
+          <div class="onds-dkt-act">Stein affirms: "neither clearly erroneous nor contrary to law"</div>
+        </div>
+        <div class="onds-dkt-foot">Proffered in July, withdrawn in October · Sources: Judge Stein's order of 5 January 2026 and the MDL docket</div>
+      </div>
+      <p>OpenAI produced the twenty-million-log Merits Sample on 14 December 2025, de-identified by an automated system. The plaintiffs objected to the extent of the redactions; Judge Wang ordered OpenAI to reduce them, and OpenAI re-produced the sample by 22 January 2026. The plaintiffs' word for OpenAI's productions, as quoted in OpenAI's opposition brief, is "unusable." OpenAI's answer sits in the same passage: "Since then, News Plaintiffs have not identified any specific redaction that they think is overzealous."</p>
+      <p>One other dispute inside the sample matters. As quoted in OpenAI's brief, the plaintiffs allege that roughly 5% of the sample logs were substituted. OpenAI's account of that 5%, in the same brief: those logs were the subject of manual deletion requests by ChatGPT users in the window between the initial identifier list and the plaintiffs' August 2025 selection, and "News Plaintiffs elected to have OpenAI select replacement logs 'at random' rather than undertake to select replacement logs themselves." OpenAI states a court-ordered sampling exercise showed the substitution did not bias the sample in any statistically significant way. Nothing about this has been decided.</p>
+      <p>News Plaintiffs filed the motion for sanctions on 9 July 2026, under seal, with thirty-one exhibits including deposition transcripts. Ian B. Crosby of Susman Godfrey, counsel for the Times, said on the record that day: "If OpenAI genuinely believed that copying our clients' journalism was fair and legal, it wouldn't have hid the truth about having done it." OpenAI spokesperson Drew Pusateri called the accusations "blatantly false allegations." Both quotes are as reported by TechCrunch. Microsoft filed a separate response on 13 August 2026; OpenAI's opposition followed on 13 and 14 August. No court has ruled on any of it.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="openai-nyt-discovery-sanctions-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Axis</strong> — A dense field of dim points; a scan line sweeps one way and the field snaps instantly into addressable lanes, one point flaring bright: found. The line rotates ninety degrees and sweeps again — the same points jitter, smear and refuse to sort, and the scan stalls partway across and dissolves without ever finding anything.</p>
+
+
+    <section class="section" id="mechanism">
+      <h2><span class="num">03 — The Mechanism</span>Two Shapes of Question</h2>
+      <p>Start with the output logs, in OpenAI's own words. Compressed conversation data "cannot be searched without first decompressing the data," and, OpenAI told the court, "it would be infeasible to decompress 50 billion or more chat logs." In a footnote: "Even transiently decompressing each of the 50+ billion compressed output logs for search purposes would be an extreme undertaking." OpenAI's characterisation of what it told the court, and what it maintains: it "could not (and cannot) readily search billions of compressed chat logs stored in OpenAI's data warehouse."</p>
+      <p>And then, on page seven of the same brief:</p>
+      <blockquote class="pull-quote">"OpenAI can, however, locate chat records based on 'user and date' information."</blockquote>
+      <p>That sentence is the story. What follows is this publication's reading of it — not a finding by any court, not a claim in any source. The warehouse is exhaustively addressable along the axes an operating business requires — account, session, date — and along no other. Customer support needs to retrieve one user's chat. A deletion request needs to find one user's records. Retention costs demand compression, so compression happened. Nobody wrote a memo choosing to be unsearchable by content; the index that exists is the index the business had a reason to build, and the corpus has a hard surface exactly where a business question grips it and no surface anywhere else. Nothing about this configuration is unusual. Almost every large consumer system is built this way. That is the point.</p>
+      <div class="onds-qry">
+        <div class="onds-qry-store"><span class="onds-qry-k">STORE</span> consumer conversation warehouse · 50,000,000,000+ records · compressed</div>
+        <div class="onds-qry-panel">
+          <div class="onds-qry-line"><span class="onds-qry-k">Q1</span> locate record WHERE user = ⟨id⟩ AND date = ⟨date⟩</div>
+          <div class="onds-qry-res"><span>→ 1 record located</span><span class="onds-qry-chip onds-qry-ok">RESOLVED</span></div>
+        </div>
+        <div class="onds-qry-panel">
+          <div class="onds-qry-line"><span class="onds-qry-k">Q2</span> locate records WHERE text CONTAINS ⟨phrase⟩</div>
+          <div class="onds-qry-res"><span>→ requires decompression of 50,000,000,000+ records</span><span class="onds-qry-chip onds-qry-no">NO INDEX</span></div>
+        </div>
+      </div>
+      <p class="onds-cap">An illustration of two query shapes, drawn from OpenAI's opposition brief at pp. 7, 13 and 14. Not a screenshot, not real system output, and not a depiction of any user's conversation.</p>
+      <p>The training-data side is a different technical problem with the same shape. The representation the plaintiffs attack dates to a hearing of 12 September 2024, and reaches the public record only as OpenAI's brief quoting the plaintiffs quoting a sealed transcript exhibit. As quoted there, OpenAI told the court it did "not currently have tools to search [all of its training datasets] efficiently," that such a search would take "a very long time," and that "[P]laintiffs would have to develop their own tool to do the search." The bracket is OpenAI's own. It matters, because OpenAI's brief also names the audience: the statement answered a request from a different plaintiff group, the Books Plaintiffs, who had asked OpenAI to determine whether <em>any</em> content from 300-plus books appeared in <em>any</em> of its training datasets. And roughly one transcript page later, per the same brief, OpenAI said it could search training data for "particular phrases," but not for entire books "without some input from plaintiffs" about what to search for.</p>
+      <p>OpenAI's framing of all of this is scope and resources, not impossibility, and it says so in terms: "OpenAI also disclosed to the Court that it had <em>some</em> existing capacity to search its training data and even offered to run Plaintiffs' searches for them. That OpenAI's existing tools could not execute the hundreds of systematic searches Plaintiffs demanded across all training datasets and all output logs is not a misrepresentation—it is a technical reality." That position is untested. The publishers' reply is not due until 10 September 2026, and no court has evaluated it.</p>
+      <p>What the tooling actually was, again per OpenAI's brief: an internal anti-regurgitation programme labelled Project Giraffe, running since 2022, one component of which is a Bloom filter that takes n-grams — short runs of consecutive words — found in certain copyrighted works and builds a block list preventing OpenAI's products from repeating those word sequences, subject to an allow list of common n-grams. In late 2023 and early 2024, content from the plaintiffs' websites was added to that filter. In addition to Project Giraffe — the two are separate efforts and the brief keeps them separate — OpenAI ran what it calls the NYT Recall Pipeline: search a Common Crawl-derived training dataset for New York Times URLs, reduce the resulting content to n-grams, and match those n-grams across what the brief calls "a rough-and-ready sample of 78 million conversations." OpenAI says it ran "several dozen evals like this."</p>
+      <p>The Recall Pipeline began in May 2023, seven months before the Times filed suit. OpenAI's brief does not draw that connection; this story is drawing it, and the inference does not survive on its own. Three answers arrive in the same brief. The pipeline searched one training dataset for one thing against a rough-and-ready sample. "Project Giraffe" had been a discovery search term since 2024, and "Plaintiffs have known what Project Giraffe is." And the load-bearing fact for OpenAI's defence: "Underscoring that OpenAI did not hide the ball, OpenAI ultimately ran the <em>same</em> search of Common Crawl for News Plaintiffs that OpenAI had used for the NYT Recall Pipeline."</p>
+      <p>A second fact cuts the same way. OpenAI hosted its training data on a secure machine at its counsel's offices, supplied the compute at its own expense, and supplied engineers when the plaintiffs' code "overwhelmed and crashed the file system." OpenAI's characterisation: "the inspection protocol was a success: it enabled Plaintiffs to search OpenAI's training data for their works." Note what that concedes in both directions. The corpus was made searchable — by hand, by the opposing party, on borrowed hardware in a lawyer's office, one query at a time.</p>
+      <p>The deposition at the centre of the dispute is that of Vinnie Monaco, an OpenAI data privacy engineer, taken in two sittings on 27 January and 8 April 2026, the second after the court ordered additional time to re-examine him on Project Giraffe. The chain is worth stating plainly: nearly every detail above about Project Giraffe and the Recall Pipeline reaches the public as OpenAI's brief quoting sealed deposition testimony that was attached as the <em>plaintiffs'</em> exhibits — the exception being the "rough-and-ready" characterisation of the 78-million sample, which the brief takes from a declaration OpenAI filed on its own behalf. Nobody outside the case has read the transcript. OpenAI's position on it is one sentence: "Nothing in Mr. Monaco's testimony contradicts OpenAI's representations that the methodical and careful analysis of training data and output logs that Plaintiffs requested in discovery is a technically difficult and expensive endeavor."</p>
+    </section>
+
+    <section class="section" id="relief">
+      <h2><span class="num">04 — Consequence</span>What Is Actually Being Asked For</h2>
+      <p>As OpenAI's opposition brief characterises the motion, the publishers seek five categories of relief: preclusion of the Merits Sample under Rule 37(b) or, alternatively, Rule 37(e)(1); established-fact sanctions under Rule 37; a finding of intent to deprive under Rule 37(e)(2); relief under the court's inherent authority; and attorneys' fees. The precise structure of the motion cannot be confirmed from a sealed filing. OpenAI's own footnote describes one predicate as resting on a "passing assertion," which suggests the pleading is looser than a clean five-part list — and that is as far as the public record goes.</p>
+      <p>The clause that makes the whole fight legible is the finding the publishers ask the court to enter. As OpenAI's brief quotes it, from page 33 of the motion: that ChatGPT's output logs "include (or would have shown if properly produced in discovery) substantial and systematic grounding on and regurgitation of News Plaintiffs' copyrighted material in user outputs," together with an order barring OpenAI from arguing otherwise. Stripped of the procedure: the publishers are asking a court to treat as established what the corpus could not be made to say.</p>
+      <div class="onds-seal">
+        <span class="onds-seal-stamp">SEALED</span>
+        <div class="onds-seal-cap">News Plaintiffs' Motion for Sanctions Against OpenAI · MDL Dkt. 1616–1618 · Filed under seal 9 July 2026 · 31 exhibits</div>
+        <div class="onds-seal-bars" aria-hidden="true">
+          <div class="onds-seal-para">
+            <span class="onds-seal-bar onds-seal-w96"></span>
+            <span class="onds-seal-bar onds-seal-w88"></span>
+            <span class="onds-seal-bar onds-seal-w74"></span>
+            <span class="onds-seal-bar onds-seal-w45"></span>
+          </div>
+          <div class="onds-seal-para">
+            <span class="onds-seal-bar onds-seal-w88"></span>
+            <span class="onds-seal-bar onds-seal-w96"></span>
+            <span class="onds-seal-bar onds-seal-w62"></span>
+          </div>
+        </div>
+        <blockquote class="onds-seal-open">"…substantial and systematic grounding on and regurgitation of News Plaintiffs' copyrighted material in user outputs."</blockquote>
+        <div class="onds-seal-attr">Quoted in OpenAI's opposition brief, Dkt. 1673, from the motion at 33 — the motion itself remains sealed</div>
+        <div class="onds-seal-bars" aria-hidden="true">
+          <div class="onds-seal-para">
+            <span class="onds-seal-bar onds-seal-w96"></span>
+            <span class="onds-seal-bar onds-seal-w74"></span>
+            <span class="onds-seal-bar onds-seal-w88"></span>
+            <span class="onds-seal-bar onds-seal-w31"></span>
+          </div>
+          <div class="onds-seal-para">
+            <span class="onds-seal-bar onds-seal-w62"></span>
+            <span class="onds-seal-bar onds-seal-w96"></span>
+            <span class="onds-seal-bar onds-seal-w45"></span>
+          </div>
+        </div>
+        <div class="onds-seal-foot">News Plaintiffs' reply due 10 September 2026</div>
+      </div>
+      <p>OpenAI's counter, in its own words: "Plaintiffs' motion asks the Court to preclude OpenAI from relying on the very Merits Sample that both sides and the Court spent eight months collaboratively designing; to enter sweeping factual findings; and to award attorneys' fees for ordinary litigation activity." It offers a motive theory — "fact discovery has revealed <em>no evidence</em> whatsoever to support Plaintiffs' allegations that ChatGPT systematically reproduced Plaintiffs' work" — and argues that preclusion would be greater than necessary to cure any prejudice, because it "would also eliminate the <em>only</em> representative dataset available to either side on the central regurgitation issue in this case." The plaintiffs' structural answer is visible in the shape of what they requested: the words "would have shown if properly produced in discovery" locate the absence of evidence inside the conduct they complain of.</p>
+      <p>Microsoft is a co-defendant, is not itself a target of the motion, and opposed the requested evidentiary sanctions anyway — while taking no position on anything else in the motion. Its response, filed 13 August 2026, cites "the significant risk of spillover prejudice to Microsoft": "there is essentially no way to effectively instruct a jury to apply the requested adverse inference and evidentiary sanctions only with respect to OpenAI," and it argues, quoting the Second Circuit on spillover in derivative-liability cases, that where limiting instructions cannot cure the prejudice there is "an overwhelming probability that the jury will be called upon to perform humanly impossible feats of mental dexterity." It is the only independent, non-OpenAI voice on the public record about what these sanctions would actually do.</p>
+      <p>Then the calendar, and the void. The reply is due 10 September 2026. No hearing on the sanctions motion appears on the docket, and there is no public indication whether Judge Stein or Judge Wang will decide it, or whether it will go on the papers. The rest of the case moves on its own schedule: on 6 August 2026 the court dismissed the publishers' "material contribution" contributory infringement and trademark dilution claims, and Daubert motions — the challenges to each side's expert witnesses — are due 24 September 2026.</p>
+      <p>One more thing the public cannot see. Key figures in OpenAI's brief are redacted — the compressed byte size of the warehouse, the proportion of users who delete their chats, the proportion who use Temporary Chat. The magnitude of the deletion problem underlying half this dispute is not publicly quantifiable, and this story does not attempt to quantify it.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">05 — Signal</span>No Model Card Says This</h2>
+      <p>Every technical fact in Section 03 became public in a fifty-page adversarial brief filed in a discovery fight. Project Giraffe. The Bloom filter and its allow list. The NYT Recall Pipeline. The rough-and-ready 78-million-conversation sample. The 50-billion-conversation warehouse, the compression regime, and the user-and-date index. None of it appeared in a model card, a system card, or a transparency report. OpenAI's own public page on the Times' data demands argues privacy — the demand is "a sweeping and unnecessary demand" and "an overreach by the New York Times" — and contains no discussion of de-identification and no statement about what OpenAI can or cannot search. Judge Stein's answer on the privacy framing is already in the record: users "voluntarily disclosed" these conversations to OpenAI, which "retains [them] in the normal course of its business."</p>
+      <p>There is no published technical account — from OpenAI or from any other frontier lab — of what training-corpus search tooling it maintains, how its datasets are indexed, or what a comprehensive cross-dataset index would cost to build. OpenAI's brief asserts its tools could not execute the searches demanded. It offers no engineering detail in the public version, and the supporting expert declarations are not public. The assertion cannot currently be checked by anyone who is not in the case.</p>
+      <p>What the open literature does establish is narrower than it first appears, and the boundary is worth drawing precisely. Exhaustive exact-match n-gram search over a multi-trillion-token corpus is a published, open-source, real-time capability: infini-gram builds a suffix-array index over five trillion tokens at roughly seven bytes per token and answers arbitrary-length n-gram queries in about twenty milliseconds, and OLMoTrace, shipped in April 2025, traces model outputs back to verbatim matches in full multi-trillion-token training data and returns results in seconds. This publication's reading — not a finding by those authors and not a claim about this case — is that the technique OpenAI describes using in the Recall Pipeline, locating the work in the corpus and reducing it to n-grams to match against outputs, belongs to that same family. The qualification is decisive: those systems index curated, public, homogeneous research corpora assembled for exactly this purpose — Dolma, RedPajama, the Pile, C4 — and no published work prices the equivalent index over a proprietary, heterogeneous, hundreds-of-terabytes frontier corpus with incomplete metadata, which is the situation OpenAI describes. The gap is real. Nothing in that literature shows OpenAI could have done what was demanded, nothing in it makes OpenAI's burden claim false, and none of it touches the output logs at all: 50 billion compressed logs is a decompression problem, not an indexing problem, and treating them as the same thing is a category error.</p>
+      <p>One of these judges will decide whether OpenAI's representations warrant sanctions. Neither outcome builds an index. The publishers have asked a court to treat as established what a corpus could not be made to say; OpenAI has answered that the corpus was never built to be asked. Both may be right. No rule anywhere requires that the next one be built differently, and nobody is currently drafting one.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvasEl = document.querySelector('.openai-nyt-discovery-sanctions-canvas') as HTMLCanvasElement | null;
+  if (!canvasEl) return;
+  const cv: HTMLCanvasElement = canvasEl;
+  const context = cv.getContext('2d');
+  if (!context) return;
+  const g: CanvasRenderingContext2D = context;
+
+  // ── Palette (read from CSS custom properties, never hardcoded) ──────────────
+  const HEX_RE = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+
+  function parseHex(raw: string, fallback: [number, number, number]): [number, number, number] {
+    const v = (raw || '').trim();
+    if (!HEX_RE.test(v)) return fallback;
+    let h = v.slice(1);
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    const r = parseInt(h.slice(0, 2), 16);
+    const gg = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    if (!Number.isFinite(r) || !Number.isFinite(gg) || !Number.isFinite(b)) return fallback;
+    return [r, gg, b];
+  }
+
+  const rootStyle = getComputedStyle(document.documentElement);
+  const BG = parseHex(rootStyle.getPropertyValue('--bg'), [13, 13, 13]);
+  const AC = parseHex(rootStyle.getPropertyValue('--story'), [103, 232, 249]);
+  const SD = parseHex(rootStyle.getPropertyValue('--story-dark'), [11, 47, 61]);
+
+  const BG_CSS = `rgb(${BG[0]},${BG[1]},${BG[2]})`;
+
+  function clamp(v: number, lo: number, hi: number) { return v < lo ? lo : v > hi ? hi : v; }
+  function clamp01(v: number) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+
+  function accent(a: number) { return `rgba(${AC[0]},${AC[1]},${AC[2]},${clamp01(a)})`; }
+  function dim(a: number) { return `rgba(232,232,232,${clamp01(a)})`; }
+  // Desaturating accent: mixes toward neutral grey as `d` goes 0 → 1
+  function fading(a: number, d: number) {
+    const k = clamp01(d);
+    const r = Math.round(AC[0] + (128 - AC[0]) * k);
+    const gg = Math.round(AC[1] + (128 - AC[1]) * k);
+    const b = Math.round(AC[2] + (128 - AC[2]) * k);
+    return `rgba(${r},${gg},${b},${clamp01(a)})`;
+  }
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ── Phase thresholds (frames @60fps) ───────────────────────────────────────
+  const P_A = 330;              // horizontal resolve
+  const P_B = P_A + 120;        // 450  — hold resolved
+  const P_C = P_B + 120;        // 570  — rotation / lane decay
+  const P_D = P_C + 450;        // 1020 — vertical attempt (incl. ~2s stall)
+  const P_E = P_D + 240;        // 1260 — dissolve + reset
+  const CYCLE = P_E;            // ≈21s
+
+  const N = 70;                 // pre-allocated points (cap 75)
+  const LANES = 9;
+  const COLS = 11;
+
+  interface Pt {
+    onx: number; ony: number;   // origin (normalised 0..1)
+    ph: number;                 // noise phase offset
+    lane: number;               // fixed row assignment
+    r: number;                  // radius
+    base: number;               // base alpha
+    res: number;                // 0 = free, 1 = snapped to lane
+  }
+
+  const pts: Pt[] = [];
+  const candidates: number[] = [];
+  let foundIdx = 0;
+  let flareStart = -1;
+  let cycleCount = 0;
+
+  for (let i = 0; i < N; i++) {
+    const ony = Math.random();
+    const onx = Math.random();
+    pts.push({
+      onx, ony,
+      ph: Math.random() * Math.PI * 2,
+      lane: clamp(Math.floor(ony * LANES), 0, LANES - 1),
+      r: 1.15 + Math.random() * 0.95,
+      base: 0.05 + Math.random() * 0.04,
+      res: 0
+    });
+    if (onx > 0.54 && onx < 0.80) candidates.push(i);
+  }
+  if (candidates.length === 0) candidates.push(Math.floor(N / 2));
+  foundIdx = candidates[0];
+
+  // ── Render state (mutated by update, consumed by draw) ─────────────────────
+  let W = 0, H = 0, frame = 0, rafId = 0;
+  let sweepX = -40, hAlpha = 0;
+  let sweepY = -40, vAlpha = 0, vDesat = 0;
+  let laneAlpha = 0, laneFillX = 0, colAlpha = 0, jitter = 0;
+  let flare = 0;
+
+  function laneY(i: number) { return H * 0.10 + (i + 0.5) * (H * 0.80 / LANES); }
+  function colX(i: number) { return W * 0.05 + (i + 0.5) * (W * 0.90 / COLS); }
+  function baseX(p: Pt) { return W * 0.05 + (p.onx + Math.sin(frame * 0.006 + p.ph) * 0.030) * W * 0.90; }
+  function baseY(p: Pt) { return H * 0.10 + (p.ony + Math.cos(frame * 0.008 + p.ph * 1.7) * 0.030) * H * 0.80; }
+
+  function easeOutCubic(t: number) { return 1 - Math.pow(1 - t, 3); }
+
+  function resetCycle() {
+    frame = 0;
+    flareStart = -1;
+    flare = 0;
+    cycleCount++;
+    foundIdx = candidates[cycleCount % candidates.length];
+    sweepX = -40; sweepY = -40;
+    hAlpha = 0; vAlpha = 0; vDesat = 0;
+    laneAlpha = 0; laneFillX = 0; colAlpha = 0; jitter = 0;
+    for (let i = 0; i < N; i++) pts[i].res = 0;
+  }
+
+  function update() {
+    let resTarget = 0;
+    let resK = 0.05;
+
+    if (frame < P_A) {
+      // ── Phase A — the indexed axis. Smooth, confident, immediate. ──
+      const t = frame / P_A;
+      sweepX = -20 + (W + 40) * t;
+      hAlpha = 0.55 * Math.min(1, frame / 12) * (1 - clamp01((frame - (P_A - 30)) / 30));
+      laneAlpha = 0.075 * Math.min(1, frame / 10);
+      laneFillX = sweepX;
+      colAlpha = 0; vAlpha = 0; jitter = 0;
+      resK = 0.25;
+    } else if (frame < P_B) {
+      // ── Phase B — hold resolved ──
+      sweepX = W + 40; hAlpha = 0;
+      laneAlpha = 0.075; laneFillX = W;
+      colAlpha = 0; vAlpha = 0; jitter = 0;
+      resTarget = 1; resK = 0.25;
+    } else if (frame < P_C) {
+      // ── Phase C — the axis rotates; the index decays ──
+      const cp = (frame - P_B) / (P_C - P_B);
+      hAlpha = 0;
+      laneAlpha = 0.075 * (1 - cp);
+      laneFillX = W;
+      colAlpha = 0; vAlpha = 0; jitter = 0;
+      resTarget = 0; resK = 0.045;
+    } else if (frame < P_D) {
+      // ── Phase D — the unindexed axis. Stutter, stall, desaturate, dissolve. ──
+      const dl = frame - P_C;
+      if (dl === 0) sweepY = H * 0.06;
+      laneAlpha = 0; hAlpha = 0;
+
+      const Y0 = H * 0.06, Y1 = H * 0.45, Y2 = H * 0.52, Y3 = H * 0.65;
+      let target = Y3;
+      let wob = 0;
+      if (dl < 180) {
+        const st = Math.floor(easeOutCubic(dl / 180) * 12) / 12;
+        target = Y0 + (Y1 - Y0) * st;
+      } else if (dl < 300) {
+        // the stall — ~2s of near-motionless creep
+        const st = Math.floor(((dl - 180) / 120) * 2) / 2;
+        target = Y1 + (Y2 - Y1) * st;
+        wob = Math.sin(frame * 0.13) * 0.9;
+      } else if (dl < 380) {
+        const st = Math.floor((1 - Math.pow(1 - (dl - 300) / 80, 4)) * 4) / 4;
+        target = Y2 + (Y3 - Y2) * st;
+        wob = Math.sin(frame * 0.11) * 0.5;
+      }
+      sweepY += (target - sweepY) * 0.2;
+
+      if (dl < 180) vAlpha = 0.35 - 0.05 * (dl / 180);
+      else if (dl < 300) vAlpha = 0.30 - 0.08 * ((dl - 180) / 120);
+      else if (dl < 380) vAlpha = 0.22 - 0.10 * ((dl - 300) / 80);
+      else vAlpha = 0.12 * (1 - (dl - 380) / 70);
+      vAlpha = Math.max(0, vAlpha * Math.min(1, dl / 15)) ;
+      sweepY += wob * 0;           // wobble applied at draw time via micro-offset
+      vDesat = Math.min(1, dl / 380);
+
+      colAlpha = 0.045 * Math.min(1, dl / 30) * (1 - clamp01((dl - 300) / 150));
+      jitter = Math.min(1, dl / 40) * (1 - clamp01((dl - 390) / 60));
+      resTarget = 0; resK = 0.05;
+    } else {
+      // ── Phase E — dissolve and settle ──
+      const ep = (frame - P_D) / (P_E - P_D);
+      hAlpha = 0; laneAlpha = 0; vAlpha = 0; colAlpha = 0;
+      jitter = Math.max(0, 1 - ep * 2.4);
+      vDesat = 1;
+      resTarget = 0; resK = 0.05;
+    }
+
+    // Found point — exactly one flare per horizontal cycle
+    if (frame < P_A) {
+      const fp = pts[foundIdx];
+      if (flareStart < 0 && baseX(fp) <= sweepX) flareStart = frame;
+    }
+    if (flareStart >= 0) {
+      const f = frame - flareStart;
+      if (f < 8) flare = f / 8;
+      else if (f < 100) flare = 1;
+      else flare = Math.max(0, 1 - (f - 100) / 140);
+    } else {
+      flare = 0;
+    }
+
+    // Per-point resolution state
+    for (let i = 0; i < N; i++) {
+      const p = pts[i];
+      const t = frame < P_A ? (baseX(p) <= sweepX ? 1 : 0) : resTarget;
+      p.res += (t - p.res) * resK;
+      if (p.res < 0.0015) p.res = 0;
+      if (p.res > 0.9985) p.res = 1;
+    }
+  }
+
+  function draw() {
+    g.clearRect(0, 0, W, H);
+    g.fillStyle = BG_CSS;
+    g.fillRect(0, 0, W, H);
+
+    // faintest depth wash
+    const wash = g.createRadialGradient(W * 0.5, H * 0.5, 0, W * 0.5, H * 0.5, Math.max(W, H) * 0.6);
+    wash.addColorStop(0, `rgba(${SD[0]},${SD[1]},${SD[2]},0.22)`);
+    wash.addColorStop(1, `rgba(${SD[0]},${SD[1]},${SD[2]},0)`);
+    g.fillStyle = wash;
+    g.fillRect(0, 0, W, H);
+
+    // Column rules — the index that never holds
+    if (colAlpha > 0.002) {
+      g.lineWidth = 1;
+      const top = H * 0.06;
+      const bot = Math.max(top, sweepY);
+      for (let i = 0; i < COLS; i++) {
+        const flick = 0.45 + 0.55 * (0.5 + 0.5 * Math.sin(frame * 0.09 + i * 1.7));
+        g.strokeStyle = dim(colAlpha * flick);
+        const x = Math.round(colX(i)) + 0.5;
+        g.beginPath(); g.moveTo(x, top); g.lineTo(x, bot); g.stroke();
+      }
+    }
+
+    // Lane rules — order arriving behind the horizontal sweep
+    if (laneAlpha > 0.002) {
+      g.lineWidth = 1;
+      const x0 = W * 0.03;
+      const x1 = clamp(laneFillX, x0, W * 0.97);
+      if (x1 > x0) {
+        const fLane = pts[foundIdx].lane;
+        for (let i = 0; i < LANES; i++) {
+          const boost = i === fLane ? 1 + flare * 1.6 : 1;
+          g.strokeStyle = dim(laneAlpha * boost);
+          const y = Math.round(laneY(i)) + 0.5;
+          g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.stroke();
+        }
+      }
+    }
+
+    // The point field
+    const band = H * 0.09;
+    for (let i = 0; i < N; i++) {
+      const p = pts[i];
+      const bx = baseX(p);
+      const by = baseY(p);
+      const ry = by + (laneY(p.lane) - by) * p.res;
+
+      let jx = 0, jy = 0, smear = 0;
+      if (jitter > 0.002) {
+        const d = (ry - sweepY) / band;
+        const inf = vAlpha > 0.001 || jitter > 0.4 ? Math.exp(-d * d * 0.5) : 0;
+        const amp = jitter * inf;
+        jx = amp * Math.sin(frame * 0.31 + p.ph * 3.1) * 5.5 + jitter * Math.sin(frame * 0.07 + p.ph) * 0.9;
+        jy = amp * Math.sin(frame * 0.23 + p.ph * 5.3) * 2.2;
+        smear = amp * 16;
+      }
+
+      const rx = bx + jx;
+      const fy = ry + jy;
+      const a = p.base * (1 + p.res * 0.35);
+
+      if (smear > 0.7) {
+        g.strokeStyle = dim(a * 0.78);
+        g.lineWidth = p.r * 2;
+        g.lineCap = 'round';
+        g.beginPath();
+        g.moveTo(rx - smear * 0.5, fy);
+        g.lineTo(rx + smear * 0.5, fy);
+        g.stroke();
+      } else {
+        g.fillStyle = dim(a);
+        g.beginPath();
+        g.arc(rx, fy, p.r, 0, Math.PI * 2);
+        g.fill();
+      }
+    }
+
+    // Vertical scan line — dimmer, desaturating, finds nothing
+    if (vAlpha > 0.003) {
+      const y = Math.round(sweepY) + 0.5;
+      const bandG = g.createLinearGradient(0, y - 9, 0, y + 9);
+      bandG.addColorStop(0, fading(0, vDesat));
+      bandG.addColorStop(0.5, fading(vAlpha * 0.10, vDesat));
+      bandG.addColorStop(1, fading(0, vDesat));
+      g.fillStyle = bandG;
+      g.fillRect(0, y - 9, W, 18);
+
+      g.strokeStyle = fading(vAlpha, vDesat);
+      g.lineWidth = 1;
+      g.beginPath(); g.moveTo(W * 0.02, y); g.lineTo(W * 0.98, y); g.stroke();
+    }
+
+    // Horizontal scan line — the query the system was built for
+    if (hAlpha > 0.003) {
+      const x = Math.round(sweepX) + 0.5;
+      const bandG = g.createLinearGradient(x - 11, 0, x + 11, 0);
+      bandG.addColorStop(0, accent(0));
+      bandG.addColorStop(0.5, accent(hAlpha * 0.13));
+      bandG.addColorStop(1, accent(0));
+      g.fillStyle = bandG;
+      g.fillRect(x - 11, 0, 22, H);
+
+      g.strokeStyle = accent(hAlpha);
+      g.lineWidth = 1;
+      g.beginPath(); g.moveTo(x, 0); g.lineTo(x, H); g.stroke();
+    }
+
+    // The found point — one successful lookup per horizontal cycle
+    if (flare > 0.004) {
+      const p = pts[foundIdx];
+      const fx = baseX(p);
+      const fyb = baseY(p);
+      const fy = fyb + (laneY(p.lane) - fyb) * p.res;
+      const rad = 6 + flare * 16;
+      const gr = g.createRadialGradient(fx, fy, 0, fx, fy, rad);
+      gr.addColorStop(0, accent(flare * 0.42));
+      gr.addColorStop(0.45, accent(flare * 0.15));
+      gr.addColorStop(1, accent(0));
+      g.fillStyle = gr;
+      g.beginPath(); g.arc(fx, fy, rad, 0, Math.PI * 2); g.fill();
+
+      g.fillStyle = accent(flare * 0.85);
+      g.beginPath(); g.arc(fx, fy, 3.4, 0, Math.PI * 2); g.fill();
+      g.fillStyle = accent(flare);
+      g.beginPath(); g.arc(fx, fy, 1.5, 0, Math.PI * 2); g.fill();
+    }
+  }
+
+  // Single static frame: the resolved-horizontal-axis state
+  function drawStatic() {
+    frame = 0;
+    sweepX = W * 0.68;
+    hAlpha = 0.55;
+    laneAlpha = 0.075;
+    laneFillX = sweepX;
+    colAlpha = 0; vAlpha = 0; vDesat = 0; jitter = 0;
+
+    let best = candidates[0];
+    let bestD = Infinity;
+    for (let i = 0; i < candidates.length; i++) {
+      const d = Math.abs(pts[candidates[i]].onx - 0.58);
+      if (d < bestD) { bestD = d; best = candidates[i]; }
+    }
+    foundIdx = best;
+    flare = 1;
+
+    for (let i = 0; i < N; i++) pts[i].res = baseX(pts[i]) <= sweepX ? 1 : 0;
+    draw();
+  }
+
+  function tick() {
+    frame++;
+    if (frame >= CYCLE) resetCycle();
+    update();
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function sizeToCss() {
+    const dpr = window.devicePixelRatio || 1;
+    W = cv.offsetWidth;
+    H = cv.offsetHeight;
+    cv.width = Math.max(1, Math.round(W * dpr));
+    cv.height = Math.max(1, Math.round(H * dpr));
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  sizeToCss();
+
+  const ro = new ResizeObserver(() => {
+    sizeToCss();
+    if (prefersReduced) drawStatic();
+  });
+  ro.observe(cv);
+
+  if (prefersReduced) {
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    resetCycle();
+    update();
+    draw();
+
+    const io = new IntersectionObserver((entries) => {
+      const e = entries[0];
+      if (!e) return;
+      if (e.isIntersecting) {
+        if (!rafId) rafId = requestAnimationFrame(tick);
+      } else if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    }, { threshold: 0.01 });
+    io.observe(cv);
+
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+      io.disconnect();
+      ro.disconnect();
+    });
+  }
+})();
+</script>
