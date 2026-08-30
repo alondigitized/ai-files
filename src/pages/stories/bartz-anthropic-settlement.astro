@@ -1,0 +1,629 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'bartz-anthropic-settlement')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .bartz-anthropic-settlement-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* ── Ruling document mockup ── */
+  .bartz-ruling-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  @media (max-width: 600px) { .bartz-ruling-wrap { grid-template-columns: 1fr; } }
+  .bartz-ruling-panel { background: var(--surface); padding: 1.2rem 1.4rem; }
+  .bartz-ruling-label { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 800; margin-bottom: 0.6rem; }
+  .bartz-ruling-label.fair { color: var(--story); }
+  .bartz-ruling-label.infringement { color: var(--accent); }
+  .bartz-ruling-quote { font-size: 0.88rem; line-height: 1.65; color: var(--text); font-style: italic; border-left: 2px solid var(--border); padding-left: 0.9rem; margin-bottom: 0.75rem; }
+  .bartz-ruling-panel.left .bartz-ruling-quote { border-left-color: var(--story); }
+  .bartz-ruling-panel.right .bartz-ruling-quote { border-left-color: var(--accent); }
+  .bartz-ruling-finding { font-size: 0.75rem; color: var(--muted); line-height: 1.5; }
+  .bartz-ruling-finding strong { color: var(--text); font-weight: 600; }
+  .bartz-ruling-footer { grid-column: 1 / -1; background: var(--surface2); padding: 0.55rem 1rem; font-size: 0.68rem; color: var(--muted); text-align: center; letter-spacing: 0.04em; border-top: 1px solid var(--border); }
+  @media (max-width: 600px) { .bartz-ruling-footer { grid-column: 1; } }
+
+  /* ── Funnel diagram ── */
+  .bartz-funnel-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; padding: 1.5rem 1.2rem; }
+  .bartz-funnel-tier { text-align: center; padding: 0.9rem 0; }
+  .bartz-funnel-num { font-size: 1.6rem; font-weight: 800; color: var(--text); line-height: 1.2; }
+  .bartz-funnel-tier:first-child .bartz-funnel-num { color: var(--muted); }
+  .bartz-funnel-tier:nth-child(3) .bartz-funnel-num { color: var(--story); }
+  .bartz-funnel-tier:nth-child(5) .bartz-funnel-num { color: var(--story); }
+  .bartz-funnel-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+  .bartz-funnel-filter { display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; padding: 0.5rem 0; border-top: 1px dashed var(--border); border-bottom: 1px dashed var(--border); margin: 0.25rem 0; }
+  .bartz-funnel-tag { font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); background: rgba(255,77,77,0.06); border: 1px solid rgba(255,77,77,0.15); border-radius: 0.4rem; padding: 0.2rem 0.55rem; }
+  .bartz-funnel-result { text-align: center; padding: 0.75rem 0 0.25rem; }
+  .bartz-funnel-result-num { font-size: 1.1rem; font-weight: 700; color: var(--story); }
+  .bartz-funnel-result-label { font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
+
+  /* ── Settlement ledger ── */
+  .bartz-ledger-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; font-family: 'Courier New', Courier, monospace; }
+  .bartz-ledger-header { background: var(--surface2); padding: 0.55rem 1rem; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+  .bartz-ledger-body { padding: 1rem 1.2rem; font-size: 0.8rem; line-height: 2; color: var(--text); }
+  .bartz-ledger-row { display: flex; justify-content: space-between; gap: 1rem; }
+  .bartz-ledger-row.indent { padding-left: 1.2rem; color: var(--muted); }
+  .bartz-ledger-divider { border: none; border-top: 1px solid var(--border); margin: 0.4rem 0; }
+  .bartz-ledger-row.highlight .bartz-ledger-val { color: var(--story); font-weight: 700; }
+  .bartz-ledger-row.dim .bartz-ledger-val { color: var(--muted); }
+  .bartz-ledger-status { background: var(--surface2); padding: 0.5rem 1rem; font-size: 0.72rem; color: var(--muted); border-top: 1px solid var(--border); line-height: 1.7; }
+  .bartz-ledger-status strong { color: var(--story); font-weight: 700; letter-spacing: 0.06em; }
+  .bartz-ledger-status .pending { color: var(--accent); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="intro">
+      <h2><span class="num">01 — Context</span>The Library That Didn't Exist</h2>
+      <p>According to the complaint in <em>Bartz et al. v. Anthropic PBC</em>, co-founder Benjamin Mann sat down in June 2021 and downloaded at least five million books from Library Genesis — a shadow piracy site the plaintiffs alleged he knew was illegal. He was not downloading samples. He was not downloading metadata. According to the filing, he was downloading the full text of millions of copyrighted works, book by book, from a site that existed for the sole purpose of distributing pirated material.</p>
+      <p>Anthropic was less than six months old. It had been founded in January 2021 by former OpenAI researchers, including Mann, with the stated mission of building safe, interpretable AI systems. What it needed to build those systems was data — vast quantities of text to train large language models. The complaint alleged that Mann's June 2021 download from Library Genesis was the first phase. The second came in July 2022, when Anthropic downloaded additional books from Pirate Library Mirror (PiLiMi) — specifically, according to the Authors Guild, the books it did not already have from LibGen. Beyond the digital piracy, the complaint also alleged that Anthropic purchased physical books, tore off their bindings, scanned each page, and stored them in digitized, searchable files. The ambition, as characterized in the court's own fair use order, was to build a "central library" of "all the books in the world" to retain "forever."</p>
+      <p>The total, according to multiple sources corroborating the complaint: approximately seven million books from LibGen and PiLiMi combined.</p>
+      <p>On August 19, 2024, three authors filed suit. Andrea Bartz, whose novel <em>We Were Never Here</em> was among the downloaded works. Charles Graeber, who wrote <em>The Good Nurse</em>. Kirk Wallace Johnson, who wrote <em>The Feather Thief</em>. The case was filed in the U.S. District Court for the Northern District of California: <em>Bartz et al. v. Anthropic PBC</em>, No. 3:24-cv-05417-WHA.</p>
+      <p>Anthropic's response, delivered through Deputy General Counsel Aparna Sridhar, framed the case narrowly. The settlement, Sridhar said, "simply resolves narrow claims about how certain materials were obtained." She emphasized that the court had already issued "a landmark ruling on AI development and copyright law, finding that Anthropic's approach to training AI models constitutes fair use." According to the Susman Godfrey press release, Anthropic certified that it "did not use materials from LibGen or PiLiMi in any commercial models." This certification has not been independently verified. If true, it means the pirated data may have been confined to research and pre-commercial training runs — not the Claude models that serve paying customers. But the certification comes from Anthropic itself, in the context of a settlement negotiation.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="bartz-anthropic-settlement-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Ledger</strong> — Identical book-particles settle into a central library; a judicial sweep illuminates each particle's provenance trail; lawfully sourced particles hold firm in amber; pirated particles flare red and dissolve backward along their shadow trails; the library shrinks, replenishes, and the sweep comes again.</p>
+
+    <section class="section" id="ruling">
+      <h2><span class="num">02 — The Ruling</span>Two Sentences, Two Worlds</h2>
+      <p>On June 23, 2025, Judge William Alsup issued a summary judgment order that split the case in two.</p>
+      <p>The first holding: AI training on lawfully acquired copyrighted works is fair use. Alsup called it "quintessentially transformative," "exceedingly transformative," and — in a phrase unusual for federal jurisprudence — "transformative — spectacularly so." He wrote that the technology at issue was "among the most transformative many of us will see in our lifetimes." He rejected the argument that an emerging AI licensing market should weigh against fair use, stating: "Such a market for that use is not one Copyright Act entitles authors to exploit."</p>
+      <p>The second holding: Downloading and retaining pirated copies from shadow libraries is not fair use. Anthropic's creation and retention of a "central library" comprised of pirated works constituted copyright infringement. The distinction was not about what the data was used for. It was about how the data was obtained.</p>
+
+      <div class="bartz-ruling-wrap" role="figure" aria-label="Side-by-side panels from Judge Alsup's June 23, 2025 ruling: training on lawful copies is fair use; possession of pirated copies is infringement.">
+        <div class="bartz-ruling-panel left">
+          <div class="bartz-ruling-label fair">Fair Use</div>
+          <div class="bartz-ruling-quote">"The use of copyrighted works to train artificial intelligence is quintessentially transformative."</div>
+          <div class="bartz-ruling-finding">Training on <strong>lawfully acquired</strong> works — No infringement</div>
+        </div>
+        <div class="bartz-ruling-panel right">
+          <div class="bartz-ruling-label infringement">Infringement</div>
+          <div class="bartz-ruling-quote">"Downloading and retaining pirated copies from shadow libraries is not fair use."</div>
+          <div class="bartz-ruling-finding">Possession of <strong>pirated copies</strong> — Infringement found</div>
+        </div>
+        <div class="bartz-ruling-footer">Bartz v. Anthropic PBC — Order on Fair Use, Docket #231 — June 23, 2025 — Hon. William Alsup</div>
+      </div>
+
+      <p>Alsup also closed one escape route. If Anthropic later purchased a lawful copy of a book it had previously pirated, that purchase could not retroactively cure the infringement. "Anthropic later bought a copy of a book it earlier stole off the internet," Alsup wrote, "will not absolve it of liability for the theft."</p>
+      <p>Two days later, Judge Vince Chhabria in <em>Kadrey v. Meta Platforms</em> reached a similar conclusion on fair use for AI training. But Chhabria did not draw the piracy distinction. What made Alsup's order singular was the line it drew: the legality of AI training depends not on what you do with copyrighted material, but on how you got it.</p>
+    </section>
+
+    <section class="section" id="funnel">
+      <h2><span class="num">03 — The Funnel</span>Seven Million to Four Hundred Eighty-Two Thousand</h2>
+      <p>In mid-to-late July 2025, Judge Alsup certified the class. The definition: all beneficial or legal copyright owners of books in the LibGen or PiLiMi datasets that Anthropic downloaded. But not all seven million books qualified. The class required each work to have an ISBN or ASIN number, to be registered with the U.S. Copyright Office within five years of publication (and before Anthropic's download, or within three months of first publication), and to not be part of the Books3 dataset, which was excluded due to insufficient metadata.</p>
+      <p>The result: 482,460 works qualified. More than 6.5 million downloaded books fell outside the class — a massive shadow population of affected works with no legal standing in this proceeding.</p>
+
+      <div class="bartz-funnel-wrap" role="figure" aria-label="Funnel from 7 million books downloaded to 482,460 qualifying works to 440,490 claimed at approximately $2,931 per work.">
+        <div class="bartz-funnel-tier">
+          <div class="bartz-funnel-num">7,000,000</div>
+          <div class="bartz-funnel-sub">Books downloaded from LibGen (June 2021) + PiLiMi (July 2022)</div>
+        </div>
+        <div class="bartz-funnel-filter">
+          <span class="bartz-funnel-tag">ISBN / ASIN required</span>
+          <span class="bartz-funnel-tag">U.S. Copyright Office registration</span>
+          <span class="bartz-funnel-tag">Books3 excluded</span>
+        </div>
+        <div class="bartz-funnel-tier">
+          <div class="bartz-funnel-num">482,460</div>
+          <div class="bartz-funnel-sub">Works qualified for the class</div>
+        </div>
+        <div class="bartz-funnel-filter">
+          <span class="bartz-funnel-tag">Claims filed by March 30, 2026</span>
+        </div>
+        <div class="bartz-funnel-tier">
+          <div class="bartz-funnel-num">440,490</div>
+          <div class="bartz-funnel-sub">Works claimed (91.3%)</div>
+        </div>
+        <div class="bartz-funnel-result">
+          <div class="bartz-funnel-result-num">~$2,931 per work</div>
+          <div class="bartz-funnel-result-label">Estimated payout before interest</div>
+        </div>
+      </div>
+
+      <p>According to the settlement administration, the class encompasses 367,824 unique authors and 16,237 unique publishers. The administrator located contact information for 97.2% of publishers, covering 99.4% of eligible works. But it found addresses for only 66.2% of authors, covering 81.3% of works. The gap is significant: roughly a third of authors whose books were pirated could not be reached.</p>
+      <p>At statutory maximum damages of $150,000 per willfully infringed work, Anthropic's theoretical exposure exceeded $70 billion. The settlement represents approximately 2% of that figure.</p>
+    </section>
+
+    <section class="section" id="settlement">
+      <h2><span class="num">04 — The Settlement</span>Three Thousand Dollars a Book</h2>
+      <p>The parties filed a binding term sheet on August 26, 2025. Settlement terms were publicly disclosed on September 5, 2025. The headline figure: $1.5 billion plus interest. Plaintiffs' co-lead counsel Justin Nelson of Susman Godfrey described it as "the largest publicly reported copyright recovery in history, larger than any other copyright class action settlement." That characterization is counsel's claim, not independently verified.</p>
+      <p>The per-work math was initially straightforward: $1.5 billion divided across 482,460 eligible works yielded approximately $3,000 per work. According to plaintiffs' counsel, that figure equals four times the $750 statutory minimum and fifteen times the $200 innocent-infringement threshold. It also equals 2% of the $150,000 statutory maximum for willful infringement.</p>
+      <p>The money arrives in four installments: $300 million due by October 2, 2025; $300 million within one week of final approval; $450 million by September 25, 2026; $450 million by September 25, 2027. Whether Anthropic made the first installment by its deadline has not been publicly confirmed. According to the Kluwer Copyright Blog's analysis, class counsel requested $375 million in attorneys' fees — 25% of the settlement fund.</p>
+      <p>The default payment split for trade and university press works is 50% to the author and 50% to the publisher. Self-published authors or those who have reverted their rights receive 100%.</p>
+      <p>The settlement carries structural limitations. It releases Anthropic from liability for past conduct only — through August 25, 2025. It does not grant Anthropic a future license to use any works. Claims related to AI model outputs are not released. And within 30 days of final judgment, Anthropic must destroy the pirated libraries and all derivative copies, providing written certification to class counsel.</p>
+      <p>Then the claims came in. By March 19, 2026, rights holders had filed claims covering 264,809 works — 54% of eligible titles. In the final eleven days before the March 30 deadline, an additional 175,681 claims arrived. The final total: 440,490 works claimed, a 91.3% claim rate. In typical class action settlements, the claim rate hovers around 10%.</p>
+
+      <div class="bartz-ledger-wrap" role="figure" aria-label="Settlement fund estimate showing $1.5B fund, ~$1.125B net distributable after fees, distributed across 440,490 claimed works at approximately $2,931 per work.">
+        <div class="bartz-ledger-header">Bartz v. Anthropic PBC — Settlement Fund Estimate</div>
+        <div class="bartz-ledger-body">
+          <div class="bartz-ledger-row">
+            <span>Settlement fund</span>
+            <span class="bartz-ledger-val">$1,500,000,000</span>
+          </div>
+          <div class="bartz-ledger-row indent">
+            <span>Less: attorneys' fees (25%)</span>
+            <span class="bartz-ledger-val">- $375,000,000</span>
+          </div>
+          <div class="bartz-ledger-row indent dim">
+            <span>Less: admin / service costs</span>
+            <span class="bartz-ledger-val">[TBD]</span>
+          </div>
+          <hr class="bartz-ledger-divider" />
+          <div class="bartz-ledger-row highlight">
+            <span>Net distributable fund</span>
+            <span class="bartz-ledger-val">~$1,125,000,000</span>
+          </div>
+          <hr class="bartz-ledger-divider" />
+          <div class="bartz-ledger-row">
+            <span>Eligible works</span>
+            <span class="bartz-ledger-val">482,460</span>
+          </div>
+          <div class="bartz-ledger-row">
+            <span>Works claimed (91.3%)</span>
+            <span class="bartz-ledger-val">440,490</span>
+          </div>
+          <hr class="bartz-ledger-divider" />
+          <div class="bartz-ledger-row">
+            <span>Est. per-work payout (initial)</span>
+            <span class="bartz-ledger-val">~$3,000</span>
+          </div>
+          <div class="bartz-ledger-row highlight">
+            <span>Est. per-work payout (post-claims)</span>
+            <span class="bartz-ledger-val">~$2,931</span>
+          </div>
+          <hr class="bartz-ledger-divider" />
+          <div class="bartz-ledger-row dim">
+            <span>Statutory maximum (per work)</span>
+            <span class="bartz-ledger-val">$150,000</span>
+          </div>
+          <div class="bartz-ledger-row dim">
+            <span>Settlement as % of maximum</span>
+            <span class="bartz-ledger-val">~2%</span>
+          </div>
+        </div>
+        <div class="bartz-ledger-status">
+          Case No. 3:24-cv-05417-WHA (N.D. Cal.)<br />
+          Status: <strong>PRELIMINARILY APPROVED</strong> — Sep 25, 2025<br />
+          Fairness hearing: <span class="pending">May 14, 2026 — 2:00 PM PT</span>
+        </div>
+      </div>
+
+      <p>The high claim rate shifted the per-work estimate. At 54% claims, each work would have yielded approximately $4,876. At 91.3%, the figure dropped to approximately $2,931 before interest accruals.</p>
+    </section>
+
+    <section class="section" id="hearing">
+      <h2><span class="num">05 — The Hearing</span>Nine Days</h2>
+      <p>Judge Alsup did not approve the settlement easily. At a September 9, 2025 hearing, he spent nearly an hour critiquing the terms. "We'll see if I can hold my nose and approve it," he said. "I have an uneasy feeling about all the hangers on in the shadows." He set a September 15 deadline for a "drop-dead list" of the total pirated books, and a September 22 deadline for submission of a claims form.</p>
+      <p>Sixteen days later, on September 25, 2025, Alsup granted preliminary approval. He described the settlement as "fair, reasonable, and adequate."</p>
+      <p>Objections followed. According to the Authors Alliance, objectors raised concerns across eight categories. Some argued the settlement is inadequate — $2,931 per work against a statutory maximum of $150,000. Others warned that the settlement sets a precedent allowing AI companies to "buy" their way out of mass infringement at a steep discount. Publishers, some objectors contended, receive a disproportionate share despite author-initiated litigation. And foreign-registered works — potentially more than two million titles — were excluded from the class entirely.</p>
+      <p>The fairness hearing is scheduled for May 14, 2026, at 2:00 PM Pacific Time, at the San Francisco Federal Courthouse, Courtroom 12, 19th Floor. Class members who timely objected may join via Zoom. If Alsup grants final approval, the destruction order triggers: Anthropic must delete the pirated libraries and provide written certification within 30 days. The settlement administrator is expected to calculate payment distributions by June 11, 2026. The number of class members who opted out by the February 9, 2026 deadline has not been publicly disclosed. The number of formal objections has not been tallied in any available source.</p>
+      <p>The settlement is not final. The legal distinction Alsup drew — it is not what you train on, it is how you got it — has no appellate confirmation. No other court has drawn the same line. Judge Chhabria's <em>Kadrey v. Meta</em> ruling reached the fair-use conclusion for training without separating lawful acquisition from piracy. Alsup's innovation stands alone, unreviewed, nine days from its next test.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.bartz-anthropic-settlement-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const cs = getComputedStyle(canvas);
+  const STORY_HEX = (cs.getPropertyValue('--story').trim() || '#b45309');
+  const ACCENT_HEX = (cs.getPropertyValue('--accent').trim() || '#ff4d4d');
+
+  function hexRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const [SR, SG, SB] = hexRgb(STORY_HEX);
+  const [RR, RG, RB] = hexRgb(ACCENT_HEX);
+
+  const GATHER    = 600;
+  const SWEEP_DUR = 120;
+  const PAUSE     = 180;
+  const REPLENISH = 300;
+  const CYCLE     = GATHER + SWEEP_DUR + PAUSE + REPLENISH;
+
+  const TOTAL     = 60;
+  const LAWFUL_N  = 36;
+  const DUST_N    = 30;
+  const SQ        = 4;
+
+  let W = 0, H = 0, rafId = 0, frame = 0;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let lawfulX = 0, lawfulY = 0;
+  let shadowX = 0, shadowY = 0;
+  let libCX = 0, libCY = 0;
+  let gridW = 0, gridH = 0;
+  let flickerT = 0;
+
+  interface Book {
+    lawful: boolean;
+    tx: number; ty: number;
+    ox: number; oy: number;
+    x: number; y: number;
+    state: 'settled' | 'drifting' | 'dissolving' | 'ghost' | 'dead';
+    alpha: number;
+    trailHi: number;
+    dProg: number;
+    ghostAlpha: number;
+    delay: number;
+  }
+  interface Dust { x: number; y: number; vx: number; vy: number; a: number; }
+
+  let books: Book[] = [];
+  let dusts: Dust[] = [];
+  let sweepX = -1;
+
+  function clamp(v: number, lo: number, hi: number) { return v < lo ? lo : v > hi ? hi : v; }
+
+  function layoutPositions() {
+    lawfulX = W * 0.5;  lawfulY = H * 0.08;
+    shadowX = W * 0.5;  shadowY = H * 0.92;
+    libCX   = W * 0.5;  libCY   = H * 0.5;
+    gridW   = Math.min(W * 0.55, 340);
+    gridH   = Math.min(H * 0.38, 200);
+  }
+  function targetFor(idx: number): { tx: number; ty: number } {
+    const cols = 10;
+    const col  = idx % cols;
+    const row  = Math.floor(idx / cols);
+    const rows = Math.ceil(TOTAL / cols);
+    const cw   = gridW / cols;
+    const ch   = gridH / rows;
+    return {
+      tx: libCX - gridW / 2 + col * cw + cw / 2 + (Math.random() - 0.5) * cw * 0.35,
+      ty: libCY - gridH / 2 + row * ch + ch / 2 + (Math.random() - 0.5) * ch * 0.35,
+    };
+  }
+  function originFor(lawful: boolean): { ox: number; oy: number } {
+    const nx = lawful ? lawfulX : shadowX;
+    const ny = lawful ? lawfulY : shadowY;
+    return {
+      ox: nx + (Math.random() - 0.5) * W * 0.7,
+      oy: ny + (Math.random() - 0.5) * H * 0.06,
+    };
+  }
+  function makeBook(idx: number, settled: boolean): Book {
+    const lawful = idx < LAWFUL_N;
+    const { tx, ty } = targetFor(idx);
+    const { ox, oy } = originFor(lawful);
+    return {
+      lawful, tx, ty, ox, oy,
+      x: settled ? tx : ox,
+      y: settled ? ty : oy,
+      state: settled ? 'settled' : 'dead',
+      alpha: settled ? 0.85 : 0,
+      trailHi: 0, dProg: 0, ghostAlpha: 0, delay: 0,
+    };
+  }
+  function initBooks() {
+    books = [];
+    for (let i = 0; i < TOTAL; i++) books.push(makeBook(i, true));
+  }
+  function initDust() {
+    dusts = [];
+    for (let i = 0; i < DUST_N; i++) {
+      dusts.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.15, vy: (Math.random() - 0.5) * 0.15,
+        a: 0.03 + Math.random() * 0.04,
+      });
+    }
+  }
+  function resize() {
+    if (!canvas || !ctx) return;
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width  = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    layoutPositions();
+    initBooks();
+    initDust();
+    frame = 0;
+    if (reduced) drawStaticFrame();
+  }
+  const ro = new ResizeObserver(() => resize());
+  ro.observe(canvas);
+
+  function phase(cf: number): 'gather' | 'sweep' | 'pause' | 'replenish' {
+    if (cf < GATHER) return 'gather';
+    if (cf < GATHER + SWEEP_DUR) return 'sweep';
+    if (cf < GATHER + SWEEP_DUR + PAUSE) return 'pause';
+    return 'replenish';
+  }
+
+  function update() {
+    const cf  = frame % CYCLE;
+    const ph  = phase(cf);
+    sweepX = ph === 'sweep' ? ((cf - GATHER) / SWEEP_DUR) * W : -1;
+
+    if (cf === GATHER + SWEEP_DUR + PAUSE) {
+      let delaySlot = 0;
+      books.forEach(p => {
+        if (p.state === 'dead' || p.state === 'ghost') {
+          const idx = books.indexOf(p);
+          const { tx, ty } = targetFor(idx);
+          const { ox, oy } = originFor(p.lawful);
+          p.tx = tx; p.ty = ty; p.ox = ox; p.oy = oy;
+          p.x = ox;  p.y = oy;
+          p.state = 'drifting';
+          p.alpha = 0; p.trailHi = 0; p.dProg = 0; p.ghostAlpha = 0;
+          p.delay = delaySlot;
+          delaySlot += 8 + Math.random() * 6;
+        }
+      });
+    }
+    if (cf === 0 && frame > 0) {
+      books.forEach(p => {
+        p.trailHi = 0;
+        if (p.state === 'ghost') { p.state = 'dead'; p.ghostAlpha = 0; }
+      });
+    }
+
+    books.forEach(p => {
+      switch (p.state) {
+        case 'settled':
+          if (ph === 'sweep' && p.trailHi === 0 && sweepX >= p.tx - SQ) {
+            p.trailHi = 1;
+            if (!p.lawful) {
+              p.state = 'dissolving'; p.dProg = 0; p.x = p.tx; p.y = p.ty;
+            }
+          }
+          if (p.trailHi > 0 && p.lawful) {
+            p.trailHi = Math.max(0, p.trailHi - 1 / 30);
+          }
+          break;
+        case 'drifting': {
+          const repBase = GATHER + SWEEP_DUR + PAUSE;
+          const elapsed = cf - repBase;
+          if (elapsed < p.delay) break;
+          p.alpha = clamp(p.alpha + 0.015, 0, 0.85);
+          const dx = p.tx - p.x;
+          const dy = p.ty - p.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist > 0.5) {
+            const speed = clamp(dist * 0.02, 0.3, 2);
+            p.x += (dx / dist) * speed;
+            p.y += (dy / dist) * speed;
+          } else {
+            p.x = p.tx; p.y = p.ty; p.state = 'settled'; p.alpha = 0.85;
+          }
+          break;
+        }
+        case 'dissolving': {
+          p.dProg = clamp(p.dProg + 1 / 60, 0, 1);
+          p.trailHi = clamp(0.8 * (1 - p.dProg), 0, 1);
+          const dx = p.ox - p.x;
+          const dy = p.oy - p.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist > 2) {
+            p.x += (dx / dist) * 1.5;
+            p.y += (dy / dist) * 1.5;
+          }
+          p.alpha = 0.85 * (1 - p.dProg);
+          if (p.dProg >= 1) { p.state = 'ghost'; p.alpha = 0; p.ghostAlpha = 0.25; }
+          break;
+        }
+        case 'ghost':
+          p.ghostAlpha = Math.max(0, p.ghostAlpha - 0.004);
+          if (p.ghostAlpha <= 0) p.state = 'dead';
+          break;
+        case 'dead': break;
+      }
+    });
+  }
+
+  function drawDust() {
+    if (!ctx) return;
+    for (let i = 0; i < dusts.length; i++) {
+      const d = dusts[i];
+      d.x += d.vx; d.y += d.vy;
+      if (d.x < 0) d.x = W; else if (d.x > W) d.x = 0;
+      if (d.y < 0) d.y = H; else if (d.y > H) d.y = 0;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, 1, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(232,232,232,${d.a})`;
+      ctx.fill();
+    }
+  }
+  function drawSourceNodes() {
+    if (!ctx) return;
+    const la = 0.14 + Math.sin(frame * 0.02) * 0.03;
+    ctx.beginPath();
+    ctx.arc(lawfulX, lawfulY, 18, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(232,232,232,${la * 0.35})`;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(lawfulX, lawfulY, 6, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(232,232,232,${la})`;
+    ctx.fill();
+
+    flickerT += 0.1 + Math.random() * 0.05;
+    let sa = 0.05 + Math.sin(flickerT) * 0.025 + Math.random() * 0.015;
+    if (Math.random() < 0.04) sa = 0.01;
+    ctx.beginPath();
+    ctx.arc(shadowX, shadowY, 18, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(232,232,232,${sa * 0.25})`;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(shadowX, shadowY, 6, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(232,232,232,${sa * 0.6})`;
+    ctx.fill();
+  }
+  function drawTrail(p: Book) {
+    if (!ctx || p.state === 'dead') return;
+    const px = p.state === 'ghost' ? p.tx : p.x;
+    const py = p.state === 'ghost' ? p.ty : p.y;
+    const cpx = (px + p.ox) / 2 + (p.lawful ? -15 : 15);
+    const cpy = (py + p.oy) / 2;
+    ctx.beginPath();
+    ctx.moveTo(px, py);
+    ctx.quadraticCurveTo(cpx, cpy, p.ox, p.oy);
+    if (p.trailHi > 0) {
+      if (p.lawful) ctx.strokeStyle = `rgba(${SR},${SG},${SB},${p.trailHi * 0.5})`;
+      else ctx.strokeStyle = `rgba(${RR},${RG},${RB},${p.trailHi * 0.8})`;
+    } else {
+      ctx.strokeStyle = `rgba(232,232,232,0.06)`;
+    }
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+  }
+  function drawBook(p: Book) {
+    if (!ctx || p.alpha <= 0) return;
+    const s = p.state === 'dissolving' ? SQ * (1 - p.dProg * 0.5) : SQ;
+    ctx.save();
+    ctx.globalAlpha = p.alpha;
+    if (p.state === 'dissolving') {
+      const t = p.dProg;
+      const r = Math.round(SR + (RR - SR) * t);
+      const g = Math.round(SG + (RG - SG) * t);
+      const b = Math.round(SB + (RB - SB) * t);
+      ctx.fillStyle = `rgb(${r},${g},${b})`;
+    } else {
+      ctx.fillStyle = `rgb(${SR},${SG},${SB})`;
+    }
+    ctx.fillRect(p.x - s, p.y - s, s * 2, s * 2);
+    ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(p.x - s * 0.3, p.y - s);
+    ctx.lineTo(p.x - s * 0.3, p.y + s);
+    ctx.stroke();
+    ctx.restore();
+  }
+  function drawGhost(p: Book) {
+    if (!ctx || p.state !== 'ghost' || p.ghostAlpha <= 0) return;
+    ctx.save();
+    ctx.globalAlpha = p.ghostAlpha;
+    ctx.strokeStyle = `rgba(${RR},${RG},${RB},1)`;
+    ctx.lineWidth = 0.5;
+    ctx.strokeRect(p.tx - SQ, p.ty - SQ, SQ * 2, SQ * 2);
+    ctx.restore();
+  }
+  function drawSweepLine() {
+    if (!ctx || sweepX < 0) return;
+    ctx.save();
+    const grad = ctx.createLinearGradient(sweepX - 25, 0, sweepX + 25, 0);
+    grad.addColorStop(0, `rgba(${SR},${SG},${SB},0)`);
+    grad.addColorStop(0.5, `rgba(${SR},${SG},${SB},0.25)`);
+    grad.addColorStop(1, `rgba(${SR},${SG},${SB},0)`);
+    ctx.fillStyle = grad;
+    ctx.fillRect(sweepX - 25, 0, 50, H);
+    ctx.beginPath();
+    ctx.moveTo(sweepX, 0);
+    ctx.lineTo(sweepX, H);
+    ctx.strokeStyle = `rgba(${SR},${SG},${SB},0.6)`;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.restore();
+  }
+  function draw() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, W, H);
+    drawDust();
+    drawSourceNodes();
+    for (let i = 0; i < books.length; i++) drawTrail(books[i]);
+    for (let i = 0; i < books.length; i++) drawGhost(books[i]);
+    for (let i = 0; i < books.length; i++) drawBook(books[i]);
+    drawSweepLine();
+  }
+  function drawStaticFrame() {
+    if (!ctx) return;
+    ctx.clearRect(0, 0, W, H);
+    for (let i = 0; i < dusts.length; i++) {
+      ctx.beginPath();
+      ctx.arc(dusts[i].x, dusts[i].y, 1, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(232,232,232,${dusts[i].a})`;
+      ctx.fill();
+    }
+    ctx.beginPath();
+    ctx.arc(lawfulX, lawfulY, 18, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(232,232,232,0.05)';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(lawfulX, lawfulY, 6, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(232,232,232,0.14)';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(shadowX, shadowY, 18, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(232,232,232,0.02)';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(shadowX, shadowY, 6, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(232,232,232,0.05)';
+    ctx.fill();
+    for (let i = 0; i < books.length; i++) {
+      const p = books[i];
+      const cpx = (p.tx + p.ox) / 2 + (p.lawful ? -15 : 15);
+      const cpy = (p.ty + p.oy) / 2;
+      ctx.beginPath();
+      ctx.moveTo(p.tx, p.ty);
+      ctx.quadraticCurveTo(cpx, cpy, p.ox, p.oy);
+      ctx.strokeStyle = 'rgba(232,232,232,0.06)';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+      ctx.save();
+      ctx.globalAlpha = 0.85;
+      ctx.fillStyle = `rgb(${SR},${SG},${SB})`;
+      ctx.fillRect(p.tx - SQ, p.ty - SQ, SQ * 2, SQ * 2);
+      ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(p.tx - SQ * 0.3, p.ty - SQ);
+      ctx.lineTo(p.tx - SQ * 0.3, p.ty + SQ);
+      ctx.stroke();
+      ctx.restore();
+    }
+    ctx.save();
+    const grad = ctx.createLinearGradient(W * 0.5 - 25, 0, W * 0.5 + 25, 0);
+    grad.addColorStop(0, `rgba(${SR},${SG},${SB},0)`);
+    grad.addColorStop(0.5, `rgba(${SR},${SG},${SB},0.25)`);
+    grad.addColorStop(1, `rgba(${SR},${SG},${SB},0)`);
+    ctx.fillStyle = grad;
+    ctx.fillRect(W * 0.5 - 25, 0, 50, H);
+    ctx.beginPath();
+    ctx.moveTo(W * 0.5, 0);
+    ctx.lineTo(W * 0.5, H);
+    ctx.strokeStyle = `rgba(${SR},${SG},${SB},0.6)`;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function tick() {
+    frame++;
+    update();
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  const io = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) {
+      if (!rafId && !reduced) rafId = requestAnimationFrame(tick);
+    } else {
+      if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
+    }
+  }, { threshold: 0.01 });
+
+  if (reduced) {
+    requestAnimationFrame(() => drawStaticFrame());
+  } else {
+    io.observe(canvas);
+  }
+
+  window.addEventListener('pagehide', () => {
+    if (rafId) cancelAnimationFrame(rafId);
+    ro.disconnect();
+    io.disconnect();
+  });
+})();
+</script>
