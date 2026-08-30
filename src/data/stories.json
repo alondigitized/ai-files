@@ -2450,5 +2450,77 @@
       "Outperformed OpenAI CLIP, Microsoft LLaVA, BioMedCLIP, Med-Flamingo by more than 30%.",
       "No FDA clearance, no clinical deployment; code and weights open-source on GitHub."
     ]
+  },
+  {
+    "slug": "langflow-cve-kev",
+    "side": "dark",
+    "chapter": 33,
+    "volume": 6,
+    "title": "The Endpoint That Won't Die",
+    "deck": "Three times in fifteen months, CISA ordered federal agencies to emergency-patch the same Langflow endpoint — a code-execution primitive that every fix walled off rather than removed.",
+    "date": "August 2026",
+    "isoDate": "2026-08-04",
+    "readTime": "8 min",
+    "emoji": "🪨",
+    "tags": [
+      "Cybersecurity",
+      "IBM",
+      "CISA KEV",
+      "Agent Orchestration"
+    ],
+    "story": "#a3e635",
+    "storyDark": "#162008",
+    "verifyText": "CISA KEV catalog (added Aug 4, 2026) · GitHub Advisory GHSA-5wm9-vgmg-cjv6 · IBM Newsroom · KEVIntel telemetry · Recorded Future · Censys · Sysdig",
+    "sources": [
+      {
+        "label": "CISA — Three Known Exploited Vulnerabilities Added to Catalog (Aug 4, 2026)",
+        "url": "https://www.cisa.gov/news-events/alerts/2026/08/04/cisa-adds-three-known-exploited-vulnerabilities-catalog"
+      },
+      {
+        "label": "CISA — Known Exploited Vulnerabilities Catalog",
+        "url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog"
+      },
+      {
+        "label": "GitHub Security Advisory — GHSA-5wm9-vgmg-cjv6 (CVE-2026-9198)",
+        "url": "https://github.com/advisories/GHSA-5wm9-vgmg-cjv6"
+      },
+      {
+        "label": "The Hacker News — CISA Flags Langflow RCE, Tomcat, and N-central Flaws as Actively Exploited",
+        "url": "https://thehackernews.com/2026/08/cisa-flags-langflow-rce-tomcat-and-n.html"
+      },
+      {
+        "label": "BleepingComputer — CISA warns of hackers exploiting Langflow, N-central, Apache Tomcat flaws",
+        "url": "https://www.bleepingcomputer.com/news/security/cisa-warns-of-hackers-exploiting-langflow-n-central-apache-tomcat-flaws/"
+      },
+      {
+        "label": "The Register — IBM's agentic AI platform is under active attack",
+        "url": "https://www.theregister.com/security/2026/08/05/ibms_agentic_ai_platform_is_under_active_attack_patch_now/5283535"
+      },
+      {
+        "label": "Recorded Future — Langflow CVE-2025-3248 Active Exploitation",
+        "url": "https://www.recordedfuture.com/blog/langflow-cve-2025-3248"
+      },
+      {
+        "label": "Sysdig — JADEPUFFER: Agentic Ransomware for Automated Database Extortion",
+        "url": "https://www.sysdig.com/blog/jadepuffer-agentic-ransomware-for-automated-database-extortion"
+      },
+      {
+        "label": "IBM Newsroom — IBM to Acquire DataStax",
+        "url": "https://newsroom.ibm.com/2025-02-25-ibm-to-acquire-datastax,-deepening-watsonx-capabilities-and-addressing-generative-ai-data-needs-for-the-enterprise"
+      },
+      {
+        "label": "KEVIntel — CVE-2026-9198 Exploitation Observed",
+        "url": "https://kevintel.com/CVE-2026-9198"
+      }
+    ],
+    "abstract": [
+      "CISA added CVE-2026-9198 (CVSS 9.8) to the Known Exploited Vulnerabilities catalog on August 4, 2026, giving federal civilian agencies until August 7 to patch.",
+      "Six Langflow CVEs have reached the CISA KEV catalog since May 2025; three of them target the same /api/v1/validate/code endpoint, which runs Python through exec().",
+      "The exploit chains two requests: /api/v1/auto_login mints a superuser token to any caller under Langflow's default configuration, then /api/v1/validate/code executes code.",
+      "KEVIntel recorded first exploitation attempts on July 6, 2026 — eleven days before IBM disclosed the flaw and shipped version 1.10.1 on July 17.",
+      "Langflow came to IBM through its DataStax acquisition, which closed May 28, 2025; Censys measured roughly 7,000 publicly exposed instances in June 2026."
+    ],
+    "llmsDescription": "CVE-2026-9198 is a CVSS 9.8 unauthenticated remote code execution vulnerability in Langflow, the open-source AI agent workflow builder owned by IBM, added to CISA's Known Exploited Vulnerabilities catalog on August 4, 2026 with a three-day remediation deadline for federal civilian agencies. The exploit chains two endpoints: /api/v1/auto_login, which mints superuser tokens to any network caller under the default configuration, and /api/v1/validate/code, which executes arbitrary Python via exec(). KEVIntel recorded 763 exploitation attempts from 299 unique IP addresses across 42 countries, with first activity on July 6, 2026 — eleven days before IBM disclosed the flaw and shipped version 1.10.1 on July 17. It was the third critical vulnerability targeting that same validate/code endpoint to reach the KEV catalog in fifteen months, following CVE-2025-3248 (May 2025) and CVE-2026-0770 (July 2026).",
+    "whatIf": "Today, a compromised Langflow instance yields the API keys and database credentials stored in that single deployment. The blast radius is bounded by whatever that one instance was wired to. The trajectory is not bounded at all. Every enterprise team building agents needs an orchestration framework — Langflow, LangGraph, CrewAI, AutoGen, or whatever ships next quarter — and each one connects to the systems the agents must reach: production databases, payment processors, identity providers, cloud consoles, internal APIs. The framework stores the credentials for every connection, because bridging systems is not a side effect of the product. It is the product. The orchestration layer becomes the de facto credential graph of the enterprise, not because anyone designed it that way, but because connecting to downstream systems is the entire point. Now scale the topology. One company runs dozens of these frameworks across marketing, finance, engineering, and support, each holding credentials to different downstream systems, some of which are themselves orchestration frameworks wired to still more systems. The result is a credential graph nobody drew, nobody inventoried, and nobody monitors as a single attack surface. It assembled itself one drag-and-drop connection at a time. Unauthenticated code execution on one node of that graph does not just take the node. It yields the keys to traverse it. The attacker uses the first instance's stored credentials to reach a connected system, finds another agent framework with its own credential store, exploits the same class of flaw — an evaluation primitive left exposed over HTTP because developers needed to test custom logic — and harvests again. Then moves again. Not one breached server but a self-propagating harvest across a topology that exists only implicitly, in the connection settings of tools that were spun up for a demo and never hardened. There is no credential rotation infrastructure built for that shape. There is no lateral-movement detection for a graph whose edges are API keys sitting in config files on instances nobody patched. What is the mean time to detect movement through a credential graph that no one ever mapped?"
   }
 ]
