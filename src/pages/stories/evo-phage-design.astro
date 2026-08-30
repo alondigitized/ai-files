@@ -1,0 +1,915 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'evo-phage-design')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .evo-phage-design-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* ── Timeline Card: Three eras of ΦX174 ── */
+  .epd-timeline-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+  .epd-tc-panel {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 1.25rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    align-items: start;
+  }
+  .epd-tc-panel:last-child {
+    border-bottom: none;
+  }
+  .epd-tc-panel.epd-tc-highlight {
+    background: color-mix(in srgb, var(--story) 8%, var(--surface));
+    border-left: 3px solid var(--story);
+  }
+  .epd-tc-year {
+    font-size: 1.6rem;
+    font-weight: 900;
+    line-height: 1;
+    color: var(--muted);
+  }
+  .epd-tc-panel.epd-tc-highlight .epd-tc-year {
+    color: var(--story);
+  }
+  .epd-tc-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+  }
+  .epd-tc-panel.epd-tc-highlight .epd-tc-label {
+    color: var(--story);
+  }
+  .epd-tc-who {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.15rem;
+  }
+  .epd-tc-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .epd-tc-footer {
+    padding: 0.75rem 1.5rem;
+    background: var(--bg);
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* ── Pipeline Funnel ── */
+  .epd-funnel {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+  .epd-funnel-step {
+    display: grid;
+    grid-template-columns: 40px 1fr auto;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+  .epd-funnel-step:last-child {
+    border-bottom: none;
+  }
+  .epd-funnel-step.epd-funnel-final {
+    background: color-mix(in srgb, var(--story) 8%, var(--surface));
+    border-left: 3px solid var(--story);
+  }
+  .epd-funnel-num {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-align: center;
+  }
+  .epd-funnel-step.epd-funnel-final .epd-funnel-num {
+    color: var(--story);
+  }
+  .epd-funnel-label {
+    font-size: 0.88rem;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .epd-funnel-label strong {
+    font-weight: 600;
+  }
+  .epd-funnel-count {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--muted);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .epd-funnel-step.epd-funnel-final .epd-funnel-count {
+    color: var(--story);
+    font-size: 1.3rem;
+  }
+  .epd-funnel-footer {
+    padding: 0.75rem 1.5rem;
+    background: var(--bg);
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* ── Growth Curve Comparison ── */
+  .epd-growth {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+  .epd-growth-header {
+    padding: 0.75rem 1.5rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .epd-growth-row {
+    display: grid;
+    grid-template-columns: 140px 1fr auto;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+  .epd-growth-row:last-of-type {
+    border-bottom: none;
+  }
+  .epd-growth-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .epd-growth-name small {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--muted);
+  }
+  .epd-growth-bar-wrap {
+    height: 18px;
+    background: color-mix(in srgb, var(--border) 40%, transparent);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+  }
+  .epd-growth-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+  .epd-growth-bar.epd-wt {
+    background: var(--muted);
+    opacity: 0.5;
+  }
+  .epd-growth-bar.epd-ai {
+    background: var(--story);
+  }
+  .epd-growth-val {
+    font-size: 1rem;
+    font-weight: 900;
+    color: var(--muted);
+    text-align: right;
+    white-space: nowrap;
+    min-width: 60px;
+  }
+  .epd-growth-row.epd-growth-ai .epd-growth-val {
+    color: var(--story);
+  }
+  .epd-growth-footer {
+    padding: 0.75rem 1.5rem;
+    background: var(--bg);
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-style: italic;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* ── Light-theme overrides ── */
+  :root[data-theme="light"] .epd-tc-panel { background: #ebe5d9; border-color: #d5cfc3; }
+  :root[data-theme="light"] .epd-tc-panel.epd-tc-highlight { background: color-mix(in srgb, var(--story) 10%, #ebe5d9); }
+  :root[data-theme="light"] .epd-tc-footer { background: #f5f0e8; }
+  :root[data-theme="light"] .epd-funnel-step { background: #ebe5d9; border-color: #d5cfc3; }
+  :root[data-theme="light"] .epd-funnel-step.epd-funnel-final { background: color-mix(in srgb, var(--story) 10%, #ebe5d9); }
+  :root[data-theme="light"] .epd-funnel-footer { background: #f5f0e8; }
+  :root[data-theme="light"] .epd-growth-row { background: #ebe5d9; border-color: #d5cfc3; }
+  :root[data-theme="light"] .epd-growth-header { background: #ebe5d9; border-color: #d5cfc3; }
+  :root[data-theme="light"] .epd-growth-footer { background: #f5f0e8; }
+
+  @media (max-width: 600px) {
+    .epd-tc-panel { grid-template-columns: 70px 1fr; gap: 0.75rem; padding: 1rem; }
+    .epd-tc-year { font-size: 1.2rem; }
+    .epd-funnel-step { grid-template-columns: 30px 1fr auto; gap: 0.5rem; padding: 0.75rem 1rem; }
+    .epd-growth-row { grid-template-columns: 100px 1fr auto; gap: 0.5rem; padding: 0.75rem 1rem; }
+    .epd-growth-name { font-size: 0.75rem; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="context">
+      <h2><span class="num">01 — Context</span>The Molecule That Keeps Coming Back</h2>
+      <p>On September 17, 2025, a language model that had never seen a microscope produced sixteen organisms that could kill bacteria — each assembled from a genome no natural virus had ever carried.</p>
+      <p>The organism those genomes were modeled on was ΦX174, a bacteriophage so small it is practically a genome with legs. It carries 5,386 nucleotides encoding 11 genes with physically overlapping reading frames — segments of DNA where two different proteins are read from the same stretch of code, shifted by one or two letters. It is among the simplest complete genetic architectures in nature. It is also the most historically consequential.</p>
+      <p>In 1977, Fred Sanger and his colleagues at Cambridge sequenced the ΦX174 genome — the first complete DNA genome ever read. In 2003, Craig Venter's team at the Institute for Biological Energy Alternatives chemically synthesized the same genome from scratch, nucleotide by nucleotide, in 14 days — the first whole genome ever assembled from chemicals. And in September 2025, Samuel King, Brian Hie, and six co-authors at Stanford University and the Arc Institute used AI to generate novel variants of the same molecule that produced living, replicating organisms — the first functional whole genomes ever written by a machine.</p>
+      <p>The results are reported in a preprint posted to bioRxiv on September 17, 2025. The paper has not been peer-reviewed as of May 2026. The underlying models — Evo 1, published in <em>Science</em> in November 2024, and Evo 2, published in <em>Nature</em> in March 2026 — have each undergone peer review. The phage design application has not. King is a PhD candidate in Hie's lab; Hie is an assistant professor of chemical engineering at Stanford and an Arc Institute Innovation Investigator in Residence. King and Hie are named on a provisional patent application filed by Stanford and the Arc Institute related to this work — a financial interest disclosed in the preprint.</p>
+      <p>The tools they used: Evo 1, a 7-billion-parameter genome language model trained on 2.7 million prokaryotic and phage genomes, and Evo 2, a larger model using the StripedHyena 2 architecture, trained on 9.3 trillion nucleotide tokens from more than 128,000 whole genomes across all domains of life. Evo 2 has a one-million-token context window — long enough to read an entire bacterial chromosome in a single pass. Both models are open-weight, with model parameters, training code, and the OpenGenome2 training dataset publicly available on GitHub and HuggingFace.</p>
+
+      <div class="epd-timeline-card">
+        <div class="epd-tc-panel">
+          <div class="epd-tc-year">1977</div>
+          <div>
+            <div class="epd-tc-label">SEQUENCED</div>
+            <div class="epd-tc-who">Fred Sanger, Cambridge</div>
+            <div class="epd-tc-desc">5,386 nucleotides read for the first time — the first complete DNA genome ever deciphered.</div>
+          </div>
+        </div>
+        <div class="epd-tc-panel">
+          <div class="epd-tc-year">2003</div>
+          <div>
+            <div class="epd-tc-label">SYNTHESIZED</div>
+            <div class="epd-tc-who">Craig Venter, IBEA</div>
+            <div class="epd-tc-desc">Known sequence assembled from chemicals in 14 days — the first whole genome built from scratch.</div>
+          </div>
+        </div>
+        <div class="epd-tc-panel epd-tc-highlight">
+          <div class="epd-tc-year">2025</div>
+          <div>
+            <div class="epd-tc-label">GENERATED</div>
+            <div class="epd-tc-who">King, Hie & Evo, Stanford / Arc Institute</div>
+            <div class="epd-tc-desc">Novel sequences written by a language model — 16 produced living, replicating organisms.</div>
+          </div>
+        </div>
+        <div class="epd-tc-footer">The same molecule, three eras. Reading → copying → inventing.</div>
+      </div>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="evo-phage-design-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Rewrite</strong> — A circular ring of genome positions rotates slowly. A scanning arc sweeps clockwise, reading each position in muted gray. The arc stops, reverses, and begins placing accent-colored marks counter-clockwise — reading becomes writing. Rewritten positions glow and pulse. The ring contracts in a single heartbeat, all positions flash in unison, and the organism is alive. The genome fades and the cycle restarts with new mutations.</p>
+
+    <section class="section" id="pipeline">
+      <h2><span class="num">02 — What Happened</span>The Pipeline</h2>
+      <p>The models did not design phages on their own. The pipeline required human engineering at every stage.</p>
+      <p>King and Hie fine-tuned both Evo 1 and Evo 2 on approximately 14,466 Microviridae genome sequences — the family that includes ΦX174. They seeded the models with 4-to-8-nucleotide consensus sequences from the ΦX174 genome and let them generate thousands of candidate sequences. Most of what came out was noise. When the outputs were run through geNomad, a computational tool for classifying viral sequences, only 34 to 38 percent of Evo 2's generations were flagged as recognizably viral. The majority did not look like viruses at all.</p>
+      <p>From that filtered pool, the team applied a second layer of computational screening: candidates had to fall between 4,000 and 6,000 base pairs in length, contain essential ΦX174 genes, and show at least seven protein hits to the ΦX174 reference genome. Three hundred and two candidates passed. Of those, 285 were successfully synthesized using Gibson assembly — a method for stitching together overlapping DNA fragments. The synthesized genomes were transformed into <em>E. coli</em> C host cells and tested in 96-well growth inhibition assays.</p>
+      <p>Sixteen worked. They infected <em>E. coli</em>, replicated inside the host cells, lysed them open, and released progeny phages that could infect new cells. By standard virological criteria, they were functional — capable of completing the full infection cycle.</p>
+
+      <div class="epd-funnel">
+        <div class="epd-funnel-step">
+          <div class="epd-funnel-num">01</div>
+          <div class="epd-funnel-label"><strong>Generate</strong> — Evo 1 / Evo 2 seeded with ΦX174 consensus</div>
+          <div class="epd-funnel-count">Thousands</div>
+        </div>
+        <div class="epd-funnel-step">
+          <div class="epd-funnel-num">02</div>
+          <div class="epd-funnel-label"><strong>Classify</strong> — geNomad viral filter (34–38% flagged as viral)</div>
+          <div class="epd-funnel-count">—</div>
+        </div>
+        <div class="epd-funnel-step">
+          <div class="epd-funnel-num">03</div>
+          <div class="epd-funnel-label"><strong>Screen</strong> — Length, essential genes, protein homology</div>
+          <div class="epd-funnel-count">302</div>
+        </div>
+        <div class="epd-funnel-step">
+          <div class="epd-funnel-num">04</div>
+          <div class="epd-funnel-label"><strong>Synthesize</strong> — Gibson assembly</div>
+          <div class="epd-funnel-count">285</div>
+        </div>
+        <div class="epd-funnel-step epd-funnel-final">
+          <div class="epd-funnel-num">05</div>
+          <div class="epd-funnel-label"><strong>Test</strong> — 96-well growth inhibition in <em>E. coli</em></div>
+          <div class="epd-funnel-count">16</div>
+        </div>
+        <div class="epd-funnel-footer">The exact number of raw sequences generated before filtering is not reported in the preprint.</div>
+      </div>
+
+      <p>The hit rate was low. The pipeline was long. The models could not compose functional genomes without fine-tuning, custom gene annotation, and multi-stage screening. But the sixteen that survived every filter were not copies. They were compositions.</p>
+    </section>
+
+    <section class="section" id="variants">
+      <h2><span class="num">03 — The Variants</span>What the Model Wrote</h2>
+      <p>According to the preprint, the 16 viable phages harbored between 67 and 392 novel mutations relative to their nearest natural phage sequences. Thirteen of the 16 contained mutations absent from all known natural phage genomes — genetic code that nature, as far as the databases record, has never produced.</p>
+      <p>Three variants tell the story of what the model could do.</p>
+      <p><strong>Evo-Phi-2147</strong> was the most divergent design. It carried 392 mutations and showed 93.0 percent average nucleotide identity to its nearest natural relative, a phage called NC51. The conventional threshold for classifying two phages as separate species is approximately 95 percent ANI. Evo-Phi-2147 fell below it. By standard taxonomy, the model may have designed a new species.</p>
+      <p><strong>Evo-Phi-36</strong> solved a problem that human engineers could not. It incorporated the DNA packaging J protein from G4, a distantly related phage. The G4 J protein is 25 amino acids — shorter than ΦX174's 38-amino-acid version. Prior rational engineering attempts to swap the shorter G4 J protein into the ΦX174 capsid had consistently crippled the phage. Evo-Phi-36 made the swap work. Cryo-electron microscopy revealed that the G4 J protein adopted a distinct orientation within the capsid — a structural solution the model found without being told the constraint existed.</p>
+      <p><strong>Evo-Phi-69</strong> was the fittest design. In competitive fitness assays where all 16 AI-designed phages and wild-type ΦX174 competed for the same <em>E. coli</em> host cells over six hours, Evo-Phi-69 expanded 16-fold to 65-fold, according to the preprint. Wild-type ΦX174 expanded 1.3-fold to 4-fold in the same assay. This is one variant, under competitive conditions, over a single six-hour period. Several other AI designs matched but did not exceed wild-type fitness.</p>
+
+      <div class="stat-cards">
+        <div class="stat-card">
+          <div class="stat-num">392</div>
+          <div class="stat-label">Mutations in the most divergent design (Evo-Phi-2147)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">93.0%</div>
+          <div class="stat-label">ANI to nearest natural phage — below the species threshold</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">16–65×</div>
+          <div class="stat-label">Expansion of Evo-Phi-69 vs. wild-type (one variant, competitive conditions, 6 hrs)</div>
+        </div>
+      </div>
+
+      <div class="epd-growth">
+        <div class="epd-growth-header">Competitive Fitness Assay — 6 Hours</div>
+        <div class="epd-growth-row">
+          <div class="epd-growth-name">Wild-type ΦX174</div>
+          <div class="epd-growth-bar-wrap">
+            <div class="epd-growth-bar epd-wt" style="width: 6%;"></div>
+          </div>
+          <div class="epd-growth-val">1.3–4×</div>
+        </div>
+        <div class="epd-growth-row epd-growth-ai">
+          <div class="epd-growth-name">Evo-Phi-69<small>(AI-designed)</small></div>
+          <div class="epd-growth-bar-wrap">
+            <div class="epd-growth-bar epd-ai" style="width: 100%;"></div>
+          </div>
+          <div class="epd-growth-val">16–65×</div>
+        </div>
+        <div class="epd-growth-footer">One variant. Competitive conditions. Several other AI designs matched but did not exceed wild-type fitness.</div>
+      </div>
+
+      <p>The preprint reports one more result. When all 16 AI-designed phages were combined into a cocktail and exposed to three strains of <em>E. coli</em> that had evolved resistance to wild-type ΦX174, the cocktail overcame resistance within one to five serial passages. The breakthrough phages that emerged were mosaics — recombinants that combined segments from two or three different AI-designed genomes. The cocktail provided a diverse enough genetic pool that evolution could find its way past the resistance. Wild-type ΦX174 alone could not.</p>
+    </section>
+
+    <section class="section" id="debate">
+      <h2><span class="num">04 — The Debate</span>Reading vs. Writing</h2>
+      <p>Every prior AI-in-biology story in this archive describes a system that reads. Halicin found a molecule hiding in a database of 6,000 compounds. AlphaFold predicted protein structures that crystallographers had spent decades trying to measure. GraphCast forecast weather from atmospheric history. Each was a feat of pattern recognition — applied to biology or physics, but fundamentally an act of reading what already existed.</p>
+      <p>This is different. According to Brian Hie, "This is the first time AI systems are able to write coherent genome-scale sequences." Samuel King, in an interview with <em>GEN</em>, described it more directly: "Even at the scale of an entire genome, the models were able to reason the different elements in the genome that need to work together in order to create something functional." The word "reason" is King's characterization, not an established mechanistic description of what the model does.</p>
+      <p>J. Craig Venter disputes the novelty. In an interview with <em>MIT Technology Review</em>, Venter characterized the work as "just a faster version of trial-and-error experiments" comparable to processes his team used in 2008. But Venter's 2003 synthesis assembled a known genome — copying a sequence that already existed in nature. King and Hie generated novel sequences, including mutations absent from all known natural phages. The distinction between assembling a known text and composing a new one is substantive.</p>
+
+      <div class="pull-quote">
+        "If we want to engineer more complex functions, we'll need to break out of the single gene space and design complete genomes."
+        <cite>— Brian Hie, Stanford / Arc Institute</cite>
+      </div>
+
+      <p>Hie's broader point addresses a structural limitation in bioengineering. Most biological functions are not achieved by any single gene. They require multiple genes working together — regulatory sequences, structural proteins, assembly factors — in coordination. Prior AI tools in biology operated at the level of individual molecules or individual genes. Genome-scale design is a different category: it requires the model to produce a complete, internally consistent genetic architecture where every part works with every other part. Peter Koo of Cold Spring Harbor Laboratory called the work "a compelling case study of what is possible today." Jef Boeke of NYU Langone Health cautioned that scaling the approach to larger genomes would involve a combinatorial space far larger than the number of subatomic particles in the observable universe.</p>
+    </section>
+
+    <section class="section" id="guardrails">
+      <h2><span class="num">05 — The Guardrails</span>Safety and the Open-Weight Question</h2>
+      <p>The phages designed in this work infect <em>E. coli</em>. They do not infect humans. Bacteriophages, by definition, kill bacteria — they are incapable of entering or replicating in human cells. The immediate biosecurity risk of the 16 organisms produced is, by the researchers' account, negligible.</p>
+      <p>The structural question is what comes next.</p>
+      <p>Arc Institute excluded eukaryotic viruses — viruses that infect humans and other complex organisms — from Evo 2's training data. According to Arc's retrospective published in March 2026, red-teaming evaluations showed that Evo 2 generates sequences that are "effectively random" when prompted for pathogenic viral proteins. The training exclusion weakened the model's ability to produce human-relevant viral sequences. For the base model, in its released form, this appears to hold.</p>
+      <p>But Evo 2 is fully open-weight. The model parameters, training code, inference code, and the OpenGenome2 training dataset are publicly available. As of March 2026, according to Arc's own figures: more than 88,000 GitHub downloads, 380 forks, over 2 million API requests for the 7B-parameter version, over 6 million for the 40B version, and more than 100,000 HuggingFace downloads. Anyone with the compute resources can fine-tune the model on eukaryotic viral data. The training exclusion protects the base model. It does not prevent downstream modification.</p>
+      <p>Brian Hie has argued that the barrier to misuse remains high. "If you wanted to design a bioweapon with AI, it would just be much harder than taking something from nature," he told <em>The Register</em>. The pipeline demonstrated in the preprint required fine-tuning on thousands of Microviridae genomes, custom gene annotation, Gibson assembly, and access to a molecular biology lab with <em>E. coli</em> culture capacity. This is not a push-button operation.</p>
+      <p>J. Craig Venter sees it differently. "One area where I urge extreme caution is any viral enhancement research, especially when it's random so you don't know what you are getting," Venter told <em>MIT Technology Review</em>. "If someone did this with smallpox or anthrax, I would have grave concerns."</p>
+      <p>The OECD AI Policy Observatory classified this work as an "AI Hazard" — not an AI incident, because no harm has occurred, but a case where "creation of AI-designed viruses inherently carries plausible risks of harm to health, environment, or biosecurity if such viruses were to be misused or escape containment." The classification implicates the OECD's AI Principles on Safety and Accountability.</p>
+      <p>Kerstin Goepfrich of Heidelberg University framed the concern as inherent to biology itself: "I think in research in general you always have a dual-use dilemma." Kimberly Davis of the Johns Hopkins Bloomberg School of Public Health saw clinical promise — AI-generated phages could be "a powerful way of rapidly generating a phage match to treat patients with antibiotic-resistant infections" — but emphasized the need for "tight controls" and "extensive testing." Arc Institute's own retrospective acknowledged the gap directly: "Further work for model alignment will be needed for ongoing biosafety."</p>
+      <p>One dimensional fact is worth noting. Niko McCarty of <em>Asimov Press</em> observed that HIV genomes are approximately 10,000 bases and coronavirus genomes approximately 30,000 bases — comparable in scale to the roughly 5,000-base phages designed here. This is not a claim that Evo can design human viruses. It is a statement about the distance between what was demonstrated and what is feared. No dedicated biosecurity institution — no representative from the Johns Hopkins Center for Health Security, NTI, or any equivalent body — has been quoted in coverage of this work.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">06 — Signal</span>The Author and the Search Space</h2>
+      <p>The transition from prediction to generation is not unique to phages. It is a capability class. The same architecture that wrote a 5,386-nucleotide phage genome was trained on more than 128,000 genomes across all domains of life. The search space is not theoretical. It is the training data.</p>
+      <p>The nearest clinical application is phage therapy. Antibiotic-resistant infections kill more than a million people per year, and bacteriophages — viruses that specifically target bacteria — are a natural countermeasure. The bottleneck has always been matching: finding a phage that kills the specific bacterial strain infecting a specific patient. The cocktail result in the preprint — four AI-designed phages overcoming resistance that wild-type ΦX174 could not — is a proof of concept for AI-accelerated phage matching. Jason Kelly, CEO of Ginkgo Bioworks, described larger-scale genome design as "a nation-scale scientific milestone" with geopolitical implications, though his framing should be read in the context of Ginkgo's commercial interest in synthetic biology. Boeke's caution about combinatorial complexity remains: scaling from 5,000-base phage genomes to million-base bacterial genomes is not a linear step.</p>
+      <p>AI has read genomes. It has predicted their structures. It has found molecules hiding in chemical libraries. It has ranked genes in a patient's exome. Now, according to a preprint that has not yet been peer-reviewed, it has written a genome that produced something alive. The question is no longer whether a language model can author biology. The question is what it will be asked to write next — and who decides.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.evo-phage-design-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  const ACCENT = '#20786e';
+  const ACC_R = 32, ACC_G = 120, ACC_B = 110;
+  const GOLD_R = 200, GOLD_G = 150, GOLD_B = 62;
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f5f0e8';
+  const isLight = document.documentElement.dataset.theme === 'light';
+  const DOT_MUTED_R = isLight ? 26 : 200;
+  const DOT_MUTED_G = isLight ? 26 : 195;
+  const DOT_MUTED_B = isLight ? 23 : 185;
+  const DOT_BASE_ALPHA = isLight ? 0.15 : 0.12;
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  });
+  ro.observe(canvas);
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const NUM_DOTS = 54;
+  const NUM_AMB = 14;
+  const NUM_REWRITE = 18;
+  const TWO_PI = Math.PI * 2;
+  const WRITE_DETECT = 0.12;
+
+  const P_READ_END = 420;
+  const P_TURN_END = 480;
+  const P_WRITE_END = 900;
+  const P_PULSE_END = 1080;
+  const CYCLE = 1320;
+
+  function ringRadius(): number {
+    if (W >= 1200) return 130;
+    if (W >= 768) return 100;
+    if (W >= 480) return 75;
+    return 65;
+  }
+
+  interface Dot {
+    baseAngle: number;
+    rewrite: boolean;
+    litTimer: number;
+    written: boolean;
+    r: number;
+    pulseOff: number;
+    alpha: number;
+  }
+  const dots: Dot[] = [];
+
+  interface Amb { x: number; y: number; vx: number; vy: number; r: number; a: number; }
+  const ambs: Amb[] = [];
+
+  let ringRotation = 0;
+  let ringScale = 1.0;
+  let pulseRingR = 0;
+  let pulseRingA = 0;
+  let arcPos = 0;
+  let arcAlpha = 0;
+  let arcWidthDeg = 30;
+  let arcIsWriting = false;
+
+  function normAngle(a: number): number {
+    a = a % TWO_PI;
+    if (a < 0) a += TWO_PI;
+    return a;
+  }
+  function easeIn(t: number): number { return t * t; }
+  function easeOut(t: number): number { return t * (2 - t); }
+
+  function initDots() {
+    dots.length = 0;
+    const rw = new Set<number>();
+    while (rw.size < NUM_REWRITE) rw.add(Math.floor(Math.random() * NUM_DOTS));
+    for (let i = 0; i < NUM_DOTS; i++) {
+      dots.push({
+        baseAngle: (i / NUM_DOTS) * TWO_PI,
+        rewrite: rw.has(i),
+        litTimer: 999,
+        written: false,
+        r: 2.5,
+        pulseOff: Math.random() * TWO_PI,
+        alpha: DOT_BASE_ALPHA,
+      });
+    }
+  }
+
+  function initAmb() {
+    ambs.length = 0;
+    const count = (W || 800) < 600 ? 8 : NUM_AMB;
+    for (let i = 0; i < count; i++) {
+      ambs.push({
+        x: Math.random() * (W || 800),
+        y: Math.random() * (H || 380),
+        vx: (Math.random() - 0.5) * 0.12,
+        vy: (Math.random() - 0.5) * 0.12,
+        r: 1 + Math.random() * 1.5,
+        a: isLight ? 0.04 + Math.random() * 0.03 : 0.03 + Math.random() * 0.03,
+      });
+    }
+  }
+
+  function resetCycle() {
+    const rw = new Set<number>();
+    while (rw.size < NUM_REWRITE) rw.add(Math.floor(Math.random() * NUM_DOTS));
+    for (let i = 0; i < dots.length; i++) {
+      const d = dots[i];
+      d.rewrite = rw.has(i);
+      d.litTimer = 999;
+      d.written = false;
+      d.r = 2.5;
+      d.alpha = DOT_BASE_ALPHA;
+      d.pulseOff = Math.random() * TWO_PI;
+    }
+    arcPos = 0;
+    arcAlpha = 0;
+    arcWidthDeg = 30;
+    arcIsWriting = false;
+    ringScale = 1.0;
+    pulseRingR = 0;
+    pulseRingA = 0;
+  }
+
+  function update() {
+    const cf = frame % CYCLE;
+
+    for (const a of ambs) {
+      a.x += a.vx; a.y += a.vy;
+      if (a.x < -10) a.x = (W || 800) + 10;
+      if (a.x > (W || 800) + 10) a.x = -10;
+      if (a.y < -10) a.y = (H || 380) + 10;
+      if (a.y > (H || 380) + 10) a.y = -10;
+    }
+
+    ringRotation += cf < P_PULSE_END ? 0.002 : 0.001;
+
+    if (cf < P_READ_END) {
+      arcPos = cf * 0.015;
+      arcAlpha = 0.5;
+      arcWidthDeg = W < 480 ? 25 : 30;
+      arcIsWriting = false;
+      ringScale = 1.0;
+
+      const arcW = arcWidthDeg * (Math.PI / 180);
+      const leadA = normAngle(arcPos);
+      for (const d of dots) {
+        const dotA = normAngle(d.baseAngle + ringRotation);
+        const delta = normAngle(leadA - dotA);
+        d.litTimer = delta < arcW * 0.3 ? 0 : d.litTimer + 1;
+        d.alpha = DOT_BASE_ALPHA + (d.litTimer < 30 ? 0.25 * (1 - d.litTimer / 30) : 0);
+        d.r = 2.5;
+        d.written = false;
+      }
+    }
+    else if (cf < P_TURN_END) {
+      const tf = cf - P_READ_END;
+
+      if (tf < 30) {
+        arcPos += 0.015 * (1 - easeIn(tf / 30));
+      } else if (tf < 45) {
+        // Hold still
+      } else {
+        const t = (tf - 45) / 15;
+        arcPos -= 0.012 * easeOut(t);
+        arcIsWriting = true;
+      }
+
+      const t = tf / 60;
+      arcWidthDeg = (W < 480 ? 25 : 30) - t * 10;
+      arcAlpha = 0.5 + t * 0.2;
+
+      for (const d of dots) {
+        d.litTimer++;
+        d.alpha = DOT_BASE_ALPHA + (d.litTimer < 30 ? 0.25 * (1 - d.litTimer / 30) : 0);
+      }
+    }
+    else if (cf < P_WRITE_END) {
+      arcPos -= 0.012;
+      arcAlpha = 0.7;
+      arcWidthDeg = W < 480 ? 15 : 20;
+      arcIsWriting = true;
+      ringScale = 1.0;
+
+      const leadA = normAngle(arcPos);
+      for (const d of dots) {
+        const dotA = normAngle(d.baseAngle + ringRotation);
+        const dist = normAngle(dotA - leadA);
+        if (dist < WRITE_DETECT && d.rewrite && !d.written) {
+          d.written = true;
+        }
+        if (dist < 0.25) {
+          d.litTimer = 0;
+        } else if (!d.written) {
+          d.litTimer++;
+        }
+        if (d.written) {
+          d.r = 3.0 + 0.5 * Math.sin(frame * 0.025 + d.pulseOff);
+          d.alpha = 0.85;
+        } else {
+          d.alpha = DOT_BASE_ALPHA + (d.litTimer < 20 ? 0.2 * (1 - d.litTimer / 20) : 0);
+          d.r = 2.5;
+        }
+      }
+    }
+    else if (cf < P_PULSE_END) {
+      const pf = cf - P_WRITE_END;
+
+      arcAlpha = pf < 30 ? 0.7 * (1 - pf / 30) : 0;
+
+      if (pf < 60) {
+        ringScale = 1.0;
+        for (const d of dots) {
+          if (d.written) {
+            d.r = 3.0 + 0.5 * Math.sin(frame * 0.025 + d.pulseOff);
+            d.alpha = 0.85;
+          } else {
+            d.alpha = DOT_BASE_ALPHA;
+            d.r = 2.5;
+          }
+        }
+      } else if (pf < 105) {
+        const t = (pf - 60) / 45;
+        ringScale = 1.0 - easeIn(t) * 0.31;
+        for (const d of dots) {
+          if (d.written) {
+            d.r = 3.0 + 0.5 * Math.sin(frame * 0.025 + d.pulseOff);
+            d.alpha = 0.85;
+          } else {
+            d.alpha = DOT_BASE_ALPHA;
+            d.r = 2.5;
+          }
+        }
+      } else if (pf < 108) {
+        ringScale = 0.69;
+        for (const d of dots) { d.alpha = 0.9; d.r = 4; }
+        if (pf === 105) { pulseRingR = 0; pulseRingA = 0.2; }
+      } else if (pf < 150) {
+        const t = (pf - 108) / 42;
+        ringScale = 0.69 + easeOut(t) * 0.31;
+        const holdT = pf - 108;
+        for (const d of dots) {
+          if (holdT < 30) {
+            d.alpha = 0.9; d.r = 4;
+          } else {
+            const fadeT = Math.min(1, (holdT - 30) / 12);
+            if (d.written) {
+              d.alpha = 0.85;
+              d.r = 3.0 + 0.5 * Math.sin(frame * 0.025 + d.pulseOff);
+            } else {
+              d.alpha = 0.9 - fadeT * (0.9 - DOT_BASE_ALPHA);
+              d.r = 4 - fadeT * 1.5;
+            }
+          }
+        }
+      } else {
+        ringScale = 1.0;
+        for (const d of dots) {
+          if (d.written) {
+            d.alpha = 0.85;
+            d.r = 3.0 + 0.5 * Math.sin(frame * 0.025 + d.pulseOff);
+          } else {
+            d.alpha = DOT_BASE_ALPHA; d.r = 2.5;
+          }
+        }
+      }
+
+      if (pulseRingA > 0.002) {
+        pulseRingR += 1.5;
+        pulseRingA = Math.max(0, pulseRingA - 0.003);
+      }
+    }
+    else {
+      const af = cf - P_PULSE_END;
+      arcAlpha = 0;
+      ringScale = 1.0;
+      pulseRingA = Math.max(0, pulseRingA - 0.003);
+
+      if (af < 90) {
+        for (const d of dots) {
+          if (d.written) {
+            d.alpha = 0.85;
+            d.r = 3.0 + 0.5 * Math.sin(frame * 0.025 + d.pulseOff);
+          } else {
+            d.alpha = DOT_BASE_ALPHA; d.r = 2.5;
+          }
+        }
+      } else if (af < 150) {
+        const t = (af - 90) / 60;
+        for (const d of dots) {
+          d.alpha = (d.written ? 0.85 : DOT_BASE_ALPHA) * (1 - t);
+          d.r = 2.5;
+        }
+      } else {
+        for (const d of dots) { d.alpha = 0; }
+      }
+    }
+
+    if (cf === 0 && frame > 0) resetCycle();
+  }
+
+  function draw() {
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+
+    const cx = W / 2;
+    const cy = H / 2;
+    const R = ringRadius() * ringScale;
+
+    for (const a of ambs) {
+      ctx.globalAlpha = a.a;
+      ctx.fillStyle = `rgb(${GOLD_R},${GOLD_G},${GOLD_B})`;
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, a.r, 0, TWO_PI);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    if (pulseRingA > 0.003) {
+      ctx.strokeStyle = `rgba(${ACC_R},${ACC_G},${ACC_B},${pulseRingA.toFixed(3)})`;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(cx, cy, pulseRingR, 0, TWO_PI);
+      ctx.stroke();
+    }
+
+    if (arcAlpha > 0.01) {
+      const arcW = arcWidthDeg * (Math.PI / 180);
+      const leadAngle = normAngle(arcPos);
+
+      if (arcIsWriting) {
+        const trailAngle = normAngle(leadAngle + arcW);
+        ctx.strokeStyle = `rgba(${ACC_R},${ACC_G},${ACC_B},${(arcAlpha * 0.25).toFixed(3)})`;
+        ctx.lineWidth = 18;
+        ctx.beginPath();
+        ctx.arc(cx, cy, R, leadAngle, trailAngle, false);
+        ctx.stroke();
+
+        ctx.strokeStyle = `rgba(${ACC_R},${ACC_G},${ACC_B},${arcAlpha.toFixed(3)})`;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.arc(cx, cy, R, leadAngle - 0.03, leadAngle + 0.03);
+        ctx.stroke();
+      } else {
+        const gR = isLight ? 80 : 200;
+        const gG = isLight ? 75 : 195;
+        const gB = isLight ? 65 : 185;
+        const trailAngle = normAngle(leadAngle - arcW);
+        ctx.strokeStyle = `rgba(${gR},${gG},${gB},${(arcAlpha * 0.18).toFixed(3)})`;
+        ctx.lineWidth = 16;
+        ctx.beginPath();
+        ctx.arc(cx, cy, R, trailAngle, leadAngle, false);
+        ctx.stroke();
+
+        ctx.strokeStyle = `rgba(${gR},${gG},${gB},${(arcAlpha * 0.4).toFixed(3)})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, R, leadAngle - 0.03, leadAngle + 0.03);
+        ctx.stroke();
+      }
+    }
+
+    for (const d of dots) {
+      if (d.alpha < 0.005) continue;
+
+      const angle = d.baseAngle + ringRotation;
+      const x = cx + Math.cos(angle) * R;
+      const y = cy + Math.sin(angle) * R;
+
+      if (d.written) {
+        ctx.globalAlpha = d.alpha * 0.12;
+        ctx.fillStyle = `rgb(${ACC_R},${ACC_G},${ACC_B})`;
+        ctx.beginPath();
+        ctx.arc(x, y, 8, 0, TWO_PI);
+        ctx.fill();
+
+        ctx.globalAlpha = d.alpha;
+        ctx.fillStyle = ACCENT;
+        ctx.beginPath();
+        ctx.arc(x, y, d.r, 0, TWO_PI);
+        ctx.fill();
+      } else {
+        ctx.globalAlpha = d.alpha;
+        ctx.fillStyle = `rgb(${DOT_MUTED_R},${DOT_MUTED_G},${DOT_MUTED_B})`;
+        ctx.beginPath();
+        ctx.arc(x, y, d.r, 0, TWO_PI);
+        ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+
+    const cf = frame % CYCLE;
+    if (cf >= P_WRITE_END + 60 && cf < P_WRITE_END + 150) {
+      const pf = cf - P_WRITE_END - 60;
+      let ga = 0;
+      if (pf < 45) ga = easeIn(pf / 45) * 0.12;
+      else if (pf < 48) ga = 0.2;
+      else ga = Math.max(0, 0.2 * (1 - (pf - 48) / 42));
+      if (ga > 0.005) {
+        const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 0.8);
+        grad.addColorStop(0, `rgba(${ACC_R},${ACC_G},${ACC_B},${ga.toFixed(3)})`);
+        grad.addColorStop(0.5, `rgba(${ACC_R},${ACC_G},${ACC_B},${(ga * 0.4).toFixed(3)})`);
+        grad.addColorStop(1, `rgba(${ACC_R},${ACC_G},${ACC_B},0)`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(cx, cy, R * 0.8, 0, TWO_PI);
+        ctx.fill();
+      }
+    }
+  }
+
+  function drawStatic() {
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+
+    const cx = W / 2;
+    const cy = H / 2;
+    const R = ringRadius();
+
+    for (const a of ambs) {
+      ctx.globalAlpha = a.a;
+      ctx.fillStyle = `rgb(${GOLD_R},${GOLD_G},${GOLD_B})`;
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, a.r, 0, TWO_PI);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 0.6);
+    grad.addColorStop(0, `rgba(${ACC_R},${ACC_G},${ACC_B},0.08)`);
+    grad.addColorStop(1, `rgba(${ACC_R},${ACC_G},${ACC_B},0)`);
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, R * 0.6, 0, TWO_PI);
+    ctx.fill();
+
+    for (const d of dots) {
+      const x = cx + Math.cos(d.baseAngle) * R;
+      const y = cy + Math.sin(d.baseAngle) * R;
+
+      if (d.rewrite) {
+        ctx.globalAlpha = 0.12;
+        ctx.fillStyle = `rgb(${ACC_R},${ACC_G},${ACC_B})`;
+        ctx.beginPath();
+        ctx.arc(x, y, 8, 0, TWO_PI);
+        ctx.fill();
+
+        ctx.globalAlpha = 0.85;
+        ctx.fillStyle = ACCENT;
+        ctx.beginPath();
+        ctx.arc(x, y, 3.5, 0, TWO_PI);
+        ctx.fill();
+      } else {
+        ctx.globalAlpha = DOT_BASE_ALPHA;
+        ctx.fillStyle = `rgb(${DOT_MUTED_R},${DOT_MUTED_G},${DOT_MUTED_B})`;
+        ctx.beginPath();
+        ctx.arc(x, y, 2.5, 0, TWO_PI);
+        ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function tick() {
+    frame++;
+    update();
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  function init() {
+    initDots();
+    initAmb();
+    resetCycle();
+  }
+
+  requestAnimationFrame(() => {
+    init();
+    if (prefersReduced) {
+      drawStatic();
+    } else {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+        else { cancelAnimationFrame(raf); raf = 0; }
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+
+      window.addEventListener('pagehide', () => {
+        cancelAnimationFrame(raf);
+        ro.disconnect();
+        io.disconnect();
+      });
+    }
+  });
+})();
+</script>
