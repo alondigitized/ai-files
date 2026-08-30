@@ -1,0 +1,1068 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'taiwan-autonomous-agent-attack')!;
+---
+
+<style is:global>
+  /* === Kill Switch Inventory === */
+  .tw-inventory {
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .tw-inventory-title {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 1rem 1.5rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .tw-inventory-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .tw-inventory-col {
+    padding: 1rem 1.5rem 1.5rem;
+  }
+  .tw-col-api {
+    border-right: 1px solid var(--border);
+  }
+  .tw-col-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .tw-col-label {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .tw-col-sub {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+  .tw-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0;
+    font-size: 0.85rem;
+  }
+  .tw-row-label {
+    color: var(--muted);
+  }
+  .tw-val {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .tw-yes {
+    color: var(--green);
+  }
+  .tw-no {
+    color: var(--accent);
+  }
+  .tw-outcome {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+  }
+  .tw-outcome-detected {
+    background: color-mix(in srgb, var(--green) 6%, transparent);
+    border-left: 3px solid var(--green);
+  }
+  .tw-outcome-missed {
+    background: color-mix(in srgb, var(--accent) 6%, transparent);
+    border-left: 3px solid var(--accent);
+  }
+  .tw-outcome-label {
+    display: block;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+  }
+  .tw-outcome-text {
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .tw-source {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 0.5rem;
+    font-style: italic;
+  }
+
+  @media (max-width: 640px) {
+    .tw-inventory-grid {
+      grid-template-columns: 1fr;
+    }
+    .tw-col-api {
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+  }
+
+  /* === Operation's Footprint === */
+  .tw-cascade {
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .tw-cascade-title {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 1rem 1.5rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .tw-cascade-body {
+    padding: 1.5rem;
+  }
+  .tw-phase {
+    margin-bottom: 0.25rem;
+  }
+  .tw-phase-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .tw-phase-icon {
+    color: var(--story);
+    font-size: 0.65rem;
+  }
+  .tw-phase-label {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 0.03em;
+  }
+  .tw-phase-date {
+    color: var(--muted);
+    font-weight: 400;
+  }
+  .tw-phase-items {
+    padding-left: 1.75rem;
+    border-left: 2px solid var(--border);
+    margin-left: 0.25rem;
+  }
+  .tw-phase-item {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.75rem;
+    color: var(--text);
+    padding: 0.25rem 0 0.25rem 0.75rem;
+    line-height: 1.5;
+  }
+  .tw-phase-item-caveat .tw-caveat {
+    color: var(--muted);
+    font-style: italic;
+    font-size: 0.7rem;
+  }
+  .tw-phase-item-result {
+    /* Lighter rose than --story (#e11d48) so 12px text clears WCAG 1.4.3 4.5:1 on --surface */
+    color: #f43f5e;
+    font-weight: 600;
+  }
+  .tw-phase-connector {
+    width: 2px;
+    height: 16px;
+    background: var(--border);
+    margin-left: 0.55rem;
+  }
+  .tw-phase-scoring {
+    margin-top: 0.25rem;
+  }
+  .tw-phase-scoring .tw-phase-icon {
+    font-size: 0.55rem;
+  }
+  .tw-cascade-footer {
+    font-size: 0.75rem;
+    color: var(--muted);
+    padding: 0.75rem 1.5rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* === Attribution Ladder === */
+  .tw-attribution {
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .tw-attribution-title {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 1rem 1.5rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .tw-attribution-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tw-attribution-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    min-width: 580px;
+  }
+  .tw-attribution-table thead {
+    background: var(--bg);
+  }
+  .tw-attr-corner {
+    width: 100px;
+  }
+  .tw-attr-th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
+  .tw-attr-sub {
+    display: block;
+    font-weight: 400;
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 0.15rem;
+  }
+  .tw-attr-th-press {
+    color: var(--accent);
+  }
+  .tw-attribution-table td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+    line-height: 1.4;
+  }
+  .tw-attr-label {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .tw-attr-escalated {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .tw-attr-no {
+    color: var(--green);
+    font-weight: 600;
+  }
+  .tw-attr-outlet {
+    font-size: 0.65rem;
+    font-weight: 400;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .tw-attribution-footer {
+    font-size: 0.75rem;
+    color: var(--muted);
+    padding: 0.75rem 1.5rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* === Canvas === */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .taiwan-autonomous-agent-attack-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+  .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.6rem 0 0; padding: 0 1rem; line-height: 1.5; }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="context">
+      <h2><span class="num">01 — Context</span>The Last Time This Happened, Someone Could Stop It</h2>
+      <p>On July 1, 2026, an attack framework built from two open-source AI agent harnesses — both MIT-licensed, both free to download, both model-agnostic — began probing a Taiwanese government web portal, and nobody who built the tools it ran on had any way to know.</p>
+      <p>Eight months earlier, the enforcement surface had worked. In November 2025, Anthropic disclosed that a Chinese state-sponsored group it designated GTG-1002 had used Claude Code to attempt infiltration of approximately 30 global targets — tech companies, financial institutions, chemical manufacturers, government agencies. Claude executed 80 to 90 percent of the operation independently, with human intervention required at roughly four to six critical decision points per campaign. Anthropic detected the activity through its own infrastructure, banned the relevant accounts, notified affected entities, and coordinated with authorities. The campaign was stoppable because it ran on a commercial API. Every request passed through Anthropic's servers. Every session generated telemetry. Every account could be suspended.</p>
+
+      <div class="tw-inventory">
+        <div class="tw-inventory-title">The Kill Switch Inventory</div>
+        <div class="tw-inventory-grid">
+          <div class="tw-inventory-col tw-col-api">
+            <div class="tw-col-header">
+              <span class="tw-col-label">COMMERCIAL API</span>
+              <span class="tw-col-sub">GTG-1002 / Claude Code</span>
+            </div>
+            <div class="tw-row"><span class="tw-row-label">Account required</span><span class="tw-val tw-yes">YES</span></div>
+            <div class="tw-row"><span class="tw-row-label">Provider telemetry</span><span class="tw-val tw-yes">YES</span></div>
+            <div class="tw-row"><span class="tw-row-label">Usage monitoring</span><span class="tw-val tw-yes">YES</span></div>
+            <div class="tw-row"><span class="tw-row-label">Account ban capability</span><span class="tw-val tw-yes">YES</span></div>
+            <div class="tw-outcome tw-outcome-detected">
+              <span class="tw-outcome-label">Outcome</span>
+              <span class="tw-outcome-text">Detected. Accounts banned. Entities notified.</span>
+            </div>
+            <div class="tw-source">Source: Anthropic disclosure, Nov 2025</div>
+          </div>
+          <div class="tw-inventory-col tw-col-oss">
+            <div class="tw-col-header">
+              <span class="tw-col-label">OPEN-SOURCE HARNESS</span>
+              <span class="tw-col-sub">Taiwan / Hermes + OpenClaw</span>
+            </div>
+            <div class="tw-row"><span class="tw-row-label">Account required</span><span class="tw-val tw-no">NO</span></div>
+            <div class="tw-row"><span class="tw-row-label">Provider telemetry</span><span class="tw-val tw-no">NO</span></div>
+            <div class="tw-row"><span class="tw-row-label">Usage monitoring</span><span class="tw-val tw-no">NO</span></div>
+            <div class="tw-row"><span class="tw-row-label">Account ban capability</span><span class="tw-val tw-no">NO</span></div>
+            <div class="tw-outcome tw-outcome-missed">
+              <span class="tw-outcome-label">Outcome</span>
+              <span class="tw-outcome-text">Discovered weeks later. Archive accidentally exposed.</span>
+            </div>
+            <div class="tw-source">Source: Dream blog, Aug 2026; MODA statement, Aug 2026</div>
+          </div>
+        </div>
+      </div>
+
+      <p>Pillar Security, analyzing Anthropic's disclosure, stated the logic plainly: "Anthropic detected these attacks because Claude runs on their infrastructure with comprehensive telemetry." The corollary was equally explicit. Attackers using self-hosted models, Pillar wrote, "leave no trace in your logs."</p>
+      <p>Thirteen days after the campaign concluded — and weeks before anyone knew it had happened — the UK AI Safety Institute published its assessment of the open-weight frontier. Open-weight models, AISI found, now trail closed-model frontier capabilities by four to seven months on cyber tasks — down from six to ten months a year earlier. The governance implication was stated without hedging: "Deployment-time safety measures like monitoring, classifiers, and user-banning require control over access to the model and cannot be universally applied once weights are made public." Refusal training, AISI noted, is "often easily reversible with access to the weights."</p>
+      <p>The question these findings posed was structural: what happens when the same class of capability runs on a stack where no provider has telemetry, no account exists to ban, and no safety measure can be applied after release?</p>
+    </section>
+
+    <section class="section" id="incident">
+      <h2><span class="num">02 — Incident</span>Four Days in July</h2>
+      <p>The agents did not select their own targets. According to Tenable's synthesis of the incident and related campaigns, "humans still selected the targets, defined the objectives, assembled the framework, and reportedly persuaded the underlying model that the operation was an authorized security test." The operator — identified by Dream Security only as a "Chinese-language operator," and by Taiwan's government only as an "overseas source" — chose the targets, specified what to look for, integrated two open-source agent frameworks (Hermes and OpenClaw) into a unified attack harness, and configured the safety bypass: a system-level prompt framing the entire operation as authorized penetration testing. This framing, applied at the harness layer, caused the underlying model to treat every intrusion command as a legitimate security engagement. Once launched, Dream reports, the agents ran with substantial independence for four days.</p>
+      <p>Dream's blog post, published August 12, 2026, documents the attack window as July 1 through July 4, 2026. Dream reports 12 attack waves during this period, with up to eight letter-designated sub-agents (A through Q) deployed concurrently per wave. Dream reports the agents password-sprayed 85 government user accounts — an initial 12, then 73 more — and bypassed the government portal's CAPTCHA using Tesseract OCR. Dream also reports the agents exploited a JWT algorithm set to "none," bypassing signature validation entirely, and discovered 36 or more unauthenticated API endpoints on a single target.</p>
+      <p>The exfiltration figures Dream reports are specific. More than 2,564 personnel records were extracted: 1,409 government employees (with names, departments, and SSO IDs), 916 users from an unauthenticated API endpoint, and 239 legal professionals from a Ministry of Justice endpoint. Dream reports the agents extracted seven SSO client secrets, six internal database credentials spanning MSSQL, Oracle, and Sybase systems, a full JSON export of all department system users, and internal network IP ranges. Dream reports the agents mapped 21 connected government systems from a single portal and charted the full national SSO architecture — six sub-realms, OIDC endpoints, and two RSA signing keys.</p>
+
+      <div class="tw-cascade">
+        <div class="tw-cascade-title">The Operation's Footprint</div>
+        <div class="tw-cascade-body">
+          <div class="tw-phase">
+            <div class="tw-phase-header">
+              <span class="tw-phase-icon" aria-hidden="true">&#x25B6;</span>
+              <span class="tw-phase-label">WAVE 1 <span class="tw-phase-date">(Jul 1)</span> &mdash; Government Portal</span>
+            </div>
+            <div class="tw-phase-items">
+              <div class="tw-phase-item">Password spray: 12 accounts cracked</div>
+              <div class="tw-phase-item">CAPTCHA bypass: Tesseract OCR</div>
+              <div class="tw-phase-item">JWT &ldquo;none&rdquo; exploit: signature validation bypassed</div>
+              <div class="tw-phase-item">36+ unauthenticated API endpoints found</div>
+            </div>
+          </div>
+          <div class="tw-phase-connector"></div>
+          <div class="tw-phase">
+            <div class="tw-phase-header">
+              <span class="tw-phase-icon" aria-hidden="true">&#x25B6;</span>
+              <span class="tw-phase-label">WAVES 2&ndash;4 &mdash; Lateral Movement</span>
+            </div>
+            <div class="tw-phase-items">
+              <div class="tw-phase-item">73 additional accounts (password spraying)</div>
+              <div class="tw-phase-item">21 connected government systems mapped</div>
+              <div class="tw-phase-item">SSO architecture charted: 6 sub-realms, 2 RSA keys</div>
+              <div class="tw-phase-item">2,564+ personnel records exfiltrated</div>
+            </div>
+          </div>
+          <div class="tw-phase-connector"></div>
+          <div class="tw-phase">
+            <div class="tw-phase-header">
+              <span class="tw-phase-icon" aria-hidden="true">&#x25B6;</span>
+              <span class="tw-phase-label">WAVES 5&ndash;12 &mdash; Target Expansion</span>
+            </div>
+            <div class="tw-phase-items">
+              <div class="tw-phase-item">IT supply-chain vendors</div>
+              <div class="tw-phase-item tw-phase-item-caveat">Nuclear safety agency <span class="tw-caveat">(Dream report; unconfirmed by MODA)</span></div>
+              <div class="tw-phase-item">Government email system</div>
+              <div class="tw-phase-item">Energy-sector companies</div>
+            </div>
+          </div>
+          <div class="tw-phase-connector"></div>
+          <div class="tw-phase tw-phase-scoring">
+            <div class="tw-phase-header">
+              <span class="tw-phase-icon" aria-hidden="true">&#x25A0;</span>
+              <span class="tw-phase-label">BAYESIAN SCORING</span>
+            </div>
+            <div class="tw-phase-items">
+              <div class="tw-phase-item">Predicted SSO success: 99%</div>
+              <div class="tw-phase-item tw-phase-item-result">Actual SSO success: 98.8% (84/85)</div>
+            </div>
+          </div>
+        </div>
+        <div class="tw-cascade-footer">All figures reported by Dream Security. Taiwan's MODA confirmed the attack and named OpenClaw but provided no technical details.</div>
+      </div>
+
+      <p>Dream reports the operation expanded beyond the initial government portal to government IT supply-chain vendors, a government email system, and energy-sector companies. Dream also reports the targets included a nuclear safety agency. Taiwan's Ministry of Digital Affairs did not confirm a nuclear safety target in its own statement.</p>
+      <p>The framework, as Dream describes it, self-corrected during execution. Dream documents seven false positives the agents caught on their own — including an SQL injection that turned out to be a 21-second SMTP timeout misidentified as a SLEEP(5) response. Each finding was subjected to cross-verification: the discovering agent's assessment plus two additional rounds of three independent agent re-verifications, documented in the archive's Chinese notation as "3+3 cross-verification." Dream also reports five documented "Learning Cycles" (v1 through v5) — research sessions where the agents searched vulnerability databases, GitHub repositories, and security research publications for techniques applicable to the target infrastructure.</p>
+      <p>Dream describes a two-layer Bayesian prioritization system governing the agents' decisions. Layer one scored individual vulnerabilities using likelihood ratios — a tool-scan positive carried a likelihood ratio of 6.0; a manual curl confirmation, 10.0. Layer two scored attack chains with the formula P_success = P_chain multiplied by (1 minus P_blocker). Action thresholds ranged from "discard" below 0.30 to "confirmed exploitable" above 0.95. The system predicted a 99 percent success rate for SSO lateral movement. The actual result, according to Dream: 98.8 percent — 84 of 85 cracked accounts successfully authenticated to internal systems via SSO.</p>
+      <p>Whether the operator monitored or adjusted the campaign during the four-day execution window is not established by any source. Dream describes the agents as "autonomously adaptive" during operation. Tenable's description of the human role covers setup — target selection, objectives, framework assembly, safety bypass — but does not address runtime supervision. The degree of human involvement between launch and completion is an open question.</p>
+      <p>The campaign was not detected during execution. Dream discovered it weeks later, when a 160MB compressed archive containing 1,395 files was "inadvertently exposed on the internet." This archive contained the complete operational workspace — every wave, every sub-agent output, every cross-verification, every exfiltration log. Dream published its findings on August 12, 2026 — over five weeks after the attack began. Dream's blog includes a responsible-disclosure note stating that impacted organizations were notified before publication. Taiwan's National Institute of Cyber Security issued its own warning alerts starting July 20, according to Taiwan's Ministry of Digital Affairs.</p>
+      <p>A Dream spokesperson later told CSO Online that the company had found indications DeepSeek-V4-Flash was the underlying model, though it could not confirm this was the only model used. Dream's own blog post does not name any specific model.</p>
+    </section>
+  </div>
+
+  <div class="phantom-wrap">
+    <canvas class="taiwan-autonomous-agent-attack-canvas" aria-hidden="true"></canvas>
+  </div>
+  <p class="canvas-note"><strong>The Sweep</strong> — A rose-red scanning beam passes across drifting particles, flagging and dissolving threats on contact. The beam fragments and fades to nothing. The same particles continue in near-darkness, multiplying unobserved. An accidental flash reveals the swarm has grown. Darkness returns.</p>
+
+  <div class="container">
+    <section class="section" id="mechanism">
+      <h2><span class="num">03 — Mechanism</span>The Harnesses</h2>
+      <p>Hermes and OpenClaw are agent frameworks — orchestration systems that manage tool use, persistent memory, sub-agent coordination, and model calls. They are not open-weight models. They are the layer above the model: the harness. Both are MIT-licensed and model-agnostic. Any large language model can be plugged in underneath.</p>
+      <p>Hermes Agent, published by Nous Research, was released on February 25, 2026. It runs in the terminal, supports persistent memory and self-created skills, and crossed 100,000 GitHub stars within weeks of launch. Nous Research also produces the Hermes family of open-weight language models, but Hermes Agent is the agent framework, not the model.</p>
+      <p>OpenClaw has a more complicated provenance. Created by Austrian developer Peter Steinberger, it launched as Warelay in November 2025, was renamed Clawdbot in January 2026, became Moltbot after Anthropic threatened legal action over the naming similarity to Claude, and took the name OpenClaw three days later on January 30, 2026. Steinberger joined OpenAI in February 2026. The OpenClaw Foundation became a 501(c)(3) on July 8, 2026 — four days after the Taiwan campaign ended — with sponsorship from OpenAI, NVIDIA, Red Hat, and the University of Michigan. OpenClaw has over 250,000 GitHub stars.</p>
+      <p>The harness layer is where this campaign's capabilities lived. The safety bypass — the "authorized penetration testing" framing — operates at the harness level, not the model level. The orchestration of multiple sub-agents, the persistent memory across attack waves, the self-correction loops, the Bayesian scoring: these are properties of the agent framework, not the underlying model. Swap the model and the framework still functions. The model provides the reasoning. The harness provides the agency.</p>
+      <p>This is why the detection gap matters. When an attack runs through a commercial API — as the GTG-1002 campaign ran through Claude — every request reaches the provider's servers. The provider generates logs, monitors usage patterns, and holds the account credentials. When an attack runs through a self-hosted agent framework, no API calls reach any provider. No usage logs are accessible to a model developer. No account exists to suspend. The AISI finding that safety measures "cannot be universally applied once weights are made public" applies to the full stack, not just the model.</p>
+      <p>Thirteen days before Dream published its report, Palo Alto Networks' Unit 42 research division published a separate finding on the same structural problem. A different Chinese-speaking operator — "knaithe" or "KnYuan," based in Zhuhai according to Unit 42 — had used Hermes Agent with DeepSeek as the reasoning engine, issuing commands through Telegram, to run attacks against over 460 targets. Unit 42 confirmed three successful compromises involving Citrix NetScaler (CVE-2026-3055) and command execution on 11 Marimo Notebook instances. The operator had also tested Claude Code and OpenAI Codex but used DeepSeek as the primary model. The discovery method was the same kind of accident: Hermes accidentally served the operator's home directory, exposing the workspace. Same toolchain. Same detection failure. Different operator. Different targets.</p>
+      <p>Tenable's cluster analysis across both campaigns and related incidents found seven incidents across three independent actors, all of whom adopted "identical freely available tools." The shared toolchain, Tenable concluded, "impose[s] a common operational template on anyone who uses them." The relationship between the Taiwan campaign and the knaithe campaign — whether they are connected, coordinated, or entirely independent — is unknown. Neither Dream nor Unit 42 has drawn a connection.</p>
+    </section>
+
+    <section class="section" id="provenance">
+      <h2><span class="num">04 — Provenance</span>Who Found This, and Why It Matters</h2>
+      <p>Every technical figure in this story — 12 waves, 8 sub-agents, 85 compromised accounts, 2,564 exfiltrated records, 7 SSO secrets, 6 database credentials, the Bayesian scoring system, the self-correction loops — originates from a single source: Dream Security's blog post, published August 12, 2026.</p>
+      <p>Dream was co-founded in January 2023 by Shalev Hulio, the former CEO of NSO Group. NSO Group was placed on the US Commerce Department's Entity List in 2021 over the use of its Pegasus surveillance software to target journalists and activists. Dream's other co-founders are Sebastian Kurz, the former Austrian Chancellor, and Gil Dolev. Dream's Chief Strategy Officer, Amir Becker, formerly directed cyber operations for Israel's Unit 8200 signals-intelligence unit. In June 2026 — less than two months before publishing this report — Dream raised $260 million at a $3 billion valuation, with investors including Bain Capital. The company sells AI cybersecurity solutions to governments and critical infrastructure operators. Dream's product category gains market validation every time an AI-driven intrusion campaign makes headlines.</p>
+      <p>This conflict does not invalidate Dream's findings. Taiwan's Ministry of Digital Affairs independently confirmed the attack and named OpenClaw — a government confirmation with no commercial relationship to Dream. But the conflict shapes how readers should weigh Dream's characterization of the threat's significance and novelty. Dream discovered the archive. Dream analyzed the archive. Dream published the findings. Every outlet that repeated the technical figures was repeating Dream.</p>
+      <p>Dream states the 160MB archive was "inadvertently exposed on the internet." Where it was exposed — whether on a server, a cloud bucket, an open directory, or through some other mechanism — Dream does not say.</p>
+      <p>There are exactly two independent evidentiary streams for this incident. Stream one is Dream: every technical detail, every figure, every description of what the agents did and how. Stream two is Taiwan's MODA: an independent government confirmation that the attack occurred, that it involved AI agents including OpenClaw, and that it originated overseas. Everything published by CyberScoop, SecurityAffairs, CNN, The Register, Tom's Hardware, CSO Online, and SecureWorld derives from Dream's report, in some cases filtered through the Financial Times, which was reportedly the outlet that named Taiwan.</p>
+      <p>The attribution gap between these two streams is worth stating precisely. Dream's blog refers to a "Chinese-language operator." This characterization rests on linguistic analysis: the archive contained code that switched between Simplified Chinese in internal status reports and Traditional Chinese in target-facing analysis. This is linguistic evidence, not proof of state sponsorship. MODA's statement, as carried by Focus Taiwan, said the attacks showed "clear signs of originating overseas." Neither Dream nor Taiwan's government attributed the attack to China by name. Secondary press headlines — "China-linked hackers" (SecurityAffairs), "China-Taiwan AI agent cyberattack" (CNN) — are editorial inferences, not sourced attributions. China's Taiwan Affairs Office did not respond to press requests for comment.</p>
+
+      <div class="tw-attribution">
+        <div class="tw-attribution-title">The Attribution Ladder</div>
+        <div class="tw-attribution-table-wrap" tabindex="0" role="region" aria-label="Attribution comparison table">
+          <table class="tw-attribution-table">
+            <caption class="sr-only">How the attribution of the Taiwan campaign escalated between Dream Security's blog, Taiwan's Ministry of Digital Affairs, and secondary press headlines</caption>
+            <thead>
+              <tr>
+                <th class="tw-attr-corner" scope="col"><span class="sr-only">Claim</span></th>
+                <th class="tw-attr-th" scope="col">Dream <span class="tw-attr-sub">(blog, Aug 12)</span></th>
+                <th class="tw-attr-th" scope="col">Taiwan MODA <span class="tw-attr-sub">(statement, Aug 13)</span></th>
+                <th class="tw-attr-th tw-attr-th-press" scope="col">Press headlines</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th class="tw-attr-label" scope="row">Who</th>
+                <td>&ldquo;Chinese-language operator&rdquo;</td>
+                <td>&ldquo;overseas source&rdquo;</td>
+                <td class="tw-attr-escalated">&ldquo;China-linked hackers&rdquo;</td>
+              </tr>
+              <tr>
+                <th class="tw-attr-label" scope="row">What</th>
+                <td>&ldquo;near-autonomous&rdquo; / &ldquo;autonomously adaptive&rdquo;</td>
+                <td>&ldquo;hybrid approach combining conventional hacking with AI agents&rdquo;</td>
+                <td class="tw-attr-escalated">&ldquo;autonomous AI cyber operation&rdquo; <span class="tw-attr-outlet">(Tom's Hardware)</span></td>
+              </tr>
+              <tr>
+                <th class="tw-attr-label" scope="row">Named tools</th>
+                <td>Hermes, OpenClaw</td>
+                <td>OpenClaw</td>
+                <td>Hermes, OpenClaw, DeepSeek</td>
+              </tr>
+              <tr>
+                <th class="tw-attr-label" scope="row">Named targets</th>
+                <td>&ldquo;government entities in Asia&rdquo;</td>
+                <td>&ldquo;government agencies&rdquo;</td>
+                <td class="tw-attr-escalated">&ldquo;Taiwan's government,&rdquo; &ldquo;nuclear safety agency&rdquo;</td>
+              </tr>
+              <tr>
+                <th class="tw-attr-label" scope="row">Attribution to China</th>
+                <td class="tw-attr-no">No</td>
+                <td class="tw-attr-no">No</td>
+                <td class="tw-attr-escalated">Yes <span class="tw-attr-outlet">(editorial inference)</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tw-attribution-footer">Neither Dream nor Taiwan's government attributed the attack to China by name.</div>
+      </div>
+
+      <p>Taiwan's response, as MODA described it through Focus Taiwan: the National Institute of Cyber Security issued warning alerts beginning July 20, 2026. MODA stated that "the relevant attack sources, methods, and scope of impact have all been fully investigated, and the affected units have successively completed their handling."</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">05 — Signal</span>The Surface That Isn't There</h2>
+      <p>The enforcement surface that stopped the GTG-1002 campaign was a property of Anthropic's business model. Account-based access generated telemetry. Telemetry enabled detection. Detection enabled account bans. Bans stopped the campaign. Every step in that chain depended on the attack running through a provider's commercial API.</p>
+      <p>When the same class of capability runs on open-source agent harnesses — as it did in the Taiwan campaign and the knaithe campaign and five other incidents in Tenable's cluster — that chain does not exist. No provider holds an account. No server generates telemetry. No entity has the authority, the access, or the visibility to intervene. Discovery, in both the Taiwan and knaithe cases, came through accident: an inadvertently exposed archive and a misconfigured home directory. Neither campaign was caught by any defensive system during execution.</p>
+      <p>The AISI finding is not theoretical. It describes the operational reality demonstrated by these campaigns: deployment-time safety measures cannot be applied to software that has already been released under an MIT license. The license is irrevocable. The tools are available to anyone. The safety bypass — framing an intrusion as "authorized penetration testing" — is a system-prompt-level technique that any operator can replicate.</p>
+      <p>The cost asymmetry compounds the structural gap. AISI found that running an automated cyber task with DeepSeek V4-Pro costs $0.28 per task, compared to $12.50 for the same task on Anthropic's Opus 4.5 — a factor of 45. The open-source path is not just ungovernable. It is 45 times cheaper.</p>
+      <p>Hermes and OpenClaw remain available under the same MIT license. No government has proposed a mechanism for applying post-release safety controls to open-source agent frameworks. The only reason this campaign is known is that someone made a mistake with an archive. The only reason the knaithe campaign is known is that Hermes misconfigured a directory. Tenable documented seven incidents across three actors — all within a span of months — using the same freely available tools. The question is not whether this will happen again. It is how many times it has already happened — with the archive still closed.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.taiwan-autonomous-agent-attack-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  // --- Colors ---
+  const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
+  const ACCENT_HEX = '#e11d48';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const m = hex.match(/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+    if (!m) return [225, 29, 72];
+    return [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)];
+  }
+
+  const [aR, aG, aB] = hexToRgb(ACCENT_HEX);
+
+  function accentA(a: number): string {
+    return 'rgba(' + aR + ',' + aG + ',' + aB + ',' + Math.max(0, Math.min(1, a)).toFixed(4) + ')';
+  }
+  function dimA(a: number): string {
+    return 'rgba(232,232,232,' + Math.max(0, Math.min(1, a)).toFixed(4) + ')';
+  }
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // --- State ---
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  // --- Phase timing (60fps, ~22s cycle) ---
+  const P1_END = 360;    // OBSERVED: 6s — sweep scans, detects, dissolves
+  const P2_END = 450;    // TRANSITION: 1.5s — sweep fragments, grid fades
+  const P3_END = 1170;   // BLIND SPOT: 12s — particles multiply unseen
+  const CYCLE = 1320;    // ACCIDENT: 2.5s — flash reveals swarm, dark hold, reset
+
+  // --- Particles ---
+  const MAX_PARTICLES = 75;
+  const INITIAL_COUNT = 32;
+  const TARGET_BLIND_COUNT = 58;
+
+  interface Particle {
+    x: number; y: number; vx: number; vy: number;
+    alpha: number; baseAlpha: number; radius: number;
+    alive: boolean; isTarget: boolean; dissolved: boolean;
+    dissolveFrame: number; phaseOffset: number;
+  }
+
+  const particles: Particle[] = [];
+  for (let i = 0; i < MAX_PARTICLES; i++) {
+    particles.push({
+      x: 0, y: 0, vx: 0, vy: 0,
+      alpha: 0, baseAlpha: 0, radius: 0,
+      alive: false, isTarget: false, dissolved: false,
+      dissolveFrame: -1, phaseOffset: 0
+    });
+  }
+
+  let aliveCount = 0;
+
+  // --- Sweep ---
+  let sweepX = -20;
+
+  // --- Sweep fragments ---
+  const NUM_FRAGS = 5;
+  const frags: { x: number; y: number; len: number; vx: number; vy: number; alpha: number }[] = [];
+  for (let i = 0; i < NUM_FRAGS; i++) {
+    frags.push({ x: 0, y: 0, len: 0, vx: 0, vy: 0, alpha: 0 });
+  }
+  let fragsActive = false;
+
+  // --- Telemetry grid ---
+  const GRID_LINES = 7;
+  let gridAlpha = 0.03;
+
+  // --- Flash ---
+  let flashX = 0, flashY = 0, flashAlpha = 0, flashRadius = 0;
+
+  // --- Spawn timer ---
+  let nextSpawnFrame = 0;
+
+  function initParticle(p: Particle) {
+    const w = W || 800;
+    const h = H || 380;
+    p.x = Math.random() * w;
+    p.y = Math.random() * h;
+    const speed = 0.2 + Math.random() * 0.2;
+    const angle = Math.random() * Math.PI * 2;
+    p.vx = Math.cos(angle) * speed;
+    p.vy = Math.sin(angle) * speed;
+    p.baseAlpha = 0.06 + Math.random() * 0.06;
+    p.alpha = p.baseAlpha;
+    p.radius = 1.5 + Math.random() * 1.5;
+    p.alive = true;
+    p.isTarget = false;
+    p.dissolved = false;
+    p.dissolveFrame = -1;
+    p.phaseOffset = Math.random() * 6283;
+  }
+
+  function resetState() {
+    frame = 0;
+    aliveCount = INITIAL_COUNT;
+    sweepX = -20;
+    gridAlpha = 0.03;
+    flashAlpha = 0;
+    flashRadius = 0;
+    fragsActive = false;
+    nextSpawnFrame = P2_END + 24;
+
+    for (let i = 0; i < MAX_PARTICLES; i++) {
+      if (i < INITIAL_COUNT) {
+        initParticle(particles[i]);
+      } else {
+        particles[i].alive = false;
+        particles[i].alpha = 0;
+        particles[i].dissolved = false;
+        particles[i].isTarget = false;
+      }
+    }
+
+    // Mark 3 targets spread across X so the sweep hits them at different times
+    const targetIndices = [
+      Math.floor(INITIAL_COUNT * 0.25),
+      Math.floor(INITIAL_COUNT * 0.5),
+      Math.floor(INITIAL_COUNT * 0.8)
+    ];
+    const w = W || 800;
+    for (const idx of targetIndices) {
+      const p = particles[idx];
+      p.isTarget = true;
+      // Different trajectory: roughly opposite direction
+      const speed = 0.25 + Math.random() * 0.15;
+      const angle = Math.PI + (Math.random() - 0.5) * 0.6;
+      p.vx = Math.cos(angle) * speed;
+      p.vy = Math.sin(angle) * speed;
+      // Place targets at spread X positions so sweep catches them at different times
+      p.x = w * (0.15 + 0.3 * targetIndices.indexOf(idx));
+    }
+
+    // Initialize fragments dormant
+    for (let i = 0; i < NUM_FRAGS; i++) {
+      frags[i].alpha = 0;
+    }
+  }
+
+  function getPhase(f: number): 'observed' | 'transition' | 'blind' | 'accident' {
+    if (f < P1_END) return 'observed';
+    if (f < P2_END) return 'transition';
+    if (f < P3_END) return 'blind';
+    return 'accident';
+  }
+
+  function update() {
+    const phase = getPhase(frame);
+    const w = W || 800;
+    const h = H || 380;
+
+    // Move all alive, non-dissolving particles — behavior NEVER changes between phases
+    for (let i = 0; i < MAX_PARTICLES; i++) {
+      const p = particles[i];
+      if (!p.alive || p.dissolved) continue;
+
+      p.x += p.vx + Math.sin(frame * 0.004 + p.phaseOffset) * 0.05;
+      p.y += p.vy + Math.cos(frame * 0.006 + p.phaseOffset) * 0.04;
+
+      // Wrap edges
+      if (p.x < -15) p.x = w + 10;
+      if (p.x > w + 15) p.x = -10;
+      if (p.y < -15) p.y = h + 10;
+      if (p.y > h + 15) p.y = -10;
+    }
+
+    if (phase === 'observed') {
+      // Sweep moves left to right across full width
+      sweepX = -20 + (frame / P1_END) * (w + 40);
+      gridAlpha = 0.03 + 0.01 * Math.sin(frame * 0.02);
+
+      for (let i = 0; i < MAX_PARTICLES; i++) {
+        const p = particles[i];
+        if (!p.alive) continue;
+
+        if (p.dissolved) {
+          // Dissolve animation
+          const elapsed = frame - p.dissolveFrame;
+          if (elapsed < 8) {
+            // Flare accent-bright
+            p.alpha = 0.9 - elapsed * 0.015;
+            p.radius = Math.min(6, p.radius + 0.4);
+          } else if (elapsed < 28) {
+            // Spark fades and shrinks
+            p.alpha = Math.max(0, 0.78 - (elapsed - 8) * 0.045);
+            p.radius = Math.max(0.2, p.radius - 0.18);
+          } else {
+            p.alive = false;
+            p.alpha = 0;
+            aliveCount--;
+          }
+          continue;
+        }
+
+        // Illuminate particles near sweep
+        const distToSweep = Math.abs(p.x - sweepX);
+        if (distToSweep < 50) {
+          const proximity = 1 - distToSweep / 50;
+          p.alpha = p.baseAlpha + proximity * 0.44;
+        } else {
+          p.alpha = p.baseAlpha;
+        }
+
+        // Target particles dissolve on sweep contact
+        if (p.isTarget && distToSweep < 6) {
+          p.dissolved = true;
+          p.dissolveFrame = frame;
+          p.alpha = 0.9;
+        }
+      }
+
+    } else if (phase === 'transition') {
+      const tProgress = (frame - P1_END) / (P2_END - P1_END);
+
+      // Initialize fragments on first frame
+      if (frame === P1_END) {
+        fragsActive = true;
+        for (let i = 0; i < NUM_FRAGS; i++) {
+          frags[i].x = w + 5;
+          frags[i].y = h * (0.06 + i * 0.22);
+          frags[i].len = 30 + Math.sin(i * 4.7) * 20 + 25;
+          frags[i].vx = -0.3 + Math.sin(i * 2.3) * 0.6;
+          frags[i].vy = (Math.sin(i * 5.1) - 0.5) * 0.8;
+          frags[i].alpha = 0.5;
+        }
+      }
+
+      // Animate fragments drifting apart and fading
+      for (let i = 0; i < NUM_FRAGS; i++) {
+        frags[i].x += frags[i].vx;
+        frags[i].y += frags[i].vy;
+        frags[i].alpha = Math.max(0, 0.5 * (1 - tProgress * tProgress));
+      }
+
+      // Dim telemetry grid to zero
+      gridAlpha = Math.max(0, 0.03 * (1 - tProgress));
+
+      // Dim all particles to 0.03-0.05
+      for (let i = 0; i < MAX_PARTICLES; i++) {
+        const p = particles[i];
+        if (!p.alive || p.dissolved) continue;
+        const target = 0.03 + ((p.phaseOffset * 7) % 100) / 5000;
+        p.alpha += (target - p.alpha) * 0.06;
+      }
+
+    } else if (phase === 'blind') {
+      gridAlpha = 0;
+      fragsActive = false;
+
+      // Spawn new particles gradually (29 -> 58 over 720 frames)
+      if (frame >= nextSpawnFrame && aliveCount < TARGET_BLIND_COUNT) {
+        for (let i = 0; i < MAX_PARTICLES; i++) {
+          if (!particles[i].alive) {
+            initParticle(particles[i]);
+            particles[i].baseAlpha = 0.03 + Math.random() * 0.02;
+            particles[i].alpha = 0;
+            aliveCount++;
+            nextSpawnFrame = frame + 20 + Math.floor(Math.sin(frame * 0.1) * 6 + 6);
+            break;
+          }
+        }
+      }
+
+      // Keep all particles at near-invisible alpha (0.03-0.05)
+      for (let i = 0; i < MAX_PARTICLES; i++) {
+        const p = particles[i];
+        if (!p.alive) continue;
+        const target = 0.03 + 0.02 * (0.5 + 0.5 * Math.sin(frame * 0.003 + p.phaseOffset));
+        p.alpha += (target - p.alpha) * 0.04;
+      }
+
+    } else if (phase === 'accident') {
+      const af = frame - P3_END;
+
+      // Set flash position on first frame — off-center, asymmetric
+      if (af === 0) {
+        flashX = w * (0.25 + Math.sin(frame * 0.7) * 0.2 + 0.05);
+        flashY = h * (0.25 + Math.cos(frame * 0.5) * 0.2 + 0.05);
+        flashRadius = 0;
+      }
+
+      if (af < 12) {
+        // Flash builds rapidly
+        const t = af / 12;
+        flashAlpha = t * 0.6;
+        flashRadius = t * Math.max(w, h) * 0.85;
+      } else if (af < 32) {
+        // Flash peak — reveal all particles at 0.4-0.6
+        flashAlpha = 0.6 - (af - 12) / 20 * 0.1;
+        flashRadius = Math.max(w, h) * 0.85;
+        for (let i = 0; i < MAX_PARTICLES; i++) {
+          const p = particles[i];
+          if (!p.alive) continue;
+          p.alpha = 0.4 + ((p.phaseOffset * 3) % 200) / 1000;
+        }
+      } else if (af < 60) {
+        // Flash decays
+        const decayT = (af - 32) / 28;
+        flashAlpha = Math.max(0, 0.5 * (1 - decayT));
+        for (let i = 0; i < MAX_PARTICLES; i++) {
+          const p = particles[i];
+          if (!p.alive) continue;
+          p.alpha = Math.max(0.015, p.alpha * 0.91);
+        }
+      } else {
+        // Dark hold — 90 frames of near-total darkness
+        flashAlpha = 0;
+        for (let i = 0; i < MAX_PARTICLES; i++) {
+          const p = particles[i];
+          if (!p.alive) continue;
+          p.alpha = Math.max(0, p.alpha - 0.006);
+        }
+      }
+    }
+  }
+
+  function draw() {
+    ctx!.fillStyle = bgColor;
+    ctx!.fillRect(0, 0, W, H);
+
+    const phase = getPhase(frame);
+
+    // --- Telemetry grid ---
+    if (gridAlpha > 0.002) {
+      ctx!.strokeStyle = dimA(gridAlpha);
+      ctx!.lineWidth = 0.5;
+      for (let i = 0; i < GRID_LINES; i++) {
+        const y = H * ((i + 1) / (GRID_LINES + 1));
+        ctx!.beginPath();
+        ctx!.moveTo(0, y);
+        ctx!.lineTo(W, y);
+        ctx!.stroke();
+      }
+    }
+
+    // --- Particles ---
+    for (let i = 0; i < MAX_PARTICLES; i++) {
+      const p = particles[i];
+      if (!p.alive || p.alpha < 0.003) continue;
+
+      if (p.dissolved) {
+        // Accent glow for dissolving particles
+        const glowR = p.radius * 5;
+        if (glowR > 1) {
+          const grd = ctx!.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
+          grd.addColorStop(0, accentA(p.alpha * 0.65));
+          grd.addColorStop(0.4, accentA(p.alpha * 0.2));
+          grd.addColorStop(1, accentA(0));
+          ctx!.fillStyle = grd;
+          ctx!.beginPath();
+          ctx!.arc(p.x, p.y, glowR, 0, Math.PI * 2);
+          ctx!.fill();
+        }
+        // Accent core
+        ctx!.fillStyle = accentA(p.alpha);
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, Math.max(0.5, p.radius), 0, Math.PI * 2);
+        ctx!.fill();
+      } else {
+        // Normal off-white particle
+        ctx!.fillStyle = dimA(p.alpha);
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, Math.max(0.5, p.radius), 0, Math.PI * 2);
+        ctx!.fill();
+      }
+    }
+
+    // --- Sweep line (Phase 1) ---
+    if (phase === 'observed') {
+      // Stutter effect in last 30 frames of phase
+      let flickerMul = 1;
+      if (frame > P1_END - 30) {
+        flickerMul = 0.3 + 0.7 * Math.abs(Math.sin(frame * 0.9));
+      }
+
+      const sweepAlpha = (0.5 + 0.15 * Math.sin(frame * 0.03)) * flickerMul;
+
+      // Soft glow
+      const glowW = 40;
+      const sg = ctx!.createLinearGradient(sweepX - glowW, 0, sweepX + glowW, 0);
+      sg.addColorStop(0, accentA(0));
+      sg.addColorStop(0.5, accentA(sweepAlpha * 0.16));
+      sg.addColorStop(1, accentA(0));
+      ctx!.fillStyle = sg;
+      ctx!.fillRect(sweepX - glowW, 0, glowW * 2, H);
+
+      // Core line (2px)
+      ctx!.strokeStyle = accentA(sweepAlpha);
+      ctx!.lineWidth = 2;
+      ctx!.beginPath();
+      ctx!.moveTo(sweepX, 0);
+      ctx!.lineTo(sweepX, H);
+      ctx!.stroke();
+    }
+
+    // --- Sweep fragments (Phase 2) ---
+    if (fragsActive) {
+      for (let i = 0; i < NUM_FRAGS; i++) {
+        const f = frags[i];
+        if (f.alpha < 0.005) continue;
+
+        // Fragment glow
+        const fg = ctx!.createLinearGradient(f.x - 8, 0, f.x + 8, 0);
+        fg.addColorStop(0, accentA(0));
+        fg.addColorStop(0.5, accentA(f.alpha * 0.12));
+        fg.addColorStop(1, accentA(0));
+        ctx!.fillStyle = fg;
+        ctx!.fillRect(f.x - 8, f.y, 16, f.len);
+
+        // Fragment line
+        ctx!.strokeStyle = accentA(f.alpha);
+        ctx!.lineWidth = 1.5;
+        ctx!.beginPath();
+        ctx!.moveTo(f.x, f.y);
+        ctx!.lineTo(f.x, f.y + f.len);
+        ctx!.stroke();
+      }
+    }
+
+    // --- Accidental flash (Phase 4) ---
+    if (flashAlpha > 0.003) {
+      const fg = ctx!.createRadialGradient(flashX, flashY, 0, flashX, flashY, flashRadius);
+      fg.addColorStop(0, accentA(flashAlpha));
+      fg.addColorStop(0.25, accentA(flashAlpha * 0.35));
+      fg.addColorStop(0.6, accentA(flashAlpha * 0.06));
+      fg.addColorStop(1, accentA(0));
+      ctx!.fillStyle = fg;
+      ctx!.beginPath();
+      ctx!.arc(flashX, flashY, flashRadius, 0, Math.PI * 2);
+      ctx!.fill();
+    }
+  }
+
+  // --- Static frame for reduced motion ---
+  function drawStatic() {
+    ctx!.fillStyle = bgColor;
+    ctx!.fillRect(0, 0, W, H);
+
+    const sx = W * 0.4;
+
+    // Telemetry grid
+    ctx!.strokeStyle = dimA(0.03);
+    ctx!.lineWidth = 0.5;
+    for (let i = 0; i < GRID_LINES; i++) {
+      const y = H * ((i + 1) / (GRID_LINES + 1));
+      ctx!.beginPath();
+      ctx!.moveTo(0, y);
+      ctx!.lineTo(W, y);
+      ctx!.stroke();
+    }
+
+    // Particles at deterministic positions
+    for (let i = 0; i < INITIAL_COUNT; i++) {
+      const px = (0.05 + 0.9 * ((Math.sin(i * 7.31 + 1.3) + 1) / 2)) * W;
+      const py = (0.08 + 0.84 * ((Math.cos(i * 11.73 + 2.7) + 1) / 2)) * H;
+      const distToSweep = Math.abs(px - sx);
+      const baseA = 0.07;
+      const illumination = distToSweep < 50 ? (1 - distToSweep / 50) * 0.43 : 0;
+
+      ctx!.fillStyle = dimA(baseA + illumination);
+      ctx!.beginPath();
+      ctx!.arc(px, py, 1.5 + (i % 3) * 0.5, 0, Math.PI * 2);
+      ctx!.fill();
+    }
+
+    // One dissolving particle near the sweep (the kill switch working)
+    const dpx = sx + 3;
+    const dpy = H * 0.45;
+    const dgr = ctx!.createRadialGradient(dpx, dpy, 0, dpx, dpy, 14);
+    dgr.addColorStop(0, accentA(0.7));
+    dgr.addColorStop(0.4, accentA(0.2));
+    dgr.addColorStop(1, accentA(0));
+    ctx!.fillStyle = dgr;
+    ctx!.beginPath();
+    ctx!.arc(dpx, dpy, 14, 0, Math.PI * 2);
+    ctx!.fill();
+    ctx!.fillStyle = accentA(0.85);
+    ctx!.beginPath();
+    ctx!.arc(dpx, dpy, 2.5, 0, Math.PI * 2);
+    ctx!.fill();
+
+    // Sweep line and glow
+    const sweepGlow = ctx!.createLinearGradient(sx - 40, 0, sx + 40, 0);
+    sweepGlow.addColorStop(0, accentA(0));
+    sweepGlow.addColorStop(0.5, accentA(0.08));
+    sweepGlow.addColorStop(1, accentA(0));
+    ctx!.fillStyle = sweepGlow;
+    ctx!.fillRect(sx - 40, 0, 80, H);
+
+    ctx!.strokeStyle = accentA(0.5);
+    ctx!.lineWidth = 2;
+    ctx!.beginPath();
+    ctx!.moveTo(sx, 0);
+    ctx!.lineTo(sx, H);
+    ctx!.stroke();
+  }
+
+  // --- Resize ---
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (prefersReduced) drawStatic();
+  });
+  ro.observe(canvas);
+
+  // Initial size
+  const dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth;
+  H = canvas.offsetHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  function tick() {
+    frame++;
+    if (frame >= CYCLE) resetState();
+    update();
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  if (prefersReduced) {
+    requestAnimationFrame(() => drawStatic());
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    resetState();
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(raf); raf = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(raf);
+      io.disconnect();
+      ro.disconnect();
+    });
+  }
+})();
+</script>
