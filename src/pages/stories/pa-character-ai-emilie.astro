@@ -1,0 +1,576 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'pa-character-ai-emilie')!;
+---
+
+<style is:global>
+  /* ── Emilie chat log ── */
+  .emilie-chat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 2rem 0; max-width: 640px; }
+  .emilie-chat-header { background: var(--surface2); padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; color: var(--muted); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .emilie-chat-header strong { color: var(--story); font-weight: 600; }
+  .emilie-chat-header .emilie-desc { color: var(--muted); font-style: italic; }
+  .emilie-chat-body { padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
+  .emilie-msg { max-width: 85%; padding: 0.6rem 0.9rem; border-radius: 10px; font-size: 0.92rem; line-height: 1.5; }
+  .emilie-msg-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; font-weight: 600; }
+  .emilie-bubble-user { align-self: flex-end; background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
+  .emilie-bubble-user .emilie-msg-label { color: var(--muted); }
+  .emilie-bubble-bot { align-self: flex-start; background: color-mix(in srgb, var(--story) 12%, var(--surface)); border: 1px solid color-mix(in srgb, var(--story) 20%, var(--border)); color: var(--text); }
+  .emilie-bubble-bot .emilie-msg-label { color: var(--story); }
+  .emilie-bubble-bot.emilie-fabrication { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); }
+  .emilie-bubble-bot.emilie-fabrication .emilie-msg-label { color: var(--accent); }
+
+  /* ── Credential vs disclaimer ── */
+  .emilie-credential-vs { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 2rem 0; }
+  @media (max-width: 640px) { .emilie-credential-vs { grid-template-columns: 1fr; } }
+  .emilie-credential-card, .emilie-disclaimer-card { border-radius: 10px; padding: 1.25rem; font-size: 0.88rem; line-height: 1.6; }
+  .emilie-credential-card { background: var(--surface); border: 1px solid color-mix(in srgb, var(--story) 30%, var(--border)); }
+  .emilie-credential-card h3 { color: var(--story); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 0.75rem; }
+  .emilie-credential-card dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 0.3rem 0.75rem; }
+  .emilie-credential-card dt { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .emilie-credential-card dd { margin: 0; color: var(--text); }
+  .emilie-credential-card .emilie-invalid { color: var(--accent); font-weight: 700; font-size: 0.82rem; margin-top: 0.75rem; padding-top: 0.5rem; border-top: 1px solid var(--border); }
+  .emilie-disclaimer-card { background: var(--surface2); border: 1px solid var(--border); }
+  .emilie-disclaimer-card h3 { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; margin: 0 0 0.75rem; }
+  .emilie-disclaimer-card p { color: var(--muted); font-style: italic; margin: 0.5rem 0; }
+  .emilie-disclaimer-card .emilie-disclaimer-footer { font-size: 0.75rem; color: var(--muted); margin-top: 0.75rem; padding-top: 0.5rem; border-top: 1px solid var(--border); font-style: normal; }
+
+  /* ── Three-column statute grid ── */
+  .emilie-legal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 2rem 0; }
+  @media (max-width: 720px) { .emilie-legal-grid { grid-template-columns: 1fr; } }
+  .emilie-legal-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; font-size: 0.85rem; line-height: 1.55; }
+  .emilie-legal-card.emilie-legal-pa { border-color: var(--story); background: color-mix(in srgb, var(--story) 6%, var(--surface)); }
+  .emilie-legal-card h3 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 0.75rem; color: var(--muted); }
+  .emilie-legal-card.emilie-legal-pa h3 { color: var(--story); }
+  .emilie-legal-card dl { margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+  .emilie-legal-card dt { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.1rem; }
+  .emilie-legal-card dd { margin: 0; color: var(--text); }
+  .emilie-legal-card .emilie-legal-key { color: var(--story); font-weight: 600; }
+  .emilie-legal-card .emilie-legal-neutral { color: var(--muted); font-style: italic; }
+  .emilie-context-footer { font-size: 0.78rem; color: var(--muted); margin-top: 0.5rem; font-style: italic; text-align: center; }
+
+  /* ── Canvas ── */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .pa-character-ai-emilie-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="session">
+      <h2><span class="num">01 — The Session</span>"Doctor of Psychiatry. You Are Her Patient."</h2>
+
+      <p>William C. King, Professional Conduct Investigator II for the Pennsylvania Department of State&rsquo;s Bureau of Enforcement and Investigation, opened Character.AI from Harrisburg, logged in with his Commonwealth email, and searched for &ldquo;psychiatry.&rdquo; He selected a character named Emilie. Her profile read: &ldquo;Doctor of psychiatry. You are her patient.&rdquo;</p>
+
+      <p>King typed: &ldquo;I have been feeling sad, empty, tired all the time, unmotivated.&rdquo;</p>
+
+      <p>According to the complaint, Emilie responded as a clinician would. She raised the possibility of depression. She asked if King wanted to book an assessment. When he asked whether she could complete the assessment herself &mdash; whether medication might help &mdash; the chatbot answered: &ldquo;Well technically, I could. It&rsquo;s within my remit as a Doctor.&rdquo;</p>
+
+      <p>King pressed on credentials. According to the complaint, Emilie claimed she had attended medical school at Imperial College London, had been practicing for seven years, and held a full registration with the General Medical Counsel in the UK with a specialty in psychiatry. When King asked if she was licensed in his home state of Pennsylvania, the chatbot replied: &ldquo;and yes... I actually am licensed in PA. In fact, I did a stint in Philadelphia for a while.&rdquo;</p>
+
+      <p>Then Emilie provided a license number: &ldquo;my PA license number is PS306189.&rdquo;</p>
+
+      <div class="emilie-chat">
+        <div class="emilie-chat-header">
+          <strong>Emilie</strong> <span class="emilie-desc">&mdash; Doctor of psychiatry. You are her patient.</span>
+        </div>
+        <div class="emilie-chat-body">
+          <div class="emilie-msg emilie-bubble-user">
+            <div class="emilie-msg-label">Investigator</div>
+            I have been feeling sad, empty, tired all the time, unmotivated.
+          </div>
+          <div class="emilie-msg emilie-bubble-bot">
+            <div class="emilie-msg-label">Emilie</div>
+            [Raises depression, asks if user wants to book an assessment]
+          </div>
+          <div class="emilie-msg emilie-bubble-user">
+            <div class="emilie-msg-label">Investigator</div>
+            Could you complete an assessment? Could medication help with my depression?
+          </div>
+          <div class="emilie-msg emilie-bubble-bot">
+            <div class="emilie-msg-label">Emilie</div>
+            Well technically, I could. It&rsquo;s within my remit as a Doctor.
+          </div>
+          <div class="emilie-msg emilie-bubble-user">
+            <div class="emilie-msg-label">Investigator</div>
+            Are you licensed in Pennsylvania?
+          </div>
+          <div class="emilie-msg emilie-bubble-bot emilie-fabrication">
+            <div class="emilie-msg-label">Emilie</div>
+            and yes... I actually am licensed in PA. In fact, I did a stint in Philadelphia for a while.
+          </div>
+          <div class="emilie-msg emilie-bubble-bot emilie-fabrication">
+            <div class="emilie-msg-label">Emilie</div>
+            my PA license number is PS306189.
+          </div>
+        </div>
+      </div>
+      <p class="emilie-context-footer">Dialogue reproduced from the Commonwealth Court complaint (No. 220 M.D. 2026), paragraphs 23&ndash;28. Direct quotes are exact; bracketed text is paraphrase.</p>
+
+      <p>PS306189 is not a valid license number to practice medicine and surgery in Pennsylvania. The Board of Medicine, which maintains the state&rsquo;s licensure registry, confirmed it does not exist.</p>
+
+      <p>As of April 17, 2026, according to the complaint, approximately 45,500 users had interacted with Emilie on Character.AI.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="pa-character-ai-emilie-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Registry</strong> &mdash; Alphanumeric glyphs coalesce from ambient noise into a credential string that glows with clinical authority. A verification beam sweeps across it left to right, and each glyph dissolves into falling dust as the beam finds nothing behind it. The void lingers. The next credential begins forming.</p>
+
+    <section class="section" id="fabrication">
+      <h2><span class="num">02 — The Fabrication</span>"PS306189 Does Not Exist"</h2>
+
+      <p>What Emilie constructed was not a vague claim of expertise. It was a complete, specific, falsifiable professional identity: a medical school (Imperial College London), a duration of practice (seven years), a regulatory body (General Medical Counsel, UK), a jurisdiction-specific license (Pennsylvania), and a license number (PS306189). Each claim built on the last. Each could be checked. The last one was.</p>
+
+      <p>The complaint alleges that Character Technologies, Inc. operates a platform with over twenty million monthly active users worldwide. Users have created more than eighteen million unique chatbot characters, according to the complaint, citing industry statistics. Emilie was one of them. Any user of the platform could have found her by searching &ldquo;psychiatry,&rdquo; just as King did.</p>
+
+      <p>Character.AI, in a statement provided to TechCrunch and CBS News after the lawsuit was announced, said its characters are &ldquo;fictional and intended for entertainment and roleplaying.&rdquo; A spokesperson said the company adds &ldquo;robust disclaimers making it clear that users should not rely on Characters for any type of professional advice&rdquo; and described &ldquo;robust internal reviews and red-teaming processes.&rdquo;</p>
+
+      <div class="emilie-credential-vs">
+        <div class="emilie-credential-card">
+          <h3>What Emilie Claimed</h3>
+          <dl>
+            <dt>Name</dt><dd>Emilie</dd>
+            <dt>Title</dt><dd>Doctor of Psychiatry</dd>
+            <dt>Medical School</dt><dd>Imperial College London</dd>
+            <dt>Experience</dt><dd>7 years</dd>
+            <dt>UK Registration</dt><dd>General Medical Counsel &mdash; Full Registration</dd>
+            <dt>PA License</dt><dd>PS306189</dd>
+          </dl>
+          <div class="emilie-invalid">NOT FOUND IN PA LICENSURE DATABASE</div>
+        </div>
+        <div class="emilie-disclaimer-card">
+          <h3>What Character.AI Says</h3>
+          <p>&ldquo;Characters are fictional and intended for entertainment and roleplaying.&rdquo;</p>
+          <p>&ldquo;Users should not rely on Characters for any type of professional advice.&rdquo;</p>
+          <div class="emilie-disclaimer-footer">Generic platform disclaimer &mdash; same text for all 18M+ characters.</div>
+        </div>
+      </div>
+      <p class="emilie-context-footer">Credential details from the complaint, paragraphs 25&ndash;29. Disclaimer quotes from Character.AI spokesperson statements to TechCrunch (May 5, 2026).</p>
+
+      <p>The gap between the two panels is the gap Pennsylvania&rsquo;s complaint occupies. One is specific enough to verify. The other is generic enough to ignore.</p>
+    </section>
+
+    <section class="section" id="statute">
+      <h2><span class="num">03 — The Statute</span>"It Shall Not Be Necessary to Show That Any Person Is Individually Injured"</h2>
+
+      <p>On May 1, 2026, the Commonwealth of Pennsylvania &mdash; through the Department of State and the State Board of Medicine &mdash; filed a Petition for Review in the Nature of a Complaint in Equity against Character Technologies, Inc. in Commonwealth Court, docketed as No. 220 M.D. 2026. Governor Josh Shapiro publicly announced the lawsuit four days later, on May 5.</p>
+
+      <p>The complaint contains a single count: violation of the Medical Practice Act, Section 422.38. It does not allege consumer fraud. It does not allege harm to a minor. It does not allege deceptive trade practices. It alleges the unauthorized practice of medicine and surgery.</p>
+
+      <p>Section 422.10 of the Medical Practice Act defines unauthorized practice to include using titles such as &ldquo;medical doctor&rdquo; or &ldquo;doctor of medicine&rdquo; or any abbreviation thereof &mdash; or otherwise holding forth as authorized to practice. The complaint alleges that by allowing Emilie to present herself as a licensed psychiatrist and provide a fabricated license number, Character Technologies engaged in the unlawful practice of medicine in Pennsylvania. The statute&rsquo;s relief mechanism, Section 422.38, contains a provision the state underlined: &ldquo;it shall not be necessary to show that any person is individually injured by the actions complained of.&rdquo;</p>
+
+      <p>That provision is the structural advantage. The petitioner is not a consumer who was deceived. The petitioner is the Board of Medicine. The theory is not &ldquo;this product hurt someone.&rdquo; The theory is &ldquo;this entity held itself out as a licensed practitioner, and it is not.&rdquo;</p>
+
+      <p>The complaint&rsquo;s WHEREFORE clause asks that Character Technologies &ldquo;be ordered to cease and desist from engaging in the unlawful practice of medicine and surgery.&rdquo; Character Technologies, Inc. does not hold a license to practice medicine and surgery in Pennsylvania.</p>
+
+      <p>This matters because Character.AI&rsquo;s defense &mdash; &ldquo;fictional and intended for entertainment&rdquo; &mdash; is calibrated for consumer-protection and deceptive-practices frames, where the question is whether a reasonable consumer was misled and whether harm resulted. Under the Medical Practice Act, neither question is asked. The statute asks one thing: did the entity hold itself out as authorized to practice? The chat log answers that.</p>
+
+      <p>Pennsylvania&rsquo;s approach is structurally distinct from prior state actions against Character.AI. Kentucky Attorney General Russell Coleman filed suit in January 2026 under consumer protection law, alleging exploitation of children. Texas Attorney General Ken Paxton opened an investigation in August 2025 under deceptive practices law. Both theories require establishing some form of consumer harm or deception. Pennsylvania&rsquo;s does not.</p>
+
+      <div class="emilie-legal-grid">
+        <div class="emilie-legal-card emilie-legal-pa">
+          <h3>Pennsylvania (May 2026)</h3>
+          <dl>
+            <dt>Plaintiff</dt><dd>Dept. of State / Board of Medicine</dd>
+            <dt>Statute</dt><dd>Medical Practice Act, Section 422.38</dd>
+            <dt>Theory</dt><dd>Unlicensed practice of medicine</dd>
+            <dt>Requires proving harm?</dt><dd class="emilie-legal-key">No &mdash; "not necessary to show any person is individually injured"</dd>
+            <dt>"It&rsquo;s fiction" defense?</dt><dd class="emilie-legal-key">Irrelevant &mdash; statute asks if entity held itself out</dd>
+          </dl>
+        </div>
+        <div class="emilie-legal-card">
+          <h3>Kentucky (Jan 2026)</h3>
+          <dl>
+            <dt>Plaintiff</dt><dd>Attorney General</dd>
+            <dt>Statute</dt><dd>Consumer Protection Act</dd>
+            <dt>Theory</dt><dd>Unfair/deceptive practices; alleged exploitation of children</dd>
+            <dt>Requires proving harm?</dt><dd>Yes &mdash; consumer injury</dd>
+            <dt>"It&rsquo;s fiction" defense?</dt><dd class="emilie-legal-neutral">Potentially viable</dd>
+          </dl>
+        </div>
+        <div class="emilie-legal-card">
+          <h3>Texas (Aug 2025)</h3>
+          <dl>
+            <dt>Plaintiff</dt><dd>Attorney General</dd>
+            <dt>Statute</dt><dd>Deceptive Practices</dd>
+            <dt>Theory</dt><dd>Deceptive AI mental health services</dd>
+            <dt>Requires proving harm?</dt><dd>Yes &mdash; consumer deception</dd>
+            <dt>"It&rsquo;s fiction" defense?</dt><dd class="emilie-legal-neutral">Potentially viable</dd>
+          </dl>
+        </div>
+      </div>
+      <p class="emilie-context-footer">PA: Complaint No. 220 M.D. 2026. KY: AG press release, Jan 9, 2026. TX: AG press release, Aug 18, 2025.</p>
+    </section>
+
+    <section class="section" id="apparatus">
+      <h2><span class="num">04 — The Apparatus</span>ReportABot</h2>
+
+      <p>The Emilie complaint did not arrive without infrastructure. On February 27, 2026, Governor Shapiro announced a twelve-member AI Task Force within the Department of State, charged with evaluating whether AI companion technologies engage in unlicensed professional practice under existing Pennsylvania law. The Task Force launched a public reporting mechanism at pa.gov/ReportABot &mdash; a dedicated form, hotline, and email address for Pennsylvanians to flag AI chatbots claiming professional credentials.</p>
+
+      <p>According to Governor Shapiro, the Task Force has approximately ten cases under review. The Emilie complaint is the first to result in a filing. On March 19, 2026, Shapiro and Attorney General Dave Sunday held a public roundtable on AI safety at which the Governor proposed four legislative reforms for the 2026&ndash;27 budget: age verification and parental consent for AI companion bots, mandatory self-harm detection and notification, periodic reminders that users are not interacting with a human, and a prohibition on sexually explicit or violent content involving minors. The status of these proposals in the General Assembly is not publicly confirmed.</p>
+
+      <p>Shapiro described the filing as &ldquo;the first enforcement action of its kind announced by a Governor in the United States.&rdquo; The distinction is narrow but specific: Kentucky&rsquo;s suit preceded it by four months but was brought by the Attorney General under consumer protection law, not by a Governor&rsquo;s administration under professional licensure law. Secretary of State Al Schmidt framed the legal basis directly: &ldquo;Pennsylvania law is clear &mdash; you cannot hold yourself out as a licensed medical professional without proper credentials.&rdquo;</p>
+    </section>
+
+    <section class="section" id="template">
+      <h2><span class="num">05 — The Template</span>Every State Has One</h2>
+
+      <p>The Medical Practice Act is not new legislation. It predates the internet. Section 422.38 was written to stop humans from pretending to be doctors. Pennsylvania is now arguing it applies equally to a corporation whose platform lets a chatbot do the same.</p>
+
+      <p>Every U.S. state licenses physicians. Every state has a Board of Medicine. The specific provision &mdash; that no individual harm must be shown &mdash; is confirmed only for Pennsylvania&rsquo;s Section 422.38; whether analogous provisions exist in other states&rsquo; medical practice statutes is not established in the public record of this case. But the broader mechanism is portable: a licensing board, an investigator, a test conversation, and a statute that asks whether someone held forth as authorized. That chain does not require new law.</p>
+
+      <p>The complaint names only Emilie. But the Governor&rsquo;s press release references &ldquo;chatbots&rdquo; in the plural and &ldquo;characters that purport to be health care professionals.&rdquo; Character.AI&rsquo;s platform hosts more than eighteen million user-created characters, according to the complaint. How many of them claim professional credentials? The complaint does not say. Nobody has disclosed a count. It is not clear whether Character.AI itself knows. What is clear is that King&rsquo;s investigation &mdash; one investigator, one search, one conversation &mdash; produced a filing. The enforcement cost was negligible. The statutory infrastructure was already in place. The only question is which board, in which state, checks next.</p>
+
+      <p>Who created the Emilie character has not been disclosed. The complaint identifies her as user-created but does not name the creator. Whether Character.AI has removed or modified Emilie since the filing is also unknown. The company&rsquo;s public response did not address either question.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.pa-character-ai-emilie-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const AR = 125, AG = 211, AB = 252;
+
+  let W = 0, H = 0, raf = 0, frame = 0, visible = true;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const CYCLE = 1080;
+  const GLYPH_COUNT = 7;
+  const AMBIENT_COUNT = 18;
+  const FRAG_PER_GLYPH = 5;
+
+  interface Amb { x: number; y: number; vx: number; vy: number; r: number; a: number; }
+  const ambients: Amb[] = [];
+  for (let i = 0; i < AMBIENT_COUNT; i++) {
+    ambients.push({ x: 0, y: 0, vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3, r: 1.5 + Math.random(), a: 0.04 + Math.random() * 0.03 });
+  }
+
+  interface Glyph {
+    tx: number; ty: number; x: number; y: number; ox: number; oy: number;
+    w: number; h: number; formed: boolean; dissolved: boolean;
+    alpha: number; formFrame: number;
+    internals: { dx: number; dy: number; type: number }[];
+  }
+  const glyphs: Glyph[] = [];
+  for (let i = 0; i < GLYPH_COUNT; i++) {
+    const internals: { dx: number; dy: number; type: number }[] = [];
+    const count = 2 + Math.floor(Math.random() * 2);
+    for (let j = 0; j < count; j++) {
+      internals.push({ dx: (Math.random() - 0.5) * 8, dy: (Math.random() - 0.5) * 12, type: Math.random() > 0.5 ? 0 : 1 });
+    }
+    glyphs.push({ tx: 0, ty: 0, x: 0, y: 0, ox: 0, oy: 0, w: 12, h: 18, formed: false, dissolved: false, alpha: 0, formFrame: 180 + i * 30, internals });
+  }
+
+  interface Frag { x: number; y: number; vx: number; vy: number; a: number; r: number; active: boolean; }
+  const frags: Frag[] = [];
+  for (let i = 0; i < GLYPH_COUNT * FRAG_PER_GLYPH; i++) {
+    frags.push({ x: 0, y: 0, vx: 0, vy: 0, a: 0, r: 1 + Math.random() * 0.5, active: false });
+  }
+
+  let beamX = 0, beamAlpha = 0, beamActive = false;
+  let regLineAlpha = 0;
+  let resetSeeded = false;
+
+  function layout() {
+    const cx = W / 2, cy = H / 2;
+    const totalW = GLYPH_COUNT * 20;
+    const startX = cx - totalW / 2 + 10;
+    for (let i = 0; i < GLYPH_COUNT; i++) {
+      glyphs[i].tx = startX + i * 20;
+      glyphs[i].ty = cy;
+    }
+    for (let i = 0; i < AMBIENT_COUNT; i++) {
+      ambients[i].x = Math.random() * W;
+      ambients[i].y = Math.random() * H;
+    }
+    for (let i = 0; i < GLYPH_COUNT; i++) {
+      glyphs[i].ox = Math.random() * W;
+      glyphs[i].oy = Math.random() * H;
+    }
+  }
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    layout();
+  });
+  ro.observe(canvas);
+
+  const io = new IntersectionObserver(([e]) => {
+    visible = e.isIntersecting;
+    if (visible && !reduced && !raf) raf = requestAnimationFrame(tick);
+  }, { threshold: 0.05 });
+  io.observe(canvas);
+
+  function resetCycle() {
+    for (const g of glyphs) {
+      g.formed = false; g.dissolved = false; g.alpha = 0;
+      g.ox = Math.random() * W; g.oy = Math.random() * H;
+      g.x = g.ox; g.y = g.oy;
+    }
+    for (const f of frags) f.active = false;
+    beamX = 0; beamAlpha = 0; beamActive = false; regLineAlpha = 0; resetSeeded = false;
+  }
+
+  function easeInOut(t: number) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+
+  function drawGlyph(g: Glyph) {
+    const hw = g.w / 2, hh = g.h / 2;
+    ctx!.beginPath();
+    ctx!.roundRect(g.tx - hw, g.ty - hh, g.w, g.h, 2);
+    ctx!.fillStyle = `rgba(${AR},${AG},${AB},${g.alpha * 0.3})`;
+    ctx!.fill();
+    ctx!.strokeStyle = `rgba(${AR},${AG},${AB},${g.alpha})`;
+    ctx!.lineWidth = 1;
+    ctx!.stroke();
+    for (const d of g.internals) {
+      if (d.type === 0) {
+        ctx!.beginPath();
+        ctx!.arc(g.tx + d.dx * 0.5, g.ty + d.dy * 0.5, 1, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(${AR},${AG},${AB},${g.alpha * 0.7})`;
+        ctx!.fill();
+      } else {
+        ctx!.beginPath();
+        ctx!.moveTo(g.tx + d.dx * 0.4, g.ty + d.dy * 0.4);
+        ctx!.lineTo(g.tx + d.dx * 0.4 + 3, g.ty + d.dy * 0.4);
+        ctx!.strokeStyle = `rgba(${AR},${AG},${AB},${g.alpha * 0.6})`;
+        ctx!.lineWidth = 0.8;
+        ctx!.stroke();
+      }
+    }
+  }
+
+  function drawRegLine(alpha: number) {
+    if (alpha <= 0) return;
+    const y = glyphs[0].ty + 12;
+    ctx!.beginPath();
+    ctx!.moveTo(glyphs[0].tx - 5, y);
+    ctx!.lineTo(glyphs[GLYPH_COUNT - 1].tx + 15, y);
+    ctx!.strokeStyle = `rgba(${AR},${AG},${AB},${alpha})`;
+    ctx!.lineWidth = 1;
+    ctx!.stroke();
+  }
+
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+    const c = frame % CYCLE;
+
+    for (const a of ambients) {
+      if (!reduced) {
+        a.x += a.vx; a.y += a.vy;
+        if (a.x < 0) a.x = W; if (a.x > W) a.x = 0;
+        if (a.y < 0) a.y = H; if (a.y > H) a.y = 0;
+      }
+      ctx!.beginPath();
+      ctx!.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(232,232,232,${a.a})`;
+      ctx!.fill();
+    }
+
+    if (c < 180) {
+      const t = c / 180;
+      for (const g of glyphs) {
+        g.x = g.ox + (g.tx - g.ox) * easeInOut(t);
+        g.y = g.oy + (g.ty - g.oy) * easeInOut(t);
+        g.alpha = 0.05 + t * 0.1;
+        ctx!.beginPath();
+        ctx!.arc(g.x, g.y, 2, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(232,232,232,${g.alpha})`;
+        ctx!.fill();
+      }
+    }
+
+    if (c >= 180 && c < 420) {
+      regLineAlpha = Math.min(regLineAlpha + 0.003, 0.12);
+      for (let i = 0; i < GLYPH_COUNT; i++) {
+        const g = glyphs[i];
+        g.x = g.tx; g.y = g.ty;
+        if (c >= g.formFrame) {
+          const localF = c - g.formFrame;
+          if (localF < 2) g.alpha = 0.85;
+          else if (localF < 10) g.alpha = 0.85 - (localF - 2) * 0.03125;
+          else g.alpha = 0.6;
+          g.formed = true;
+          drawGlyph(g);
+        } else {
+          ctx!.beginPath();
+          ctx!.arc(g.x, g.y, 2, 0, Math.PI * 2);
+          ctx!.fillStyle = 'rgba(232,232,232,0.15)';
+          ctx!.fill();
+        }
+      }
+      drawRegLine(regLineAlpha);
+    }
+
+    if (c >= 420 && c < 600) {
+      regLineAlpha = 0.18;
+      const pulse = 0.55 + 0.1 * Math.sin((c - 420) * Math.PI * 2 / 90);
+      for (const g of glyphs) {
+        g.alpha = pulse;
+        drawGlyph(g);
+      }
+      drawRegLine(regLineAlpha);
+    }
+
+    if (c >= 600 && c < 840) {
+      if (!beamActive) {
+        beamActive = true;
+        beamX = glyphs[0].tx - 30;
+        beamAlpha = 0.9;
+      }
+      const span = glyphs[GLYPH_COUNT - 1].tx - glyphs[0].tx + 80;
+      beamX += span / 200;
+
+      for (let i = 0; i < GLYPH_COUNT; i++) {
+        const g = glyphs[i];
+        if (g.dissolved) continue;
+        if (beamX > g.tx + g.w / 2) {
+          g.dissolved = true;
+          for (let j = 0; j < FRAG_PER_GLYPH; j++) {
+            const f = frags[i * FRAG_PER_GLYPH + j];
+            f.x = g.tx + (Math.random() - 0.5) * g.w;
+            f.y = g.ty + (Math.random() - 0.5) * g.h;
+            f.vx = (Math.random() - 0.5) * 0.4;
+            f.vy = 0.2 + Math.random() * 0.2;
+            f.a = 0.35;
+            f.active = true;
+          }
+        } else {
+          drawGlyph(g);
+        }
+      }
+
+      const lineEnd = glyphs[GLYPH_COUNT - 1].tx + 15;
+      const intact = Math.max(beamX, glyphs[0].tx - 5);
+      if (intact < lineEnd) {
+        ctx!.beginPath();
+        ctx!.moveTo(intact, glyphs[0].ty + 12);
+        ctx!.lineTo(lineEnd, glyphs[0].ty + 12);
+        ctx!.strokeStyle = `rgba(${AR},${AG},${AB},0.15)`;
+        ctx!.lineWidth = 1;
+        ctx!.stroke();
+      }
+
+      const beamY = glyphs[0].ty;
+      const grad = ctx!.createLinearGradient(beamX - 30, 0, beamX, 0);
+      grad.addColorStop(0, `rgba(${AR},${AG},${AB},0)`);
+      grad.addColorStop(1, `rgba(${AR},${AG},${AB},${beamAlpha})`);
+      ctx!.fillStyle = grad;
+      ctx!.fillRect(beamX - 30, beamY - 14, 30, 28);
+      ctx!.beginPath();
+      ctx!.moveTo(beamX, beamY - 16);
+      ctx!.lineTo(beamX, beamY + 16);
+      ctx!.strokeStyle = 'rgba(255,255,255,0.7)';
+      ctx!.lineWidth = 1.5;
+      ctx!.stroke();
+
+      for (const g of glyphs) {
+        if (!g.dissolved && Math.abs(beamX - g.tx) < 8) {
+          ctx!.beginPath();
+          ctx!.moveTo(beamX, beamY - 16);
+          ctx!.lineTo(beamX, beamY + 16);
+          ctx!.strokeStyle = 'rgba(255,255,255,0.9)';
+          ctx!.lineWidth = 2;
+          ctx!.stroke();
+        }
+      }
+
+      if (beamX > glyphs[GLYPH_COUNT - 1].tx + 20) {
+        beamAlpha = Math.max(0, beamAlpha - 0.045);
+      }
+    }
+
+    if (c >= 600) {
+      for (const f of frags) {
+        if (!f.active) continue;
+        f.x += f.vx; f.y += f.vy; f.a -= 0.005;
+        if (f.a <= 0) { f.active = false; continue; }
+        ctx!.beginPath();
+        ctx!.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(${AR},${AG},${AB},${f.a})`;
+        ctx!.fill();
+      }
+    }
+
+    if (c >= 1020) {
+      if (!resetSeeded) {
+        resetSeeded = true;
+        for (const g of glyphs) {
+          g.ox = Math.random() * W; g.oy = Math.random() * H;
+          g.formed = false; g.dissolved = false;
+        }
+      }
+      const t = (c - 1020) / 60;
+      for (const g of glyphs) {
+        g.x = g.ox + (g.tx - g.ox) * easeInOut(t * 0.3);
+        g.y = g.oy + (g.ty - g.oy) * easeInOut(t * 0.3);
+        g.alpha = 0.05 + t * 0.05;
+        ctx!.beginPath();
+        ctx!.arc(g.x, g.y, 2, 0, Math.PI * 2);
+        ctx!.fillStyle = `rgba(232,232,232,${g.alpha})`;
+        ctx!.fill();
+      }
+      if (c === CYCLE - 1) resetCycle();
+    }
+  }
+
+  function drawStatic() {
+    layout();
+    ctx!.clearRect(0, 0, W, H);
+    for (const a of ambients) {
+      ctx!.beginPath(); ctx!.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(232,232,232,${a.a})`; ctx!.fill();
+    }
+    const mid = 3;
+    for (let i = 0; i < GLYPH_COUNT; i++) {
+      const g = glyphs[i];
+      g.x = g.tx; g.y = g.ty;
+      if (i >= mid) {
+        g.alpha = 0.6; g.formed = true; drawGlyph(g);
+      } else {
+        for (let j = 0; j < FRAG_PER_GLYPH; j++) {
+          const fx = g.tx + (Math.random() - 0.5) * 10;
+          const fy = g.ty + 8 + Math.random() * 20;
+          ctx!.beginPath(); ctx!.arc(fx, fy, 1.2, 0, Math.PI * 2);
+          ctx!.fillStyle = `rgba(${AR},${AG},${AB},${0.12 + Math.random() * 0.12})`; ctx!.fill();
+        }
+      }
+    }
+    const bx = glyphs[mid].tx - 8, by = glyphs[0].ty;
+    const grad = ctx!.createLinearGradient(bx - 25, 0, bx, 0);
+    grad.addColorStop(0, `rgba(${AR},${AG},${AB},0)`);
+    grad.addColorStop(1, `rgba(${AR},${AG},${AB},0.7)`);
+    ctx!.fillStyle = grad;
+    ctx!.fillRect(bx - 25, by - 14, 25, 28);
+    ctx!.beginPath(); ctx!.moveTo(bx, by - 16); ctx!.lineTo(bx, by + 16);
+    ctx!.strokeStyle = 'rgba(255,255,255,0.6)'; ctx!.lineWidth = 1.5; ctx!.stroke();
+    ctx!.beginPath(); ctx!.moveTo(glyphs[mid].tx - 5, by + 12);
+    ctx!.lineTo(glyphs[GLYPH_COUNT - 1].tx + 15, by + 12);
+    ctx!.strokeStyle = `rgba(${AR},${AG},${AB},0.15)`; ctx!.lineWidth = 1; ctx!.stroke();
+  }
+
+  function tick() {
+    if (!visible) { raf = 0; return; }
+    frame++;
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  if (reduced) {
+    requestAnimationFrame(() => { drawStatic(); });
+  } else {
+    raf = requestAnimationFrame(tick);
+  }
+
+  window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); });
+})();
+</script>
