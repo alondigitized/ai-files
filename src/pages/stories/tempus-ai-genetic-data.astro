@@ -1,0 +1,550 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'tempus-ai-genetic-data')!;
+---
+
+<style is:global>
+  /* ── Reenactment 1: Announcement vs. Allegation ── */
+  .tempus-doc-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  @media (max-width: 640px) { .tempus-doc-wrap { grid-template-columns: 1fr; } }
+  .tempus-doc-panel { background: var(--surface); padding: 1.2rem 1.4rem; }
+  .tempus-doc-header { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.4rem; }
+  .tempus-doc-header.press { color: var(--story); }
+  .tempus-doc-header.complaint { color: var(--accent); }
+  .tempus-doc-body { font-size: 0.85rem; line-height: 1.65; color: var(--text); }
+  .tempus-doc-body.legal { font-family: 'Courier New', monospace; font-size: 0.8rem; line-height: 1.55; color: #ccc; }
+  .tempus-doc-quote { margin: 0.75rem 0; padding-left: 0.75rem; border-left: 2px solid var(--border); font-style: italic; color: var(--muted); font-size: 0.82rem; line-height: 1.55; }
+  .tempus-doc-quote.press-quote { border-left-color: var(--story); }
+  .tempus-doc-quote.complaint-quote { border-left-color: var(--accent); font-style: normal; font-family: 'Courier New', monospace; font-size: 0.78rem; }
+  .tempus-doc-attr { font-size: 0.7rem; color: var(--muted); margin-top: 0.75rem; }
+  .tempus-doc-context { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); grid-column: 1 / -1; }
+
+  /* ── Reenactment 2: Docket Timeline ── */
+  .tempus-docket-wrap { margin: 2rem 0; }
+  .tempus-docket-entry { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1rem 1.2rem; margin-bottom: 0.75rem; position: relative; transition: border-color 0.3s; }
+  .tempus-docket-entry:last-child { margin-bottom: 0; }
+  .tempus-docket-entry.escalation { border-left: 3px solid var(--accent); }
+  .tempus-docket-entry.consolidated { border-left: 3px solid var(--story); background: var(--surface2); }
+  .tempus-docket-date { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; color: var(--muted); margin-bottom: 0.35rem; }
+  .tempus-docket-entry.consolidated .tempus-docket-date { color: var(--story); }
+  .tempus-docket-case { font-family: 'Courier New', monospace; font-size: 0.78rem; color: var(--text); margin-bottom: 0.25rem; }
+  .tempus-docket-detail { font-size: 0.8rem; line-height: 1.55; color: var(--muted); }
+  .tempus-docket-detail strong { color: var(--text); font-weight: 600; }
+  .tempus-docket-flag { display: inline-block; background: rgba(255,77,77,0.1); border: 1px solid rgba(255,77,77,0.25); border-radius: 0.35rem; padding: 0.15rem 0.5rem; font-size: 0.7rem; font-weight: 700; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.35rem; }
+  .tempus-docket-flag.final { background: rgba(20,184,166,0.1); border-color: var(--story); color: var(--story); }
+  .tempus-docket-connector { width: 2px; height: 0.75rem; background: var(--border); margin-left: 1.5rem; }
+
+  /* ── Reenactment 3: Tempus Statement ── */
+  .tempus-stmt-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .tempus-stmt-header { background: var(--surface2); padding: 0.75rem 1.2rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .tempus-stmt-org { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 700; color: var(--text); }
+  .tempus-stmt-date { font-size: 0.68rem; color: var(--muted); letter-spacing: 0.1em; }
+  .tempus-stmt-body { padding: 1.2rem 1.4rem; }
+  .tempus-stmt-text { font-size: 0.85rem; line-height: 1.7; color: var(--text); margin-bottom: 0.75rem; }
+  .tempus-stmt-text:last-of-type { margin-bottom: 0; }
+  .tempus-stmt-text em.keyword { color: var(--story); font-style: normal; font-weight: 600; }
+  .tempus-stmt-footer { font-size: 0.7rem; color: var(--muted); font-style: italic; padding: 0.5rem 1.2rem; border-top: 1px solid var(--border); background: var(--surface2); }
+
+  /* ── Canvas ── */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .tempus-ai-genetic-data-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+<section class="section" id="company">
+  <h2><span class="num">01 — The Company</span>The DNA in the Deal</h2>
+  <p>A patient walks into a clinic for a hereditary cancer test. A physician sends a saliva sample to Ambry Genetics, one of the country's oldest hereditary genetic testing firms. Weeks later a report comes back identifying a variant that affects how this patient — and any biological children — will be screened, treated, and insured for the rest of their lives. The patient signs the consent form for the test. They do not, the consolidated complaint alleges, sign any consent form imagining their DNA sequence as a line item in a $1.1 billion data-licensing pipeline.</p>
+  <p>That is the gap at the center of <em>Farrier et al v. Tempus AI, Inc.</em> — the 21-count consolidated class action that the U.S. District Court for the Northern District of Illinois assembled on April 15, 2026 from multiple individual suits. Seven named plaintiffs. Seven states. The Illinois Genetic Information Privacy Act and six other state statutes. And a $600 million corporate acquisition that closed fourteen months earlier.</p>
+  <p>Tempus AI, traded on Nasdaq under the ticker TEM, is a precision medicine company headquartered in Chicago. Eric Lefkofsky founded it in 2015 after his wife was diagnosed with breast cancer. The company is roughly a billion-dollar revenue business operating at a loss; its advisory board includes Jennifer Doudna, a Nobel laureate for co-developing CRISPR gene editing, and Scott Gottlieb, the former FDA commissioner.</p>
+  <p>The business model, stated plainly: Tempus sequences tumor and germline DNA, links it to clinical records, builds a data library — which the company describes as containing more than 45 million de-identified patient records — and licenses access to pharmaceutical companies for drug development and AI model training.</p>
+  <p>On November 4, 2024, Tempus announced it would acquire Ambry Genetics, a hereditary genetic testing firm with a 25-year history and more than one million genetic tests conducted, from Konica Minolta's subsidiary Realm IDX. The acquisition created something neither company had alone: a direct pipeline from the diagnostic lab that sequences your DNA to the data platform that sells access to the results.</p>
+</section>
+
+<section class="section" id="acquisition">
+  <h2><span class="num">02 — The Acquisition</span>Two Stories About the Same Deal</h2>
+  <p>Tempus announced the Ambry deal on November 4, 2024. It closed on February 3, 2025. The total consideration was $600 million, structured as $375 million in cash plus $225 million in Tempus Class A common stock, with a portion of the stock subject to a one-year lock-up. Tempus financed the cash component in part through a credit facility from Ares Management.</p>
+  <p>Eric Lefkofsky framed the acquisition in the completion press release: "This acquisition complements our strategy of leveraging diagnostics and data to drive innovation, further strengthening our ability to deliver cutting-edge solutions to clinicians, patients, and life sciences companies."</p>
+  <p>Ambry CEO Tom Schoenherr sent a letter to clients the day of the announcement. Ambry would continue to operate as a wholly-owned subsidiary, he wrote, under its existing brand and leadership. The letter did not address patient data handling. It did not mention privacy policy changes. It did not discuss consent procedures.</p>
+  <p>The consolidated complaint filed fourteen months later offers a different characterization of the same transaction. According to the complaint, as reported by multiple specialist outlets, the acquisition was "conditioned on Ambry handing over its database of patients' genetic data" to Tempus "without obtaining the written consent required under" the Illinois Genetic Information Privacy Act and other state laws. The complaint further alleges that Tempus subsequently shared genetic data from Ambry's database with more than 70 partner companies — including GSK, Bristol Myers Squibb, AstraZeneca, Pfizer, Aspera Biomedicines, Incyte, Servier, and Whitehawk Therapeutics — in deals the complaint claims totaled $1.1 billion. The plaintiffs allege that Tempus and Ambry "misled the public by claiming that they only disclose de-identified genetic information, when that is not the case."</p>
+  <p>These are allegations. No facts have been adjudicated. Tempus disputes them. But the framing gap between the press release and the complaint is the fracture this story traces.</p>
+
+  <div class="tempus-doc-wrap">
+    <div class="tempus-doc-panel">
+      <div class="tempus-doc-header press">PRESS RELEASE — FEB 3, 2025</div>
+      <div class="tempus-doc-body">
+        <div class="tempus-doc-quote press-quote">"This acquisition complements our strategy of leveraging diagnostics and data to drive innovation, further strengthening our ability to deliver cutting-edge solutions to clinicians, patients, and life sciences companies."</div>
+        <div class="tempus-doc-attr">— Eric Lefkofsky, Founder & CEO, Tempus AI</div>
+        <div class="tempus-doc-quote press-quote" style="margin-top: 1rem;">"Ambry Genetics will continue to operate as a wholly-owned subsidiary under its existing brand and leadership."</div>
+        <div class="tempus-doc-attr">— Tom Schoenherr, CEO, Ambry Genetics</div>
+      </div>
+    </div>
+    <div class="tempus-doc-panel">
+      <div class="tempus-doc-header complaint">CONSOLIDATED COMPLAINT — APR 15, 2026</div>
+      <div class="tempus-doc-body legal">
+        <div class="tempus-doc-quote complaint-quote">"The acquisition was conditioned on Ambry handing over its database of patients' genetic data...without obtaining the written consent required under [GIPA]."</div>
+        <div class="tempus-doc-quote complaint-quote" style="margin-top: 0.75rem;">"Tempus subsequently shared genetic data with more than 70 partner companies in deals totaling $1.1 billion."</div>
+        <div class="tempus-doc-attr">— Farrier et al v. Tempus AI, Inc., N.D. Ill.</div>
+      </div>
+    </div>
+    <div class="tempus-doc-context">The same transaction, described by its architects and by its plaintiffs. The press release mentions "diagnostics and data." The complaint alleges the data was the point.</div>
+  </div>
+</section>
+
+<div class="phantom-wrap">
+  <canvas class="tempus-ai-genetic-data-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>The Helix</strong> — A rotating double helix of teal particles drifts toward a faint vertical membrane. Each particle dims to gray as it passes through. On the other side, the gray particles reconstitute into the identical helix, teal restored. The membrane accomplished nothing.</p>
+
+<section class="section" id="docket">
+  <h2><span class="num">03 — The Docket</span>From Nash to Barone to Farrier</h2>
+  <p>The litigation began ten days after Tempus reported its fiscal year 2025 results.</p>
+  <p>On February 13, 2026, Jennifer Nash and E.S., a minor, filed <em>Nash et al v. Tempus AI, Inc.</em> (Case No. 1:26-cv-01688) in the U.S. District Court for the Northern District of Illinois. The case was assigned to Judge April M. Perry, with Magistrate Judge Gabriel A. Fuentes. Latham & Watkins represented Tempus. Girard Sharp and Loevy & Loevy represented the plaintiffs.</p>
+  <p>Two weeks later, <em>The Cancer Letter</em> published its first analysis. Editor Paul Goldberg noted "two lawsuits filed within days of each other" and drew a distinction that would become central to the litigation: "Deidentified does not equal deidentifiable."</p>
+  <p>On March 30, 2026, the case escalated. Lauren Barone, Stephanie Bianco (individually and on behalf of her minor child H.B.), and Eugenia Rukhin filed <em>Barone et al v. Tempus AI, Inc. et al</em> (Case No. 1:26-cv-03516) — an 80-page complaint represented by DiCello Levitt LLP. The Barone complaint named not just Tempus but four AstraZeneca entities as co-defendants: AstraZeneca AB, AstraZeneca LP, AstraZeneca PLC, and AstraZeneca Pharmaceuticals LP. This was a significant expansion. The Nash complaint alleged Tempus collected and shared the data. The Barone complaint alleged that at least one recipient should share liability for receiving it.</p>
+  <p>On April 15, 2026, the court consolidated the cases into <em>Farrier et al v. Tempus AI, Inc.</em> — the 21-count complaint that now defines the litigation. The consolidated action names seven plaintiffs from seven states: California, Florida, Georgia, Illinois, Michigan, New York, and West Virginia. It invokes the Illinois Genetic Information Privacy Act along with six other state genetic privacy and consumer protection statutes.</p>
+
+  <div class="tempus-docket-wrap">
+    <div class="tempus-docket-entry">
+      <div class="tempus-docket-date">Feb 13, 2026</div>
+      <div class="tempus-docket-case">Case 1:26-cv-01688 &nbsp;|&nbsp; Nash et al v. Tempus AI, Inc.</div>
+      <div class="tempus-docket-detail">N.D. Ill. &nbsp;|&nbsp; Judge Perry &nbsp;|&nbsp; Plaintiffs: <strong>Jennifer Nash, E.S.</strong> (minor)</div>
+      <div class="tempus-docket-detail">Defense: Latham & Watkins &nbsp;|&nbsp; Plaintiffs' counsel: Girard Sharp + Loevy & Loevy</div>
+    </div>
+    <div class="tempus-docket-connector"></div>
+    <div class="tempus-docket-entry escalation">
+      <div class="tempus-docket-date">Mar 30, 2026</div>
+      <div class="tempus-docket-case">Case 1:26-cv-03516 &nbsp;|&nbsp; Barone et al v. Tempus AI, Inc. et al</div>
+      <div class="tempus-docket-detail">N.D. Ill. &nbsp;|&nbsp; <strong>80-page complaint</strong> &nbsp;|&nbsp; Plaintiffs: <strong>Lauren Barone, Stephanie Bianco</strong> (+ H.B.), <strong>Eugenia Rukhin</strong></div>
+      <div class="tempus-docket-detail">Counsel: DiCello Levitt LLP (Amy Elisabeth Keller)</div>
+      <div class="tempus-docket-flag">+ AstraZeneca AB, LP, PLC, Pharmaceuticals LP named as co-defendants</div>
+    </div>
+    <div class="tempus-docket-connector"></div>
+    <div class="tempus-docket-entry consolidated">
+      <div class="tempus-docket-date">Apr 15, 2026</div>
+      <div class="tempus-docket-case">CONSOLIDATED &nbsp;|&nbsp; Farrier et al v. Tempus AI, Inc.</div>
+      <div class="tempus-docket-detail"><strong>21 counts</strong> &nbsp;|&nbsp; <strong>7 plaintiffs</strong> &nbsp;|&nbsp; <strong>7 states:</strong> CA, FL, GA, IL, MI, NY, WV</div>
+      <div class="tempus-docket-detail">GIPA + 6 state genetic privacy and consumer protection statutes</div>
+      <div class="tempus-docket-flag final">Consolidated</div>
+    </div>
+  </div>
+
+  <p>The identity of the plaintiff whose name now captions the consolidated case — Farrier — does not appear in either the Nash or Barone filings. This suggests a third individual filing was consolidated alongside the two known cases. Available public records do not identify this filing.</p>
+  <p>The complaint's core arguments, as reported by multiple specialist outlets: genetic data "cannot be deidentified because such data serves as an inherently unique biomarker." Tempus AI trained AI models on Ambry patients' genetic data without consent, the plaintiffs allege. And the alleged sharing was not incidental — the complaint claims it was the commercial engine, with more than 70 partner companies receiving data in deals totaling $1.1 billion.</p>
+  <p>Under GIPA, statutory damages are $15,000 per intentional or reckless violation and $2,500 per negligent violation, plus attorney fees.</p>
+</section>
+
+<section class="section" id="defense">
+  <h2><span class="num">04 — The Defense</span>"Frivolous"</h2>
+
+  <div class="tempus-stmt-wrap">
+    <div class="tempus-stmt-header">
+      <span class="tempus-stmt-org">Tempus AI — Official Statement</span>
+      <span class="tempus-stmt-date">~February 20, 2026</span>
+    </div>
+    <div class="tempus-stmt-body">
+      <p class="tempus-stmt-text">"Tempus is aware of the lawsuit filed regarding Ambry Genetics. Protecting patient privacy and maintaining data security are of the utmost importance in everything we do, and all of our businesses, including Ambry, are built on a foundation of <em class="keyword">rigorous HIPAA compliance</em> and the highest standards of data stewardship."</p>
+      <p class="tempus-stmt-text">"We are committed to vigorously defending against this <em class="keyword">frivolous lawsuit</em>, and our focus remains unwavering: to use <em class="keyword">de-identified data</em> to advance research and deliver life-saving diagnostic insights to help patients live longer and healthier lives."</p>
+    </div>
+    <div class="tempus-stmt-footer">Via GenomeWeb (Forest Ray). No responsive pleading (motion to dismiss, answer) filed as of April 28, 2026.</div>
+  </div>
+
+  <p>Tempus's defense rests on two pillars. The first is HIPAA compliance — the assertion that all of the company's data practices, including those involving Ambry's genetic testing data, operate within the framework of the Health Insurance Portability and Accountability Act. The second is de-identification — the claim that Tempus shares only de-identified data, stripped of the 18 categories of personal identifiers that HIPAA defines.</p>
+  <p>The consolidated complaint attacks the second pillar directly. The plaintiffs argue that for genetic data, de-identification in the HIPAA sense is a conceptual impossibility — that a genome IS an identifier, not a record that can have identifiers removed from it. This is the central legal question the litigation will test.</p>
+  <p>Tempus is also defending a separate lawsuit with a different theory. On June 12, 2025, a securities fraud class action — <em>Shouse v. Tempus AI, Inc.</em>, Case No. 25-cv-06534 — was filed in the same district, alleging that Tempus overstated its AI capabilities. The catalyst was a May 28, 2025 short-seller report from Spruce Point Capital Management, which has a financial interest in the company's stock declining. Tempus stock fell approximately 20 percent on the day of the report. The claims are distinct from the genetic data litigation, but the combined legal exposure is relevant context for a company that has been public for less than two years.</p>
+  <p>No responsive pleading has been filed in either the genetic data or securities cases as of April 28, 2026. No facts have been adjudicated. No class has been certified. The Farrier case is at the earliest stage of litigation.</p>
+</section>
+
+<section class="section" id="mechanism">
+  <h2><span class="num">05 — Why DNA Is Different</span>You Cannot Rotate Your Genome</h2>
+  <p>The complaint's "inherently unique biomarker" argument is a legal claim, not settled science. But it has independent analytical support that extends beyond the litigation.</p>
+  <p><em>The Cancer Letter</em>'s Paul Goldberg, writing in February 2026, drew the sharpest distinction: "The idea of de-identified predates our ability to sequence our entire genome." The HIPAA de-identification standard was designed for medical records — documents that contain identifiers (names, dates of birth, Social Security numbers, zip codes) attached to medical information. Remove the identifiers, and the medical information becomes anonymous. The framework assumes the data and the identity are separable.</p>
+  <p>A genome does not work this way. Attorney Rachel Rose, quoted in Bank Info Security's coverage of the lawsuits, noted that anonymizing genetic information presents unique challenges distinct from removing standard identifiers. The genome is not a record with an identity attached. The plaintiffs argue it IS the identity — a biological sequence unique to one person (identical twins excepted), present in every cell, and unchangeable across a lifetime.</p>
+  <p>Three properties make genetic data categorically different from any other class of information in a data breach.</p>
+  <p>It is permanent. A compromised password can be rotated. A stolen credit card number can be replaced. A leaked medical record is damaging but bounded — you can change providers, addresses, insurance plans. A sequenced genome cannot be un-sequenced. There is no new genome to issue. The exposure has no expiration date.</p>
+  <p>It is heritable. Your genome does not belong only to you. It encodes information about your biological parents, your siblings, your children, and their children. A single individual's genomic exposure radiates outward to every biological relative, including those who never consented to any test and those who have not yet been born.</p>
+  <p>It is increasingly linkable. Public genealogy databases, forensic DNA techniques, and growing reference datasets mean that a "de-identified" genomic sequence can be re-identified with progressively less effort. The plaintiffs' argument — that genetic data "cannot be deidentified" — is a legal assertion. The trajectory of re-identification research is the empirical evidence beneath it.</p>
+  <p>This is what separates the Tempus litigation from other data privacy stories in this archive. When Mercor exposed contractor resumes and work history, the data was rotatable — tokens could be revoked, profiles could be deleted, affected users could change their professional identities. When Perplexity exposed private chat logs, the data was embarrassing but temporal — conversations are contextual, bounded in time, and ultimately forgettable. Genetic data is none of these things. You can rotate a token. You can delete a chat log. You cannot rotate your genome.</p>
+</section>
+
+<section class="section" id="stakes">
+  <h2><span class="num">06 — The Stakes</span>Two Futures for Genomic Data</h2>
+  <p>The Farrier case has not been adjudicated. No class has been certified. No motion to dismiss has been filed or ruled upon. But the two possible outcomes trace different futures for an industry built on the assumption that genomic data can be de-identified and shared.</p>
+  <p>If a court accepts the plaintiffs' argument that genetic data "cannot be deidentified" and that HIPAA's de-identification safe harbor does not apply to genomic sequences, the implications extend beyond Tempus. Every company that collects and shares genomic data under de-identification claims — consumer genetics firms, academic biobanks with commercial data-sharing agreements, health systems that license clinical genomic data for research — would face the same legal exposure. The precedent would mean that the standard industry practice of de-identifying and licensing genomic data is, by definition, insufficient.</p>
+  <p>The statutory damages math is hypothetical but illustrative. GIPA provides $15,000 per intentional violation. According to Fisher Phillips, Ambry's database includes more than one million genetic tests. If the class is certified and the plaintiffs prevail on the intentional-violation standard, the statutory exposure is measured in billions. This is arithmetic, not prediction — class certification and liability are both unresolved.</p>
+  <p>If Tempus prevails — if the court rules that HIPAA-compliant de-identification is sufficient for genetic data, or dismisses the complaint on other grounds — the precedent validates the current model. Collect genomic data under clinical consent. De-identify under HIPAA. License to pharmaceutical partners for AI training and drug development. Genomic data becomes a commodity with an established legal framework for secondary use.</p>
+  <p>The Barone complaint's decision to name AstraZeneca as a co-defendant signals a theory of liability that reaches beyond the company that collected the data to the companies that received it. If this theory survives, every pharmaceutical company that licensed Tempus data could face exposure — not as a bystander, but as a participant in the alleged violation.</p>
+  <p>Whatever the court decides, the genome cannot be un-sequenced, un-shared, or un-known. If the plaintiffs are right that genetic data is an inherently unique biomarker, then the question the case poses is not whether Tempus can fix the alleged disclosure. It is whether the legal and regulatory frameworks that govern health data can adapt to a category of information that was never supposed to exist in commercial databases at this scale.</p>
+</section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.tempus-ai-genetic-data-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  const TEAL = '#14b8a6';
+  const T_R = 20, T_G = 184, T_B = 166;
+  const GRAY_R = 150, GRAY_G = 150, GRAY_B = 150;
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  });
+  ro.observe(canvas);
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const PARTICLES_PER_STRAND = 14;
+  const HELIX_AMP = 30;
+  const HELIX_LEN = 240;
+  const HELIX_TWIST = Math.PI * 2.5;
+  const ROTATION_SPEED = 0.012;
+  const CYCLE = 1320;
+
+  const NUM_AMB = 18;
+  interface Amb { x: number; y: number; vx: number; vy: number; r: number; a: number; }
+  const ambs: Amb[] = [];
+
+  function initAmb() {
+    ambs.length = 0;
+    for (let i = 0; i < NUM_AMB; i++) {
+      ambs.push({
+        x: Math.random() * (W || 800),
+        y: Math.random() * (H || 380),
+        vx: (Math.random() - 0.5) * 0.1,
+        vy: (Math.random() - 0.5) * 0.1,
+        r: 1 + Math.random() * 1.5,
+        a: 0.03 + Math.random() * 0.03,
+      });
+    }
+  }
+
+  interface HP {
+    strand: number;
+    idx: number;
+    r: number;
+    baseAlpha: number;
+    x: number; y: number;
+    colorT: number;
+    alpha: number;
+    scatterVx: number;
+    scatterVy: number;
+    scatterX: number;
+    scatterY: number;
+    scattered: boolean;
+  }
+  const hps: HP[] = [];
+
+  function initHelix() {
+    hps.length = 0;
+    for (let s = 0; s < 2; s++) {
+      for (let i = 0; i < PARTICLES_PER_STRAND; i++) {
+        hps.push({
+          strand: s,
+          idx: i,
+          r: 2.2 + Math.random() * 1.3,
+          baseAlpha: 0.7 + Math.random() * 0.3,
+          x: 0, y: 0,
+          colorT: 0,
+          alpha: 0.8,
+          scatterVx: (Math.random() - 0.5) * 1.2,
+          scatterVy: (Math.random() - 0.5) * 1.2,
+          scatterX: 0,
+          scatterY: 0,
+          scattered: false,
+        });
+      }
+    }
+  }
+
+  function helixPos(p: HP, cx: number, cy: number, rot: number): [number, number] {
+    const t = p.idx / (PARTICLES_PER_STRAND - 1);
+    const yPos = cy - HELIX_LEN / 2 + t * HELIX_LEN;
+    const angle = t * HELIX_TWIST + rot + (p.strand === 1 ? Math.PI : 0);
+    const xPos = cx + Math.sin(angle) * HELIX_AMP;
+    return [xPos, yPos];
+  }
+
+  function membraneX(): number { return W * 0.5; }
+
+  const FADE_IN_END = 80;
+  const APPROACH_END = 440;
+  const MEMBRANE_CROSS_END = 540;
+  const RECONSTITUTE_END = 740;
+  const DRIFT_RIGHT_END = 1100;
+  const FADE_OUT_END = 1240;
+
+  function getHelixCenterX(cf: number): number {
+    const startX = W * 0.15;
+    const endX = W * 0.85;
+    if (cf < FADE_IN_END) return startX;
+    if (cf >= FADE_OUT_END) return endX;
+    const t = (cf - FADE_IN_END) / (FADE_OUT_END - FADE_IN_END);
+    return startX + t * (endX - startX);
+  }
+
+  function update() {
+    const cf = frame % CYCLE;
+    const rot = frame * ROTATION_SPEED;
+    const cy = H / 2;
+    const helixCX = getHelixCenterX(cf);
+
+    for (const a of ambs) {
+      a.x += a.vx;
+      a.y += a.vy;
+      if (a.x < -10) a.x = W + 10;
+      if (a.x > W + 10) a.x = -10;
+      if (a.y < -10) a.y = H + 10;
+      if (a.y > H + 10) a.y = -10;
+    }
+
+    for (const p of hps) {
+      const [hx, hy] = helixPos(p, helixCX, cy, rot);
+
+      if (cf < FADE_IN_END) {
+        const t = cf / FADE_IN_END;
+        p.x = hx; p.y = hy;
+        p.alpha = p.baseAlpha * t;
+        p.colorT = 0;
+        p.scattered = false;
+      } else if (cf < APPROACH_END) {
+        p.x = hx; p.y = hy;
+        p.alpha = p.baseAlpha;
+        p.colorT = 0;
+        p.scattered = false;
+      } else if (cf < MEMBRANE_CROSS_END) {
+        const crossT = (cf - APPROACH_END) / (MEMBRANE_CROSS_END - APPROACH_END);
+        const phaseFrac = p.idx / (PARTICLES_PER_STRAND - 1);
+        const particleCrossT = (crossT - phaseFrac * 0.3);
+        const normalizedCT = Math.max(0, Math.min(1, particleCrossT / 0.7));
+
+        if (normalizedCT <= 0) {
+          p.x = hx; p.y = hy;
+          p.colorT = 0;
+          p.scattered = false;
+        } else {
+          p.colorT = Math.min(1, normalizedCT * 1.5);
+          if (!p.scattered) {
+            p.scattered = true;
+            p.scatterX = 0;
+            p.scatterY = 0;
+            p.scatterVx = (Math.random() - 0.5) * 1.4;
+            p.scatterVy = (Math.random() - 0.5) * 1.4;
+          }
+          p.scatterX += p.scatterVx * 0.5;
+          p.scatterY += p.scatterVy * 0.5;
+          const maxScatter = 20;
+          p.scatterX = Math.max(-maxScatter, Math.min(maxScatter, p.scatterX));
+          p.scatterY = Math.max(-maxScatter, Math.min(maxScatter, p.scatterY));
+          p.x = hx + p.scatterX * normalizedCT;
+          p.y = hy + p.scatterY * normalizedCT;
+          p.alpha = p.baseAlpha * (0.4 + 0.3 * (1 - normalizedCT));
+        }
+      } else if (cf < RECONSTITUTE_END) {
+        const reconT = (cf - MEMBRANE_CROSS_END) / (RECONSTITUTE_END - MEMBRANE_CROSS_END);
+        const ease = reconT < 0.5 ? 2 * reconT * reconT : -1 + (4 - 2 * reconT) * reconT;
+        const scatterFade = 1 - ease;
+        p.x = hx + p.scatterX * scatterFade;
+        p.y = hy + p.scatterY * scatterFade;
+        p.colorT = Math.max(0, 1 - ease * 1.3);
+        p.alpha = (0.4 + ease * 0.6) * p.baseAlpha;
+        p.scattered = ease > 0.9 ? false : true;
+      } else if (cf < DRIFT_RIGHT_END) {
+        p.x = hx; p.y = hy;
+        p.alpha = p.baseAlpha;
+        p.colorT = 0;
+        p.scattered = false;
+      } else if (cf < FADE_OUT_END) {
+        const fadeT = (cf - DRIFT_RIGHT_END) / (FADE_OUT_END - DRIFT_RIGHT_END);
+        p.x = hx; p.y = hy;
+        p.alpha = p.baseAlpha * (1 - fadeT);
+        p.colorT = 0;
+        p.scattered = false;
+      } else {
+        p.alpha = 0;
+        p.colorT = 0;
+        p.scattered = false;
+      }
+    }
+  }
+
+  function draw() {
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+
+    const cf = frame % CYCLE;
+    const rot = frame * ROTATION_SPEED;
+    const mx = membraneX();
+
+    for (const a of ambs) {
+      ctx.globalAlpha = a.a;
+      ctx.fillStyle = 'rgb(232,232,232)';
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    const membranePulse = 0.06 + 0.025 * Math.sin(frame * 0.015);
+    ctx.strokeStyle = `rgba(232,232,232,${membranePulse.toFixed(3)})`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(mx, H * 0.08);
+    ctx.lineTo(mx, H * 0.92);
+    ctx.stroke();
+
+    const memGrad = ctx.createLinearGradient(mx - 20, 0, mx + 20, 0);
+    memGrad.addColorStop(0, 'rgba(232,232,232,0)');
+    memGrad.addColorStop(0.5, `rgba(232,232,232,${(membranePulse * 0.3).toFixed(3)})`);
+    memGrad.addColorStop(1, 'rgba(232,232,232,0)');
+    ctx.fillStyle = memGrad;
+    ctx.fillRect(mx - 20, H * 0.08, 40, H * 0.84);
+
+    if (cf < FADE_OUT_END) {
+      ctx.lineWidth = 0.6;
+      for (let i = 0; i < PARTICLES_PER_STRAND; i++) {
+        const p0 = hps[i];
+        const p1 = hps[i + PARTICLES_PER_STRAND];
+        if (p0.alpha < 0.05 || p1.alpha < 0.05) continue;
+        const t = i / (PARTICLES_PER_STRAND - 1);
+        const angle0 = t * HELIX_TWIST + rot;
+        const angle1 = angle0 + Math.PI;
+        const depth0 = Math.cos(angle0);
+        const depth1 = Math.cos(angle1);
+        if (depth0 * depth1 < -0.1) {
+          const avgColorT = (p0.colorT + p1.colorT) / 2;
+          const lr = T_R + (GRAY_R - T_R) * avgColorT;
+          const lg = T_G + (GRAY_G - T_G) * avgColorT;
+          const lb = T_B + (GRAY_B - T_B) * avgColorT;
+          const lineAlpha = Math.min(p0.alpha, p1.alpha) * 0.12 * (1 - avgColorT * 0.5);
+          if (lineAlpha > 0.005) {
+            ctx.strokeStyle = `rgba(${lr|0},${lg|0},${lb|0},${lineAlpha.toFixed(3)})`;
+            ctx.beginPath();
+            ctx.moveTo(p0.x, p0.y);
+            ctx.lineTo(p1.x, p1.y);
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    const drawOrder: { p: HP; depth: number }[] = [];
+    for (const p of hps) {
+      if (p.alpha < 0.02) continue;
+      const t = p.idx / (PARTICLES_PER_STRAND - 1);
+      const angle = t * HELIX_TWIST + rot + (p.strand === 1 ? Math.PI : 0);
+      const depth = Math.cos(angle);
+      drawOrder.push({ p, depth });
+    }
+    drawOrder.sort((a, b) => a.depth - b.depth);
+
+    for (const { p, depth } of drawOrder) {
+      const depthFactor = 0.6 + 0.4 * ((depth + 1) / 2);
+      const effectiveR = p.r * depthFactor;
+      const effectiveAlpha = p.alpha * (0.5 + 0.5 * depthFactor);
+      const cr = T_R + (GRAY_R - T_R) * p.colorT;
+      const cg = T_G + (GRAY_G - T_G) * p.colorT;
+      const cb = T_B + (GRAY_B - T_B) * p.colorT;
+      if (effectiveAlpha > 0.1 && p.colorT < 0.7) {
+        ctx.globalAlpha = effectiveAlpha * 0.12;
+        ctx.fillStyle = `rgb(${cr|0},${cg|0},${cb|0})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, effectiveR * 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = effectiveAlpha;
+      ctx.fillStyle = `rgb(${cr|0},${cg|0},${cb|0})`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, effectiveR, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function tick() {
+    frame++;
+    update();
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  function init() {
+    initAmb();
+    initHelix();
+  }
+
+  const io = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+    else { cancelAnimationFrame(raf); raf = 0; }
+  }, { threshold: 0.01 });
+
+  requestAnimationFrame(() => {
+    init();
+    if (prefersReduced) {
+      const cy = H / 2;
+      const leftCX = W * 0.28;
+      const rightCX = W * 0.72;
+
+      for (let s = 0; s < 2; s++) {
+        for (let i = 0; i < PARTICLES_PER_STRAND; i++) {
+          const p = hps[s * PARTICLES_PER_STRAND + i];
+          const t = i / (PARTICLES_PER_STRAND - 1);
+          const yPos = cy - HELIX_LEN / 2 + t * HELIX_LEN;
+          const angle = t * HELIX_TWIST + (s === 1 ? Math.PI : 0);
+          p.x = leftCX + Math.sin(angle) * HELIX_AMP;
+          p.y = yPos;
+          p.alpha = 0.85;
+          p.colorT = 0;
+        }
+      }
+      draw();
+
+      for (let s = 0; s < 2; s++) {
+        for (let i = 0; i < PARTICLES_PER_STRAND; i++) {
+          const t = i / (PARTICLES_PER_STRAND - 1);
+          const yPos = cy - HELIX_LEN / 2 + t * HELIX_LEN;
+          const angle = t * HELIX_TWIST + (s === 1 ? Math.PI : 0);
+          const px = rightCX + Math.sin(angle) * HELIX_AMP;
+          const py = yPos;
+          const depth = Math.cos(angle);
+          const depthFactor = 0.6 + 0.4 * ((depth + 1) / 2);
+          const r = (2.2 + 0.65) * depthFactor;
+          const alpha = 0.85 * (0.5 + 0.5 * depthFactor);
+          ctx.globalAlpha = alpha * 0.12;
+          ctx.fillStyle = TEAL;
+          ctx.beginPath();
+          ctx.arc(px, py, r * 3.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = alpha;
+          ctx.fillStyle = TEAL;
+          ctx.beginPath();
+          ctx.arc(px, py, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      ctx.globalAlpha = 1;
+    } else {
+      io.observe(canvas);
+    }
+  });
+
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(raf);
+    ro.disconnect();
+    io.disconnect();
+  });
+})();
+</script>
