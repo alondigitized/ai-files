@@ -34,6 +34,13 @@
   --border-hover: #a89e8c;
 }
 
+/* Light-theme contrast override: small accent text needs darker variant for WCAG AA.
+   --story values (#b8763a, #c8963e, etc.) sit at ~3:1 on cream at <14px; --accent2
+   (#8b6914) hits 6.0:1. Applies only to small structural labels like "01 — …". */
+:root[data-theme="light"] h2 .num {
+  color: var(--accent2);
+}
+
 /* ── Reset ── */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 

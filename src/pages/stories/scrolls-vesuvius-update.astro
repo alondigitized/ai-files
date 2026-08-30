@@ -1,0 +1,682 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'scrolls-vesuvius-update')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .scrolls-vesuvius-update-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* Reenactment: decoded words panel */
+  .vsu-reveal-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--story);
+    border-radius: 8px;
+    padding: 2rem 2.5rem;
+    margin: 2rem 0;
+    font-family: 'Georgia', serif;
+  }
+  .vsu-reveal-panel .vsu-panel-header {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--story);
+    margin-bottom: 1.5rem;
+    font-family: system-ui, sans-serif;
+  }
+  .vsu-reveal-panel .vsu-word-row {
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .vsu-reveal-panel .vsu-word-row:last-child {
+    border-bottom: none;
+  }
+  .vsu-reveal-panel .vsu-greek {
+    font-size: 1.4rem;
+    color: var(--story);
+    min-width: 140px;
+    font-style: italic;
+  }
+  .vsu-reveal-panel .vsu-arrow {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .vsu-reveal-panel .vsu-english {
+    font-size: 1.1rem;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .vsu-reveal-panel .vsu-context {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 1.5rem;
+    font-style: italic;
+    font-family: system-ui, sans-serif;
+    line-height: 1.5;
+  }
+
+  /* Reenactment: pipeline comparison diagram */
+  .vsu-pipeline-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2rem;
+    margin: 2rem 0;
+    overflow-x: auto;
+  }
+  .vsu-pipeline-diagram .vsu-pipe-header {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--story);
+    margin-bottom: 1.5rem;
+    font-family: system-ui, sans-serif;
+  }
+  .vsu-pipeline-diagram .vsu-pipe-stages {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .vsu-pipeline-diagram .vsu-stage-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--story);
+    text-align: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border);
+  }
+  .vsu-pipeline-diagram .vsu-pipe-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .vsu-pipeline-diagram .vsu-pipe-row:last-child {
+    border-bottom: none;
+  }
+  .vsu-pipeline-diagram .vsu-pipe-cell {
+    font-size: 0.82rem;
+    color: var(--text);
+    text-align: center;
+    line-height: 1.4;
+  }
+  .vsu-pipeline-diagram .vsu-row-label {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .vsu-pipeline-diagram .vsu-pipe-cell em {
+    color: var(--story);
+    font-style: normal;
+    font-weight: 600;
+  }
+  .vsu-pipeline-diagram .vsu-pipe-footer {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 1rem;
+    font-style: italic;
+    text-align: center;
+    font-family: system-ui, sans-serif;
+  }
+
+  /* Reenactment: papyrological identification card */
+  .vsu-ident-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--story);
+    border-radius: 8px;
+    padding: 2rem 2.5rem;
+    margin: 2rem 0;
+    font-family: system-ui, sans-serif;
+  }
+  .vsu-ident-card .vsu-ident-header {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--story);
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .vsu-ident-card .vsu-ident-title-greek {
+    font-size: 1.3rem;
+    color: var(--story);
+    font-style: italic;
+    font-family: 'Georgia', serif;
+    margin: 1rem 0 0.25rem;
+    opacity: 0.85;
+  }
+  .vsu-ident-card .vsu-ident-title-full {
+    font-size: 1rem;
+    color: var(--text);
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+    font-style: italic;
+  }
+  .vsu-ident-card .vsu-ident-grid {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 0.55rem 1rem;
+    font-size: 0.88rem;
+  }
+  .vsu-ident-card .vsu-ident-label {
+    color: var(--muted);
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding-top: 2px;
+  }
+  .vsu-ident-card .vsu-ident-value {
+    color: var(--text);
+  }
+  .vsu-ident-card .vsu-ident-value.vsu-confirmed {
+    color: var(--green);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .vsu-ident-card .vsu-ident-note {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 1.25rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* Light-theme contrast overrides — story accent (#b8763a) is too soft on cream for body text.
+     Use darker variant (#7a4d24, 5.74:1 on --surface) for all label text to meet WCAG AA. */
+  :root[data-theme="light"] .vsu-pipeline-diagram .vsu-pipe-cell em,
+  :root[data-theme="light"] .vsu-reveal-panel .vsu-greek,
+  :root[data-theme="light"] .vsu-reveal-panel .vsu-panel-header,
+  :root[data-theme="light"] .vsu-pipeline-diagram .vsu-pipe-header,
+  :root[data-theme="light"] .vsu-pipeline-diagram .vsu-stage-label,
+  :root[data-theme="light"] .vsu-ident-card .vsu-ident-header {
+    color: #7a4d24;
+  }
+  :root[data-theme="light"] .vsu-ident-card .vsu-ident-title-greek {
+    color: #7a4d24;
+    opacity: 1;
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="intro">
+      <h2><span class="num">01 — A Different Scroll</span>What was identified, and how it differs</h2>
+
+      <p>On 5 May 2025, a papyrological team confirmed that the charred lump catalogued as PHerc. 172 — sealed since Vesuvius buried it in 79 AD — was Book 1 of "On Vices" by Philodemus of Gadara. No one had unrolled it. No one had touched the text. A machine-learning pipeline read the title through the ash.</p>
+
+      <p>PHerc. 172 is not the scroll that made headlines in 2023. That was Scroll 1 — the artifact from which Youssef Nader, Luke Farritor, and Julian Schilliger recovered roughly 2,000 characters to win the Vesuvius Challenge Grand Prize. (Our earlier story, <a href="/stories/vesuvius-scrolls">The Library That Came Back</a>, covered that milestone.) PHerc. 172 is a physically distinct object: one of three Herculaneum scrolls held by the Bodleian Libraries at the University of Oxford, not the Institut de France collection in Paris where Scroll 1 resides.</p>
+
+      <p>The difference that matters most is chemical. The writing ink on PHerc. 172 is much denser than that of other Herculaneum papyri, making it more visible to X-ray scanning. Where Scroll 1 required painstaking signal extraction from faint carbon traces, PHerc. 172 offered a stronger signal. Dr. Brent Seales, Principal Investigator for the Vesuvius Challenge, stated: "This scroll contains more recoverable text than we have ever seen in a scanned Herculaneum scroll."</p>
+
+      <p>The scroll was scanned using the synchrotron at Diamond Light Source, a UK particle accelerator that produces X-rays intense enough to penetrate carbonized papyrus and distinguish ink from substrate. The resulting 3D reconstruction revealed internal structure — columns of text sealed since the eruption.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="scrolls-vesuvius-update-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Transfer</strong> — Two scroll cross-sections with different internal geometry sit side by side; a warm bronze scanning ridge sweeps across the first, recovering glowing specks that drift upward; the ridge lifts to the second scroll and the same recovery occurs; both clusters of recovered text-particles glow in parallel at the top, proving the method transfers.</p>
+
+    <section class="section" id="first-light">
+      <h2><span class="num">02 — First Light</span>Words emerging from carbonized papyrus</h2>
+
+      <p>On 7 February 2025, Oxford University announced that the first images of PHerc. 172's interior had been generated. Columns of Greek text were visible for the first time since the scroll was carbonized.</p>
+
+      <p>Among the first words decoded: <em>foolish</em>. <em>Disgust</em>. <em>Fear</em>. <em>Life</em>.</p>
+
+      <div class="vsu-reveal-panel">
+        <div class="vsu-panel-header">First decoded words — PHerc. 172 interior, February 2025</div>
+        <div class="vsu-word-row">
+          <span class="vsu-greek" lang="grc">ἀδιάληπτος</span>
+          <span class="vsu-arrow">→</span>
+          <span class="vsu-english">foolish</span>
+        </div>
+        <div class="vsu-word-row">
+          <span class="vsu-greek" lang="grc">διατροπή</span>
+          <span class="vsu-arrow">→</span>
+          <span class="vsu-english">disgust</span>
+        </div>
+        <div class="vsu-word-row">
+          <span class="vsu-greek" lang="grc">φοβ—</span>
+          <span class="vsu-arrow">→</span>
+          <span class="vsu-english">fear</span>
+        </div>
+        <div class="vsu-word-row">
+          <span class="vsu-greek" lang="grc">βίου</span>
+          <span class="vsu-arrow">→</span>
+          <span class="vsu-english">life</span>
+        </div>
+        <div class="vsu-context">Greek characters surfaced from carbonized papyrus via ML ink detection — the first words read from PHerc. 172 without physical contact. All concern human frailty.</div>
+      </div>
+
+      <p>The content — terms describing human weakness — was suggestive but not yet conclusive. Scholars recognized the vocabulary as consistent with Epicurean moral philosophy. But identifying a scroll requires more than scattered words. It requires a title.</p>
+
+      <p>That identification came three months later through two independent lines of work. Sean Johnson, whose team had won the December 2024 First Automated Segmentation Prize, produced new segmentation of PHerc. 172 that revealed the scroll's title line. Simultaneously, Marcel Roth and Micha Nowak developed improved ink detection methods that independently surfaced the same title text from the same scroll.</p>
+
+      <p>A papyrological team led by Federica Nicolardi verified the identification. The text was "On Vices and Their Opposite Virtues and In Whom They Are and About What" — the full title of a treatise by the Epicurean philosopher Philodemus of Gadara. Possibly Book 1. The first time a title from a still-rolled Herculaneum scroll had been recovered noninvasively.</p>
+    </section>
+
+    <section class="section" id="pipeline">
+      <h2><span class="num">03 — Pipeline, Not Stunt</span>Why the second scroll matters more than the first</h2>
+
+      <p>The 2023 Grand Prize proved that machine learning could read a sealed scroll at all. The May 2025 First Title Prize proved something harder: that the method generalizes.</p>
+
+      <p>The Vesuvius Challenge pipeline has four stages. CT scanning produces a 3D volume from X-ray data. Surface segmentation traces the papyrus layers wound inside the scroll — separating one sheet from the next without physical contact. Geometric reconstruction flattens those curved surfaces into readable planes. Ink detection applies ML pattern recognition to identify traces of carbon ink against carbonized papyrus.</p>
+
+      <p>Every stage was different for PHerc. 172. The scanning used Diamond Light Source rather than the facilities used for Scroll 1. The segmentation was partially automated — an advance that did not exist during the Grand Prize. The ink was denser and more responsive. The geometry was distinct. And the team that achieved the title identification — Roth and Nowak — was different from the Grand Prize winners.</p>
+
+      <div class="vsu-pipeline-diagram">
+        <div class="vsu-pipe-header">Pipeline comparison: same architecture, different inputs</div>
+        <div class="vsu-pipe-stages">
+          <div class="vsu-stage-label">CT Scan</div>
+          <div class="vsu-stage-label">Segmentation</div>
+          <div class="vsu-stage-label">Reconstruction</div>
+          <div class="vsu-stage-label">Ink Detection</div>
+          <div class="vsu-stage-label">Verification</div>
+        </div>
+        <div class="vsu-pipe-row">
+          <div class="vsu-pipe-cell"><div class="vsu-row-label">Scroll 1 (2023)</div>Particle accelerator (France)</div>
+          <div class="vsu-pipe-cell"><div class="vsu-row-label">&nbsp;</div>Manual</div>
+          <div class="vsu-pipe-cell"><div class="vsu-row-label">&nbsp;</div>Standard geometry</div>
+          <div class="vsu-pipe-cell"><div class="vsu-row-label">&nbsp;</div>Faint carbon ink</div>
+          <div class="vsu-pipe-cell"><div class="vsu-row-label">&nbsp;</div>Papyrologists</div>
+        </div>
+        <div class="vsu-pipe-row">
+          <div class="vsu-pipe-cell"><div class="vsu-row-label">PHerc. 172 (2025)</div><em>Diamond Light Source (UK)</em></div>
+          <div class="vsu-pipe-cell"><div class="vsu-row-label">&nbsp;</div><em>Automated</em></div>
+          <div class="vsu-pipe-cell"><div class="vsu-row-label">&nbsp;</div><em>Different geometry</em></div>
+          <div class="vsu-pipe-cell"><div class="vsu-row-label">&nbsp;</div><em>Dense ink</em></div>
+          <div class="vsu-pipe-cell"><div class="vsu-row-label">&nbsp;</div>Papyrologists</div>
+        </div>
+        <div class="vsu-pipe-footer">Same four-stage architecture. Different scroll, scanner, team, and technique at each stage. Same class of output: readable ancient Greek.</div>
+      </div>
+
+      <p>This is what generalization looks like. Not a repeat of the same experiment under the same conditions. A different substrate, a different team, improved but structurally identical methods — and the same class of result. The pipeline's components are being developed in parallel by independent groups: segmentation by one team, ink detection by another, surface reconstruction by a third. Each can improve without the others needing to restart. That is the architecture of infrastructure, not of a one-time demonstration.</p>
+    </section>
+
+    <section class="section" id="second-chance">
+      <h2><span class="num">04 — Second Chance</span>The team that came back</h2>
+
+      <p>Marcel Roth and Micha Nowak came to the Vesuvius Challenge late. "Back in 2023, we jumped into the Vesuvius Grand Prize Challenge less than two months before it concluded, winning a progress prize but missing the podium, which was both motivating and frustrating," they said in their prize announcement.</p>
+
+      <p>They came back. Their improved ink detection methods — developed over the intervening year — surfaced the title of PHerc. 172. Sean Johnson's automated segmentation independently produced the same result from a different direction. Two independent threads arrived at the same answer. The Vesuvius Challenge awarded the $60,000 First Title Prize to Roth and Nowak on 5 May 2025.</p>
+
+      <div class="vsu-ident-card">
+        <div class="vsu-ident-header">Papyrological identification — verified May 2025</div>
+        <div class="vsu-ident-title-greek" lang="grc">Περὶ κακιῶν καὶ τῶν ἀντικειμένων ἀρετῶν…</div>
+        <div class="vsu-ident-title-full">"On Vices and Their Opposite Virtues and In Whom They Are and About What"</div>
+        <div class="vsu-ident-grid">
+          <span class="vsu-ident-label">Author</span>
+          <span class="vsu-ident-value">Philodemus of Gadara</span>
+          <span class="vsu-ident-label">Period</span>
+          <span class="vsu-ident-value">1st century BCE</span>
+          <span class="vsu-ident-label">Scroll</span>
+          <span class="vsu-ident-value">PHerc. 172 (Bodleian Libraries, Oxford)</span>
+          <span class="vsu-ident-label">Book</span>
+          <span class="vsu-ident-value">Possibly Book 1</span>
+          <span class="vsu-ident-label">Method</span>
+          <span class="vsu-ident-value">Noninvasive ML ink detection + synchrotron CT</span>
+          <span class="vsu-ident-label">Verified by</span>
+          <span class="vsu-ident-value">Federica Nicolardi (papyrological team)</span>
+          <span class="vsu-ident-label">Status</span>
+          <span class="vsu-ident-value vsu-confirmed">CONFIRMED</span>
+        </div>
+        <div class="vsu-ident-note">Unusual formatting: book number appears on the same line as the title — atypical for Herculaneum scrolls. This bibliographic detail aided identification.</div>
+      </div>
+
+      <p>The identification was notable for its specificity. The title line contained the book number on the same line as the title text — an unusual formatting convention for Herculaneum scrolls. This bibliographic detail, flagged by Nicolardi's team, aided the positive identification. The pipeline had not just recovered letters. It had recovered enough structural context for classical scholarship to do its work.</p>
+    </section>
+
+    <section class="section" id="remaining">
+      <h2><span class="num">05 — The Remaining Collection</span>What's still out there</h2>
+
+      <p>First Title Prizes of $60,000 each remain open for Scrolls 2 and 3. The Unwrapping at Scale Prize — $200,000 — targets automated virtual unwrapping of entire scroll interiors. The Kaggle Surface Detection Prize ($200,000) was completed in March 2026. Monthly progress prizes remain active through 31 May 2026. In total, the Vesuvius Challenge has awarded $1,781,500 in prizes since its 2023 launch by Nat Friedman, Daniel Gross, and Dr. Brent Seales.</p>
+
+      <p>The pipeline's components continue to improve independently. Automated segmentation — the bottleneck that once required hundreds of hours of manual tracing — was the subject of a $60,000 prize in December 2024, awarded to Hendrik Schilling, Sean Johnson, and Paul Henderson. Surface detection has its own track. Ink detection has another. Each advance reduces the labor required for the next scroll.</p>
+
+      <p>The wider Herculaneum collection — hundreds of extant scrolls, mostly housed in Naples — awaits. How much text remains recoverable is an open question. The pipeline has now proven it can cross from one scroll to another. It has not yet proven it can do so at speed. But the precondition for speed — a generalizable method — is no longer hypothetical. A method that works on one scroll is a curiosity. A method that works on two, with different ink, different geometry, and a different team operating it, is infrastructure. The question is no longer whether the scrolls can be read. It is how fast.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script is:inline>
+(function () {
+  const canvas = document.querySelector('.scrolls-vesuvius-update-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  const STORY_COLOR = (getComputedStyle(document.documentElement).getPropertyValue('--story') || '').trim() || '#b8763a';
+  const BG_COLOR = (getComputedStyle(document.documentElement).getPropertyValue('--bg') || '').trim() || '#f5f0e8';
+
+  function hexToRgb(hex) {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+
+  const [stR, stG, stB] = hexToRgb(STORY_COLOR.startsWith('#') ? STORY_COLOR : '#b8763a');
+  const darkR = Math.max(0, stR - 40), darkG = Math.max(0, stG - 30), darkB = Math.max(0, stB - 15);
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  });
+  ro.observe(canvas);
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const SWEEP_LEFT = 400;
+  const GAP_PAUSE = 30;
+  const SWEEP_RIGHT = 400;
+  const HOLD_TOP = 120;
+  const FADE_OUT = 60;
+  const REST = 30;
+  const CYCLE = SWEEP_LEFT + GAP_PAUSE + SWEEP_RIGHT + HOLD_TOP + FADE_OUT + REST;
+
+  const leftArcs = [];
+  const rightArcs = [];
+
+  function buildArcs() {
+    leftArcs.length = 0;
+    rightArcs.length = 0;
+    const leftCx = W * 0.28;
+    const leftCy = H * 0.52;
+    const rightCx = W * 0.72;
+    const rightCy = H * 0.52;
+
+    for (let i = 0; i < 6; i++) {
+      const baseR = 22 + i * 16;
+      leftArcs.push({
+        cx: leftCx, cy: leftCy,
+        rx: baseR + (i % 2 === 0 ? 4 : -2),
+        ry: baseR * 0.75 + (i % 2 === 1 ? 3 : -1),
+        startAngle: -Math.PI * 0.85 + i * 0.05,
+        endAngle: Math.PI * 0.85 - i * 0.03,
+        wobbleAmp: 2 + i * 0.5,
+        wobbleFreq: 3 + i * 0.7,
+      });
+    }
+
+    for (let i = 0; i < 7; i++) {
+      const baseR = 18 + i * 11;
+      rightArcs.push({
+        cx: rightCx, cy: rightCy,
+        rx: baseR + (i % 2 === 0 ? 2 : -1),
+        ry: baseR * 0.8 + (i % 2 === 1 ? 2 : 0),
+        startAngle: -Math.PI * 0.9 + i * 0.03,
+        endAngle: Math.PI * 0.9 - i * 0.02,
+        wobbleAmp: 1 + i * 0.3,
+        wobbleFreq: 4 + i * 0.5,
+      });
+    }
+  }
+
+  const MAX_SPECKS = 80;
+  const specks = [];
+  function initSpecks() {
+    specks.length = 0;
+    for (let i = 0; i < MAX_SPECKS; i++) {
+      specks.push({
+        x: 0, y: 0, vx: 0, vy: 0,
+        alpha: 0, targetAlpha: 0,
+        radius: 1.5 + Math.random() * 1.5,
+        scroll: 0, active: false,
+        holdY: 40 + Math.random() * 30,
+        phase: 0,
+        r: stR, g: stG, b: stB,
+      });
+    }
+  }
+
+  let ridgeX = 0;
+  let ridgeAlpha = 0;
+  let ridgeActive = false;
+
+  function getScrollBounds(scrollIdx) {
+    if (scrollIdx === 0 && leftArcs.length > 0) {
+      const last = leftArcs[leftArcs.length - 1];
+      return { left: last.cx - last.rx - 10, right: last.cx + last.rx + 10, cy: last.cy };
+    } else if (rightArcs.length > 0) {
+      const last = rightArcs[rightArcs.length - 1];
+      return { left: last.cx - last.rx - 10, right: last.cx + last.rx + 10, cy: last.cy };
+    }
+    return { left: 0, right: W, cy: H * 0.5 };
+  }
+
+  function spawnSpeck(scrollIdx, ridgeXPos) {
+    let s = null;
+    for (let i = 0; i < specks.length; i++) {
+      if (!specks[i].active) { s = specks[i]; break; }
+    }
+    if (!s) return;
+    const bounds = getScrollBounds(scrollIdx);
+    s.active = true;
+    s.scroll = scrollIdx;
+    s.x = ridgeXPos + (Math.random() - 0.5) * 8;
+    s.y = bounds.cy + (Math.random() - 0.5) * 40;
+    s.vx = (Math.random() - 0.5) * 0.15;
+    s.vy = -0.2 - Math.random() * 0.15;
+    s.alpha = 0;
+    s.targetAlpha = 0.6 + Math.random() * 0.4;
+    s.phase = 0;
+    s.holdY = 30 + Math.random() * 35;
+    s.radius = 1.5 + Math.random() * 1.5;
+    if (scrollIdx === 1) {
+      s.r = Math.min(255, stR + 20);
+      s.g = Math.min(255, stG + 10);
+      s.b = stB;
+      s.targetAlpha = 0.7 + Math.random() * 0.3;
+    } else {
+      s.r = stR; s.g = stG; s.b = stB;
+    }
+  }
+
+  function update() {
+    const cf = frame % CYCLE;
+    if (cf === 0) {
+      for (const s of specks) { s.active = false; s.alpha = 0; }
+    }
+
+    const sweepRightStart = SWEEP_LEFT + GAP_PAUSE;
+    const holdStart = sweepRightStart + SWEEP_RIGHT;
+    const fadeStart = holdStart + HOLD_TOP;
+    const restStart = fadeStart + FADE_OUT;
+
+    if (cf < SWEEP_LEFT) {
+      const bounds = getScrollBounds(0);
+      const t = cf / SWEEP_LEFT;
+      ridgeX = bounds.left + t * (bounds.right - bounds.left);
+      ridgeAlpha = 0.5 + 0.2 * Math.sin(t * Math.PI);
+      ridgeActive = true;
+      if (cf % 8 === 0 && cf > 10) {
+        const numToSpawn = 2 + Math.floor(Math.random() * 2);
+        for (let i = 0; i < numToSpawn; i++) spawnSpeck(0, ridgeX);
+      }
+    } else if (cf < sweepRightStart) {
+      ridgeAlpha = Math.max(0, ridgeAlpha - 0.03);
+      ridgeActive = ridgeAlpha > 0.01;
+    } else if (cf < holdStart) {
+      const localF = cf - sweepRightStart;
+      const bounds = getScrollBounds(1);
+      const t = localF / SWEEP_RIGHT;
+      ridgeX = bounds.left + t * (bounds.right - bounds.left);
+      ridgeAlpha = 0.5 + 0.2 * Math.sin(t * Math.PI);
+      ridgeActive = true;
+      if (localF % 8 === 0 && localF > 10) {
+        const numToSpawn = 2 + Math.floor(Math.random() * 2);
+        for (let i = 0; i < numToSpawn; i++) spawnSpeck(1, ridgeX);
+      }
+    } else if (cf < fadeStart) {
+      ridgeActive = false;
+      ridgeAlpha = 0;
+      const pulseT = (cf - holdStart) / HOLD_TOP;
+      const pulse = 0.85 + 0.15 * Math.sin(pulseT * Math.PI * 4);
+      for (const s of specks) {
+        if (s.active && s.phase === 1) {
+          s.targetAlpha = s.targetAlpha * pulse;
+        }
+      }
+    } else if (cf < restStart) {
+      ridgeActive = false;
+      const fadeT = (cf - fadeStart) / FADE_OUT;
+      for (const s of specks) {
+        if (s.active) {
+          s.targetAlpha = Math.max(0, (1 - fadeT) * 0.8);
+          if (fadeT > 0.95) s.active = false;
+        }
+      }
+    } else {
+      ridgeActive = false;
+      ridgeAlpha = 0;
+    }
+
+    for (const s of specks) {
+      if (!s.active) continue;
+      if (s.phase === 0) {
+        s.x += s.vx;
+        s.y += s.vy;
+        s.alpha += (s.targetAlpha - s.alpha) * 0.05;
+        if (s.y <= s.holdY) {
+          s.phase = 1;
+          s.vy = 0;
+          s.vx = 0;
+        }
+      } else if (s.phase === 1) {
+        s.x += Math.sin(frame * 0.01 + s.holdY) * 0.05;
+        s.alpha += (s.targetAlpha - s.alpha) * 0.08;
+      }
+    }
+  }
+
+  function drawArc(arc, frameNum) {
+    ctx.beginPath();
+    const steps = 60;
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const angle = arc.startAngle + t * (arc.endAngle - arc.startAngle);
+      const wobble = Math.sin(angle * arc.wobbleFreq + frameNum * 0.003) * arc.wobbleAmp;
+      const x = arc.cx + Math.cos(angle) * (arc.rx + wobble);
+      const y = arc.cy + Math.sin(angle) * (arc.ry + wobble * 0.6);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+
+  function draw() {
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+    if (W === 0 || H === 0) return;
+
+    ctx.lineWidth = 1.2;
+    ctx.lineCap = 'round';
+
+    for (let i = 0; i < leftArcs.length; i++) {
+      const opacity = 0.16 + i * 0.025;
+      ctx.strokeStyle = 'rgba(' + stR + ',' + stG + ',' + stB + ',' + opacity + ')';
+      drawArc(leftArcs[i], frame);
+    }
+
+    for (let i = 0; i < rightArcs.length; i++) {
+      const opacity = 0.18 + i * 0.022;
+      ctx.strokeStyle = 'rgba(' + darkR + ',' + darkG + ',' + darkB + ',' + opacity + ')';
+      drawArc(rightArcs[i], frame);
+    }
+
+    if (ridgeActive && ridgeAlpha > 0.01) {
+      const grad = ctx.createLinearGradient(ridgeX - 8, 0, ridgeX + 8, 0);
+      grad.addColorStop(0, 'rgba(' + stR + ',' + stG + ',' + stB + ',0)');
+      grad.addColorStop(0.3, 'rgba(' + stR + ',' + stG + ',' + stB + ',' + (ridgeAlpha * 0.4) + ')');
+      grad.addColorStop(0.5, 'rgba(' + stR + ',' + stG + ',' + stB + ',' + ridgeAlpha + ')');
+      grad.addColorStop(0.7, 'rgba(' + stR + ',' + stG + ',' + stB + ',' + (ridgeAlpha * 0.4) + ')');
+      grad.addColorStop(1, 'rgba(' + stR + ',' + stG + ',' + stB + ',0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(ridgeX - 8, 20, 16, H - 40);
+    }
+
+    for (const s of specks) {
+      if (!s.active || s.alpha < 0.02) continue;
+      ctx.globalAlpha = s.alpha * 0.25;
+      ctx.fillStyle = 'rgb(' + s.r + ',' + s.g + ',' + s.b + ')';
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.radius * 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = s.alpha;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function tick() {
+    frame++;
+    if (frame % CYCLE === 0) buildArcs();
+    update();
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  function init() {
+    buildArcs();
+    initSpecks();
+  }
+
+  requestAnimationFrame(() => {
+    init();
+    if (prefersReduced) {
+      buildArcs();
+      let idx = 0;
+      const leftBounds = getScrollBounds(0);
+      const rightBounds = getScrollBounds(1);
+      for (let i = 0; i < 20 && idx < MAX_SPECKS; i++, idx++) {
+        const s = specks[idx];
+        s.active = true; s.scroll = 0;
+        s.x = leftBounds.left + 20 + Math.random() * (leftBounds.right - leftBounds.left - 40);
+        s.y = 35 + Math.random() * 30;
+        s.alpha = 0.6 + Math.random() * 0.3;
+        s.phase = 1;
+        s.r = stR; s.g = stG; s.b = stB;
+      }
+      for (let i = 0; i < 20 && idx < MAX_SPECKS; i++, idx++) {
+        const s = specks[idx];
+        s.active = true; s.scroll = 1;
+        s.x = rightBounds.left + 20 + Math.random() * (rightBounds.right - rightBounds.left - 40);
+        s.y = 35 + Math.random() * 30;
+        s.alpha = 0.7 + Math.random() * 0.3;
+        s.phase = 1;
+        s.r = Math.min(255, stR + 20); s.g = Math.min(255, stG + 10); s.b = stB;
+      }
+      draw();
+    } else {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+        else { cancelAnimationFrame(raf); raf = 0; }
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+      window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); io.disconnect(); ro.disconnect(); });
+    }
+  });
+
+  window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); ro.disconnect(); });
+})();
+</script>
