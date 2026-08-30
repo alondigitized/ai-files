@@ -1,0 +1,862 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'varnet-pasadena-student')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .varnet-pasadena-student-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* === Reenactment #1: Light Curve Pair === */
+  .vps-lc-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+  @media (max-width: 640px) {
+    .vps-lc-wrap { grid-template-columns: 1fr; }
+  }
+  .vps-lc-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  }
+  .vps-lc-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--surface2, var(--surface));
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .vps-lc-body {
+    padding: 1rem 1.25rem;
+  }
+  .vps-lc-axes {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .vps-lc-ylabel {
+    writing-mode: vertical-lr;
+    transform: rotate(180deg);
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    text-align: center;
+    padding-right: 0.25rem;
+    flex-shrink: 0;
+  }
+  .vps-lc-chart-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .vps-lc-area {
+    position: relative;
+    height: 110px;
+    border-left: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    flex: 1;
+  }
+  .vps-lc-midline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 50%;
+    border-top: 1px dashed var(--border);
+  }
+  .vps-lc-dot {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--muted);
+    transform: translate(-50%, 50%);
+  }
+  .vps-lc-panel.pulsating .vps-lc-dot {
+    background: var(--story);
+    opacity: 0.85;
+  }
+  .vps-lc-xlabel {
+    font-size: 0.62rem;
+    color: var(--muted);
+    text-align: center;
+    padding-top: 0.35rem;
+    letter-spacing: 0.04em;
+  }
+  .vps-lc-result {
+    padding: 0.6rem 1.25rem;
+    border-top: 1px solid var(--border);
+    background: var(--surface2, var(--surface));
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-align: center;
+    font-weight: 700;
+  }
+  .vps-lc-result.null {
+    color: var(--muted);
+  }
+  .vps-lc-result.pulsating {
+    color: var(--story);
+  }
+  .vps-lc-footer {
+    font-size: 0.72rem;
+    color: var(--muted);
+    padding: 0.75rem 0 0;
+    line-height: 1.5;
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* === Reenactment #2: Catalog Entry === */
+  .vps-cat-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    margin: 2rem 0;
+    font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  }
+  .vps-cat-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--surface2, var(--surface));
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .vps-cat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--story);
+    flex-shrink: 0;
+  }
+  .vps-cat-body {
+    padding: 1.25rem;
+  }
+  .vps-cat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.35rem 0;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    border-bottom: 1px solid var(--border);
+    gap: 1rem;
+  }
+  .vps-cat-row:last-child {
+    border-bottom: none;
+  }
+  .vps-cat-label {
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .vps-cat-value {
+    color: var(--text);
+    font-weight: 600;
+    text-align: right;
+  }
+  .vps-cat-value.accent {
+    color: var(--story);
+    font-weight: 700;
+  }
+  .vps-cat-value.highlight {
+    color: var(--green, #2d8a4e);
+    font-weight: 700;
+  }
+  .vps-cat-count {
+    text-align: center;
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--border);
+    background: var(--surface2, var(--surface));
+    font-size: 0.82rem;
+    color: var(--story);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .vps-cat-footer {
+    font-size: 0.72rem;
+    color: var(--muted);
+    padding: 0.5rem 1.25rem 0.75rem;
+    background: var(--surface2, var(--surface));
+    line-height: 1.5;
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* === Reenactment #3: Quality Ledger === */
+  .vps-ql-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    margin: 2rem 0;
+    font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+  }
+  .vps-ql-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--surface2, var(--surface));
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .vps-ql-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--story);
+    flex-shrink: 0;
+  }
+  .vps-ql-body {
+    padding: 0.5rem 1.25rem 1rem;
+    overflow-x: auto;
+  }
+  .vps-ql-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+    line-height: 1.6;
+  }
+  .vps-ql-table caption {
+    caption-side: top;
+    text-align: left;
+    font-size: 0.72rem;
+    color: var(--muted);
+    padding: 0.5rem 0.5rem 0.25rem;
+    font-style: italic;
+  }
+  .vps-ql-table th {
+    text-align: left;
+    color: var(--muted);
+    font-weight: 600;
+    padding: 0.5rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .vps-ql-table th:last-child {
+    text-align: left;
+  }
+  .vps-ql-table td {
+    padding: 0.45rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+  }
+  .vps-ql-table tr:last-child td {
+    border-bottom: none;
+  }
+  .vps-ql-table th[scope="row"] {
+    text-transform: none;
+    letter-spacing: normal;
+    font-size: 0.78rem;
+    font-weight: 400;
+    padding: 0.45rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .vps-ql-table tr:last-child th[scope="row"] {
+    border-bottom: none;
+  }
+  .vps-ql-class {
+    font-weight: 700;
+    color: var(--story);
+    white-space: nowrap;
+  }
+  .vps-ql-contam {
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+  .vps-ql-note {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+    padding: 0.5rem 0.5rem 0;
+  }
+  .vps-ql-footer {
+    font-size: 0.72rem;
+    color: var(--muted);
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--border);
+    background: var(--surface2, var(--surface));
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  /* Light-theme text contrast overrides (WCAG AA).
+     --story (#e2703a) stays for decorative use — dots, borders, canvas, glows. */
+  :root[data-theme="light"] .vps-lc-result.pulsating,
+  :root[data-theme="light"] .vps-cat-value.accent,
+  :root[data-theme="light"] .vps-cat-count,
+  :root[data-theme="light"] .vps-ql-class {
+    color: #7a3308;
+  }
+  :root[data-theme="light"] .vps-cat-value.highlight {
+    color: #1e6e3a;
+  }
+  /* Non-text contrast (WCAG 1.4.11): --story at 0.85 opacity on cream is 2.22:1.
+     The light-curve dots carry information, so darken them on the light theme. */
+  :root[data-theme="light"] .vps-lc-panel.pulsating .vps-lc-dot {
+    background: #7a3308;
+    opacity: 1;
+  }
+  :root[data-theme="light"] .vps-lc-header,
+  :root[data-theme="light"] .vps-cat-header,
+  :root[data-theme="light"] .vps-ql-header,
+  :root[data-theme="light"] .vps-lc-result.null,
+  :root[data-theme="light"] .vps-cat-label,
+  :root[data-theme="light"] .vps-ql-contam,
+  :root[data-theme="light"] .vps-ql-note,
+  :root[data-theme="light"] .vps-ql-footer,
+  :root[data-theme="light"] .vps-cat-footer,
+  :root[data-theme="light"] .vps-lc-footer,
+  :root[data-theme="light"] .vps-lc-xlabel,
+  :root[data-theme="light"] .vps-lc-ylabel,
+  :root[data-theme="light"] .vps-ql-table caption,
+  :root[data-theme="light"] .vps-ql-table th {
+    color: #5f5a4e;
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="archive">
+      <h2><span class="num">01 — Context</span>The Archive That No One Read</h2>
+      <p>In the NEOWISE Single-Exposure Database, 188,876,840,852 rows of infrared photometry — every detection the spacecraft recorded across 10.5 years of sweeping the sky — sat queryable and public for over a decade. Almost no one had systematically searched them for objects that change.</p>
+      <p>The scale is worth pausing on. The database logs approximately 450 million distinct light sources. Each source has multiple detections — "apparitions" — captured as the spacecraft orbited, re-scanning the same patch of sky every six months. The result is a time-series archive of the infrared sky: not a single snapshot but a decade-long record of how bright each source was every time the telescope passed over it. This is the raw material for studying variability — sources whose brightness changes over time. Pulsating stars, eclipsing binaries, erupting young stellar objects, active galactic nuclei, supernovae. Variability is not exotic. It is one of the primary ways astronomers learn what objects are and how they behave.</p>
+      <p>The data was never hidden. It was hosted at NASA's Infrared Processing and Analysis Center at Caltech, freely downloadable, open to anyone with a query. The bottleneck was not access. It was attention. As the VARnet paper put it directly: "There has been a lack of progress in studying the WISE database in its raw form (single-exposure photometry). Its size, in the hundreds of billions of rows, is no doubt a limiting factor."</p>
+      <p>Other projects tried to make the data tractable. UnWISE and unTimely stacked exposures to improve image depth and reduce noise. Both are valuable. Both deliberately eliminated or degraded the time-domain information — the very dimension needed to detect variability. They made the data smaller. They did not make anyone faster at reading it.</p>
+    </section>
+
+    <section class="section" id="origin">
+      <h2><span class="num">02 — Origin</span>The Right Question</h2>
+      <p>Davy Kirkpatrick is an IPAC senior scientist at Caltech, a Steward Observatory PhD alumnus who grew up in a farming community in Tennessee. His ninth-grade chemistry and physics teacher, Marilyn Morrison, showed him what mentorship could do. He has mentored high school students for five consecutive summers, along with undergraduates, citizen scientists, and visiting graduate fellows. "I wanted to pass on that same sort of mentoring to someone else," he told Caltech, "and hopefully many someone elses."</p>
+      <p>Matteo Paz arrived at Kirkpatrick's door through a specific sequence. In grade school, he attended Caltech's Stargazing Lectures — public events on campus that sparked an interest in astronomy. In the summer of 2022, he joined Caltech's Planet Finder Academy, a program led by Professor of Astronomy Andrew Howard. The following summer, in 2023, he enrolled in Caltech's six-week Summer Research Connection and was paired with Kirkpatrick as his mentor.</p>
+      <p>The pairing produced a question. Kirkpatrick proposed the research direction: could anyone systematically analyze the NEOWISE single-exposure data to identify variable objects? Paz wanted to do more than a summer project. He wanted to publish a paper. "I'm so lucky to have met Davy," Paz said. "He didn't discourage me. He said, OK, so let's talk about that."</p>
+      <p>What followed was not a single burst of work but a sustained collaboration. "Every meeting with Davy is 10 percent work and 90 percent us just chatting," Paz said. "It's been super cool just to have someone to talk to about science like that." Kirkpatrick's orientation toward mentoring was direct: "If I see their potential, I want to make sure that they are reaching it. I'll do whatever I can to help them out." According to the Caltech press release, Kirkpatrick also connected Paz with other Caltech astronomers — Shoubaneh Hemmati, Daniel Masters, Ashish Mahabal, and Matthew Graham — to deepen his expertise. By 2024, Paz was employed at IPAC as a paid staff researcher under NASA funding while still attending Pasadena High School.</p>
+      <p>The technical question took shape: can a model classify the variability signature of every source in the NEOWISE single-exposure database fast enough to make a full-sky survey feasible?</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="varnet-pasadena-student-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Apparition</strong> — A dense field of near-invisible points rests on warm cream; a staggered wave of recognition sweeps left to right and fourteen points brighten to burnt orange, each pulsating at its own period; two or three stutter and fade back to the undifferentiated field; the remaining sources dim and withdraw; nothing arrives, nothing leaves.</p>
+
+    <section class="section" id="instrument">
+      <h2><span class="num">03 — The Instrument</span>VARnet</h2>
+      <p>VARnet is the model. A single-author paper — Matthew Paz, published in <em>The Astronomical Journal</em> (AJ 168, 241, December 2024) — describing a proof of concept, not a catalog. The paper's own abstract frames it explicitly: "a proof of concept for both the efficacy of VARnet and methods for an upcoming variability survey over the entirety of the NEOWISE dataset."</p>
+      <p>The architecture is a nine-layer convolutional neural network with two distinctive features. The first is a wavelet decomposition step: after three initial convolutional layers, the model applies a biorthogonal 2.2 discrete wavelet transform to the signal, concatenates the wavelet coefficients with the original input, and passes both through three more convolutional layers. This gives the network access to both the raw light curve and its frequency structure simultaneously. The second is a custom module called the Finite-Embedding Fourier Transform, or FEFT. NEOWISE light curves are not all the same length — some sources have dozens of detections, others have hundreds, depending on sky position and observation cadence. The standard discrete Fourier transform produces variable-length outputs from variable-length inputs. FEFT replaces the square DFT matrix with a rectangular one, projecting every input sequence into a fixed-dimension embedding regardless of length. After the FEFT module, three final convolutional layers feed into three fully connected layers and a softmax classifier.</p>
+      <p>Paz trained VARnet on 1.06 million synthetic light curves — not real data, but signals generated from mathematical models of four variability classes: Null (non-variable), Transient (sudden brightness changes with decay), Pulsating (periodic or quasi-periodic intrinsic variability), and Transit (eclipsing binary systems). He validated the model on 231 real known variable objects. The result: an F1 score of 0.914 across all four classes, with accuracy of 92.2%. In binary mode — variable versus not variable — the F1 rose to 0.974.</p>
+      <p>The speed is the point. VARnet processes a single source in under 53 microseconds on an NVIDIA Quadro RTX 6000 GPU with 22 GB of VRAM. For the 25-square-degree pilot region around the Orion Nebula — 62,841,525 rows of data — the model evaluation step took 0.41 seconds. The preprocessing step, a DBSCAN clustering algorithm that groups individual detections into coherent light curves for each source, took 287 seconds for the same region. Classification is not the bottleneck. Data preparation is.</p>
+
+      <div class="vps-lc-wrap">
+        <div class="vps-lc-panel null">
+          <div class="vps-lc-header">Null Source</div>
+          <div class="vps-lc-body">
+            <div class="vps-lc-axes">
+              <span class="vps-lc-ylabel">W1 mag (brighter up)</span>
+              <div class="vps-lc-chart-col">
+                <div class="vps-lc-area">
+                  <div class="vps-lc-midline"></div>
+                  <span class="vps-lc-dot" style="left:5%;bottom:48%"></span>
+                  <span class="vps-lc-dot" style="left:10%;bottom:54%"></span>
+                  <span class="vps-lc-dot" style="left:15%;bottom:46%"></span>
+                  <span class="vps-lc-dot" style="left:20%;bottom:51%"></span>
+                  <span class="vps-lc-dot" style="left:26%;bottom:43%"></span>
+                  <span class="vps-lc-dot" style="left:31%;bottom:55%"></span>
+                  <span class="vps-lc-dot" style="left:37%;bottom:49%"></span>
+                  <span class="vps-lc-dot" style="left:42%;bottom:57%"></span>
+                  <span class="vps-lc-dot" style="left:48%;bottom:44%"></span>
+                  <span class="vps-lc-dot" style="left:53%;bottom:52%"></span>
+                  <span class="vps-lc-dot" style="left:59%;bottom:47%"></span>
+                  <span class="vps-lc-dot" style="left:64%;bottom:55%"></span>
+                  <span class="vps-lc-dot" style="left:70%;bottom:50%"></span>
+                  <span class="vps-lc-dot" style="left:75%;bottom:44%"></span>
+                  <span class="vps-lc-dot" style="left:81%;bottom:53%"></span>
+                  <span class="vps-lc-dot" style="left:86%;bottom:48%"></span>
+                  <span class="vps-lc-dot" style="left:91%;bottom:56%"></span>
+                  <span class="vps-lc-dot" style="left:96%;bottom:50%"></span>
+                </div>
+                <span class="vps-lc-xlabel">MJD (time)</span>
+              </div>
+            </div>
+          </div>
+          <div class="vps-lc-result null">NULL — 0.97</div>
+        </div>
+        <div class="vps-lc-panel pulsating">
+          <div class="vps-lc-header">Pulsating Variable</div>
+          <div class="vps-lc-body">
+            <div class="vps-lc-axes">
+              <span class="vps-lc-ylabel">W1 mag (brighter up)</span>
+              <div class="vps-lc-chart-col">
+                <div class="vps-lc-area">
+                  <div class="vps-lc-midline"></div>
+                  <span class="vps-lc-dot" style="left:5%;bottom:52%"></span>
+                  <span class="vps-lc-dot" style="left:10%;bottom:59%"></span>
+                  <span class="vps-lc-dot" style="left:15%;bottom:60%"></span>
+                  <span class="vps-lc-dot" style="left:20%;bottom:69%"></span>
+                  <span class="vps-lc-dot" style="left:26%;bottom:72%"></span>
+                  <span class="vps-lc-dot" style="left:31%;bottom:67%"></span>
+                  <span class="vps-lc-dot" style="left:37%;bottom:64%"></span>
+                  <span class="vps-lc-dot" style="left:42%;bottom:58%"></span>
+                  <span class="vps-lc-dot" style="left:48%;bottom:55%"></span>
+                  <span class="vps-lc-dot" style="left:53%;bottom:44%"></span>
+                  <span class="vps-lc-dot" style="left:59%;bottom:41%"></span>
+                  <span class="vps-lc-dot" style="left:64%;bottom:32%"></span>
+                  <span class="vps-lc-dot" style="left:70%;bottom:28%"></span>
+                  <span class="vps-lc-dot" style="left:75%;bottom:31%"></span>
+                  <span class="vps-lc-dot" style="left:81%;bottom:35%"></span>
+                  <span class="vps-lc-dot" style="left:86%;bottom:36%"></span>
+                  <span class="vps-lc-dot" style="left:91%;bottom:47%"></span>
+                  <span class="vps-lc-dot" style="left:96%;bottom:48%"></span>
+                </div>
+                <span class="vps-lc-xlabel">MJD (time)</span>
+              </div>
+            </div>
+          </div>
+          <div class="vps-lc-result pulsating">PULSATING — 0.94</div>
+        </div>
+      </div>
+      <p class="vps-lc-footer">Both sources have the same noise level. The signal is hiding in the scatter — VARnet picks it out in under 53 microseconds.</p>
+
+      <p>Even in the 25-square-degree pilot, the model produced results. It confirmed the known variable system V1403 Ori, identified a new eclipsing binary, detected a potential supernova in galaxy LEDA 358365, and found a feeding supermassive black hole in LEDA 340305. All from a patch of sky that had been photographed, archived, and publicly available for years. The objects were there. They had not been classified.</p>
+      <p>Paz estimated that at VARnet's classification speed, a full-sky model evaluation would take approximately 20.5 minutes. The proof of concept worked. The question was what would happen at scale.</p>
+    </section>
+
+    <section class="section" id="survey">
+      <h2><span class="num">04 — The Survey</span>VarWISE</h2>
+      <p>VarWISE is the catalog — a different paper, a different scope, a different authorship. Paz et al. 2026, published in <em>The Astrophysical Journal Supplement Series</em> (ApJS 284, 41, June 2026). Five authors: Matthew Paz, J. Davy Kirkpatrick, Rajiv Uttamchandani, Troy Raen, and Roc M. Cutri, all affiliated with IPAC at Caltech. This was collaborative work.</p>
+      <p>The full-sky application processed approximately 199.7 billion rows from the NEOWISE Single-Exposure Source Table, examining over 450 million distinct light sources across the infrared sky. The pipeline ran in two stages. VARnet performed the first-pass morphological triage, sorting every source into one of three categories — Null, Transient, or Continuous Variable (note the shift from four classes to three, collapsing the original distinctions for the coarser first pass). A separate XGBoost classifier, trained on 910,697 known variable objects and achieving an F1 of 0.95, then sorted all non-null sources into nine astrophysical classes: Cepheids, RR Lyrae, long-period variables, cataclysmic variables, Algol-type eclipsing binaries, W Ursae Majoris-type eclipsing binaries, young stellar objects, active galactic nuclei, and supernovae.</p>
+      <p>The result: two catalogs. The Extended Catalog contains 1,918,082 objects. The Pure Catalog — a high-confidence subset — contains 457,080. Of the Extended Catalog's objects, 82.02% had no prior designation as a variable source or active galactic nucleus in SIMBAD, the astronomical reference database. That amounts to approximately 1,573,000 objects.</p>
+      <p>A critical clarification, because nearly all press coverage of this work got it wrong: "new" does not mean "never before observed." Every one of these objects was already in the NEOWISE database. They had been detected by the spacecraft, recorded as rows in a public archive, and available for anyone to examine. What they lacked was a classification. No one had labeled them as variable. They were observed but not attended to. "New" means newly noticed — not newly seen. The distinction matters, and the story exists partly because the press coverage collapsed it.</p>
+
+      <div class="vps-cat-panel">
+        <div class="vps-cat-header">
+          <span class="vps-cat-dot"></span>
+          IRSA Catalog Query — VarWISE Extended Catalog (DOI: 10.26131/IRSA657)
+        </div>
+        <div class="vps-cat-body">
+          <div class="vps-cat-row"><span class="vps-cat-label">Designation</span><span class="vps-cat-value accent">VarWISE J180414.35+675412.5</span></div>
+          <div class="vps-cat-row"><span class="vps-cat-label">RA / Dec</span><span class="vps-cat-value">271.0598 / +67.9035</span></div>
+          <div class="vps-cat-row"><span class="vps-cat-label">Classification</span><span class="vps-cat-value">EW (W UMa Eclipsing Binary)</span></div>
+          <div class="vps-cat-row"><span class="vps-cat-label">Confidence</span><span class="vps-cat-value">0.92</span></div>
+          <div class="vps-cat-row"><span class="vps-cat-label">W1 mean mag</span><span class="vps-cat-value">13.47</span></div>
+          <div class="vps-cat-row"><span class="vps-cat-label">Amplitude</span><span class="vps-cat-value">0.38 mag</span></div>
+          <div class="vps-cat-row"><span class="vps-cat-label">Period</span><span class="vps-cat-value">0.6214 d</span></div>
+          <div class="vps-cat-row"><span class="vps-cat-label">Modulation</span><span class="vps-cat-value">O'Connell effect, 14–18 day timescale</span></div>
+          <div class="vps-cat-row"><span class="vps-cat-label">SIMBAD match</span><span class="vps-cat-value highlight">No prior variable designation</span></div>
+        </div>
+        <div class="vps-cat-count">1 of 1,918,082</div>
+        <div class="vps-cat-footer">One entry. One object sitting in the archive all along, observed but never classified. The catalog holds 1.9 million more.</div>
+      </div>
+
+      <p>VarWISE J180414.35+675412.5, shown above, is one of the catalog's specific discoveries: an eclipsing binary exhibiting the O'Connell effect — an asymmetry in brightness between the two maxima of its light curve — with a 14-to-18-day modulation timescale. The catalog also reports VarWISE J141848.45−232439.6, another eclipsing binary, along with Cepheid variables demonstrating Hertzsprung progression in their light curve morphology, and young stellar object candidates associated with nebulosity and star-forming regions.</p>
+      <p>Both catalogs are publicly hosted at NASA/IPAC's Infrared Science Archive with permanent DOIs: 10.26131/IRSA656 for the Pure Catalog, 10.26131/IRSA657 for the Extended Catalog, and 10.26131/IRSA658 for the associations table. The data is accessible via IRSA's Catalog Search Tool and API. The science product is real, downloadable, and verifiable.</p>
+    </section>
+
+    <section class="section" id="integrity">
+      <h2><span class="num">05 — Integrity</span>The Honest Ledger</h2>
+      <p>The VarWISE authors did something that none of the press coverage about their work did: they told the reader exactly where the catalog is wrong.</p>
+      <p>Section 4.3 of the paper presents a class-by-class spot-check of the automated classifications. The numbers are not uniformly flattering. Of 212 objects classified as supernovae, only 18 — 9% — are solid supernova candidates. A majority, 56%, are likely normal AGN activity misidentified by the classifier. Of 149 objects classified as cataclysmic variables, 92% are actually young stellar object outbursts — genuinely variable sources, but mislabeled. The model found real change. It named the change wrong.</p>
+
+      <div class="vps-ql-panel">
+        <div class="vps-ql-header">
+          <span class="vps-ql-dot"></span>
+          VarWISE Quality Assessment — Authors' Own Disclosure
+        </div>
+        <div class="vps-ql-body">
+          <table class="vps-ql-table">
+            <caption>Class-by-class spot-check of VarWISE automated classifications, as reported by the authors.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Class</th>
+                <th scope="col">Checked</th>
+                <th scope="col">Solid</th>
+                <th scope="col">Primary Contamination</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row"><span class="vps-ql-class">SN</span></th>
+                <td>212</td>
+                <td>18 (9%)</td>
+                <td><span class="vps-ql-contam">56% likely normal AGN activity</span></td>
+              </tr>
+              <tr>
+                <th scope="row"><span class="vps-ql-class">CV</span></th>
+                <td>149</td>
+                <td>12 (8%)</td>
+                <td><span class="vps-ql-contam">92% actually YSO outbursts</span></td>
+              </tr>
+              <tr>
+                <th scope="row"><span class="vps-ql-class">AGN</span></th>
+                <td>84</td>
+                <td>71 (85%)</td>
+                <td><span class="vps-ql-contam">15% possibly unresolved galaxies</span></td>
+              </tr>
+              <tr>
+                <th scope="row"><span class="vps-ql-class">CEP</span></th>
+                <td>229</td>
+                <td>187 (~82%)</td>
+                <td><span class="vps-ql-contam">18% periods match WISE 6-month cadence</span></td>
+              </tr>
+              <tr>
+                <th scope="row"><span class="vps-ql-class">LPV</span></th>
+                <td>81</td>
+                <td>77 (95%)</td>
+                <td><span class="vps-ql-contam">5% false positives (nebular edges)</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="vps-ql-note">CV "contamination" is instructive: those 137 objects are still genuine variables — the model detected real change but assigned the wrong astrophysical label.</p>
+        </div>
+        <div class="vps-ql-footer">Source: Paz et al. 2026, ApJS 284, 41 — Section 4.3</div>
+      </div>
+
+      <p>The Cepheid class carries its own kind of ambiguity: roughly 18% of candidate periods align with NEOWISE's six-month observation cadence, meaning the instrument's own rhythm may be producing phantom periodicities. The long-period variable class is the cleanest, with a 5% false positive rate (4 of 81 spot-checked), three of those four caused by nebular edge processing artifacts. No trade press article covering this work mentioned any of these figures.</p>
+      <p>The paper states the constraint plainly: "automated classification is only as reliable as the data on which it was trained" and "the diversity and quality of prior training data remain the principal constraint for infrared-variability studies." A catalog with acknowledged imperfections and published DOIs is infinitely more useful than a headline number no one can check. The contamination disclosures are not a weakness of the catalog. They are what distinguish a peer-reviewed science product from a press release.</p>
+    </section>
+
+    <section class="section" id="recognition">
+      <h2><span class="num">06 — Recognition</span>First Place</h2>
+      <p>On March 11, 2025, at the National Building Museum in Washington, D.C., Matteo Paz won the $250,000 first-place prize in the 84th Regeneron Science Talent Search. The competition distributed over $1.8 million to 40 finalists, with $3.1 million in total awards including school bonuses. Pasadena High School received $2,000.</p>
+      <p>His STS entry was titled "VarWISE — the First Complete Infrared Variability Survey — 1.9M Variables Classified into 10 Classes." The project name confirms what the judges evaluated: not the VARnet model paper alone, but the catalog work. The Society for Science described Paz as having found "1.5 million new potential objects" — the word "potential" is significant. Even the competition organizer used qualifying language.</p>
+      <p>A timeline gap is worth noting. The STS prize was awarded in March 2025. The VARnet model paper had been published in December 2024 — single-author, peer-reviewed. But the VarWISE catalog paper, the five-author work that reports the 1.9 million objects and the contamination analysis, was not submitted until May 2026 and published in June 2026, more than a year after the prize. The STS judges evaluated unpublished catalog work. The published science that supports the competition claims arrived later.</p>
+      <p>"I was just happy to have had the privilege," Paz told Forbes. "Not only placing in the top ten, but winning first place, came as a visceral surprise." Kirkpatrick's reaction was less measured: "When they announced Matteo was the winner of the science competition, that was the highest high I've ever had."</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">07 — Signal</span>The Attention Deficit</h2>
+      <p>The lesson of VARnet and VarWISE is not that a teenager did something impressive. It is that a public archive of 189 billion data points contained over a million unclassified variable objects, and the bottleneck was never the telescope, the database, or the access policy. It was the absence of a tool fast enough to pay attention at the scale the data demanded.</p>
+      <p>The paper's own observation makes this concrete. Existing projects that tried to make the NEOWISE data tractable — unWISE, unTimely — degraded the time-domain information. They made the data smaller so humans could manage it. VARnet took a different approach. It did not reduce the data. It made the reader faster. That is a different category of solution: not compression but attention.</p>
+      <p>Paz identified the generalizability himself: "The model I implemented can be used for other time domain studies in astronomy, and potentially anything else that comes in a temporal format." The VarWISE paper names the remaining constraint: "the diversity and quality of prior training data remain the principal constraint for infrared-variability studies." The limit is not compute. It is not data. It is not access. It is the quality of the questions we teach the instrument to ask. And some of those questions are producing answers no one anticipated. "What's exciting," Paz told Forbes, "is that some variable phenomena I'm detecting don't have obvious explanations."</p>
+      <p>The bottleneck in discovery has moved. It is no longer collection. It is classification. Not observation but attention. Public archives across science — not just astronomy — hold more data than anyone has instruments of attention for. VARnet did not build a better telescope. It built a faster pair of eyes. The question it leaves is how many other archives sit in the same state: data acquired, attention unaffordable, discoveries waiting inside noise that no one has yet asked the right question of.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.varnet-pasadena-student-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  /* --- Colors from computed style --- */
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f5f0e8';
+  const STORY_RAW = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#e2703a';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+
+  const [accR, accG, accB] = hexToRgb(STORY_RAW.startsWith('#') && STORY_RAW.length >= 7 ? STORY_RAW : '#e2703a');
+  /* Warm grey for unresolved points — dark on cream, very low alpha */
+  const DIM_R = 26, DIM_G = 26, DIM_B = 23;
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  });
+  ro.observe(canvas);
+
+  /* --- Phase thresholds (1200 frames = ~20s at 60fps) --- */
+  const P1_END = 120;    /* Stillness */
+  const P3_END = 960;    /* Hold */
+  const P4_END = 1140;   /* Withdrawal */
+  const CYCLE  = 1200;   /* Silence, then restart */
+  const STUTTER_START = 720;
+  const STUTTER_DUR   = 120;
+
+  const NUM_PTS    = 65;
+  const NUM_VAR    = 14;
+  const NUM_CONTAM = 3;
+
+  interface Pt {
+    x: number; y: number;
+    vx: number; vy: number;
+    baseR: number;
+    baseA: number;
+    isVar: boolean;
+    isContam: boolean;
+    actFrame: number;
+    period: number;
+    isIrreg: boolean;
+    dispA: number;
+    dispR: number;
+    mix: number;
+  }
+
+  const pts: Pt[] = [];
+
+  function init() {
+    pts.length = 0;
+    for (let i = 0; i < NUM_PTS; i++) {
+      pts.push({
+        x: 20 + Math.random() * Math.max(1, W - 40),
+        y: 20 + Math.random() * Math.max(1, H - 40),
+        vx: (Math.random() - 0.5) * 0.2,
+        vy: (Math.random() - 0.5) * 0.2,
+        baseR: 1.5 + Math.random() * 1.5,
+        baseA: 0.06 + Math.random() * 0.04,
+        isVar: false,
+        isContam: false,
+        actFrame: 0,
+        period: 100,
+        isIrreg: false,
+        dispA: 0,
+        dispR: 0,
+        mix: 0,
+      });
+    }
+
+    const idxs: number[] = [];
+    for (let i = 0; i < NUM_PTS; i++) idxs.push(i);
+    for (let i = idxs.length - 1; i > 0; i--) {
+      const j = (Math.random() * (i + 1)) | 0;
+      const tmp = idxs[i]; idxs[i] = idxs[j]; idxs[j] = tmp;
+    }
+    const varIdxs = idxs.slice(0, NUM_VAR);
+    varIdxs.sort((a, b) => pts[a].x - pts[b].x);
+
+    for (let vi = 0; vi < varIdxs.length; vi++) {
+      const p = pts[varIdxs[vi]];
+      p.isVar = true;
+      p.actFrame = P1_END + vi * 30;
+      p.period = 60 + Math.random() * 180;
+      p.isIrreg = vi < 2;
+    }
+
+    const contamCandidates = varIdxs.slice().sort((a, b) => pts[a].baseR - pts[b].baseR);
+    for (let c = 0; c < NUM_CONTAM; c++) {
+      pts[contamCandidates[c]].isContam = true;
+    }
+
+    for (const p of pts) {
+      p.dispA = p.baseA;
+      p.dispR = p.baseR;
+      p.mix = 0;
+    }
+  }
+
+  const pulOut = { a: 0, r: 0 };
+
+  function pulsateInto(p: Pt, elapsed: number) {
+    let ePeriod = p.period;
+    if (p.isIrreg) {
+      const cycleNum = Math.floor(elapsed / p.period);
+      ePeriod = p.period * (1 + 0.2 * Math.sin(cycleNum * 2.7));
+    }
+    if (ePeriod < 10) ePeriod = 10;
+    const phase = (elapsed % ePeriod) / ePeriod;
+    const norm = 0.5 + 0.5 * Math.sin(phase * Math.PI * 2);
+    pulOut.a = 0.5 + 0.4 * norm;
+    pulOut.r = p.baseR + 1.5 * norm;
+  }
+
+  function update() {
+    const cf = frame % CYCLE;
+
+    /* Re-sort the wavefront at each cycle boundary */
+    if (cf === 0 && frame > 0) {
+      const varPts: Pt[] = [];
+      for (const p of pts) { if (p.isVar) varPts.push(p); }
+      varPts.sort((a, b) => a.x - b.x);
+      for (let vi = 0; vi < varPts.length; vi++) {
+        varPts[vi].actFrame = P1_END + vi * 30;
+      }
+    }
+
+    /* Brownian drift, ~0.1 px/frame */
+    for (const p of pts) {
+      p.vx += (Math.random() - 0.5) * 0.02;
+      p.vy += (Math.random() - 0.5) * 0.02;
+      p.vx *= 0.99;
+      p.vy *= 0.99;
+      const mv = 0.12;
+      if (p.vx > mv) p.vx = mv;
+      if (p.vx < -mv) p.vx = -mv;
+      if (p.vy > mv) p.vy = mv;
+      if (p.vy < -mv) p.vy = -mv;
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 8)     { p.x = 8;     p.vx = Math.abs(p.vx); }
+      if (p.x > W - 8) { p.x = W - 8; p.vx = -Math.abs(p.vx); }
+      if (p.y < 8)     { p.y = 8;     p.vy = Math.abs(p.vy); }
+      if (p.y > H - 8) { p.y = H - 8; p.vy = -Math.abs(p.vy); }
+    }
+
+    for (const p of pts) {
+      p.dispA = p.baseA;
+      p.dispR = p.baseR;
+      p.mix = 0;
+
+      if (!p.isVar) continue;
+      if (cf < P1_END) continue;
+      if (cf >= P4_END) continue;
+      if (cf < p.actFrame) continue;
+
+      const sinceAct = cf - p.actFrame;
+
+      /* Contaminated sources: fully faded once the stutter completes */
+      if (p.isContam && cf >= STUTTER_START + STUTTER_DUR) continue;
+
+      /* Contaminated sources mid-stutter */
+      if (p.isContam && cf >= STUTTER_START) {
+        const se = cf - STUTTER_START;
+        const t = se / STUTTER_DUR;
+
+        let pmult: number;
+        if (t < 0.33)      pmult = 0.5;
+        else if (t < 0.66) pmult = 2.0;
+        else               pmult = 0.5;
+
+        const sp = Math.max(10, p.period * pmult);
+        const phase = (se % sp) / sp;
+        const norm = Math.max(0, 0.5 + 0.5 * Math.sin(phase * Math.PI * 2));
+
+        const peakA = 0.9 * (1 - t * 0.9);
+        p.dispA = p.baseA + (peakA - p.baseA) * norm;
+        p.dispR = p.baseR + 1.5 * (1 - t) * norm;
+        p.mix = Math.max(0, 1 - t);
+        continue;
+      }
+
+      /* Phase 4: withdrawal */
+      if (cf >= P3_END) {
+        const wt = (cf - P3_END) / (P4_END - P3_END);
+        pulsateInto(p, sinceAct - 40);
+        const amp = 1 - wt;
+        p.dispA = p.baseA + (pulOut.a - p.baseA) * amp;
+        p.dispR = p.baseR + (pulOut.r - p.baseR) * amp;
+        p.mix = 1 - wt;
+        continue;
+      }
+
+      /* Brightening, then pulsating at the source's own period */
+      if (sinceAct < 40) {
+        const t = sinceAct / 40;
+        p.mix = t;
+        p.dispA = p.baseA + (0.8 - p.baseA) * t;
+        p.dispR = p.baseR;
+      } else {
+        pulsateInto(p, sinceAct - 40);
+        p.dispA = pulOut.a;
+        p.dispR = pulOut.r;
+        p.mix = 1;
+      }
+    }
+  }
+
+  function draw() {
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+
+    for (let i = 0; i < pts.length; i++) {
+      const p = pts[i];
+
+      const cr = Math.round(DIM_R + (accR - DIM_R) * p.mix);
+      const cg = Math.round(DIM_G + (accG - DIM_G) * p.mix);
+      const cb = Math.round(DIM_B + (accB - DIM_B) * p.mix);
+
+      if (p.mix > 0.3 && p.dispA > 0.25) {
+        const gr = p.dispR * 5;
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, gr);
+        grad.addColorStop(0, 'rgba(' + accR + ',' + accG + ',' + accB + ',' + (p.dispA * 0.12).toFixed(4) + ')');
+        grad.addColorStop(1, 'rgba(' + accR + ',' + accG + ',' + accB + ',0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, gr, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.globalAlpha = p.dispA;
+      ctx.fillStyle = 'rgb(' + cr + ',' + cg + ',' + cb + ')';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.dispR, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* Reduced motion: a single frozen Phase-3 frame */
+  function drawStatic() {
+    for (const p of pts) {
+      if (!p.isVar) {
+        p.dispA = p.baseA;
+        p.dispR = p.baseR;
+        p.mix = 0;
+      } else if (p.isContam) {
+        p.mix = 0.35;
+        p.dispA = 0.22;
+        p.dispR = p.baseR + 0.4;
+      } else {
+        const seed = (p.baseR + p.period) * 0.37;
+        const norm = 0.5 + 0.5 * Math.sin(seed);
+        p.dispA = 0.5 + 0.4 * norm;
+        p.dispR = p.baseR + 1.5 * norm;
+        p.mix = 1;
+      }
+    }
+    draw();
+  }
+
+  function tick() {
+    frame++;
+    update();
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  requestAnimationFrame(() => {
+    init();
+    if (prefersReduced) {
+      drawStatic();
+    } else {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+        else { cancelAnimationFrame(raf); raf = 0; }
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+
+      window.addEventListener('pagehide', () => {
+        cancelAnimationFrame(raf);
+        ro.disconnect();
+        io.disconnect();
+      });
+    }
+  });
+})();
+</script>
