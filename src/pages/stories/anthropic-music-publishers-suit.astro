@@ -1,0 +1,774 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'anthropic-music-publishers-suit')!;
+---
+
+<style is:global>
+/* ── Complaint structure mockup ── */
+.mps-filing { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+.mps-filing-header { background: var(--surface2); padding: 0.75rem 1.2rem; border-bottom: 1px solid var(--border); }
+.mps-filing-caption { font-size: 0.82rem; font-weight: 700; color: var(--text); line-height: 1.5; }
+.mps-filing-meta { font-size: 0.72rem; color: var(--muted); margin-top: 0.25rem; }
+.mps-counts { padding: 0.8rem 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.mps-count { display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 0.55rem 0.75rem; border-radius: 0.5rem; border-left: 3px solid var(--border); font-size: 0.8rem; line-height: 1.5; background: rgba(255,255,255,0.015); }
+.mps-count.challenged { border-left-color: var(--story); background: rgba(255,255,255,0.03); }
+.mps-count.unchallenged { border-left-color: var(--muted); }
+.mps-count-label { color: var(--text); font-weight: 600; }
+.mps-count-detail { color: var(--muted); font-size: 0.75rem; }
+.mps-count-badge { font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.2rem 0.5rem; border-radius: 0.3rem; white-space: nowrap; font-weight: 600; }
+.mps-count.challenged .mps-count-badge { background: rgba(255,255,255,0.06); color: var(--story); }
+.mps-count.unchallenged .mps-count-badge { background: rgba(255,255,255,0.03); color: #919191; }
+.mps-filing-note { font-size: 0.7rem; color: var(--muted); font-style: italic; padding: 0.5rem 1.2rem; border-top: 1px solid var(--border); background: var(--surface2); }
+
+/* ── Statutory ceiling display ── */
+.mps-ceiling { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; font-family: 'Courier New', Courier, monospace; }
+.mps-ceiling-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--border); font-family: inherit; }
+.mps-ceiling-body { padding: 1rem 1.2rem; font-size: 0.82rem; line-height: 2; color: var(--text); }
+.mps-ceiling-row { display: flex; justify-content: space-between; gap: 1rem; }
+.mps-ceiling-divider { border: none; border-top: 1px dashed var(--border); margin: 0.4rem 0; }
+.mps-ceiling-result { color: var(--story); font-weight: 700; }
+.mps-ceiling-gap { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+.mps-ceiling-gap-row { display: flex; justify-content: space-between; gap: 1rem; }
+.mps-ceiling-none { color: var(--muted); font-weight: 700; font-style: italic; }
+.mps-ceiling-note { font-size: 0.7rem; color: var(--muted); font-style: italic; padding: 0.5rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+/* ── Release comparison ── */
+.mps-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+@media (max-width: 640px) { .mps-compare { grid-template-columns: 1fr; } }
+.mps-panel { background: var(--surface); padding: 1rem 1.2rem; }
+.mps-panel-header { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem; }
+.mps-panel-header.resolved { color: var(--muted); }
+.mps-panel-header.pending { color: var(--story); }
+.mps-row { font-size: 0.78rem; padding: 0.3rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--muted); display: flex; gap: 0.5rem; line-height: 1.5; }
+.mps-row-label { color: var(--text); min-width: 90px; font-weight: 600; flex-shrink: 0; }
+.mps-row-value { color: var(--muted); }
+.mps-row-value.highlight { color: var(--story); font-weight: 600; }
+.mps-row-value.dim { color: var(--muted); font-style: italic; }
+.mps-compare-note { font-size: 0.7rem; color: var(--muted); font-style: italic; padding: 0.5rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); grid-column: 1 / -1; }
+
+/* ── Canvas ── */
+.phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+.anthropic-music-publishers-suit-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="the-settlement">
+      <h2><span class="num">01 — Context</span>The Settlement</h2>
+      <p>On July 20, 2026, Judge Araceli Martinez-Olguin approved Anthropic's $1.5 billion settlement with the authors whose books its employees had torrented from pirate libraries. The Bartz v. Anthropic class covered works with an ISBN or ASIN, registered with the U.S. Copyright Office within five years of publication, downloaded by Anthropic between 2021 and August 10, 2022. Approximately 500,000 titles qualified. The settlement required destruction of all original torrented files and copies derived from them.</p>
+      <p>The Authors Guild, which represented the plaintiff class, described the release as "narrow" — limited to Anthropic's past acquisition and copying of those books through August 25, 2025. The class was defined around books. The plaintiffs were book authors. The works had ISBNs.</p>
+      <p>Two days later, on July 22, music publishers filed a Second Amended Complaint in the same district — adding new evidence drawn from the Bartz discovery, new claims, and 20,517 musical compositions that the settlement had never covered. The $1.5 billion had looked like resolution. The class definition told a different story.</p>
+    </section>
+    <div class="phantom-wrap">
+      <canvas class="anthropic-music-publishers-suit-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Remainder</strong> — particles drift in a mixed field; a boundary arc sweeps in and encloses a cluster, which dims and settles; accent particles outside remain vivid; two dashed targeting lines reach toward two exterior particles that flicker but persist; three others are never touched; the boundary holds; the remainder stands.</p>
+    <section class="section" id="the-filing">
+      <h2><span class="num">02 — The Case</span>The Filing</h2>
+      <p>The publishers' case against Anthropic did not begin in 2026. Concord Music Group, Universal Music Corp. and affiliates, and ABKCO Music first sued Anthropic in October 2023 — a case known as Concord I, covering 499 musical compositions, with Anthropic as the sole defendant. In October 2025, the Concord I court denied the publishers' motion to amend that complaint to add torrenting allegations, finding they had not been "sufficiently diligent" in discovering those claims. The publishers say they first learned of the torrenting through the Bartz proceedings in July 2025.</p>
+      <p>So they filed a new case. On January 28, 2026, Concord Music Group, Inc. et al. v. Anthropic PBC, Dario Amodei, and Benjamin Mann was docketed in the Northern District of California. Concord II names three defendants — the company, its CEO, and its co-founder — and brings five counts.</p>
+      <div class="mps-filing">
+        <div class="mps-filing-header">
+          <div class="mps-filing-caption">Concord Music Group, Inc. et al. v. Anthropic PBC, Dario Amodei, and Benjamin Mann</div>
+          <div class="mps-filing-meta">N.D. Cal. — Case No. 5:26-cv-00880-EKL-SVK — Filed January 28, 2026</div>
+        </div>
+        <div class="mps-counts">
+          <div class="mps-count unchallenged">
+            <div><span class="mps-count-label">Count I — Direct Infringement (Torrenting)</span><br><span class="mps-count-detail">All Defendants (Anthropic, Amodei, Mann) — Exhibit A: 714 works</span></div>
+            <div class="mps-count-badge">Not challenged *</div>
+          </div>
+          <div class="mps-count challenged">
+            <div><span class="mps-count-label">Count II — Direct Infringement (Training + Output)</span><br><span class="mps-count-detail">Anthropic only — Exhibit B: 20,517 works</span></div>
+            <div class="mps-count-badge">MTD filed</div>
+          </div>
+          <div class="mps-count unchallenged">
+            <div><span class="mps-count-label">Count III — Contributory Infringement</span><br><span class="mps-count-detail">Anthropic only</span></div>
+            <div class="mps-count-badge">Not challenged</div>
+          </div>
+          <div class="mps-count unchallenged">
+            <div><span class="mps-count-label">Count IV — Vicarious Infringement</span><br><span class="mps-count-detail">Anthropic only</span></div>
+            <div class="mps-count-badge">Not challenged</div>
+          </div>
+          <div class="mps-count challenged">
+            <div><span class="mps-count-label">Count V — DMCA / CMI Removal</span><br><span class="mps-count-detail">Anthropic only</span></div>
+            <div class="mps-count-badge">MTD filed</div>
+          </div>
+        </div>
+        <div class="mps-filing-note">* Count I is unchallenged as to Anthropic and Mann. Amodei separately moved to dismiss Count I against him individually, arguing the allegations describe contributory, not direct, infringement. A motion to dismiss tests legal sufficiency, not truth — declining to challenge a count concedes nothing about liability.</div>
+      </div>
+      <p>The complaint's allegations against the individual defendants are drawn from depositions and internal communications produced in the Bartz discovery. The complaint alleges that in June 2021, Benjamin Mann personally used BitTorrent to download approximately five million pirated books from LibGen, a pirate book repository, including books containing the publishers' copyrighted musical compositions. The complaint alleges that Dario Amodei discussed and approved the torrenting despite describing LibGen as "sketchy," and that Anthropic's own Archive Team had deemed LibGen a "blatant violation of copyright." The complaint alleges both were "primary participants and moving forces" behind the torrenting. The complaint alleges that when an Anthropic founder discovered additional pirated content was available via torrenting, he messaged colleagues "[J]ust in time!" — and another employee responded "zlibrary my beloved."</p>
+      <p>These are allegations in a complaint. They have not been proven.</p>
+      <p>Amodei's response is a legal argument, not merely a denial. In a separate motion to dismiss filed on August 3, 2026, he argues the complaint "asserts zero facts of any unlawful copying by Dr. Amodei himself" — that authorizing or directing others to torrent constitutes, at most, contributory infringement, not the direct infringement charged in Count I. His motion takes the complaint's allegations as true for purposes of the motion — standard practice at the pleading stage — and argues that even accepted as stated, they describe a different legal theory than the one the publishers charged. No separate motion to dismiss by Mann has been reported. Holland & Knight, the law firm, observed that naming executives individually "may signal an appetite among plaintiffs to pursue individual officer liability" — approximately three months after Concord II was filed, publishers filed a separate suit against Meta naming CEO Mark Zuckerberg individually.</p>
+      <p>The complaint's Prayer for Relief requests "up to $150,000 per work infringed." It states no aggregate dollar figure anywhere in its 48 pages. The "$3 billion" that appeared in headlines originates from a publishers' press statement: 20,517 works multiplied by the $150,000 willful-infringement maximum under 17 U.S.C. section 504(c) equals approximately $3.08 billion. That number is a statutory-damages ceiling — the theoretical maximum if every listed work were found to be willfully infringed at the highest rate the statute allows.</p>
+      <div class="mps-ceiling">
+        <div class="mps-ceiling-header">Statutory Ceiling (per publishers' press statement)</div>
+        <div class="mps-ceiling-body">
+          <div class="mps-ceiling-row"><span>Exhibit B works:</span><span>20,517</span></div>
+          <div class="mps-ceiling-row"><span>x Willful maximum:</span><span>$150,000 &ensp;[17 U.S.C. &sect;504(c)]</span></div>
+          <hr class="mps-ceiling-divider">
+          <div class="mps-ceiling-row"><span>= Theoretical ceiling:</span><span class="mps-ceiling-result">~$3.08 billion</span></div>
+          <div class="mps-ceiling-gap">
+            <div class="mps-ceiling-gap-row"><span>Complaint requests:</span><span>"up to $150,000 per work infringed"</span></div>
+            <div class="mps-ceiling-gap-row"><span>Aggregate $ in complaint:</span><span class="mps-ceiling-none">NONE</span></div>
+          </div>
+        </div>
+        <div class="mps-ceiling-note">The $3 billion figure is arithmetic from a press statement, not a demand in the complaint. Actual damages, if any, would be determined at trial.</div>
+      </div>
+    </section>
+    <section class="section" id="the-contested-map">
+      <h2><span class="num">03 — Mechanism</span>The Contested Map</h2>
+      <p>On August 3, 2026, Anthropic filed a motion to partially dismiss the Second Amended Complaint. It targets two of the five counts.</p>
+      <p>On Count II — direct infringement through training and output — Anthropic argues the complaint "lacks even a single example of any allegedly infringing output" from Claude, despite multiple opportunities to amend. On Count V — removal of copyright management information under the Digital Millennium Copyright Act (DMCA) — Anthropic argues section 1202 applies only to removing CMI from "complete copyrighted works," which the publishers never allege Anthropic possessed. Amodei's separate motion, filed the same day, targets Count I against him individually on the direct-versus-contributory distinction described above.</p>
+      <p>What is not challenged: Count I against Anthropic and Mann (the core torrenting claim), Count III (contributory infringement), and Count IV (vicarious infringement).</p>
+      <p>A motion to dismiss tests legal sufficiency, not truth. The defendant argues that the allegations, taken as true on their face, fail to state a legally cognizable claim. Declining to challenge a count at the pleading stage means the defendant cannot defeat it on the face of the complaint — not that the defendant concedes it will ultimately lose. Fair use and other affirmative defenses remain available at later stages.</p>
+      <p>That said, the shape of what a defendant does not attempt to dispose of at the pleading stage is analytically informative. Anthropic's lawyers looked at five counts and chose to fight on two. The three they left alone — torrenting, contributory infringement, vicarious infringement — are the theories grounded most heavily in the complaint's factual record and, in some instances, backed by precedent already running against the company.</p>
+      <p>In the parallel Concord I case, the court denied Anthropic's motion to dismiss on contributory infringement, vicarious infringement, and DMCA/CMI removal. The court found Anthropic had sufficient knowledge of infringement because its own guardrails "alerted Anthropic to Claude's output of copyrighted materials." The court found Anthropic deliberately selected a "Newspaper" algorithm that "removed more CMI from training datasets, compared with other available methods." The DMCA theory that Anthropic now challenges again in Concord II has already survived dismissal once in Concord I.</p>
+      <p>The Second Amended Complaint, filed July 22, 2026, incorporated discovery materials from the Bartz proceedings. According to MBW, these include internal communications showing co-founder Tom Brown requesting lyrics during model development ("@Claude what are the lyrics to desolation row by Dylan?"). MBW reports that "lyric" appeared in over 170,000 Claude prompt/output records within nine days in September 2023. MBW reports the SAC also added newly released Claude models — 4.6 Opus and 4.6 Sonnet — to the claims.</p>
+      <p>The hearing on the motions to dismiss is set for November 4, 2026, before Judge Eumi K. Lee. Anthropic has not issued any public statement about the case outside of its court filings.</p>
+    </section>
+    <section class="section" id="the-release">
+      <h2><span class="num">04 — Signal</span>The Release</h2>
+      <p>Return to the numbers. The Bartz settlement resolved approximately 500,000 book titles. Concord II claims infringement of 20,517 musical compositions in its Exhibit B and 714 torrented works in its Exhibit A. MBW reports that BMG has filed a third, separate action citing 493 compositions — a claim not independently confirmed. The plaintiffs are different entities. The works are different works. The legal theories now include torrenting allegations that did not exist in Concord I.</p>
+      <div class="mps-compare">
+        <div class="mps-panel">
+          <div class="mps-panel-header resolved">&#9679; Bartz v. Anthropic — What Was Released</div>
+          <div class="mps-row"><span class="mps-row-label">Class</span><span class="mps-row-value">Books with ISBN or ASIN</span></div>
+          <div class="mps-row"><span class="mps-row-label">Registration</span><span class="mps-row-value">U.S. Copyright Office within 5 years</span></div>
+          <div class="mps-row"><span class="mps-row-label">Download period</span><span class="mps-row-value">2021 — August 10, 2022</span></div>
+          <div class="mps-row"><span class="mps-row-label">Titles</span><span class="mps-row-value">~500,000</span></div>
+          <div class="mps-row"><span class="mps-row-label">Release scope</span><span class="mps-row-value">Past acquisition and copying through Aug. 25, 2025</span></div>
+          <div class="mps-row"><span class="mps-row-label">Output claims</span><span class="mps-row-value dim">Not released (per Authors Guild, a settlement participant)</span></div>
+          <div class="mps-row"><span class="mps-row-label">Settlement</span><span class="mps-row-value">$1.5 billion — Approved July 20, 2026</span></div>
+          <div class="mps-row"><span class="mps-row-label">Individual defs.</span><span class="mps-row-value dim">None</span></div>
+        </div>
+        <div class="mps-panel">
+          <div class="mps-panel-header pending">&#9679; Concord II — What Remains</div>
+          <div class="mps-row"><span class="mps-row-label">Works</span><span class="mps-row-value highlight">20,517 compositions (Ex. B) + 714 torrented (Ex. A)</span></div>
+          <div class="mps-row"><span class="mps-row-label">Defendants</span><span class="mps-row-value highlight">Anthropic PBC, Dario Amodei, Benjamin Mann</span></div>
+          <div class="mps-row"><span class="mps-row-label">Counts</span><span class="mps-row-value highlight">5 (direct, output, contributory, vicarious, DMCA)</span></div>
+          <div class="mps-row"><span class="mps-row-label">Statutory ceiling</span><span class="mps-row-value">~$3.08B (per publishers' press statement)</span></div>
+          <div class="mps-row"><span class="mps-row-label">Settlement</span><span class="mps-row-value dim">None</span></div>
+          <div class="mps-row"><span class="mps-row-label">Status</span><span class="mps-row-value highlight">MTD pending — hearing Nov. 4, 2026</span></div>
+        </div>
+        <div class="mps-compare-note">The Bartz settlement covers books. The Concord II claims cover musical compositions. They are different plaintiffs, different works, and different legal theories. The $3.08B statutory ceiling is not a demand — see arithmetic above.</div>
+      </div>
+      <p>Each settlement in the AI copyright landscape is a contract about a defined set of works — bounded by medium, by registration status, by date of copying. What is released is specific. What is not released remains. Anthropic tried to stay Concord II pending Concord I; the stay was denied on April 24, 2026. Both cases proceed in parallel.</p>
+      <p>The operative question after any AI settlement headline is not how much was paid. It is what was released — which works, which rights, which dates, which defendants. A reader who saw "$1.5 billion" and concluded that Anthropic's training-data exposure had been priced and resolved would now need to account for 20,517 compositions, three defendants including the CEO, and the three theories of liability that Anthropic's own lawyers did not attempt to dismiss at the pleading stage.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.anthropic-music-publishers-suit-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
+  const STORY_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#fb7185';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+
+  const [sR, sG, sB] = hexToRgb(STORY_COLOR.startsWith('#') ? STORY_COLOR : '#fb7185');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function accentA(a: number) { return `rgba(${sR},${sG},${sB},${Math.max(0, Math.min(1, a))})`; }
+  function dimA(a: number)    { return `rgba(232,232,232,${Math.max(0, Math.min(1, a))})`; }
+  function clamp(v: number, lo: number, hi: number) { return v < lo ? lo : v > hi ? hi : v; }
+
+  // --- Phase thresholds ---
+  const P1_END = 180;   // mixed drift
+  const P2_END = 360;   // boundary draws, interior dims
+  const P3_END = 480;   // targeting lines reach two exterior particles
+  const P4_END = 600;   // hold — three untouched accent particles pulse
+  const P5_END = 660;   // fade out, snap reset
+  const CYCLE = P5_END;
+
+  // --- Particle counts ---
+  const N_INTERIOR = 35;
+  const N_EXTERIOR = 18;
+  const N_TOTAL = N_INTERIOR + N_EXTERIOR; // 53
+
+  // Exterior particle roles: indices 0-1 = targeted, 2-4 = untouched, 5-17 = ambient accent
+  const TARGET_A = 0;
+  const TARGET_B = 1;
+  const UNTOUCHED_START = 2;
+  const UNTOUCHED_END = 4; // inclusive
+
+  interface Particle {
+    x: number; y: number;
+    vx: number; vy: number;
+    alpha: number;
+    baseAlpha: number;
+    radius: number;
+    isAccent: boolean;
+    anchorX: number;  // for exterior particles — stable position outside boundary
+    anchorY: number;
+  }
+
+  let W = 0, H = 0, frame = 0, rafId = 0;
+  let interior: Particle[] = [];
+  let exterior: Particle[] = [];
+
+  // Boundary arc geometry (computed on resize)
+  let bCx = 0, bCy = 0, bR = 0, bStartAngle = 0, bEndAngle = 0;
+
+  // Seeded pseudo-positions for exterior particles (relative to W, H)
+  // These are placed in the right half / edges of the canvas
+  const extRelPos = [
+    // 0,1: targeted by dashed lines
+    { rx: 0.78, ry: 0.30 },
+    { rx: 0.72, ry: 0.72 },
+    // 2,3,4: untouched — prominent positions
+    { rx: 0.88, ry: 0.18 },
+    { rx: 0.92, ry: 0.52 },
+    { rx: 0.82, ry: 0.85 },
+    // 5-17: ambient exterior
+    { rx: 0.66, ry: 0.14 },
+    { rx: 0.70, ry: 0.46 },
+    { rx: 0.85, ry: 0.36 },
+    { rx: 0.74, ry: 0.58 },
+    { rx: 0.90, ry: 0.70 },
+    { rx: 0.68, ry: 0.88 },
+    { rx: 0.80, ry: 0.50 },
+    { rx: 0.76, ry: 0.22 },
+    { rx: 0.64, ry: 0.66 },
+    { rx: 0.86, ry: 0.82 },
+    { rx: 0.70, ry: 0.38 },
+    { rx: 0.94, ry: 0.44 },
+    { rx: 0.62, ry: 0.52 },
+  ];
+
+  function initParticles() {
+    interior = [];
+    exterior = [];
+    for (let i = 0; i < N_INTERIOR; i++) {
+      // Scatter across the whole canvas initially (before boundary draws)
+      interior.push({
+        x: W * 0.08 + Math.random() * W * 0.84,
+        y: H * 0.08 + Math.random() * H * 0.84,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        alpha: 0.06 + Math.random() * 0.04,
+        baseAlpha: 0.06 + Math.random() * 0.04,
+        radius: 1.5 + Math.random() * 0.8,
+        isAccent: false,
+        anchorX: 0, anchorY: 0
+      });
+    }
+    for (let i = 0; i < N_EXTERIOR; i++) {
+      const rel = extRelPos[i];
+      const ax = rel.rx * W;
+      const ay = rel.ry * H;
+      exterior.push({
+        x: W * 0.08 + Math.random() * W * 0.84,
+        y: H * 0.08 + Math.random() * H * 0.84,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        alpha: 0.7 + Math.random() * 0.3,
+        baseAlpha: 0.7 + Math.random() * 0.3,
+        radius: 2.0 + Math.random() * 0.8,
+        isAccent: true,
+        anchorX: ax,
+        anchorY: ay
+      });
+    }
+  }
+
+  function computeBoundary() {
+    // Arc centered to the left, enclosing roughly the left-center 55% of canvas
+    bCx = W * 0.30;
+    bCy = H * 0.50;
+    bR = Math.min(W, H) * 0.55;
+    bStartAngle = -Math.PI * 0.55;
+    bEndAngle = Math.PI * 0.55;
+  }
+
+  function isInsideBoundary(x: number, y: number): boolean {
+    const dx = x - bCx;
+    const dy = y - bCy;
+    if (dx * dx + dy * dy > bR * bR) return false;
+    // Also check the particle is on the "enclosed" side (left of the arc chord)
+    const chordTopX = bCx + bR * Math.cos(bStartAngle);
+    const chordTopY = bCy + bR * Math.sin(bStartAngle);
+    const chordBotX = bCx + bR * Math.cos(bEndAngle);
+    const chordBotY = bCy + bR * Math.sin(bEndAngle);
+    // Cross product to check which side of the chord line we're on
+    const cross = (chordBotX - chordTopX) * (y - chordTopY) - (chordBotY - chordTopY) * (x - chordTopX);
+    return cross <= 0; // left side of chord = inside the enclosure
+  }
+
+  // Dashed-line targeting state
+  let dashLineAProgress = 0;
+  let dashLineBProgress = 0;
+  let dashOriginX = 0, dashOriginY = 0;
+  let targetAFlickerStart = -1;
+  let targetBFlickerStart = -1;
+
+  function resetState() {
+    frame = 0;
+    dashLineAProgress = 0;
+    dashLineBProgress = 0;
+    targetAFlickerStart = -1;
+    targetBFlickerStart = -1;
+    initParticles();
+    computeBoundary();
+    // Compute dash origin: a point on the boundary arc between the two target particles
+    const midAngle = (bStartAngle + bEndAngle) * 0.5 * 0.3 + bEndAngle * 0.3;
+    dashOriginX = bCx + bR * Math.cos(midAngle * 0.5);
+    dashOriginY = bCy + bR * Math.sin(midAngle * 0.5);
+  }
+
+  function getPhase(f: number): string {
+    const c = f % CYCLE;
+    if (c < P1_END) return 'drift';
+    if (c < P2_END) return 'boundary';
+    if (c < P3_END) return 'targeting';
+    if (c < P4_END) return 'hold';
+    return 'fade';
+  }
+
+  function update() {
+    const phase = getPhase(frame);
+    const cycleFrame = frame % CYCLE;
+
+    if (phase === 'drift') {
+      // All particles drift freely, mixed field
+      for (let i = 0; i < N_INTERIOR; i++) {
+        const p = interior[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        // Gentle boundary bounce
+        if (p.x < W * 0.04 || p.x > W * 0.96) p.vx *= -1;
+        if (p.y < H * 0.04 || p.y > H * 0.96) p.vy *= -1;
+        p.x = clamp(p.x, W * 0.03, W * 0.97);
+        p.y = clamp(p.y, H * 0.03, H * 0.97);
+        p.alpha = p.baseAlpha;
+      }
+      for (let i = 0; i < N_EXTERIOR; i++) {
+        const p = exterior[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < W * 0.04 || p.x > W * 0.96) p.vx *= -1;
+        if (p.y < H * 0.04 || p.y > H * 0.96) p.vy *= -1;
+        p.x = clamp(p.x, W * 0.03, W * 0.97);
+        p.y = clamp(p.y, H * 0.03, H * 0.97);
+        p.alpha = p.baseAlpha;
+      }
+
+    } else if (phase === 'boundary') {
+      const progress = (cycleFrame - P1_END) / (P2_END - P1_END);
+
+      // Interior particles: decelerate and migrate toward enclosed region, then dim
+      for (let i = 0; i < N_INTERIOR; i++) {
+        const p = interior[i];
+        // Decelerate
+        const speedFactor = 1 - progress * 0.95;
+        p.x += p.vx * speedFactor;
+        p.y += p.vy * speedFactor;
+        // Drift toward enclosed interior
+        if (progress > 0.2) {
+          const targetX = bCx + (Math.sin(i * 2.7 + 1.1) * 0.5 + 0.5) * bR * 0.6 - bR * 0.3;
+          const targetY = bCy + (Math.cos(i * 3.3 + 0.7) * 0.5 + 0.5) * bR * 0.6 - bR * 0.3;
+          const pull = Math.min(1, (progress - 0.2) * 0.03);
+          p.x += (targetX - p.x) * pull;
+          p.y += (targetY - p.y) * pull;
+        }
+        // Dim as boundary closes
+        const dimFactor = progress > 0.5 ? 1 - (progress - 0.5) * 2 : 1;
+        p.alpha = p.baseAlpha * Math.max(0.06 / p.baseAlpha, dimFactor);
+        p.x = clamp(p.x, W * 0.03, W * 0.97);
+        p.y = clamp(p.y, H * 0.03, H * 0.97);
+      }
+
+      // Exterior particles: migrate toward their anchor positions outside boundary
+      for (let i = 0; i < N_EXTERIOR; i++) {
+        const p = exterior[i];
+        const pull = 0.025;
+        p.x += (p.anchorX - p.x) * pull;
+        p.y += (p.anchorY - p.y) * pull;
+        // Continue drifting slightly
+        p.x += p.vx * 0.5;
+        p.y += p.vy * 0.5;
+        if (p.x < W * 0.04 || p.x > W * 0.96) p.vx *= -1;
+        if (p.y < H * 0.04 || p.y > H * 0.96) p.vy *= -1;
+        p.x = clamp(p.x, W * 0.03, W * 0.97);
+        p.y = clamp(p.y, H * 0.03, H * 0.97);
+        p.alpha = p.baseAlpha;
+      }
+
+    } else if (phase === 'targeting') {
+      const progress = (cycleFrame - P2_END) / (P3_END - P2_END);
+
+      // Interior stays dim and still
+      for (let i = 0; i < N_INTERIOR; i++) {
+        interior[i].alpha = 0.06;
+      }
+
+      // Exterior particles drift gently around anchors
+      for (let i = 0; i < N_EXTERIOR; i++) {
+        const p = exterior[i];
+        p.x += Math.sin(frame * 0.01 + i * 1.7) * 0.15;
+        p.y += Math.cos(frame * 0.013 + i * 2.3) * 0.12;
+        const pull = 0.02;
+        p.x += (p.anchorX - p.x) * pull;
+        p.y += (p.anchorY - p.y) * pull;
+        p.x = clamp(p.x, W * 0.03, W * 0.97);
+        p.y = clamp(p.y, H * 0.03, H * 0.97);
+        p.alpha = p.baseAlpha;
+      }
+
+      // Advance dashed lines
+      dashLineAProgress = clamp(progress * 1.3, 0, 1);
+      dashLineBProgress = clamp((progress - 0.15) * 1.3, 0, 1);
+
+      // On contact: flicker
+      if (dashLineAProgress >= 1 && targetAFlickerStart < 0) {
+        targetAFlickerStart = cycleFrame;
+      }
+      if (dashLineBProgress >= 1 && targetBFlickerStart < 0) {
+        targetBFlickerStart = cycleFrame;
+      }
+
+      // Apply flicker to targeted particles
+      if (targetAFlickerStart > 0) {
+        const flickerFrame = cycleFrame - targetAFlickerStart;
+        if (flickerFrame < 40) {
+          exterior[TARGET_A].alpha = 0.3 + Math.abs(Math.sin(flickerFrame * 0.35)) * 0.7;
+        } else {
+          exterior[TARGET_A].alpha = exterior[TARGET_A].baseAlpha;
+        }
+      }
+      if (targetBFlickerStart > 0) {
+        const flickerFrame = cycleFrame - targetBFlickerStart;
+        if (flickerFrame < 40) {
+          exterior[TARGET_B].alpha = 0.3 + Math.abs(Math.sin(flickerFrame * 0.35)) * 0.7;
+        } else {
+          exterior[TARGET_B].alpha = exterior[TARGET_B].baseAlpha;
+        }
+      }
+
+      // Fade dashed lines after contact
+      if (progress > 0.85) {
+        const lineFade = (progress - 0.85) / 0.15;
+        dashLineAProgress = Math.max(0, 1 - lineFade);
+        dashLineBProgress = Math.max(0, 1 - lineFade);
+      }
+
+    } else if (phase === 'hold') {
+      const holdFrame = cycleFrame - P3_END;
+
+      // Interior stays dim
+      for (let i = 0; i < N_INTERIOR; i++) {
+        interior[i].alpha = 0.06;
+      }
+
+      dashLineAProgress = 0;
+      dashLineBProgress = 0;
+
+      // All exterior drift gently
+      for (let i = 0; i < N_EXTERIOR; i++) {
+        const p = exterior[i];
+        p.x += Math.sin(frame * 0.01 + i * 1.7) * 0.12;
+        p.y += Math.cos(frame * 0.013 + i * 2.3) * 0.1;
+        const pull = 0.015;
+        p.x += (p.anchorX - p.x) * pull;
+        p.y += (p.anchorY - p.y) * pull;
+        p.x = clamp(p.x, W * 0.03, W * 0.97);
+        p.y = clamp(p.y, H * 0.03, H * 0.97);
+      }
+
+      // Untouched particles pulse — they become the visual weight
+      for (let i = UNTOUCHED_START; i <= UNTOUCHED_END; i++) {
+        exterior[i].alpha = 0.7 + Math.sin(holdFrame * 0.04 + i * 1.2) * 0.3;
+        exterior[i].radius = 2.5 + Math.sin(holdFrame * 0.03 + i * 0.9) * 0.5;
+      }
+
+      // Other exterior particles stay at normal alpha
+      for (let i = 0; i < N_EXTERIOR; i++) {
+        if (i >= UNTOUCHED_START && i <= UNTOUCHED_END) continue;
+        exterior[i].alpha = exterior[i].baseAlpha * 0.6; // slightly dimmer to contrast
+      }
+
+    } else if (phase === 'fade') {
+      const fadeProgress = (cycleFrame - P4_END) / (P5_END - P4_END);
+
+      for (let i = 0; i < N_INTERIOR; i++) {
+        interior[i].alpha = 0.06 * (1 - fadeProgress);
+      }
+      for (let i = 0; i < N_EXTERIOR; i++) {
+        exterior[i].alpha = exterior[i].baseAlpha * (1 - fadeProgress);
+      }
+      dashLineAProgress = 0;
+      dashLineBProgress = 0;
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+
+    const phase = getPhase(frame);
+    const cycleFrame = frame % CYCLE;
+
+    // --- Draw boundary arc ---
+    if (phase === 'boundary' || phase === 'targeting' || phase === 'hold' || phase === 'fade') {
+      let arcProgress = 1;
+      let boundaryStrokeAlpha = 0.12;
+
+      if (phase === 'boundary') {
+        arcProgress = clamp((cycleFrame - P1_END) / (P2_END - P1_END), 0, 1);
+        // Pulse on completion
+        if (arcProgress > 0.95) {
+          const pulseT = (arcProgress - 0.95) / 0.05;
+          boundaryStrokeAlpha = 0.12 + Math.sin(pulseT * Math.PI) * 0.25;
+        } else {
+          boundaryStrokeAlpha = 0.08 + arcProgress * 0.04;
+        }
+      } else if (phase === 'fade') {
+        const fadeProgress = (cycleFrame - P4_END) / (P5_END - P4_END);
+        boundaryStrokeAlpha = 0.12 * (1 - fadeProgress);
+      }
+
+      if (boundaryStrokeAlpha > 0.003) {
+        const drawEndAngle = bStartAngle + (bEndAngle - bStartAngle) * arcProgress;
+        ctx.beginPath();
+        ctx.arc(bCx, bCy, bR, bStartAngle, drawEndAngle);
+        ctx.strokeStyle = dimA(boundaryStrokeAlpha);
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        // Subtle glow along the arc
+        if (boundaryStrokeAlpha > 0.05) {
+          ctx.beginPath();
+          ctx.arc(bCx, bCy, bR, bStartAngle, drawEndAngle);
+          ctx.strokeStyle = dimA(boundaryStrokeAlpha * 0.3);
+          ctx.lineWidth = 4;
+          ctx.stroke();
+        }
+      }
+    }
+
+    // --- Draw dashed targeting lines ---
+    if ((phase === 'targeting') && (dashLineAProgress > 0.01 || dashLineBProgress > 0.01)) {
+      ctx.save();
+      ctx.setLineDash([4, 6]);
+      ctx.lineWidth = 0.8;
+
+      // Compute origin on the boundary arc — midpoint of arc, right side
+      const originAngle = (bStartAngle + bEndAngle) * 0.5;
+      const ox = bCx + bR * Math.cos(originAngle);
+      const oy = bCy + bR * Math.sin(originAngle);
+
+      // Line A → target particle 0
+      if (dashLineAProgress > 0.01) {
+        const tA = exterior[TARGET_A];
+        const endX = ox + (tA.x - ox) * dashLineAProgress;
+        const endY = oy + (tA.y - oy) * dashLineAProgress;
+        ctx.beginPath();
+        ctx.moveTo(ox, oy);
+        ctx.lineTo(endX, endY);
+        ctx.strokeStyle = accentA(0.35 * dashLineAProgress);
+        ctx.stroke();
+      }
+
+      // Line B → target particle 1
+      if (dashLineBProgress > 0.01) {
+        const tB = exterior[TARGET_B];
+        const endX = ox + (tB.x - ox) * dashLineBProgress;
+        const endY = oy + (tB.y - oy) * dashLineBProgress;
+        ctx.beginPath();
+        ctx.moveTo(ox, oy);
+        ctx.lineTo(endX, endY);
+        ctx.strokeStyle = accentA(0.35 * dashLineBProgress);
+        ctx.stroke();
+      }
+
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
+
+    // --- Draw interior particles ---
+    for (let i = 0; i < N_INTERIOR; i++) {
+      const p = interior[i];
+      if (p.alpha < 0.003) continue;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = dimA(p.alpha);
+      ctx.fill();
+    }
+
+    // --- Draw exterior (accent) particles ---
+    for (let i = 0; i < N_EXTERIOR; i++) {
+      const p = exterior[i];
+      if (p.alpha < 0.003) continue;
+
+      // Glow for untouched particles during hold phase
+      const isUntouched = i >= UNTOUCHED_START && i <= UNTOUCHED_END;
+      if (isUntouched && phase === 'hold') {
+        const gr = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 5);
+        gr.addColorStop(0, accentA(p.alpha * 0.2));
+        gr.addColorStop(1, accentA(0));
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius * 5, 0, Math.PI * 2);
+        ctx.fillStyle = gr;
+        ctx.fill();
+      }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = accentA(p.alpha);
+      ctx.fill();
+
+      // Bright core
+      if (p.alpha > 0.4) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius * 0.4, 0, Math.PI * 2);
+        ctx.fillStyle = accentA(Math.min(1, p.alpha * 1.3));
+        ctx.fill();
+      }
+    }
+  }
+
+  function drawStatic() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+
+    computeBoundary();
+
+    // Draw the completed boundary arc
+    ctx.beginPath();
+    ctx.arc(bCx, bCy, bR, bStartAngle, bEndAngle);
+    ctx.strokeStyle = dimA(0.12);
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(bCx, bCy, bR, bStartAngle, bEndAngle);
+    ctx.strokeStyle = dimA(0.04);
+    ctx.lineWidth = 4;
+    ctx.stroke();
+
+    // Draw dim interior particles
+    for (let i = 0; i < N_INTERIOR; i++) {
+      const px = bCx + Math.sin(i * 2.7 + 1.1) * bR * 0.35;
+      const py = bCy + Math.cos(i * 3.3 + 0.7) * bR * 0.35;
+      ctx.beginPath();
+      ctx.arc(px, py, 1.5 + Math.sin(i * 1.9) * 0.4, 0, Math.PI * 2);
+      ctx.fillStyle = dimA(0.06);
+      ctx.fill();
+    }
+
+    // Draw three vivid untouched accent particles outside boundary
+    for (let i = UNTOUCHED_START; i <= UNTOUCHED_END; i++) {
+      const rel = extRelPos[i];
+      const px = rel.rx * W;
+      const py = rel.ry * H;
+      const r = 2.5;
+      // Glow
+      const gr = ctx.createRadialGradient(px, py, 0, px, py, r * 5);
+      gr.addColorStop(0, accentA(0.18));
+      gr.addColorStop(1, accentA(0));
+      ctx.beginPath();
+      ctx.arc(px, py, r * 5, 0, Math.PI * 2);
+      ctx.fillStyle = gr;
+      ctx.fill();
+      // Core
+      ctx.beginPath();
+      ctx.arc(px, py, r, 0, Math.PI * 2);
+      ctx.fillStyle = accentA(0.9);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(px, py, r * 0.4, 0, Math.PI * 2);
+      ctx.fillStyle = accentA(1);
+      ctx.fill();
+    }
+
+    // Draw remaining exterior accent particles at lower opacity
+    for (let i = 0; i < N_EXTERIOR; i++) {
+      if (i >= UNTOUCHED_START && i <= UNTOUCHED_END) continue;
+      const rel = extRelPos[i];
+      const px = rel.rx * W;
+      const py = rel.ry * H;
+      ctx.beginPath();
+      ctx.arc(px, py, 2, 0, Math.PI * 2);
+      ctx.fillStyle = accentA(0.45);
+      ctx.fill();
+    }
+  }
+
+  function tick() {
+    frame++;
+    if (frame % CYCLE === 0) {
+      resetState();
+    }
+    update();
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  // --- Resize ---
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.scale(dpr, dpr);
+    computeBoundary();
+    // Recompute dash origin
+    const midAngle = (bStartAngle + bEndAngle) * 0.5;
+    dashOriginX = bCx + bR * Math.cos(midAngle);
+    dashOriginY = bCy + bR * Math.sin(midAngle);
+    // Re-anchor exterior particles
+    for (let i = 0; i < N_EXTERIOR; i++) {
+      const rel = extRelPos[i];
+      exterior[i].anchorX = rel.rx * W;
+      exterior[i].anchorY = rel.ry * H;
+    }
+    if (prefersReduced) {
+      drawStatic();
+    }
+  });
+  ro.observe(canvas);
+
+  // Initial size
+  const dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth;
+  H = canvas.offsetHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  if (prefersReduced) {
+    computeBoundary();
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    resetState();
+
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        if (!rafId) rafId = requestAnimationFrame(tick);
+      } else {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+      ro.disconnect();
+    });
+  }
+})();
+</script>
