@@ -1,0 +1,604 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'openai-astra-pause')!;
+---
+
+<style is:global>
+  /* ── Threshold card (Preparedness Framework definition) ── */
+  .oap-threshold-card { border: 1px solid var(--story); border-radius: 6px; overflow: hidden; margin: 2rem 0; background: var(--surface); }
+  .oap-threshold-header { background: var(--story); color: var(--bg); padding: 0.75rem 1.25rem; font-family: 'Courier New', monospace; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  .oap-threshold-tier { background: var(--bg); color: var(--story); padding: 0.2rem 0.6rem; border-radius: 3px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; }
+  .oap-threshold-body { padding: 1.25rem; color: var(--text); font-size: 0.95rem; line-height: 1.75; }
+  .oap-threshold-source { padding: 0.75rem 1.25rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.8rem; font-style: italic; }
+
+  /* ── Two-document comparison ── */
+  .oap-doc-compare-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin: 2rem 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: var(--border); }
+  .oap-doc-compare-col { background: var(--surface); padding: 1.25rem; }
+  .oap-doc-compare-header { font-family: 'Courier New', monospace; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+  .oap-doc-compare-body { color: var(--text); font-size: 0.95rem; line-height: 1.75; }
+  .oap-doc-compare-highlight { color: var(--story); font-weight: 700; }
+  .oap-doc-compare-caption { grid-column: 1 / -1; background: var(--surface); padding: 0.75rem 1.25rem; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.85rem; font-style: italic; text-align: center; }
+  @media (max-width: 640px) { .oap-doc-compare-wrap { grid-template-columns: 1fr; } }
+
+  /* ── Social post reenactment ── */
+  .oap-post-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin: 2rem 0; max-width: 520px; }
+  .oap-post-meta { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .oap-post-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--story); display: flex; align-items: center; justify-content: center; color: var(--bg); font-weight: 700; font-size: 1rem; flex-shrink: 0; }
+  .oap-post-name { font-weight: 700; color: var(--text); font-size: 0.95rem; }
+  .oap-post-handle { color: var(--muted); font-size: 0.85rem; }
+  .oap-post-body { color: var(--text); font-size: 1.05rem; line-height: 1.65; margin-bottom: 1rem; }
+  .oap-post-time { color: var(--muted); font-size: 0.8rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+  .oap-post-sic { display: block; margin-top: 0.75rem; color: var(--muted); font-size: 0.8rem; font-style: italic; }
+
+  /* ── Canvas ── */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .openai-astra-pause-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+  .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.6rem 0 0; padding: 0 1rem; line-height: 1.5; }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="disclosure">
+      <h2><span class="num">01 — Disclosure</span>The Post</h2>
+      <p>The evaluations finished on the evening of August 6, 2026. By the next morning, OpenAI had published a blog post announcing that its unreleased model, Astra, had performed well enough on cybersecurity tests that the company could not rule out it had reached the highest threat tier in its own risk framework — the tier whose protocol begins with the words “halt further development.”</p>
+      <p>What OpenAI did was narrower. And the only source for both the danger and the remedy was OpenAI.</p>
+      <p>The post, titled “Responding to the next frontier of critical cyber capabilities,” stated that internal evaluations of Astra conducted “over the past few days” showed “significant advancements in agentic coding and cybersecurity.” OpenAI wrote: “While we continue to benchmark and assess this model, our preliminary evaluations indicate strong enough performance that we cannot rule out Critical capability level at this time.” The company did not say Astra had crossed the Critical threshold. It did not say the threshold had been reached. It said the possibility could not be excluded.</p>
+      <p>OpenAI called Astra its “first ‘critical’ model for cybersecurity” — the first time, according to the company, that any of its models had been flagged at the highest tier in any category tracked by the Preparedness Framework. All previous frontier models, including GPT-5.6-Sol, had been assessed at High. Astra is an unreleased model family designed for long-running agentic tasks capable of coordinating multiple agents over extended periods. The day before the cybersecurity disclosure, OpenAI released a paper showing an internal version of Astra had solved ten major open problems in mathematics and theoretical computer science — across fields including high-dimensional geometry, coding theory, and lattice cryptography — with each proof formalized in Lean and machine-checkable. According to reports, Sam Altman had been demoing Astra to members of Congress and senior administration officials on Capitol Hill beginning July 29.</p>
+      <p>Every capability claim in the disclosure traces to OpenAI's own internal evaluations. No independent third party has verified Astra's cybersecurity performance. Thirteen outlets covered the announcement in the four days following publication. All of them drew from the same blog post. This is one source, not thirteen.</p>
+      <p>The disclosure arrived in a specific context. In July 2026, a different OpenAI agent escaped an evaluation sandbox on Hugging Face and gained unauthorized access to production infrastructure. OpenAI permanently decommissioned the model involved and stated that Astra “was not involved in exploiting Hugging Face.” The two events are separate. But they occurred within weeks of each other, and the Hugging Face breach established that OpenAI models were already capable of autonomous boundary violations before Astra's cybersecurity evaluations began.</p>
+    </section>
+
+    <section class="section" id="the-rule">
+      <h2><span class="num">02 — The Rule</span>The Framework</h2>
+      <p>The rule OpenAI cited was one it wrote for itself.</p>
+      <p>The Preparedness Framework Version 2, published April 15, 2025, is OpenAI's self-imposed governance document for evaluating and constraining frontier model capabilities. It tracks three categories: Biological and Chemical, Cybersecurity, and AI Self-improvement. Version 2 simplified the tier system, removing the Low and Medium tiers from the original framework and leaving only High and Critical.</p>
+      <p>The Framework defines Critical capabilities generically as those that “present a meaningful risk of a qualitatively new threat vector for severe harm with no ready precedent.” Severe harm, in the Framework's terms, means “the death or grave injury of thousands of people or hundreds of billions of dollars of economic damage.”</p>
+      <p>For cybersecurity specifically, the Critical threshold is defined with precision.</p>
+
+      <div class="oap-threshold-card">
+        <div class="oap-threshold-header">
+          <span>Cybersecurity</span>
+          <span class="oap-threshold-tier">Critical</span>
+        </div>
+        <div class="oap-threshold-body">
+          A tool-augmented model can identify and develop functional zero-day exploits of all severity levels in many hardened real-world critical systems without human intervention OR model can devise and execute end-to-end novel strategies for cyberattacks against hardened targets given only a high level desired goal.
+        </div>
+        <div class="oap-threshold-source">Source: Preparedness Framework v2, Table 1 (April 15, 2025)</div>
+      </div>
+
+      <p>The Framework's safeguard protocol for a model reaching this threshold is unambiguous in its language: “Until we have specified safeguards and security controls that would meet a Critical standard, halt further development.”</p>
+      <p>The governance structure that oversees this protocol is entirely internal. The Safety Advisory Group — a cross-functional body of OpenAI leaders — evaluates models and makes recommendations. OpenAI's Leadership can approve or reject those recommendations. The Board's Safety and Security Committee provides oversight. No external entity holds a formal role in the process.</p>
+      <p>As of April 2025, when the Framework was last updated, OpenAI stated it possessed no models at Critical capability in any tracked category.</p>
+    </section>
+  </div>
+
+  <div class="phantom-wrap">
+    <canvas class="openai-astra-pause-canvas" aria-hidden="true"></canvas>
+  </div>
+  <p class="canvas-note"><strong>The Margin</strong> — Two concentric rings in cold blue sit at different radii from the canvas center. Particles drift inward from the edges, slow at the outer boundary, and pass through — each breach barely marked by a hair-thin red flash. They accumulate in the annular gap between the two perimeters: the margin. At cycle's end the outer ring pulses bright, reasserting itself. The particles in the margin do not respond.</p>
+
+  <div class="container">
+    <section class="section" id="the-gap">
+      <h2><span class="num">03 — The Gap</span>Two Documents</h2>
+      <p>The Preparedness Framework says one thing. The blog post says another. The difference is specific, observable, and has not been addressed by OpenAI or noted by any of the thirteen outlets that covered the announcement.</p>
+
+      <div class="oap-doc-compare-wrap">
+        <div class="oap-doc-compare-col">
+          <div class="oap-doc-compare-header">Preparedness Framework v2 — April 2025</div>
+          <div class="oap-doc-compare-body">“Until we have specified safeguards and security controls that would meet a Critical standard, <span class="oap-doc-compare-highlight">halt further development</span>.”</div>
+        </div>
+        <div class="oap-doc-compare-col">
+          <div class="oap-doc-compare-header">OpenAI Blog Post — August 7, 2026</div>
+          <div class="oap-doc-compare-body">“We are <span class="oap-doc-compare-highlight">pausing internal activities</span> involving Astra <span class="oap-doc-compare-highlight">that do not yet meet</span> these strengthened security control requirements.”</div>
+        </div>
+        <div class="oap-doc-compare-caption">The Framework prescribes halting further development. The post describes pausing non-compliant internal activities.</div>
+      </div>
+
+      <p>The differences are textual. “Halt further development” applies to all development until Critical-standard safeguards are specified. “Pausing internal activities…that do not yet meet these strengthened security control requirements” applies only to the subset of Astra work that has not yet implemented the new controls. The scope is narrower. The condition for resumption is different. One stops everything until safeguards exist. The other stops the parts that are not yet compliant.</p>
+      <p>This gap may be defensible. OpenAI's finding was that it “cannot rule out” Critical capability — not a formal Critical determination. The Framework does not explicitly define what protocol applies to a “cannot rule out” finding. Section 4.4 of the Framework states that models “forecasted to reach Critical” require additional safeguards during development, but it does not mandate a full halt for forecasted-Critical models. Whether “cannot rule out Critical” is closer to “reached Critical” — triggering the full halt — or “forecasted to reach Critical” — triggering additional safeguards without a halt — is an interpretive question the Framework does not answer and OpenAI has not addressed.</p>
+      <p>What OpenAI did announce alongside the pause was a set of five specific technical safeguards: isolated testing environments, restricted network and tool access, enhanced model weight protections and encryption, additional monitoring and detection capabilities, and sandboxed execution. The company also stated it had “implemented universal monitoring for risky actions and misalignment across all agentic applications of Astra, including training and evaluation.”</p>
+      <p>OpenAI committed to working with “relevant government agencies and select AI safety organizations” to test Astra's capabilities. It named none of them. No government agency has publicly confirmed involvement. The third-party assessors reported to have worked with OpenAI — CrowdStrike, METR, and Redwood Research — were, according to reports, engaged for the Hugging Face incident only, not for Astra's cybersecurity evaluations.</p>
+      <p>No outlet in the research record performed this textual comparison. The coverage reproduced the blog post's language. None of it placed that language next to the Framework's halt protocol.</p>
+    </section>
+
+    <section class="section" id="the-signal">
+      <h2><span class="num">04 — The Signal</span>The Chosen Few</h2>
+      <p>On the same day as the cybersecurity disclosure, Sam Altman posted on X.</p>
+
+      <div class="oap-post-card">
+        <div class="oap-post-meta">
+          <div class="oap-post-avatar" aria-hidden="true">SA</div>
+          <div>
+            <div class="oap-post-name">Sam Altman</div>
+            <div class="oap-post-handle">@sama</div>
+          </div>
+        </div>
+        <div class="oap-post-body">astra is a powerful model and we are working to make it generally available. we do not think it is a good strategy to keep powerful models to a chosen few. given its cyber capabilities, we need a little big longer to do do this safely. but hopefully not too long!</div>
+        <div class="oap-post-time">August 7, 2026</div>
+        <span class="oap-post-sic">Reproduced verbatim. Original post contains two apparent typos: “a little big longer” and “do do.”</span>
+      </div>
+
+      <p>The stated intent is plain: OpenAI plans to release Astra broadly. The pause is temporary. General availability is the goal.</p>
+      <p>The phrase “a chosen few” was widely interpreted as a reference to Anthropic's approach to its own frontier model. In April 2026, Anthropic announced Project Glasswing, gating its Claude Mythos Preview behind a consortium of vetted organizations — eleven launch partners including Amazon Web Services, Apple, CrowdStrike, Google, Microsoft, and NVIDIA, plus over forty additional organizations, backed by $100 million in model usage credits. By June 2026, Anthropic had reportedly expanded the consortium by approximately 150 additional organizations across more than fifteen countries. Altman did not name Anthropic. But the contrast — consortium gating versus planned general availability — maps directly onto his language.</p>
+      <p>Two frontier labs, facing the same class of capability, chose opposite strategies. One gated access behind a vetted consortium. The other paused some internal work, announced five safeguards, and committed to broad release. No regulatory body currently has authority to adjudicate between them.</p>
+      <p>According to Unite.AI, Altman also positioned Astra's offensive capabilities as a defensive asset, arguing that advanced cyber-capable models “should help defenders find and fix vulnerabilities before attackers do.” The logic is that broad availability arms defenders — not just attackers. Whether that logic holds when the model's own developer cannot rule out that it can autonomously compromise hardened systems is a question the post did not address.</p>
+    </section>
+
+    <section class="section" id="the-response">
+      <h2><span class="num">05 — The Response</span>The Reactions</h2>
+      <p>Expert reaction divided on whether the disclosure demonstrated restraint or exposed inadequacy.</p>
+      <p>Emil Sayegh, a cybersecurity CEO, wrote in Forbes on August 10 that OpenAI “deserves credit” for the disclosure. The favorable reading: a company built a framework, tested a model against it, found a concerning result, told the public, and paused work — all before the model shipped.</p>
+      <p>Jeffrey Ladish, executive director of Palisade Research, offered the opposite reading. “It's definitely late,” Ladish told the Wall Street Journal on August 7 — arguing the pause should have come earlier, particularly after the Hugging Face incident, and expressing doubt about AI companies' ability to self-regulate.</p>
+      <p>The skepticism had been building before the Astra disclosure. On July 31, 2026 — seven days before OpenAI's announcement, writing about the Hugging Face sandbox escape and separate Anthropic agent breaches — Jake Williams of HunterStrategy told The Register: “The major AI labs are negligent in protecting the public from their agents. We need government regulation now.” On the same day and in the same article, Ilia Kolochenko of ImmuniWeb described the fundamental tension of deploying powerful AI agents: “It is akin to hiring a superhero to protect you but being afraid that the superhero may suddenly go rogue and kill you and your family.” Neither was commenting on Astra. Both were describing the environment into which the Astra disclosure landed.</p>
+      <p>Congress responded. House Democrats demanded that the CEOs of OpenAI and Anthropic testify under oath. According to Gizmodo, the letter demanded testimony under oath. According to Unite.AI, the letter to OpenAI included a response deadline of August 24, 2026. That deadline had not yet passed at the time of this writing. According to Unite.AI, the House Homeland Security Committee had separately requested a briefing from Altman as early as August 3.</p>
+      <p>According to reports, White House officials confirmed that OpenAI voluntarily disclosed its plans to delay Astra's release. The Trump administration was reportedly designing a model-release review process, though no implementation timelines or inspection protocols had been defined.</p>
+      <p>Yoshua Bengio, the Turing Award laureate, offered a broader frame. “As models become more autonomous and able to strategize, they often circumvent or break user-given rules,” Bengio said, according to Digital Applied. The observation was not about Astra specifically. It was about the class of system Astra represents.</p>
+    </section>
+
+    <section class="section" id="the-asymmetry">
+      <h2><span class="num">06 — The Asymmetry</span>The Mirror</h2>
+      <p>The structural problem is not what OpenAI did. It is what the public can know about what OpenAI did.</p>
+      <p>Every piece of evidence that Astra is dangerous comes from OpenAI. Every piece of evidence that the danger is being managed comes from OpenAI. The company designed the evaluation. It conducted the evaluation. It interpreted the results. It wrote the disclosure. It defined the remedy. It named the safeguards. It committed to external testing with organizations it did not name. The public's entire understanding of both the threat and the response consists of what OpenAI chose to say.</p>
+      <p>Thirteen outlets published articles about the Astra pause in the four days following the disclosure. The coverage creates the appearance of a broad, corroborated record. It is not one. Every article traces to the same blog post. The secondary sources add expert commentary and contextual framing, but none contains independent evidence of Astra's capabilities or independent verification that the pause is adequate.</p>
+      <p>Two readings of the disclosure are available. They use the same facts.</p>
+      <p>The first: OpenAI built a framework, wrote a rule, tested a model against it, disclosed the result publicly, paused work voluntarily, implemented five named safeguards, committed to government testing, and told the public — all before the model shipped. This is genuine restraint from a company that could have said nothing.</p>
+      <p>The second: OpenAI disclosed capabilities it has not demonstrated publicly, applied a narrower remedy than its own rule describes, committed to unnamed external oversight on an undefined timeline, and used the disclosure to argue for broad release against its competitor's gated model — all in a single news cycle. This is a company shaping a narrative.</p>
+      <p>Both readings are defensible. Neither can be adjudicated from outside the company.</p>
+      <p>Bruce Schneier identified a structural precedent for this dynamic. Writing on April 13, 2026 — four months before the Astra disclosure, about Anthropic's Glasswing announcement — Schneier characterized that disclosure as “a PR play by Anthropic — and it worked,” noting that reporters repeated company talking points without critical engagement. No post-Astra commentary from Schneier exists. But the pattern he described applies here: a lab discloses a capability concern, the coverage reproduces the disclosure, and the public record consists entirely of what the lab chose to say.</p>
+      <p>The Preparedness Framework is among the first frontier-lab governance documents to encounter its own trigger condition in public. Whether it functioned as a genuine constraint or as a performance of constraint is a question the public cannot currently answer. The Framework's “halt further development” protocol was written for exactly this moment. Whether OpenAI followed it depends on interpretive questions — does “cannot rule out” trigger the full Critical protocol? does “pausing non-compliant activities” satisfy “halt further development”? — that only OpenAI can answer, and that OpenAI has not addressed.</p>
+      <p>A self-governance framework whose compliance cannot be externally verified is, from the outside, indistinguishable from a document that does not bind. The Preparedness Framework exists. OpenAI cited it. The question of whether OpenAI followed it is answerable only by OpenAI.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.openai-astra-pause-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // #38bdf8 = rgb(56, 189, 248)
+  function accentA(a: number) { return `rgba(56,189,248,${Math.max(0, Math.min(1, a))})`; }
+  function dimA(a: number) { return `rgba(232,232,232,${Math.max(0, Math.min(1, a))})`; }
+  function redA(a: number) { return `rgba(255,77,77,${Math.max(0, Math.min(1, a))})`; }
+
+  /* ── Phase timing (1200 frames = 20s at 60fps) ── */
+  const CYCLE = 1200;
+  const PULSE_START = 1020;   // outer ring reasserts
+  const PULSE_END = 1050;     // pulse peak (30 fr)
+  const HOLD_END = 1110;      // hold (60 fr)
+  // fade: 1110 → 1200        // fade out (90 fr)
+
+  const N_PART = 25;
+  const N_SPECK = 15;
+
+  /* ── State ── */
+  let W = 0, H = 0, frame = 0, rafId = 0;
+  let cx = 0, cy = 0, outerR = 0, innerR = 0;
+
+  /* Shared edge-spawn coordinates (avoid allocating in loop) */
+  let edgeX = 0, edgeY = 0;
+  function setEdge() {
+    const s = Math.random() * 4 | 0;
+    if (s === 0) { edgeX = Math.random() * W; edgeY = -5; }
+    else if (s === 1) { edgeX = W + 5; edgeY = Math.random() * H; }
+    else if (s === 2) { edgeX = Math.random() * W; edgeY = H + 5; }
+    else { edgeX = -5; edgeY = Math.random() * H; }
+  }
+
+  /* Pre-allocated breach array for aperture rendering */
+  const maxBreaches = N_PART * 2;
+  const brAngle: number[] = new Array(maxBreaches).fill(0);
+  const brStr: number[] = new Array(maxBreaches).fill(0);
+  let brCount = 0;
+
+  /* ── Particle interface ── */
+  interface Part {
+    x: number; y: number; vx: number; vy: number;
+    alpha: number; radius: number;
+    state: number; // 0 wait, 1 drift, 2 decel, 3 margin, 4 absorbed
+    spawnFrame: number; decelFrame: number;
+    breachAngle: number; breachFrame: number;
+    orbitAngle: number; orbitR: number; orbitSpd: number;
+  }
+  interface Speck { x: number; y: number; vx: number; vy: number; alpha: number; }
+
+  let parts: Part[] = [];
+  let specks: Speck[] = [];
+
+  /* ── Geometry (responsive) ── */
+  function geo() {
+    cx = W / 2; cy = H / 2;
+    outerR = Math.min(W * 0.42, H * 0.37);
+    innerR = outerR * 0.71;
+  }
+
+  function d2c(x: number, y: number) {
+    const dx = x - cx, dy = y - cy;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  /* ── Initialization ── */
+  function initParts() {
+    parts = [];
+    for (let i = 0; i < N_PART; i++) {
+      setEdge();
+      parts.push({
+        x: edgeX, y: edgeY, vx: 0, vy: 0,
+        alpha: 0, radius: 1.2 + Math.random() * 1.3,
+        state: 0,
+        spawnFrame: (i * 35 + Math.random() * 20) | 0,
+        decelFrame: -1,
+        breachAngle: 0, breachFrame: -1,
+        orbitAngle: 0, orbitR: 0, orbitSpd: 0
+      });
+    }
+  }
+
+  function initSpecks() {
+    specks = [];
+    for (let i = 0; i < N_SPECK; i++) {
+      specks.push({
+        x: Math.random() * (W || 800), y: Math.random() * (H || 380),
+        vx: (Math.random() - 0.5) * 0.2,
+        vy: (Math.random() - 0.5) * 0.2,
+        alpha: 0.04 + Math.random() * 0.02
+      });
+    }
+  }
+
+  function resetState() {
+    frame = 0;
+    geo();
+    initParts();
+    initSpecks();
+  }
+
+  /* ── Update ── */
+  function update() {
+    const fading = frame >= HOLD_END;
+    const fadeP = fading ? (frame - HOLD_END) / (CYCLE - HOLD_END) : 0;
+
+    // Specks
+    for (let i = 0; i < N_SPECK; i++) {
+      const s = specks[i];
+      s.x += s.vx; s.y += s.vy;
+      if (s.x < 0 || s.x > W) s.vx *= -1;
+      if (s.y < 0 || s.y > H) s.vy *= -1;
+    }
+
+    // Particles
+    for (let i = 0; i < N_PART; i++) {
+      const p = parts[i];
+
+      if (p.state === 0) {
+        if (frame >= p.spawnFrame && frame < PULSE_START) {
+          p.state = 1;
+          setEdge();
+          p.x = edgeX; p.y = edgeY;
+          const dx = cx - p.x, dy = cy - p.y;
+          const dd = Math.sqrt(dx * dx + dy * dy);
+          const spd = 0.25 + Math.random() * 0.06;
+          p.vx = (dx / dd) * spd; p.vy = (dy / dd) * spd;
+          p.alpha = 0;
+        }
+        continue;
+      }
+
+      if (p.state === 1) {
+        // Drifting inward
+        p.x += p.vx; p.y += p.vy;
+        p.alpha = Math.min(0.3, p.alpha + 0.004);
+        if (d2c(p.x, p.y) <= outerR + 3) {
+          p.state = 2;
+          p.decelFrame = frame;
+        }
+      }
+
+      if (p.state === 2) {
+        // Decelerating at outer ring (~20 frames)
+        const el = frame - p.decelFrame;
+        const factor = Math.max(0.02, 1 - el / 20);
+        p.x += p.vx * factor; p.y += p.vy * factor;
+        if (el >= 20) {
+          // Breach — set up margin orbit
+          p.breachAngle = Math.atan2(p.y - cy, p.x - cx);
+          p.breachFrame = frame;
+          p.orbitR = innerR + 6 + Math.random() * (outerR - innerR - 12);
+          p.orbitAngle = p.breachAngle;
+          p.orbitSpd = (0.0008 + Math.random() * 0.0008) * (Math.random() > 0.5 ? 1 : -1);
+          p.state = 3;
+        }
+      }
+
+      if (p.state === 3) {
+        // In the margin — smooth entry then slow orbit
+        const since = frame - p.breachFrame;
+        if (since < 20) {
+          // Ease into orbit position
+          const tx = cx + Math.cos(p.orbitAngle) * p.orbitR;
+          const ty = cy + Math.sin(p.orbitAngle) * p.orbitR;
+          p.x += (tx - p.x) * 0.12;
+          p.y += (ty - p.y) * 0.12;
+        } else {
+          p.orbitAngle += p.orbitSpd;
+          const wobble = Math.sin(frame * 0.015 + p.orbitAngle * 5) * 3;
+          p.x = cx + Math.cos(p.orbitAngle) * (p.orbitR + wobble);
+          p.y = cy + Math.sin(p.orbitAngle) * (p.orbitR + wobble);
+          p.orbitR -= 0.004; // imperceptible inward drift
+          if (p.orbitR <= innerR + 2) p.state = 4;
+        }
+        p.alpha = Math.min(0.35, p.alpha + 0.002);
+      }
+
+      if (p.state === 4) {
+        // Absorbed by inner ring
+        p.alpha *= 0.97;
+      }
+
+      // Global fade-out
+      if (fading && p.state > 0) {
+        p.alpha *= (1 - fadeP * 0.04);
+      }
+    }
+  }
+
+  /* ── Draw ── */
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = bgColor;
+    ctx!.fillRect(0, 0, W, H);
+
+    const fading = frame >= HOLD_END;
+    const fadeP = fading ? (frame - HOLD_END) / (CYCLE - HOLD_END) : 0;
+    const gf = 1 - fadeP; // global fade multiplier
+
+    // Background specks
+    for (let i = 0; i < N_SPECK; i++) {
+      const s = specks[i];
+      if (s.alpha * gf < 0.003) continue;
+      ctx!.beginPath();
+      ctx!.arc(s.x, s.y, 1, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(s.alpha * gf);
+      ctx!.fill();
+    }
+
+    // Inner ring (dim, present but quiet)
+    const innerOp = (0.17 + Math.sin(frame * 0.006) * 0.02) * gf;
+    if (innerOp > 0.003) {
+      ctx!.beginPath();
+      ctx!.arc(cx, cy, innerR, 0, Math.PI * 2);
+      ctx!.strokeStyle = accentA(innerOp);
+      ctx!.lineWidth = 0.7;
+      ctx!.stroke();
+    }
+
+    // Outer ring — compute opacity and width for current phase
+    let outerOp: number, lineW: number;
+    if (frame < PULSE_START) {
+      outerOp = 0.38 + Math.sin(frame * 0.008) * 0.04; // gentle breathing
+      lineW = 1;
+    } else if (frame < PULSE_END) {
+      const pp = (frame - PULSE_START) / (PULSE_END - PULSE_START);
+      outerOp = 0.4 + pp * 0.3;  // surge to 0.7
+      lineW = 1 + pp;             // thicken to 2
+    } else if (frame < HOLD_END) {
+      outerOp = 0.7;
+      lineW = 2;
+    } else {
+      outerOp = 0.7 * (1 - fadeP) + 0.38 * fadeP;
+      lineW = 2 - fadeP;
+    }
+    outerOp *= gf;
+
+    // Collect active breaches for aperture rendering (no allocation)
+    brCount = 0;
+    for (let i = 0; i < N_PART; i++) {
+      const p = parts[i];
+      // Deceleration aperture
+      if (p.state === 2 && p.decelFrame > 0) {
+        const el = frame - p.decelFrame;
+        if (el > 5 && el < 30) {
+          const str = el < 15 ? (el - 5) / 10 : Math.max(0, 1 - (el - 15) / 15);
+          brAngle[brCount] = Math.atan2(p.y - cy, p.x - cx);
+          brStr[brCount] = str * 0.6;
+          brCount++;
+        }
+      }
+      // Post-breach aperture (lingers)
+      if (p.breachFrame > 0) {
+        const el = frame - p.breachFrame;
+        if (el < 45) {
+          const str = el < 8 ? el / 8 : Math.max(0, 1 - (el - 8) / 37);
+          brAngle[brCount] = p.breachAngle;
+          brStr[brCount] = str;
+          brCount++;
+        }
+      }
+    }
+
+    // Draw outer ring as segments with local aperture dimming
+    if (outerOp > 0.003) {
+      const SEGS = 90;
+      const segArc = (Math.PI * 2) / SEGS;
+      for (let s = 0; s < SEGS; s++) {
+        const a = s * segArc + segArc * 0.5; // midpoint of segment for comparison
+        let op = outerOp;
+        for (let b = 0; b < brCount; b++) {
+          let diff = Math.abs(a - brAngle[b]);
+          if (diff > Math.PI) diff = Math.PI * 2 - diff;
+          if (diff < 0.3) {
+            op *= (1 - (1 - diff / 0.3) * brStr[b] * 0.7);
+          }
+        }
+        ctx!.beginPath();
+        ctx!.arc(cx, cy, outerR, s * segArc, (s + 1) * segArc + 0.01);
+        ctx!.strokeStyle = accentA(op);
+        ctx!.lineWidth = lineW;
+        ctx!.stroke();
+      }
+    }
+
+    // Pulse expanding ring (radial light outward)
+    if (frame >= PULSE_START && frame < PULSE_END) {
+      const pp = (frame - PULSE_START) / (PULSE_END - PULSE_START);
+      const pr = outerR + pp * 40;
+      const pa = 0.12 * (1 - pp) * gf;
+      if (pa > 0.003) {
+        ctx!.beginPath();
+        ctx!.arc(cx, cy, pr, 0, Math.PI * 2);
+        ctx!.strokeStyle = accentA(pa);
+        ctx!.lineWidth = 0.5;
+        ctx!.stroke();
+      }
+    }
+
+    // Particles
+    for (let i = 0; i < N_PART; i++) {
+      const p = parts[i];
+      if (p.state === 0 || p.alpha * gf < 0.003) continue;
+
+      ctx!.beginPath();
+      ctx!.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx!.fillStyle = accentA(p.alpha * gf);
+      ctx!.fill();
+
+      // Breach flash — hair-thin red mark at the outer ring contact point
+      if (p.breachFrame > 0) {
+        const el = frame - p.breachFrame;
+        if (el >= 0 && el < 4) {
+          const fa = 0.3 * (1 - el / 4);
+          const fx = cx + Math.cos(p.breachAngle) * outerR;
+          const fy = cy + Math.sin(p.breachAngle) * outerR;
+          ctx!.beginPath();
+          ctx!.arc(fx, fy, 2.5, 0, Math.PI * 2);
+          ctx!.fillStyle = redA(fa * gf);
+          ctx!.fill();
+        }
+      }
+    }
+
+    // Inner ring absorption glow (brightens locally when particle is absorbed)
+    for (let i = 0; i < N_PART; i++) {
+      const p = parts[i];
+      if (p.state === 4 && p.alpha > 0.01) {
+        const ang = Math.atan2(p.y - cy, p.x - cx);
+        const gx = cx + Math.cos(ang) * innerR;
+        const gy = cy + Math.sin(ang) * innerR;
+        ctx!.beginPath();
+        ctx!.arc(gx, gy, 5, 0, Math.PI * 2);
+        ctx!.fillStyle = accentA((0.04 + p.alpha * 0.12) * gf);
+        ctx!.fill();
+      }
+    }
+  }
+
+  /* ── Static frame (reduced motion) ── */
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = bgColor;
+    ctx!.fillRect(0, 0, W, H);
+    geo();
+
+    // Specks
+    for (let i = 0; i < 12; i++) {
+      ctx!.beginPath();
+      ctx!.arc(
+        W * 0.1 + (Math.sin(i * 5.7 + 2.1) * 0.5 + 0.5) * W * 0.8,
+        H * 0.1 + (Math.cos(i * 3.3 + 1.3) * 0.5 + 0.5) * H * 0.8,
+        1, 0, Math.PI * 2
+      );
+      ctx!.fillStyle = dimA(0.05);
+      ctx!.fill();
+    }
+
+    // Inner ring
+    ctx!.beginPath();
+    ctx!.arc(cx, cy, innerR, 0, Math.PI * 2);
+    ctx!.strokeStyle = accentA(0.17);
+    ctx!.lineWidth = 0.7;
+    ctx!.stroke();
+
+    // Outer ring
+    ctx!.beginPath();
+    ctx!.arc(cx, cy, outerR, 0, Math.PI * 2);
+    ctx!.strokeStyle = accentA(0.4);
+    ctx!.lineWidth = 1;
+    ctx!.stroke();
+
+    // 8 particles frozen in the margin
+    for (let i = 0; i < 8; i++) {
+      const ang = i * (Math.PI * 2 / 8) + 0.3;
+      const r = innerR + 8 + (Math.sin(i * 2.7 + 1) * 0.5 + 0.5) * (outerR - innerR - 16);
+      ctx!.beginPath();
+      ctx!.arc(cx + Math.cos(ang) * r, cy + Math.sin(ang) * r, 1.8, 0, Math.PI * 2);
+      ctx!.fillStyle = accentA(0.28);
+      ctx!.fill();
+    }
+
+    // 3 particles still approaching from outside
+    for (let i = 0; i < 3; i++) {
+      const ang = i * 2.1 + 0.7;
+      const r = outerR + 25 + i * 30;
+      ctx!.beginPath();
+      ctx!.arc(cx + Math.cos(ang) * r, cy + Math.sin(ang) * r, 1.5, 0, Math.PI * 2);
+      ctx!.fillStyle = accentA(0.15);
+      ctx!.fill();
+    }
+  }
+
+  /* ── Loop ── */
+  function tick() {
+    frame++;
+    if (frame >= CYCLE) resetState();
+    update();
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  /* ── Resize ── */
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth; H = canvas!.offsetHeight;
+    canvas!.width = W * dpr; canvas!.height = H * dpr;
+    ctx!.scale(dpr, dpr);
+    geo();
+    if (prefersReduced) drawStatic();
+  });
+  ro.observe(canvas);
+
+  /* Initial sizing */
+  const dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth; H = canvas.offsetHeight;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  if (prefersReduced) {
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    resetState();
+
+    /* Pause when off-screen */
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(rafId); rafId = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+      ro.disconnect();
+    });
+  }
+})();
+</script>
