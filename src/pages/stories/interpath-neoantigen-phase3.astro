@@ -1,0 +1,630 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'interpath-neoantigen-phase3')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .interpath-neoantigen-phase3-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* Story-scoped text tokens.
+     --inp-dim  : darker than --muted so small text clears WCAG AA on --surface2 (4.9:1)
+     --inp-warn : darker than --accent-red so "not disclosed" text clears AA on cream (5.6:1+) */
+  .inp-select-panel,
+  .inp-trial-diagram,
+  .inp-term-audit {
+    --inp-dim: #5f5a4e;
+    --inp-warn: #a01b1b;
+  }
+
+  /* === REENACTMENT #1: THE SELECTION PANEL === */
+  .inp-select-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    margin: 2rem 0;
+    overflow: hidden;
+  }
+  .inp-select-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--inp-dim);
+  }
+  .inp-select-count {
+    color: var(--story);
+    font-weight: 600;
+  }
+  .inp-select-list {
+    padding: 0.75rem 1.25rem;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+  .inp-mutation-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.3rem 0;
+    font-size: 0.78rem;
+    color: var(--text-body);
+    border-bottom: 1px solid var(--border);
+  }
+  .inp-mutation-row:last-child { border-bottom: none; }
+  .inp-mutation-name { color: var(--text); }
+  .inp-mutation-type { font-size: 0.65rem; color: var(--inp-dim); }
+  .inp-select-divider {
+    border: none;
+    border-top: 1px dashed var(--story);
+    margin: 0;
+  }
+  .inp-select-output {
+    padding: 0.75rem 1.25rem;
+    background: var(--bg);
+  }
+  .inp-output-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--story);
+    margin-bottom: 0.5rem;
+  }
+  .inp-selected-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .inp-selected-tag {
+    background: color-mix(in srgb, var(--story) 12%, var(--bg));
+    border: 1px solid color-mix(in srgb, var(--story) 35%, var(--bg));
+    color: var(--story);
+    font-size: 0.65rem;
+    padding: 0.2rem 0.45rem;
+    border-radius: 3px;
+  }
+  .inp-select-footer {
+    padding: 0.6rem 1.25rem 0.75rem;
+    font-size: 0.7rem;
+    color: var(--inp-dim);
+    font-style: italic;
+    border-top: 1px solid var(--border);
+  }
+
+  /* === REENACTMENT #2: TRIAL ARCHITECTURE === */
+  .inp-trial-diagram {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 2rem 0;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  }
+  @media (max-width: 640px) {
+    .inp-trial-diagram { grid-template-columns: 1fr; }
+  }
+  .inp-trial-arm {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+  }
+  /* No opacity on the ghost arm — colours are dimmed explicitly so text
+     contrast is computable and stays above 4.5:1. */
+  .inp-trial-arm.inp-ghost {
+    border-style: dashed;
+    border-color: var(--border-hover);
+    background: var(--bg);
+  }
+  .inp-arm-header {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--story);
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+  }
+  .inp-ghost .inp-arm-header { color: var(--inp-dim); }
+  .inp-arm-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.35rem;
+  }
+  .inp-ghost .inp-arm-title { color: var(--inp-dim); }
+  .inp-arm-detail {
+    font-size: 0.78rem;
+    color: var(--text-body);
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+  }
+  .inp-ghost .inp-arm-detail { color: var(--inp-dim); }
+  .inp-arm-bracket {
+    font-size: 0.72rem;
+    color: var(--text-body);
+    border-left: 2px solid var(--border-hover);
+    padding-left: 0.75rem;
+    margin-top: 0.5rem;
+    line-height: 1.6;
+  }
+  .inp-ghost .inp-arm-bracket {
+    border-left-style: dashed;
+    color: var(--inp-dim);
+  }
+  .inp-trial-endpoint {
+    grid-column: 1 / -1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    text-align: center;
+  }
+  .inp-endpoint-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--inp-dim);
+    margin-bottom: 0.3rem;
+  }
+  .inp-endpoint-result {
+    font-size: 0.85rem;
+    color: var(--story);
+    font-weight: 600;
+  }
+  .inp-endpoint-numbers {
+    font-size: 0.78rem;
+    color: var(--inp-warn);
+    font-weight: 600;
+    margin-top: 0.25rem;
+  }
+  .inp-trial-footer {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--text-body);
+    line-height: 1.6;
+    padding: 0.5rem 0;
+  }
+  .inp-trial-footer em {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--inp-dim);
+    margin-top: 0.35rem;
+  }
+
+  /* === REENACTMENT #3: TERMINOLOGY AUDIT === */
+  .inp-term-audit {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  }
+  @media (max-width: 640px) {
+    .inp-term-audit { grid-template-columns: 1fr; }
+  }
+  .inp-term-col { padding: 1rem 1.25rem; }
+  .inp-term-col:first-child {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+  }
+  @media (max-width: 640px) {
+    .inp-term-col:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+  .inp-term-col:last-child { background: var(--bg); }
+  .inp-term-header {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .inp-term-col:first-child .inp-term-header { color: var(--story); }
+  .inp-term-col:last-child .inp-term-header { color: var(--inp-warn); }
+  .inp-term-item {
+    font-size: 0.78rem;
+    padding: 0.3rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .inp-term-col:first-child .inp-term-item { color: var(--text); }
+  .inp-term-col:first-child .inp-term-item::before {
+    content: '\25CF';
+    color: var(--story);
+    font-size: 0.5rem;
+  }
+  .inp-term-col:last-child .inp-term-item {
+    color: var(--inp-dim);
+    text-decoration: line-through;
+    text-decoration-color: var(--border-hover);
+  }
+  .inp-term-col:last-child .inp-term-item::before {
+    content: '\25CB';
+    color: var(--inp-dim);
+    font-size: 0.5rem;
+    text-decoration: none;
+  }
+  .inp-term-scope {
+    grid-column: 1 / -1;
+    padding: 0.6rem 1.25rem;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    font-size: 0.68rem;
+    color: var(--inp-dim);
+    line-height: 1.5;
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="selection-problem">
+      <h2><span class="num">01 — The Problem</span>The Selection Problem</h2>
+      <p>A typical melanoma tumor carries roughly 489 nonsynonymous mutations. The vaccine can target up to 34. An algorithm no one outside two companies can examine makes the cut.</p>
+      <p>Melanoma is among the most mutation-rich cancers in humans. Whole-exome sequencing of melanoma tumors reveals a median of approximately 12 mutations per megabase of coding DNA, with an average of 489 nonsynonymous mutations per tumor — changes in the DNA that alter a protein's structure. The range is vast: some tumors carry as few as 45, others more than 800. Each mutation is a potential signal. Each produces a protein fragment — a neoantigen — that exists only in the patient's cancer cells, not in their healthy tissue. A vaccine built to encode those neoantigens could, in theory, train the patient's immune system to hunt and destroy any cell displaying them.</p>
+      <p>The challenge is selection. The therapy developed by Moderna and Merck — intismeran autogene, formerly mRNA-4157/V940 — encodes up to 34 neoantigens per patient, delivered as synthetic mRNA in a lipid nanoparticle. Thirty-four out of roughly 489. That ratio means someone, or something, must decide which mutations matter most, which are most likely to provoke an immune response, and which to discard. The selection is the personalization. Without it, you have a platform. With it, you have a therapy designed for one person's cancer.</p>
+      <p>Moderna describes this selector on its corporate blog as "a proprietary algorithm developed in collaboration with Merck" that "reviews these mutations and predicts up to 34 of those mutations that are believed to help the study participant's immune system better recognize tumor cells and to launch an attack." The algorithm takes in the patient's whole-exome and transcriptome sequencing data, along with their HLA genotype, and outputs the neoantigen payload.</p>
+      <p>The only peer-reviewed characterization of this algorithm is AACR 2020 Abstract 6539, which calls it the "bioinformatics algorithm of mRNA-4157." The abstract, published six years ago, describes a test performed by Moderna's own team on sequencing data from 29 colorectal cancer patients shared by the National Cancer Institute. The algorithm captured 41% of neoantigens that were confirmed to be recognized by the patients' own tumor-infiltrating lymphocytes. For 61% of patients, at least one reactive neoantigen was included in the vaccine the algorithm designed. The abstract does not describe the algorithm's architecture, training data, or validation methodology. No independent third-party evaluation has been published. Whether the algorithm uses machine learning techniques or conventional bioinformatics tools — HLA binding prediction, expression filtering, clonality weighting — is, based on the public record, an open question. No sponsor or peer-reviewed source applies the label "AI" or "machine learning" to this selector.</p>
+      <p>That 2020 characterization is now six years old. The algorithm may have been substantially modified since. Its current performance is unknown.</p>
+
+      <div class="inp-select-panel">
+        <div class="inp-select-header">
+          <span>Tumor exome analysis — patient [redacted]</span>
+          <span class="inp-select-count">489 nonsynonymous mutations identified</span>
+        </div>
+        <div class="inp-select-list">
+          <div class="inp-mutation-row"><span class="inp-mutation-name">BRAF V600E</span><span class="inp-mutation-type">missense chr7</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">NRAS Q61K</span><span class="inp-mutation-type">missense chr1</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">TP53 R248W</span><span class="inp-mutation-type">missense chr17</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">CDKN2A P114L</span><span class="inp-mutation-type">missense chr9</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">PTEN R130Q</span><span class="inp-mutation-type">missense chr10</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">MAP2K1 P124S</span><span class="inp-mutation-type">missense chr15</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">IDH1 R132H</span><span class="inp-mutation-type">missense chr2</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">RAC1 P29S</span><span class="inp-mutation-type">missense chr7</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">PPP6C R264C</span><span class="inp-mutation-type">missense chr9</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">STK19 D89N</span><span class="inp-mutation-type">missense chr6</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">ARID2 Q1334*</span><span class="inp-mutation-type">nonsense chr12</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">RB1 E440fs</span><span class="inp-mutation-type">frameshift chr13</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">NF1 L844R</span><span class="inp-mutation-type">missense chr17</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">FBXW7 R465C</span><span class="inp-mutation-type">missense chr4</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">KIT L576P</span><span class="inp-mutation-type">missense chr4</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">CTNNB1 S37C</span><span class="inp-mutation-type">missense chr3</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">GNA11 Q209L</span><span class="inp-mutation-type">missense chr19</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">SF3B1 R625H</span><span class="inp-mutation-type">missense chr2</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">TERT C228T</span><span class="inp-mutation-type">promoter chr5</span></div>
+          <div class="inp-mutation-row"><span class="inp-mutation-name">DNMT3A R882H</span><span class="inp-mutation-type">missense chr2</span></div>
+        </div>
+        <hr class="inp-select-divider">
+        <div class="inp-select-output">
+          <div class="inp-output-label">Algorithm output: 34 neoantigens selected for mRNA synthesis</div>
+          <div class="inp-selected-grid">
+            <span class="inp-selected-tag">BRAF V600E</span>
+            <span class="inp-selected-tag">NRAS Q61K</span>
+            <span class="inp-selected-tag">RAC1 P29S</span>
+            <span class="inp-selected-tag">PPP6C R264C</span>
+            <span class="inp-selected-tag">STK19 D89N</span>
+            <span class="inp-selected-tag">MAP2K1 P124S</span>
+            <span class="inp-selected-tag">NF1 L844R</span>
+            <span class="inp-selected-tag">FBXW7 R465C</span>
+            <span class="inp-selected-tag">KIT L576P</span>
+            <span class="inp-selected-tag">CTNNB1 S37C</span>
+            <span class="inp-selected-tag">IDH1 R132H</span>
+            <span class="inp-selected-tag">CDKN2A P114L</span>
+            <span class="inp-selected-tag">TERT C228T</span>
+            <span class="inp-selected-tag">GNA11 Q209L</span>
+            <span class="inp-selected-tag">SF3B1 R625H</span>
+            <span class="inp-selected-tag">PTEN R130Q</span>
+            <span class="inp-selected-tag">DNMT3A R882H</span>
+            <span class="inp-selected-tag">+ 17 more</span>
+          </div>
+        </div>
+        <div class="inp-select-footer">Selection criteria: proprietary</div>
+      </div>
+    </section>
+
+    <section class="section" id="first-win">
+      <h2><span class="num">02 — The Result</span>The First Win</h2>
+      <p>On 19 August 2026, Merck and Moderna announced that the Phase 3 trial INTerpath-001 had met its primary endpoint of recurrence-free survival and a key secondary endpoint of distant metastasis-free survival. The result came from a pre-specified interim analysis. 1,137 patients with completely resected stage IIB through IV cutaneous melanoma — patients whose tumors had been surgically removed but who faced a significant risk of the cancer returning — had been randomized 2:1. Two-thirds received intismeran plus pembrolizumab (KEYTRUDA), the current standard-of-care immunotherapy. One-third received KEYTRUDA alone with a placebo. The trial was triple-masked: patients, investigators, and outcomes assessors were all blinded.</p>
+      <p>The combination beat the standard of care. According to the sponsors, the improvements in both recurrence-free survival and distant metastasis-free survival were "statistically significant and clinically meaningful." The safety profile was consistent with previously reported studies, with no new safety signals.</p>
+      <p>The sponsors described this as "the first positive Phase 3 readout for an individualized neoantigen therapy and for an mRNA-based cancer therapy, as well as the first Phase 3 study to demonstrate a clinically meaningful improvement over KEYTRUDA alone" in the adjuvant melanoma setting. Those are the sponsors' claims. This story cannot independently verify the "first" label, but no contradicting precedent was found in this research.</p>
+      <p>A year earlier, a hobbyist named David Harris made international news for using ChatGPT and AlphaFold to <a href="/stories/rosie-vaccine">design a personalized mRNA cancer vaccine for his dog Rosie</a> — n of 1, uncontrolled, one tumour shrank and one did not. The same therapeutic idea — mRNA encoding patient-specific neoantigens — had now been put through a 1,137-patient randomized, triple-masked trial against an active comparator. The distance between a dog owner's garage-lab experiment and a global Phase 3 readout is the distance between aspiration and evidence.</p>
+      <p>The sponsors did not disclose specific efficacy numbers. No hazard ratios. No confidence intervals. No p-values. No median recurrence-free survival. No median distant metastasis-free survival. The announcement stated the result was positive and statistically significant, but withheld the magnitude of the benefit. This is not unusual: companies routinely reserve detailed data for presentation at medical conferences and subsequent regulatory filings. The sponsors said these data will be presented at an upcoming international medical meeting and shared with regulatory authorities. No regulatory filing has been submitted. Intismeran is investigational and unapproved.</p>
+      <p>ClinicalTrials.gov had estimated enrollment at 1,089 patients; the sponsors reported actual enrollment of 1,137. The registry's figure, last updated in September 2025, reflected a pre-enrollment estimate. Both numbers are correct for their respective categories. The trial began in July 2023 with an estimated primary completion date of October 2029. The study continues to evaluate overall survival.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="interpath-neoantigen-phase3-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Cut</strong> — A field of candidate mutations sits undifferentiated. A selection resolves thirty-four of them in violet. Then a second, equally plausible thirty-four resolves in gold beside it. Both hold. Neither is marked correct. The field dissolves and the cut is made again, differently.</p>
+
+    <section class="section" id="two-numbers">
+      <h2><span class="num">03 — The Evidence</span>Five Years, Two Numbers</h2>
+      <p>The Phase 3 result did not arrive in isolation. Two months before the INTerpath-001 topline, at the 2026 ASCO Annual Meeting, the sponsors presented five-year follow-up data from the earlier, smaller Phase 2b trial KEYNOTE-942. That trial enrolled patients with resected stage IIIB–IV melanoma — a narrower and higher-risk population than the Phase 3.</p>
+      <p>The Phase 2b five-year data showed a 49% reduction in the risk of recurrence or death (HR=0.51; 95% CI 0.294–0.887) and a 59% reduction in the risk of distant metastasis or death (HR=0.411; 95% CI 0.200–0.843) for the intismeran-plus-KEYTRUDA combination versus KEYTRUDA alone. These are Phase 2b figures from KEYNOTE-942. They are not Phase 3 figures. The Phase 3 efficacy numbers remain undisclosed.</p>
+      <p>The distinction matters because Phase 2b trials are smaller, enroll a more selected population, and are more susceptible to chance findings. INTerpath-001's larger, broader Phase 3 population — 1,137 patients across stages IIB through IV, rather than the Phase 2b's focus on stages IIIB–IV — provides a harder test. The Phase 3 met its endpoints, but until the sponsors release the actual numbers, how large the benefit is, how precise the estimate is, and how it compares to the Phase 2b effect are all unknown.</p>
+      <p>Behind these two trials sits a larger bet. The INTerpath clinical development program spans nine Phase 2 and Phase 3 trials across four cancer types: melanoma, non-small cell lung cancer, bladder cancer, and renal cell carcinoma. The same platform. The same proprietary algorithm making the neoantigen selection for every patient in every trial.</p>
+
+      <div class="inp-trial-diagram">
+        <div class="inp-trial-arm">
+          <div class="inp-arm-header">INTerpath-001 — Experimental</div>
+          <div class="inp-arm-title">Arm A (2/3 of patients)</div>
+          <div class="inp-arm-detail">Intismeran + KEYTRUDA</div>
+          <div class="inp-arm-bracket">
+            mRNA vaccine: 34 neoantigens<br>
+            selected by proprietary algorithm<br>
+            + pembrolizumab 400 mg IV q6w
+          </div>
+        </div>
+        <div class="inp-trial-arm">
+          <div class="inp-arm-header">INTerpath-001 — Control</div>
+          <div class="inp-arm-title">Arm B (1/3 of patients)</div>
+          <div class="inp-arm-detail">Placebo + KEYTRUDA</div>
+          <div class="inp-arm-bracket">
+            Standard of care alone<br>
+            pembrolizumab 400 mg IV q6w
+          </div>
+        </div>
+        <div class="inp-trial-arm inp-ghost">
+          <div class="inp-arm-header">Does not exist</div>
+          <div class="inp-arm-title">Arm C (hypothetical)</div>
+          <div class="inp-arm-detail">Alternative selection method + KEYTRUDA</div>
+          <div class="inp-arm-bracket">
+            Same mRNA platform, different<br>
+            neoantigen selection method<br>
+            — would isolate the algorithm's contribution
+          </div>
+        </div>
+        <div class="inp-trial-endpoint">
+          <div class="inp-endpoint-label">Primary endpoint: Recurrence-Free Survival</div>
+          <div class="inp-endpoint-result">Result: Statistically significant improvement</div>
+          <div class="inp-endpoint-numbers">Numbers: Not disclosed</div>
+        </div>
+        <div class="inp-trial-footer">
+          This trial tests whether the therapy works. It does not test whether the selector is optimal.
+          <em>[This observation is the story's analysis, not a claim by the sponsors.]</em>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="terminology">
+      <h2><span class="num">04 — The Language</span>What Was Said and What Was Not</h2>
+      <p>The press release describes intismeran as a therapy "designed and produced using a patient's tumor sample to identify the unique mutational signature, or 'fingerprint,' of their cancer." The backgrounder uses similar language: "This information is then used to create a personalized synthetic mRNA coding for up to 34 neoantigens." The therapy is presented in biological terms. The tumor has a fingerprint. The vaccine is designed from it. The neoantigens are created.</p>
+      <p>What is absent from both documents is any reference to the computational process that makes this possible. Neither the Phase 3 press release nor the INTerpath clinical-program backgrounder contains the words algorithm, artificial intelligence, machine learning, computational, bioinformatic, software, or AI. The word "predict" appears in both press releases only in the KEYTRUDA prescribing-information boilerplate — "predict a patient's likelihood of benefitting from treatment with KEYTRUDA" — not in any description of the neoantigen selection process. The backgrounder does not contain the word "predict" at all.</p>
+
+      <div class="inp-term-audit">
+        <div class="inp-term-col">
+          <div class="inp-term-header">Terms present in Phase 3 announcement</div>
+          <div class="inp-term-item">individualized</div>
+          <div class="inp-term-item">personalized</div>
+          <div class="inp-term-item">fingerprint</div>
+          <div class="inp-term-item">unique mutational signature</div>
+          <div class="inp-term-item">designed and produced</div>
+          <div class="inp-term-item">neoantigen therapy</div>
+          <div class="inp-term-item">tailored</div>
+          <div class="inp-term-item">train and activate</div>
+        </div>
+        <div class="inp-term-col">
+          <div class="inp-term-header">Terms absent from Phase 3 announcement</div>
+          <div class="inp-term-item">algorithm</div>
+          <div class="inp-term-item">artificial intelligence</div>
+          <div class="inp-term-item">machine learning</div>
+          <div class="inp-term-item">computational</div>
+          <div class="inp-term-item">bioinformatic</div>
+          <div class="inp-term-item">software</div>
+          <div class="inp-term-item">AI</div>
+          <div class="inp-term-item">predict (in neoantigen context)</div>
+        </div>
+        <div class="inp-term-scope">Scope: Merck Phase 3 press release (19 Aug 2026) and INTerpath clinical-program backgrounder. The word "algorithmically" appears once in a separate Merck ASCO 2026 release about Phase 2b data. "Proprietary algorithm" appears on Moderna's INT explainer blog.</div>
+      </div>
+
+      <p>This is worth stating precisely because it is easy to overstate. The word "algorithm" is not absent from all Merck and Moderna materials about intismeran. The adverb "algorithmically" appears in a separate Merck press release covering ASCO 2026 portfolio highlights — "the algorithmically derived and RNA-encoded neoantigen sequences" — in reference to the Phase 2b KEYNOTE-942 data, not the Phase 3 result. Moderna's own INT explainer blog uses the phrase "proprietary algorithm" directly. The absence is specific to the Phase 3 announcement and the clinical-program backgrounder — the two documents that declared victory.</p>
+      <p>Not naming a proprietary component in a topline press release is ordinary industry practice. Withholding efficacy numbers until a medical meeting is the normal scientific sequence. Neither omission, on its own, is unusual. Taken together, though, they mean the public announcement of a 1,137-patient Phase 3 result described the therapy entirely in biological language, without reference to the computational system that decides what goes into each dose.</p>
+      <p>Independent experts responded to the topline result through the Science Media Centre. Dr. Yin Wu, a Wellcome Trust Career Development Fellow at King's College London with no declared conflict of interest, said: "This is the first phase 3 study to demonstrate improved recurrence-free survival and distant metastasis-free survival for a combination adjuvant treatment over anti-PD-1 adjuvant therapy in melanoma which is significant in itself." Prof. Marco Gerlinger, who is a principal investigator on a BioNTech neoantigen vaccine trial, said: "I think it is fair to call it a breakthrough in the development of new cancer immunotherapies as it is the first phase 3 study that shows that a vaccine can protect against recurrences of one of the deadliest cancer types." Dr. Lennard Lee, who advises the UK government on cancer vaccines and leads academic cancer vaccine research programmes, called the findings "significant" and noted that this is "the first positive Phase III trial of an individualised neoantigen therapy and an mRNA-based cancer treatment." Sam Barrell, CEO of LifeArc — an organization that receives royalty income from pembrolizumab — said: "These results are encouraging because they suggest treatments made for an individual patient, even in common conditions, may be moving closer to everyday clinical use."</p>
+      <p>None of these experts commented on the algorithm or its absence from the announcement.</p>
+    </section>
+
+    <section class="section" id="untested-selector">
+      <h2><span class="num">05 — The Gap</span>The Untested Selector</h2>
+      <p>INTerpath-001 compared intismeran plus KEYTRUDA against KEYTRUDA alone. There was no arm testing intismeran with a different neoantigen selection method. No arm with randomly selected neoantigens. No arm with a competing prediction pipeline. The trial has two arms, and the ClinicalTrials.gov registry confirms this design: randomized, parallel, triple-masked.</p>
+      <p>A positive result from this design demonstrates that the complete intismeran therapy — the algorithm's selections, the mRNA encoding, the lipid nanoparticle delivery, the dosing schedule, the combination with pembrolizumab — adds benefit over pembrolizumab alone. This is the story's own analytical observation, not a claim made by the sponsors: that design cannot isolate how much of the benefit comes from the proprietary algorithm's selection of which neoantigens to target, versus the mRNA platform itself, versus the immune system's response to any set of 34 neoantigens from a mutation-rich tumor. The trial was designed to answer the regulatory question — does the therapy work? — and it answered it. It was not designed to answer the scientific question of whether the selector is optimal.</p>
+      <p>The algorithm has never been independently benchmarked against other neoantigen prediction pipelines. Open-source tools for neoantigen prediction exist — pVACtools, NetMHCpan, MuPeXI, among others. Whether the proprietary algorithm outperforms, matches, or underperforms these alternatives is unknown. No comparison exists in the public record.</p>
+      <p>The algorithm's only published performance metric — the 41% capture rate of TIL-reactive neoantigens from the 2020 AACR abstract — was measured on 29 colorectal tumors, not melanoma, by Moderna's own team, six years ago. Whether 41% is good, bad, or average is unknowable without a benchmark. And the number may no longer describe the current algorithm at all.</p>
+      <p>The <em>Lancet</em> paper that published the Phase 2b primary results describes the vaccine as encoding up to 34 neoantigens designed from whole-exome and RNA sequencing of patient tumor and blood samples. It does not publish the selection algorithm's methodology, training data, or performance metrics. The peer-reviewed literature describes what the algorithm does. It does not describe how.</p>
+    </section>
+
+    <section class="section" id="threshold">
+      <h2><span class="num">06 — The Limit</span>The Proprietary Threshold</h2>
+      <p>A therapy that works is moving toward regulatory filing. The INTerpath program spans nine trials across four cancer types.</p>
+      <p>The result is real. The trial was rigorous — randomized, triple-masked, against an active standard-of-care comparator, with 1,137 patients. The therapy beat pembrolizumab alone on both recurrence-free survival and distant metastasis-free survival at an interim analysis. Patients may live longer because of it. These are not small things.</p>
+      <p>The honest limit is structural. The component that makes each vaccine unique — the selector that chooses 34 neoantigens from hundreds of candidates in a patient's tumor — has cleared a regulatory threshold as part of a bundled therapy without ever being independently examined, published in full, or compared to alternatives. The vaccine works by choosing. The trial proved the vaccine works. It did not, and was not designed to, prove the choosing is optimal.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+  (() => {
+    const canvas = document.querySelector('.interpath-neoantigen-phase3-canvas');
+    if (!(canvas instanceof HTMLCanvasElement)) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const styles = getComputedStyle(document.documentElement);
+    const bg = styles.getPropertyValue('--bg').trim() || '#f5f0e8';
+    const PICK_A = '139,92,246';   // violet — the selection that was made
+    const PICK_B = '200,150,62';   // gold — the selection that was not
+
+    const FIELD = 300;      // candidate marks
+    const PICK = 34;        // neoantigens encoded
+    const CYCLE = 1020;     // ~17s at 60fps
+
+    let w = 0, h = 0, dpr = 1;
+    let field: { x: number; y: number; a: number; len: number; dim: number }[] = [];
+    let setA: number[] = [], setB: number[] = [];
+    let frame = 0, raf = 0, visible = true;
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    const rnd = (a: number, b: number) => a + Math.random() * (b - a);
+
+    function buildField() {
+      field = [];
+      const cx = w / 2, cy = h / 2;
+      const rx = w * 0.44, ry = h * 0.42;
+      for (let i = 0; i < FIELD; i++) {
+        // rejection-sample into an ellipse so the field reads as a cloud, not a rectangle
+        let x, y, t = 0;
+        do {
+          x = rnd(-1, 1); y = rnd(-1, 1); t++;
+        } while (x * x + y * y > 1 && t < 12);
+        field.push({
+          x: cx + x * rx,
+          y: cy + y * ry,
+          a: rnd(0, Math.PI),
+          len: rnd(3, 7),
+          dim: rnd(0.35, 1)
+        });
+      }
+    }
+
+    function chooseSets() {
+      const idx = field.map((_, i) => i);
+      for (let i = idx.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [idx[i], idx[j]] = [idx[j], idx[i]];
+      }
+      setA = idx.slice(0, PICK);
+      setB = idx.slice(PICK, PICK * 2);
+    }
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const r = canvas.getBoundingClientRect();
+      w = r.width; h = r.height;
+      canvas.width = Math.max(1, Math.round(w * dpr));
+      canvas.height = Math.max(1, Math.round(h * dpr));
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      buildField();
+      chooseSets();
+    }
+
+    // eased 0->1 ramp
+    const ramp = (t: number, s: number, e: number) => {
+      if (t <= s) return 0;
+      if (t >= e) return 1;
+      const p = (t - s) / (e - s);
+      return p * p * (3 - 2 * p);
+    };
+
+    function drawMark(m: { x: number; y: number; a: number; len: number; dim: number }, alpha: number, rgb: string | null, glow: number) {
+      const dx = Math.cos(m.a) * m.len, dy = Math.sin(m.a) * m.len;
+      if (glow > 0) {
+        ctx.strokeStyle = `rgba(${rgb},${alpha * 0.22 * glow})`;
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(m.x - dx, m.y - dy);
+        ctx.lineTo(m.x + dx, m.y + dy);
+        ctx.stroke();
+      }
+      ctx.strokeStyle = rgb ? `rgba(${rgb},${alpha})` : `rgba(26,26,23,${alpha})`;
+      ctx.lineWidth = rgb ? 1.7 : 1;
+      ctx.beginPath();
+      ctx.moveTo(m.x - dx, m.y - dy);
+      ctx.lineTo(m.x + dx, m.y + dy);
+      ctx.stroke();
+    }
+
+    function drawThreads(set: number[], alpha: number, rgb: string) {
+      if (alpha <= 0.01) return;
+      ctx.strokeStyle = `rgba(${rgb},${alpha * 0.3})`;
+      ctx.lineWidth = 0.7;
+      ctx.beginPath();
+      for (let i = 1; i < set.length; i++) {
+        const p = field[set[i - 1]], q = field[set[i]];
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(q.x, q.y);
+      }
+      ctx.stroke();
+    }
+
+    function render(f: number) {
+      const t = f / CYCLE;
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, w, h);
+
+      // the undifferentiated field
+      const fieldFade = 1 - 0.45 * ramp(t, 0.16, 0.42);
+      for (const m of field) drawMark(m, 0.1 * m.dim * fieldFade, null, 0);
+
+      // selection A resolves, then selection B resolves beside it
+      const aIn = ramp(t, 0.16, 0.36) * (1 - ramp(t, 0.86, 0.98));
+      const bIn = ramp(t, 0.42, 0.62) * (1 - ramp(t, 0.86, 0.98));
+
+      // neither resolves into a verdict — they breathe against each other
+      const contest = ramp(t, 0.62, 0.70) * (1 - ramp(t, 0.86, 0.98));
+      const beat = Math.sin(t * Math.PI * 2 * 5);
+      const pulseA = 1 + contest * 0.30 * beat;
+      const pulseB = 1 - contest * 0.30 * beat;
+
+      drawThreads(setA, aIn * pulseA, PICK_A);
+      drawThreads(setB, bIn * pulseB, PICK_B);
+
+      setA.forEach((i, n) => {
+        const stag = Math.min(1, Math.max(0, aIn * PICK - n * 0.6));
+        drawMark(field[i], Math.min(1, 0.78 * aIn * pulseA) * stag, PICK_A, aIn * pulseA);
+      });
+      setB.forEach((i, n) => {
+        const stag = Math.min(1, Math.max(0, bIn * PICK - n * 0.6));
+        drawMark(field[i], Math.min(1, 0.78 * bIn * pulseB) * stag, PICK_B, bIn * pulseB);
+      });
+    }
+
+    function loop() {
+      if (!visible) { raf = 0; return; }
+      frame++;
+      if (frame % CYCLE === 0) chooseSets();   // the cut is made again, differently
+      render(frame % CYCLE);
+      raf = requestAnimationFrame(loop);
+    }
+
+    function start() {
+      if (reduce.matches) { render(Math.round(CYCLE * 0.74)); return; }
+      if (!raf) raf = requestAnimationFrame(loop);
+    }
+    function stop() {
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    }
+
+    const ro = new ResizeObserver(() => {
+      resize();
+      if (reduce.matches) render(Math.round(CYCLE * 0.74));
+    });
+    ro.observe(canvas);
+
+    const io = new IntersectionObserver((entries) => {
+      visible = entries[0].isIntersecting;
+      if (visible) start(); else stop();
+    }, { threshold: 0 });
+    io.observe(canvas);
+
+    resize();
+    if (reduce.matches) render(Math.round(CYCLE * 0.74));
+
+    window.addEventListener('beforeunload', () => { stop(); ro.disconnect(); io.disconnect(); });
+  })();
+</script>
