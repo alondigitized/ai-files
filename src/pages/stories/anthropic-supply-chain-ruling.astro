@@ -1,0 +1,752 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'anthropic-supply-chain-ruling')!;
+---
+
+<style is:global>
+  /* ── Canvas ── */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .anthropic-supply-chain-ruling-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* ===== REENACTMENT 1: The Michael Memo ===== */
+  .ascr-memo-wrap {
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    margin: 2rem 0;
+    overflow: hidden;
+  }
+  .ascr-memo-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 2px solid var(--story, #c2704e);
+    background: #0d0d0d;
+  }
+  .ascr-memo-field {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85rem;
+    color: var(--muted, #888);
+    line-height: 1.8;
+  }
+  .ascr-memo-label {
+    color: var(--story, #c2704e);
+    font-weight: 700;
+    display: inline-block;
+    min-width: 90px;
+  }
+  .ascr-memo-body {
+    padding: 1.25rem 1.5rem;
+  }
+  .ascr-memo-quote {
+    border-left: 3px solid var(--story, #c2704e);
+    padding: 1rem 1.25rem;
+    margin: 0;
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: var(--text, #e8e8e8);
+    background: rgba(194, 112, 78, 0.05);
+    font-style: normal;
+  }
+  .ascr-memo-cite {
+    margin-top: 0.5rem;
+    font-size: 0.78rem;
+    color: var(--muted, #888);
+    font-style: italic;
+  }
+  .ascr-memo-gaps {
+    padding: 1rem 1.5rem 1.25rem;
+    border-top: 1px solid #2a2a2a;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .ascr-memo-gap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 77, 77, 0.04);
+    border: 1px solid rgba(255, 77, 77, 0.15);
+    border-radius: 4px;
+  }
+  .ascr-memo-gap-label {
+    font-size: 0.82rem;
+    color: var(--muted, #888);
+    flex: 1;
+  }
+  .ascr-memo-gap-stamp {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent, #ff4d4d);
+    white-space: nowrap;
+    letter-spacing: 0.05em;
+  }
+  .ascr-memo-footer {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.78rem;
+    color: var(--muted, #888);
+    font-style: italic;
+    border-top: 1px solid #1e1e1e;
+  }
+
+  /* ===== REENACTMENT 2: Shifting Declarations ===== */
+  .ascr-shift-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: #2a2a2a;
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 2rem 0;
+  }
+  .ascr-shift-col {
+    background: #111;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .ascr-shift-date {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--story, #c2704e);
+    text-transform: uppercase;
+  }
+  .ascr-shift-quote {
+    font-size: 0.85rem;
+    line-height: 1.65;
+    color: var(--text, #e8e8e8);
+    flex: 1;
+  }
+  /* Lightened from --muted so it still clears 4.5:1 after the opacity dimming below. */
+  .ascr-shift-quote em {
+    color: #b0b0b0;
+  }
+  .ascr-shift-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.6rem;
+    border-radius: 3px;
+    width: fit-content;
+  }
+  /* Non-colour cue for the narrowing progression (WCAG 1.4.1) */
+  .ascr-shift-label::before {
+    content: attr(data-tier) " · ";
+    opacity: 1;
+  }
+  .ascr-shift-col:nth-child(1) .ascr-shift-label {
+    background: rgba(255, 77, 77, 0.10);
+    color: var(--accent, #ff4d4d);
+  }
+  .ascr-shift-col:nth-child(2) .ascr-shift-label {
+    background: rgba(194, 112, 78, 0.10);
+    color: var(--story, #c2704e);
+  }
+  .ascr-shift-col:nth-child(3) .ascr-shift-label {
+    background: rgba(160, 160, 160, 0.10);
+    color: #a0a0a0;
+  }
+  .ascr-shift-shrink .ascr-shift-quote {
+    opacity: 0.85;
+  }
+  .ascr-shift-smallest .ascr-shift-quote {
+    opacity: 0.75;
+  }
+  .ascr-shift-footer {
+    grid-column: 1 / -1;
+    background: #0d0d0d;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.78rem;
+    color: var(--muted, #888);
+    font-style: italic;
+  }
+  @media (max-width: 700px) {
+    .ascr-shift-wrap {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 520px) {
+    .ascr-memo-gap {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.4rem;
+    }
+  }
+
+  /* ===== REENACTMENT 3: Statutory Side-by-Side ===== */
+  .ascr-statute-wrap {
+    border: 1px solid #2a2a2a;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 2rem 0;
+    background: #111;
+  }
+  .ascr-statute-headers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: #2a2a2a;
+  }
+  .ascr-statute-header {
+    padding: 0.85rem 1.25rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: #0d0d0d;
+  }
+  .ascr-statute-header.ascr-statute-left {
+    color: var(--story, #c2704e);
+  }
+  .ascr-statute-header.ascr-statute-right {
+    color: var(--text, #e8e8e8);
+  }
+  .ascr-statute-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: #2a2a2a;
+  }
+  .ascr-statute-cell {
+    padding: 0.85rem 1.25rem;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    background: #111;
+  }
+  .ascr-statute-cell.ascr-statute-left {
+    color: var(--story, #c2704e);
+    font-style: italic;
+  }
+  .ascr-statute-cell.ascr-statute-right {
+    color: var(--text, #e8e8e8);
+  }
+  .ascr-statute-footer {
+    padding: 0.85rem 1.25rem;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--muted, #888);
+    border-top: 2px solid var(--story, #c2704e);
+    background: #0d0d0d;
+  }
+  .ascr-statute-footer strong {
+    color: var(--story, #c2704e);
+  }
+  .ascr-statute-cell::before {
+    display: none;
+  }
+  @media (max-width: 700px) {
+    .ascr-statute-headers,
+    .ascr-statute-row {
+      grid-template-columns: 1fr;
+    }
+    /* Column headers no longer sit above their cells once stacked, so each cell
+       carries its own visible label (WCAG 1.3.1 / 1.4.10). */
+    .ascr-statute-headers {
+      display: none;
+    }
+    .ascr-statute-cell::before {
+      content: attr(data-col);
+      display: block;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.65rem;
+      font-weight: 700;
+      font-style: normal;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #a0a0a0;
+      margin-bottom: 0.35rem;
+    }
+    .ascr-statute-cell.ascr-statute-right {
+      border-left: 3px solid var(--story, #c2704e);
+      background: #161616;
+    }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="intro">
+      <h2><span class="num">01 — Context</span>The Record Is Slim</h2>
+      <p>"The record is slim."</p>
+      <p>The sentence appears on the first page of a 59-page federal court order filed August 27, 2026, in the Northern District of California. Judge Rita F. Lin was assessing what the government had assembled to justify designating Anthropic — the maker of the AI model Claude — a supply chain risk to the United States military. The entire written basis was a four-page memorandum. By the time the government finished defending it in court, the memorandum's central claims had been abandoned.</p>
+      <p>In late February 2026, a contract dispute over AI usage restrictions between Anthropic and the Department of War escalated into a public confrontation. The President directed federal agencies to cease using Anthropic's technology. Secretary of War Pete Hegseth ordered a supply chain risk designation. The story of how that happened has been told (see "The Red Line," Chapter 29). This story is about what the government put on paper to justify it — and what happened when a court read those pages.</p>
+      <p>A note on what follows. Almost everything in this account derives from a single adversarial proceeding — <em>Anthropic PBC v. U.S. Department of War</em>, No. 3:26-cv-01996-RFL (N.D. Cal.). The court's findings rest on an undisputed administrative record; the government does not dispute the authenticity of any document in it. But no inspector general, independent regulator, or investigative journalist has examined the administrative record outside the litigation context. Revenue figures cited later are Anthropic's own declarations, unrebutted by the government but not independently audited. The court's order is a judicial finding on an undisputed record — the strongest evidence available and, at present, the only evidence available.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="anthropic-supply-chain-ruling-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Remainder</strong> — Four concentric rings of particles form a structure that looks solid, deliberate, institutional. A single scalar drains out of it; the rings dissolve from the outside in, each departing particle leaving a near-invisible ghost where it stood. What is left is one terracotta point at the centre, surrounded by the outline of everything abandoned.</p>
+
+    <section class="section" id="memo">
+      <h2><span class="num">02 — The Memo</span>The Case on Paper</h2>
+      <p>The government's case for designating Anthropic a supply chain risk rests on Administrative Record pages 213 through 216 — a four-page memorandum authored by Under Secretary of War for Research and Engineering Emil Michael and dated March 2, 2026. The court found this document "provides the entirety of the government's rationale."</p>
+      <p>The memo frames Anthropic's conduct as an escalating threat. It describes a four-step sequence: first, Anthropic insisted on usage restrictions that "would constrain the DoW beyond what is in the law." Second, Anthropic asserted "an approval role in the operational decision chain." Third, Anthropic began "engaging in an increasingly hostile manner through the press." Fourth, during active military operations, "Anthropic leadership questioned the use of their technology in our warfighting systems."</p>
+
+      <div class="ascr-memo-wrap">
+        <div class="ascr-memo-header">
+          <div class="ascr-memo-field"><span class="ascr-memo-label">FROM:</span> Under Secretary of War for Research and Engineering</div>
+          <div class="ascr-memo-field"><span class="ascr-memo-label">DATE:</span> March 2, 2026</div>
+          <div class="ascr-memo-field"><span class="ascr-memo-label">SUBJECT:</span> Supply Chain Risk Assessment — Anthropic PBC</div>
+        </div>
+        <div class="ascr-memo-body">
+          <blockquote class="ascr-memo-quote">"In the instant case, Anthropic's risk level escalated from a potentially manageable technical and business negotiation to an unacceptable national security threat. . . . The supply chain risk level increased when Anthropic insisted on terms of service that would constrain the DoW beyond what is in the law. This risk further increased when Anthropic asserted in the negotiations that it have an approval role in the operational decision chain. . . . [T]hey began engaging in an increasingly hostile manner through the press. . . . Anthropic leadership questioned the use of their technology in our warfighting systems clearly permitted under the Terms of Service of their existing contract with our Prime contractor."</blockquote>
+          <div class="ascr-memo-cite">— AR 215 (Michael Memo, March 2, 2026)</div>
+        </div>
+        <div class="ascr-memo-gaps">
+          <div class="ascr-memo-gap">
+            <span class="ascr-memo-gap-label">Technical analysis of alleged backdoor mechanisms</span>
+            <span class="ascr-memo-gap-stamp">NOT IN RECORD</span>
+          </div>
+          <div class="ascr-memo-gap">
+            <span class="ascr-memo-gap-label">Description of how Anthropic could access deployed models</span>
+            <span class="ascr-memo-gap-stamp">NOT IN RECORD</span>
+          </div>
+          <div class="ascr-memo-gap">
+            <span class="ascr-memo-gap-label">Assessment of less intrusive measures considered</span>
+            <span class="ascr-memo-gap-stamp">NOT IN RECORD</span>
+          </div>
+          <div class="ascr-memo-gap">
+            <span class="ascr-memo-gap-label">Evaluation by Under Secretary for Intelligence (req. by 48 C.F.R. 239.7304(a))</span>
+            <span class="ascr-memo-gap-stamp">NOT IN RECORD</span>
+          </div>
+        </div>
+        <div class="ascr-memo-footer">The Michael Memo is the sole analytical basis for the supply chain designation. It was authored one business day after Secretary Hegseth publicly directed the designation on social media.</div>
+      </div>
+
+      <p>The memo also advanced specific technical claims. It asserted that Anthropic could "attempt to disable" or "alter the behavior of the model . . . in the middle of ongoing warfighting operations." It warned of AI "drift" in which Claude could "degrade as new data is introduced." It concluded that the Department of War would be "forced to operate a black box controlled by a hostile party, which could contain hidden biases or backdoors." Nothing in the administrative record described, "even at a high level, what technological means would give rise to the so-called 'backdoors,'" the court found. No classified intelligence assessment supported the claims. No technical evaluation of Claude's architecture appeared anywhere in the record.</p>
+      <p>The timing compounded the weakness. The Michael Memo, dated March 2, post-dates two of the three challenged actions: the Presidential Directive (February 27) and the Hegseth Directive (February 27). It pre-dates the formal Supply Chain Designation (March 3) by one day. All supporting records in the administrative record are dated March 2 or 3, or were prepared for purposes of the litigation and added afterward. The sole exception is a vendor "Due Diligence Preliminary Report" dated February 26, which the court found "does not provide evidence of the risks that purportedly resulted in the supply chain risk designation." The court characterized the entire record as generated "after the fact to justify the foreordained conclusion."</p>
+      <p>The official who wrote the assessment was the wrong one. Department of War regulations at 48 C.F.R. sec. 239.7304(a) require the risk assessment to come from the Under Secretary of Defense for Intelligence. The Michael Memo came instead from Under Secretary Michael — the same person simultaneously negotiating the contract with Anthropic. Michael's declaration stated that his office "has assumed responsibility for providing [] supply chain risk assessments relating to AI" due to 2025 reorganizations. The court found the relevant regulations were never amended to permit this substitution.</p>
+    </section>
+
+    <section class="section" id="concession">
+      <h2><span class="num">03 — The Concession</span>What Fell Away</h2>
+      <p>By the time the case reached summary judgment, the government had, in the court's words, "backed away from the thrust of their risk assessment, which relied on Anthropic having backdoor access to its technology once deployed in a national security system."</p>
+      <p>The retreat was visible in the undisputed record. Anthropic submitted declarations from its Chief Science Officer and Head of Public Sector explaining how deployed Claude models actually work. Each new model is independently tested by the Department of War and third-party cloud providers before deployment. Once deployed, models are static: they cannot "degrade or change on their own." Anthropic cannot "access, alter, or shut down" a deployed model. Claude models cannot be updated like conventional software; a new model must be trained to completely replace the old model. Anthropic cannot view the Department of War's prompts to Claude. The government did not dispute any of this. It is now "undisputed," the court found, that "Anthropic's technology is itself no riskier to the national security than any other 'black box' artificial intelligence model."</p>
+      <p>The government's position shifted visibly across its own filings. Under Secretary Michael's March 17 declaration — submitted during the preliminary injunction phase — asserted it was "reasonably likely that Anthropic's leadership would alter or even shut off DoW's use of Claude . . . before or during a military operation." His March 24 declaration, filed seven days later, no longer made any such claim. It discussed only "the risk inherent in model updates." The court identified these as "shifting justifications."</p>
+
+      <div class="ascr-shift-wrap">
+        <div class="ascr-shift-col">
+          <div class="ascr-shift-date">March 17 Declaration</div>
+          <div class="ascr-shift-quote">"reasonably likely that Anthropic's leadership would alter or even shut off DoW's use of Claude . . . before or during a military operation."</div>
+          <div class="ascr-shift-label" data-tier="Broadest">Real-time interference</div>
+        </div>
+        <div class="ascr-shift-col ascr-shift-shrink">
+          <div class="ascr-shift-date">March 24 Declaration</div>
+          <div class="ascr-shift-quote"><em>[Claim abandoned.]</em> Discusses only "the risk inherent in model updates."</div>
+          <div class="ascr-shift-label" data-tier="Narrowed">Model poisoning</div>
+        </div>
+        <div class="ascr-shift-col ascr-shift-smallest">
+          <div class="ascr-shift-date">Summary Judgment</div>
+          <div class="ascr-shift-quote">"Anthropic's technology is itself no riskier to the national security than any other 'black box' artificial intelligence model."</div>
+          <div class="ascr-shift-label" data-tier="Narrowest">Public criticism</div>
+        </div>
+        <div class="ascr-shift-footer">Within seven days, the government's core claim shrank from real-time interference to model updates. By summary judgment, the only factor unique to Anthropic was public criticism.</div>
+      </div>
+
+      <p>The memo's reference to an "approval role in the operational decision chain" was explained by Michael's own March 24 declaration as referring to a December 4, 2025 contract negotiation meeting in which Anthropic said the Department of War would have to call Anthropic in real time to seek authorization for a usage exception to one of its redlines. The court found "no evidence in the record that Anthropic sought to impose any restrictions on the operational decision chain other than the usage policies at issue." A contract request, recast as an operational veto.</p>
+      <p>The "Operation Incident" collapsed too. Michael's March 17 declaration described it as "a comment made by an unnamed Anthropic executive to a DoW operational support software vendor." The administrative record does not reflect what the concern was — whether it involved Claude's performance, a moral objection, a legal question, or something else. It is undisputed that CEO Dario Amodei confirmed to the Department of War, before any of the challenged actions, that Anthropic had no objection to its tools' use in that situation.</p>
+      <p>What remained, the court found, was this: "That leaves only one factor unique to Anthropic on which Defendants rely: 'trust.' Defendants claim that because of Anthropic's 'increasingly hostile manner through the press' and its criticism of the Department of War's views on AI use, Defendants 'cannot trust Anthropic to ensure the integrity of its models.'" The technical case was gone. The only thing left was that Anthropic had talked.</p>
+    </section>
+
+    <section class="section" id="statute">
+      <h2><span class="num">04 — The Statute</span>The Misfit</h2>
+      <p>The supply chain risk designation was made under 10 U.S.C. sec. 3252. The statute defines "supply chain risk" as "the risk that an adversary may sabotage, maliciously introduce unwanted function, or otherwise subvert the design, integrity, manufacturing, production, distribution, installation, operation, or maintenance of a [national security] system so as to surveil, deny, disrupt, or otherwise degrade the function, use, or operation of such system."</p>
+
+      <div class="ascr-statute-wrap">
+        <div class="ascr-statute-headers">
+          <div class="ascr-statute-header ascr-statute-left">10 U.S.C. &sect; 3252(d)(4) &mdash; Supply Chain Risk</div>
+          <div class="ascr-statute-header ascr-statute-right">What Anthropic Did</div>
+        </div>
+        <div class="ascr-statute-row">
+          <div class="ascr-statute-cell ascr-statute-left" data-col="Statute — 10 U.S.C. § 3252(d)(4)">"an adversary may sabotage"</div>
+          <div class="ascr-statute-cell ascr-statute-right" data-col="What Anthropic Did">Publicly declined contract terms</div>
+        </div>
+        <div class="ascr-statute-row">
+          <div class="ascr-statute-cell ascr-statute-left" data-col="Statute — 10 U.S.C. § 3252(d)(4)">"maliciously introduce unwanted function"</div>
+          <div class="ascr-statute-cell ascr-statute-right" data-col="What Anthropic Did">Published essay advocating AI safety guardrails</div>
+        </div>
+        <div class="ascr-statute-row">
+          <div class="ascr-statute-cell ascr-statute-left" data-col="Statute — 10 U.S.C. § 3252(d)(4)">"otherwise subvert the design, integrity . . . of a system"</div>
+          <div class="ascr-statute-cell ascr-statute-right" data-col="What Anthropic Did">Spoke to the press about military AI policy</div>
+        </div>
+        <div class="ascr-statute-row">
+          <div class="ascr-statute-cell ascr-statute-left" data-col="Statute — 10 U.S.C. § 3252(d)(4)">"so as to surveil, deny, disrupt, or otherwise degrade"</div>
+          <div class="ascr-statute-cell ascr-statute-right" data-col="What Anthropic Did">Asked DoW to call before exceeding usage redlines</div>
+        </div>
+        <div class="ascr-statute-footer"><strong>Court finding:</strong> "The plain text of the statute is directed at covert acts or hacks, not overt, public positions regarding contract terms."</div>
+      </div>
+
+      <p>Anthropic publicly declined contract terms. Anthropic published an essay advocating AI safety guardrails. Anthropic spoke to the press about military AI policy. Anthropic asked the Department of War to call before exceeding usage redlines. None of these are covert. None involve sabotage or subversion. The legislative history reinforced the point: Congress enacted the statute to address "increasing risk that systems and networks critical to [the Department of Defense] could be exploited through the introduction of counterfeit or malicious code and other defects introduced by suppliers of systems or components." In support of summary judgment, the court noted, "Defendants do not take the position that any technological capabilities unique to Anthropic drove their risk assessment."</p>
+      <p>On the secondary boycott — Secretary Hegseth's order that "no contractor, supplier, or partner that does business with the United States military may conduct any commercial activity with Anthropic" — the government conceded there was no statutory basis for it. The government did not defend it. The court found: "Defendants concede that this portion of the Hegseth Directive was in excess of and contrary to his statutory authority and contrary to law."</p>
+      <p>Secretary Hegseth's six identical notices to congressional committees contained no "discussion of less intrusive measures that were considered and why they were not reasonably available," as required by 10 U.S.C. sec. 3252(b)(3)(B). The record contained boilerplate statements that less intrusive measures were unavailable. Nothing indicated the Department of War had actually considered alternatives.</p>
+      <p>Secretary Hegseth had described Anthropic's conduct as "a master class in arrogance" in his X post announcing the designation. The court quoted this language back when assessing the gap between what the statute requires and what the government had done. "Permitting the Secretary to affix that label to suppliers simply because he deems them too arrogant or difficult to 'trust,'" the court wrote, "would effectively gut that statutory requirement." The word was Hegseth's. The court used it to demonstrate what the designation was actually about.</p>
+    </section>
+
+    <section class="section" id="pretext">
+      <h2><span class="num">05 — The Pretext</span>Against the Record</h2>
+      <p>The court found the challenged actions were "based on a desire to make a public example out of Anthropic for its 'arrogance' in criticizing the government, not based on any articulable basis to believe that Anthropic would actually sabotage its model." That word — "arrogance" — is Hegseth's, from the same X post that ordered the designation. The court quoted it to establish what the record demonstrated: retaliation, not risk assessment. The finding rested on a series of contradictions between the government's stated concerns and its contemporaneous conduct.</p>
+      <p>Days before the February 27 actions, Secretary Hegseth raised the possibility of invoking the Defense Production Act to designate Anthropic as essential to national security — not a threat to it. The court found this "inconsistent with any genuine belief that Anthropic is an adversary of the United States who might secretly poison its model to undermine national security."</p>
+      <p>The day after the supply chain designation was finalized, Under Secretary Michael emailed Anthropic: "After reviewing with our attorneys and seeing your last draft (thanks for being fast), I think we are very close here." The email appeared to attach updated contract language. The court found it "difficult to square this correspondence with Under Secretary Michael's near-contemporaneous characterization of Anthropic as a 'hostile' company presenting a 'fully mature' and 'unacceptable' supply chain risk."</p>
+      <p>After the designation, the government continued to engage Anthropic on sensitive work. Anthropic announced Project Glasswing to deploy its Mythos model for defensive cybersecurity on April 7. Amodei and senior White House officials held "productive and constructive" discussions about Mythos collaboration on April 17. The Office of Management and Budget began setting up protocols for agency use of Mythos. The National Security Agency and NASA began deploying Mythos. The court found: "Defendants do not submit any evidence explaining why the government would seek to collaborate on these types of projects with a company believed to pose an intolerable national security risk."</p>
+      <p>Before February 27, the relationship looked nothing like a national security threat. Anthropic held Top Secret facility security clearance, granted by the Department of War's own Defense Counterintelligence and Security Agency after an 18-month vetting process. In June 2025, Claude received FedRAMP High and DoD Impact Level 4 and 5 authorization. In July 2025, Anthropic was awarded a two-year, up to $200 million agreement by the Department of War's Chief Digital and AI Office. Before March 2, 2026, the court found, "DoW did not identify any potential supply chain risk posed by Anthropic."</p>
+      <p>At oral argument, the court asked whether terminating a contract for the sole purpose of stopping public criticism of the President would violate the First Amendment. The government's counsel "was reticent to offer a yes or no answer." The court responded: "But the argument is already foreclosed. 'Criticism of government is at the very center of the constitutionally protected area of free discussion.'"</p>
+      <p>The government argued that the Pickering framework — which gives the government additional deference when acting as employer or contractor — should shield its actions. The court disagreed. The challenged actions were "an exercise of sovereign power, not contractual power," extending "far beyond the limited scope of preparing to terminate a government contract." Defense counsel conceded at oral argument that actions outside maintaining or terminating contractual relationships are not subject to Pickering. The government's own concession closed the door.</p>
+    </section>
+
+    <section class="section" id="damage">
+      <h2><span class="num">06 — The Damage</span>Across the Government</h2>
+      <p>The February 27 Presidential Directive triggered immediate compliance across the federal government. The administrative record documents the sweep: GSA announced "USAi will suspend availability of all Anthropic models immediately." OPM blocked access to Claude "[e]ffective immediately." FHFA's director posted on X that the agency was "terminating all use of Anthropic products." The State Department instructed staff to "cancel everything with Anthropic ASAP." HHS issued an alert to disable enterprise Claude. The Nuclear Regulatory Commission declared use "strictly prohibited." The SEC instructed staff to "pull Claude off the website and make sure it is no longer visible or accessible to be used by anyone." NNSA and the Department of Energy issued stop-work orders. The Department of Homeland Security set up "firewall blocks to restrict all-DHS users from accessing Anthropic's tools." Commerce removed Anthropic products. The VA suspended access. At least thirteen agencies moved within hours or days of a social media post.</p>
+      <p>Anthropic stated in court declarations — unrebutted by the government but not independently audited — that the full extent of the designation and associated restrictions would reduce its defense contractor and Department of War-related revenue by "50-100 percent" and its 2026 revenue by "multiple billions of dollars."</p>
+      <p>The effects extended beyond Anthropic. Trade associations representing government contractors filed an amicus brief describing the aftermath: "contracts terminated, partnerships frozen, workflows thrown into disarray." They reported their members feared they "could be subject to similar actions without any prior findings or process." A separate amicus brief from 38 employees at major AI companies warned that the challenged actions threatened to "chill open deliberation" and "professional debate" among the people best positioned to understand AI technology and its potential for "catastrophic misuse."</p>
+      <p>On the due process claim, the court applied the <em>Mathews v. Eldridge</em> balancing test and found Anthropic had a protectible liberty interest under the "stigma-plus" doctrine. The court cited the D.C. Circuit's recent ruling in <em>Hesai Tech.</em> (August 18, 2026), involving a company labeled a "Chinese military company." The designation, the court found, "was based on a core misunderstanding about how Anthropic's technology works, which it could have readily dispelled" — had the government provided pre-deprivation notice and an opportunity to respond.</p>
+    </section>
+
+    <section class="section" id="limits">
+      <h2><span class="num">07 — The Limits</span>What Anthropic Did Not Win</h2>
+      <p>The ruling was not a clean sweep. What follows is what the government retained.</p>
+      <p>Anthropic's separation-of-powers claim — that the Presidential Directive exceeded the President's constitutional authority (Count III) — failed. The court found Anthropic's "passing references to the statutory provisions and Congress's 'power of the purse' are insufficient to carry its burden." Judgment for Defendants on this claim as to all Defendants.</p>
+      <p>The court granted Defendants' motion as to the Non-Participating Defendants: the National Endowment for the Arts, the Social Security Administration, the Federal Reserve Board of Governors, the Executive Office of the President, their respective heads, and Does 1-10. Anthropic obtained no relief against them.</p>
+      <p>On the Section 558 claim (Count V), Defendants prevailed as to five agencies — HHS, Commerce, VA, SEC, and NASA — because the administrative record did not "sufficiently demonstrate that their actions were a consummation of their decision-making processes." Anthropic prevailed on this count only against the Department of War, Treasury, FHFA, State, GSA, OPM, NRC, DHS, and Energy.</p>
+      <p>The court acknowledged the government's authority in terms the ruling does not disturb. "The government is certainly owed deference on weighty issues of national security," the order states. "The Department of War is undisputedly free to select the AI vendor of its choice." The final relief order makes this explicit: "This Order does not require the Department of War to use Anthropic's products or services and does not prevent the Department of War from transitioning to other artificial intelligence providers, so long as those actions are consistent with applicable regulations, statutes, and constitutional provisions."</p>
+      <p>A separate proceeding may limit the ruling's practical effect. The D.C. Circuit case <em>Anthropic PBC v. United States Department of War</em>, No. 26-1049, challenges the distinct FASCSA designation under 41 U.S.C. sec. 4713. Oral argument was held May 19, 2026, before Judges Katsas, Rao, and Henderson. No merits decision has been issued as of August 30, 2026. The FASCSA is a different statutory instrument from the sec. 3252 designation vacated here. Its continued vitality may independently constrain Anthropic's federal business.</p>
+      <p>This is a district court order, not an appellate decision. The government previously appealed the March 26 preliminary injunction to the Ninth Circuit (No. 26-2011), though that appeal is stayed pending the D.C. Circuit ruling. A new notice of appeal of the summary judgment order is possible. The court denied Defendants' request for a seven-day administrative stay: "Defendants have not shown irreparable harm, even though they have been complying with the Court's Preliminary Injunction Order for more than five months and had ample opportunity to identify any harms caused by it."</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">08 — Signal</span>What Remains</h2>
+      <p>The court declared the challenged actions — the Presidential Directive, the Hegseth Directive, and the Supply Chain Designation — violations of the First Amendment (unlawful retaliation) and the Due Process Clause of the Fifth Amendment. All participating defendants are permanently enjoined from implementing, enforcing, or giving effect to the challenged actions. The Supply Chain Designation is vacated as arbitrary, capricious, and in excess of statutory authority under 10 U.S.C. sec. 3252. The secondary boycott portion of the Hegseth Directive is vacated. Implementing orders from nine agencies are vacated under 5 U.S.C. sec. 558. The court retains jurisdiction to enforce the order.</p>
+      <p>The final line of the opinion's introduction: "The empty invocation of national security is not a blank check to punish and retaliate against government critics."</p>
+      <p>As of August 30, 2026, no on-record statement from the Department of War, the Department of Justice, or the White House responding to the ruling has been identified. TechCrunch reported receiving no response to a request for comment. Nextgov reported the Pentagon "did not provide a response by publication time." A notice of appeal is possible and may have been filed after the date this account was prepared. Anthropic stated: "We welcome the court's ruling that this supply chain risk designation was unlawful. We remain focused on working productively with the government to harness AI for our national security so all Americans benefit from this technology."</p>
+      <p>The designation is vacated. The secondary boycott is vacated. Nine agencies' implementing orders are vacated. But the Department of War is free to choose another AI vendor. The FASCSA designation may survive independently. And the ruling is, at bottom, about what happens when the government does not do the work — when the record is four pages, when the claims are wrong, when the official who wrote them is the wrong official, when the process skips every safeguard the statute requires. The government lost the way you lose when you do not prepare.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  // "The Remainder" — a shared `substance` scalar drains an imposing four-ring
+  // formation from the outside in, leaving one accent point and a ghost outline.
+  const canvas = document.querySelector('.anthropic-supply-chain-ruling-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const rootStyle = getComputedStyle(document.documentElement);
+  const BG_COLOR = rootStyle.getPropertyValue('--bg').trim() || '#0d0d0d';
+  const STORY_RAW = rootStyle.getPropertyValue('--story').trim() || '#c2704e';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    let h = hex.replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    if (h.length !== 6) return [194, 112, 78];
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+
+  const [sR, sG, sB] = hexToRgb(STORY_RAW.startsWith('#') ? STORY_RAW : '#c2704e');
+
+  function storyA(a: number) { return `rgba(${sR},${sG},${sB},${Math.max(0, Math.min(1, a))})`; }
+  function dimA(a: number) { return `rgba(232,232,232,${Math.max(0, Math.min(1, a))})`; }
+  function clamp(v: number, lo: number, hi: number) { return v < lo ? lo : v > hi ? hi : v; }
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ── Cycle timing: 900 frames = 15s @ 60fps ──
+  const HOLD_END = 180;        // Phase 1: formation holds (0–3s)
+  const DISSOLVE_END = 660;    // Phase 2: substance 1.0 → 0.05 (3–11s)
+  const REMAINDER_END = 840;   // Phase 3: the remainder holds (11–14s)
+  const GHOST_FADE_END = 860;  // Phase 4a: ghost outline fades out
+  const DARK_END = 870;        // Phase 4b: brief darkness
+  const CYCLE = 900;           // Phase 4c: everything fades back in
+
+  const SUBSTANCE_FLOOR = 0.05;
+  const FADE_FRAMES = 60;
+  const BASE_SIZE = 380;
+
+  // ── Ring definition: radius (at 380px canvas), count, substance threshold ──
+  const RINGS = [
+    { radius: 140, count: 20, threshold: 0.80, spin: 0.002 },
+    { radius: 105, count: 16, threshold: 0.55, spin: -0.002 },
+    { radius: 70, count: 12, threshold: 0.30, spin: 0.002 },
+    { radius: 40, count: 8, threshold: 0.15, spin: -0.002 },
+  ];
+
+  interface P {
+    ring: number;
+    baseAngle: number;
+    baseRadius: number;
+    threshold: number;
+    spin: number;
+    spread: number;   // angular drift once released
+    opacity: number;
+    fadeStart: number; // frame at which fading began, -1 = still held
+    drift: number;     // radial px drifted outward
+    ghostX: number;
+    ghostY: number;
+    hasGhost: boolean;
+  }
+
+  const particles: P[] = [];
+
+  function buildParticles() {
+    particles.length = 0;
+    for (let r = 0; r < RINGS.length; r++) {
+      const ring = RINGS[r];
+      for (let i = 0; i < ring.count; i++) {
+        particles.push({
+          ring: r,
+          baseAngle: (i / ring.count) * Math.PI * 2 + r * 0.19,
+          baseRadius: ring.radius,
+          threshold: ring.threshold,
+          spin: ring.spin,
+          spread: (Math.random() - 0.5) * 0.0022,
+          opacity: 1,
+          fadeStart: -1,
+          drift: 0,
+          ghostX: 0,
+          ghostY: 0,
+          hasGhost: false,
+        });
+      }
+    }
+  }
+
+  let W = 0, H = 0, cx = 0, cy = 0, scale = 1;
+  let frame = 0, rafId = 0;
+  let substance = 1;
+  let centerOpacity = 1;
+
+  function sizeToCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth || 800;
+    H = canvas!.offsetHeight || BASE_SIZE;
+    canvas!.width = Math.max(1, Math.round(W * dpr));
+    canvas!.height = Math.max(1, Math.round(H * dpr));
+    ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cx = W / 2;
+    cy = H / 2;
+    scale = Math.min(W, H) / BASE_SIZE;
+  }
+
+  function resetCycle() {
+    frame = 0;
+    substance = 1;
+    centerOpacity = 1;
+    for (const p of particles) {
+      p.opacity = 1;
+      p.fadeStart = -1;
+      p.drift = 0;
+      p.hasGhost = false;
+    }
+  }
+
+  function orbitPos(p: P, breathe: number) {
+    const angle = p.baseAngle + frame * p.spin + (p.fadeStart >= 0 ? (frame - p.fadeStart) * p.spread : 0);
+    const r = (p.baseRadius + breathe) * scale + p.drift;
+    return { x: cx + Math.cos(angle) * r, y: cy + Math.sin(angle) * r };
+  }
+
+  // ── Update ──
+  function update() {
+    if (frame < HOLD_END) {
+      substance = 1;
+    } else if (frame < DISSOLVE_END) {
+      substance = 1 - (1 - SUBSTANCE_FLOOR) * ((frame - HOLD_END) / (DISSOLVE_END - HOLD_END));
+    } else {
+      substance = SUBSTANCE_FLOOR;
+    }
+
+    const breathe = Math.sin(frame * (Math.PI * 2 / 240)) * 2;
+
+    for (const p of particles) {
+      if (p.fadeStart < 0) {
+        if (substance < p.threshold) {
+          p.fadeStart = frame;
+          const pos = orbitPos(p, breathe);
+          p.ghostX = pos.x;
+          p.ghostY = pos.y;
+          p.hasGhost = true;
+        }
+      } else {
+        const elapsed = frame - p.fadeStart;
+        p.opacity = clamp(1 - elapsed / FADE_FRAMES, 0, 1);
+        p.drift += 0.3;
+      }
+    }
+
+    // The centre pulses gently once it stands alone.
+    if (frame >= DISSOLVE_END) {
+      centerOpacity = 0.85 + 0.15 * Math.sin((frame - DISSOLVE_END) * (Math.PI * 2 / 120));
+    } else {
+      centerOpacity = 1;
+    }
+  }
+
+  // ── Draw ──
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = BG_COLOR;
+    ctx!.fillRect(0, 0, W, H);
+
+    // Phase 4 envelope
+    let ghostFade = 1;
+    let liveFade = 1;
+    let rebuild = 0;
+    if (frame >= REMAINDER_END && frame < GHOST_FADE_END) {
+      ghostFade = 1 - (frame - REMAINDER_END) / (GHOST_FADE_END - REMAINDER_END);
+      liveFade = ghostFade;
+    } else if (frame >= GHOST_FADE_END && frame < DARK_END) {
+      ghostFade = 0;
+      liveFade = 0;
+    } else if (frame >= DARK_END) {
+      ghostFade = 0;
+      liveFade = 0;
+      rebuild = (frame - DARK_END) / (CYCLE - DARK_END);
+    }
+
+    const breathe = Math.sin(frame * (Math.PI * 2 / 240)) * 2;
+
+    // Faint warmth from the centre
+    const warm = ctx!.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, H) * 0.45);
+    warm.addColorStop(0, storyA(0.03 * Math.max(ghostFade, liveFade, rebuild)));
+    warm.addColorStop(1, storyA(0));
+    ctx!.fillStyle = warm;
+    ctx!.fillRect(0, 0, W, H);
+
+    // Ghost markers first — fixed points where the structure stood
+    if (ghostFade > 0.002) {
+      const ghostAlpha = (0.04 + 0.02 * (1 - substance)) * ghostFade;
+      for (const p of particles) {
+        if (!p.hasGhost) continue;
+        ctx!.beginPath();
+        ctx!.arc(p.ghostX, p.ghostY, 1.5, 0, Math.PI * 2);
+        ctx!.fillStyle = dimA(ghostAlpha);
+        ctx!.fill();
+      }
+    }
+
+    if (rebuild > 0) {
+      // Quiet reconstitution: every particle returns at its base position
+      for (const p of particles) {
+        const angle = p.baseAngle;
+        const r = p.baseRadius * scale;
+        ctx!.beginPath();
+        ctx!.arc(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r, 3, 0, Math.PI * 2);
+        ctx!.fillStyle = dimA(0.7 * rebuild);
+        ctx!.fill();
+      }
+      ctx!.beginPath();
+      ctx!.arc(cx, cy, 4, 0, Math.PI * 2);
+      ctx!.fillStyle = storyA(rebuild);
+      ctx!.fill();
+      return;
+    }
+
+    if (liveFade <= 0.002) return;
+
+    // Ring particles
+    for (const p of particles) {
+      const a = p.opacity * liveFade;
+      if (a < 0.004) continue;
+      const pos = orbitPos(p, breathe);
+      ctx!.beginPath();
+      ctx!.arc(pos.x, pos.y, 3, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(a * 0.7);
+      ctx!.fill();
+      ctx!.beginPath();
+      ctx!.arc(pos.x, pos.y, 5, 0, Math.PI * 2);
+      ctx!.fillStyle = storyA(a * 0.12);
+      ctx!.fill();
+    }
+
+    // The remainder: 'trust', the only thing the case ever contained
+    ctx!.beginPath();
+    ctx!.arc(cx, cy, 4, 0, Math.PI * 2);
+    ctx!.fillStyle = storyA(centerOpacity * liveFade);
+    ctx!.fill();
+    ctx!.beginPath();
+    ctx!.arc(cx, cy, 9, 0, Math.PI * 2);
+    ctx!.fillStyle = storyA(centerOpacity * liveFade * 0.08);
+    ctx!.fill();
+  }
+
+  // ── Static frame for reduced motion: Phase 3, the remainder ──
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = BG_COLOR;
+    ctx!.fillRect(0, 0, W, H);
+
+    const warm = ctx!.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, H) * 0.45);
+    warm.addColorStop(0, storyA(0.03));
+    warm.addColorStop(1, storyA(0));
+    ctx!.fillStyle = warm;
+    ctx!.fillRect(0, 0, W, H);
+
+    for (const p of particles) {
+      const r = p.baseRadius * scale;
+      ctx!.beginPath();
+      ctx!.arc(cx + Math.cos(p.baseAngle) * r, cy + Math.sin(p.baseAngle) * r, 1.5, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(0.06);
+      ctx!.fill();
+    }
+
+    ctx!.beginPath();
+    ctx!.arc(cx, cy, 4, 0, Math.PI * 2);
+    ctx!.fillStyle = storyA(0.9);
+    ctx!.fill();
+    ctx!.beginPath();
+    ctx!.arc(cx, cy, 9, 0, Math.PI * 2);
+    ctx!.fillStyle = storyA(0.08);
+    ctx!.fill();
+  }
+
+  function tick() {
+    frame++;
+    if (frame >= CYCLE) resetCycle();
+    update();
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  buildParticles();
+  sizeToCanvas();
+
+  const ro = new ResizeObserver(() => {
+    sizeToCanvas();
+    if (prefersReduced) drawStatic();
+  });
+  ro.observe(canvas);
+
+  if (prefersReduced) {
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    resetCycle();
+    draw();
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        if (!rafId) rafId = requestAnimationFrame(tick);
+      } else {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    }, { threshold: 0.1 });
+    io.observe(canvas);
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+      io.disconnect();
+      ro.disconnect();
+    });
+  }
+})();
+</script>
