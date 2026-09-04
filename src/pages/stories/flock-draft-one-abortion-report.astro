@@ -1,0 +1,782 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'flock-draft-one-abortion-report')!;
+---
+
+<style is:global>
+  /* === Canvas === */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .flock-draft-one-abortion-report-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* === Reenactment 1: Flock Audit Log === */
+  .flock-audit-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin: 2rem 0;
+    overflow: hidden;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  }
+  .flock-audit-header {
+    background: var(--surface2);
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .flock-audit-row { display: grid; grid-template-columns: 1fr 1fr; }
+  .flock-audit-cell {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+  .flock-audit-cell:nth-child(odd) {
+    color: var(--muted);
+    border-right: 1px solid var(--border);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .flock-audit-reason {
+    grid-column: 1 / -1;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .flock-audit-reason-label {
+    color: var(--muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .flock-audit-reason-value {
+    color: var(--accent);
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .flock-audit-warrant {
+    grid-column: 1 / -1;
+    padding: 0.6rem 1rem;
+    color: var(--muted);
+    font-size: 0.82rem;
+    display: flex;
+    justify-content: space-between;
+  }
+  .flock-audit-warrant-val { color: var(--accent); font-weight: 600; }
+  .flock-audit-footer {
+    padding: 0.6rem 1rem;
+    background: var(--surface2);
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-style: italic;
+    border-top: 1px solid var(--border);
+  }
+
+  /* === Reenactment 2: Provenance Chain === */
+  .provenance-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.5rem 1rem;
+    margin: 2rem 0;
+    overflow-x: auto;
+  }
+  .provenance-chain {
+    display: flex;
+    align-items: center;
+    min-width: 700px;
+    justify-content: center;
+  }
+  .provenance-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    flex: 0 0 auto;
+    width: 100px;
+    text-align: center;
+  }
+  .provenance-icon { font-size: 1.5rem; line-height: 1; }
+  .provenance-label { font-size: 0.7rem; color: var(--text); line-height: 1.3; font-weight: 500; }
+  .provenance-sublabel { font-size: 0.62rem; color: var(--muted); line-height: 1.2; }
+  .provenance-arrow { color: var(--muted); font-size: 1rem; flex: 0 0 auto; padding: 0 0.25rem; }
+  .provenance-step-ghost .provenance-icon { opacity: 0.35; }
+  .provenance-step-ghost .provenance-label {
+    color: #8ea3cc;
+    text-decoration: line-through;
+  }
+  .provenance-step-ghost .provenance-sublabel {
+    color: var(--story);
+    font-weight: 600;
+    font-size: 0.65rem;
+    letter-spacing: 0.04em;
+  }
+  .provenance-ghost-border {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    border: 1px dashed var(--story);
+    border-radius: 4px;
+    padding: 0.5rem 0.3rem;
+    background: color-mix(in srgb, var(--story) 6%, transparent);
+  }
+  .provenance-annotation {
+    margin-top: 1rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-style: italic;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* === Reenactment 3: Report Document === */
+  .report-doc-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin: 2rem 0;
+    overflow: hidden;
+  }
+  .report-doc-header {
+    background: var(--surface2);
+    padding: 0.8rem 1.2rem;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+  }
+  .report-doc-header-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .report-doc-header-sub { font-size: 0.7rem; color: var(--muted); margin-top: 0.2rem; }
+  .report-doc-meta {
+    display: flex;
+    gap: 2rem;
+    padding: 0.6rem 1.2rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  }
+  .report-doc-meta span { color: var(--text); font-weight: 500; }
+  .report-doc-body { padding: 1.2rem; }
+  .report-doc-passage {
+    font-size: 0.9rem;
+    line-height: 1.75;
+    color: var(--text);
+    margin: 0;
+  }
+  .report-doc-disclosure {
+    background: color-mix(in srgb, var(--story) 8%, transparent);
+    border-left: 3px solid var(--story);
+    padding: 0.7rem 0.9rem;
+    margin-bottom: 1.2rem;
+  }
+  .report-doc-disclosure p {
+    font-size: 0.9rem;
+    line-height: 1.75;
+    color: var(--text);
+    font-style: italic;
+    margin: 0;
+  }
+  .report-doc-disclosure-tag {
+    display: inline-block;
+    margin-top: 0.4rem;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.6rem;
+    color: var(--story);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-style: normal;
+  }
+  .report-doc-footer {
+    padding: 0.7rem 1.2rem;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 600px) {
+    .flock-audit-row { grid-template-columns: 1fr; }
+    .flock-audit-cell:nth-child(odd) { border-right: none; }
+    .provenance-chain { flex-direction: column; min-width: auto; gap: 0.2rem; }
+    .provenance-arrow { transform: rotate(90deg); }
+    .provenance-step { width: auto; }
+    .report-doc-meta { flex-direction: column; gap: 0.3rem; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="report">
+      <h2><span class="num">01 — Context</span>The Report</h2>
+      <p>The Johnson County sheriff's report on the May 9, 2025 incident carries a single disclosure line: "I acknowledge this report was generated using Draft One by Axon."</p>
+      <p>The report was authored by Sgt. Damien Bethel of the Johnson County Sheriff's Office. It documented an investigation that had already made national news for a different reason: the Johnson County Sheriff's Office had used Flock Safety's license-plate recognition network to search for a woman who had self-administered an abortion. That search — spanning 83,345 cameras across 6,809 networks, without a warrant — was first reported by 404 Media's Joseph Cox and Jason Koebler in May 2025. The Flock search was the story. The AI-authored report was a detail hiding in 23 pages of documents that no one noticed for over a year.</p>
+      <p>The documents had been obtained by Tri-City Herald journalist Cameron Probert through a Texas Public Information Act request to the Johnson County Sheriff's Office. Probert shared them with 404 Media. On September 2, 2026, Koebler identified a line the earlier reporting had missed: the report was written using Axon's Draft One, an AI tool built on OpenAI's GPT-4 Turbo that generates police report narratives from body-worn-camera audio. The Draft One authorship is the new fact. It means the narrative police report documenting this investigation — the account that would be filed, cited, and relied upon as a law-enforcement record of events — was not written by a human.</p>
+    </section>
+
+    <section class="section" id="investigation">
+      <h2><span class="num">02 — What Happened</span>The Investigation</h2>
+      <p>On May 9, 2025, Erik De La Rosa called the Johnson County Sheriff's Office. He reported that his girlfriend had taken Mifepristone and disposed of what he claimed was a fetus. According to the records, deputies noted that the report was "not making sense and was not a normal call for service." De La Rosa had previous convictions for aggravated robbery.</p>
+      <p>A deputy listed as "J. Smith" in the Flock Safety audit log ran two searches of Flock's national camera network that day. The larger search swept 6,809 networks totaling 83,345 cameras. The audit log listed the search reason in plain text: "had an abortion, search for female." No warrant was obtained. The search reached cameras in states where abortion is legal and protected by state law, including Washington and Illinois.</p>
+
+      <div class="flock-audit-wrap">
+        <div class="flock-audit-header">Flock Safety — Audit Log Entry</div>
+        <div class="flock-audit-row">
+          <div class="flock-audit-cell">Deputy</div>
+          <div class="flock-audit-cell">J. Smith</div>
+          <div class="flock-audit-cell">Date</div>
+          <div class="flock-audit-cell">May 9, 2025</div>
+          <div class="flock-audit-cell">Networks</div>
+          <div class="flock-audit-cell">6,809</div>
+          <div class="flock-audit-cell">Cameras</div>
+          <div class="flock-audit-cell">83,345</div>
+          <div class="flock-audit-reason">
+            <span class="flock-audit-reason-label">Search Reason</span>
+            <span class="flock-audit-reason-value">"had an abortion, search for female"</span>
+          </div>
+          <div class="flock-audit-warrant">
+            <span>Warrant</span>
+            <span class="flock-audit-warrant-val">None</span>
+          </div>
+        </div>
+        <div class="flock-audit-footer">One warrantless search. 83,345 cameras. The reason, logged in plain text.</div>
+      </div>
+
+      <p>Deputies collected photographs, a FedEx medication envelope, self-administration instructions, and the woman's text messages as evidence. The lead detective filed a sworn affidavit describing the case as a "death investigation of a non-viable fetus." The detective documented consulting the District Attorney's office about potential charges. The DA responded that "the State could not statutorily charge [her] for taking the pill to cause the abortion or miscarriage of the non-viable fetus." Under Texas law, the pregnant person is exempt from criminal, civil, and administrative liability for an abortion: Health and Safety Code Section 170A.003 bars prosecution of the patient under the state's trigger ban, and Penal Code Section 19.06 separately exempts conduct by the mother from the criminal homicide chapter. The Texas District and County Attorneys Association has found "no reported cases of a woman being prosecuted in Texas for abortion." No charges against the woman were filed.</p>
+      <p>Approximately three days after De La Rosa's initial call, a Texas medical examiner determined that the object he had placed in a freezer was a blood clot, not fetal matter.</p>
+      <p>On May 14, the woman came to the Johnson County Sheriff's Office voluntarily to report domestic violence. De La Rosa was subsequently charged with aggravated assault with a deadly weapon and assault of a family or household member. According to the indictment, he allegedly pointed a gun at her head and strangled her. The death investigation was marked closed by mid-June 2025.</p>
+    </section>
+
+    <section class="section" id="disputed">
+      <h2><span class="num">03 — The Disputed Record</span>Who Said What</h2>
+      <p>After the initial reporting in May 2025, Johnson County Sheriff Adam King stated publicly that the woman "was never under criminal investigation" and that officers "were just trying to check on her welfare." He said her "family was worried she would bleed to death."</p>
+      <p>The lead detective's sworn affidavit consistently labels the case a "death investigation of a non-viable fetus" — not a welfare check, not a missing-person case. The Flock audit log lists the search reason as "had an abortion, search for female," not as a search for a missing or endangered person. The DA was consulted about potential criminal charges. The Electronic Frontier Foundation's review of the affidavit found no mention of concerned family members or large amounts of blood. A sergeant's supplemental report filed June 5, 2025 — nearly a month after the initial incident and after media coverage had begun — claimed officers found "a large amount of blood." The lead investigator's earlier affidavit, filed by someone present at the scene, makes no mention of blood samples or evidence collection beyond photographs.</p>
+      <p>Separately, in August 2026, Flock Safety CEO Garrett Langley — in leaked audio from a presentation to law enforcement — called 404 Media's original reporting on the abortion search "entirely false." He stated that the woman "was in an abusive relationship and the family was concerned that she was in danger." Flock's public relations manager, Paris Lewbel, stated that the case report shows the woman "could NOT be charged with a crime." That narrow point is accurate. It does not address why the investigation was documented as a death investigation, why the DA was consulted about charges, or why deputies collected the woman's text messages as evidence. 404 Media is an interested party in the specific dispute with Langley, having been the outlet whose reporting Langley challenged.</p>
+      <p>The official documents — the sworn affidavit, the incident report, the Flock audit log, the record of the DA consultation — are consistent with each other. They describe a death investigation in which deputies explored criminal charges and determined that Texas law exempted the woman from prosecution.</p>
+    </section>
+  </div>
+
+  <div class="phantom-wrap">
+    <canvas class="flock-draft-one-abortion-report-canvas" aria-hidden="true"></canvas>
+  </div>
+  <p class="canvas-note"><strong>The Erasure</strong> — off-white source particles stream into a steel-periwinkle processing zone and briefly coalesce into a visible intermediate form; the zone pulses and the intermediate dissolves by design; output particles emerge and settle on the far side; provenance threads reach inward from both endpoints and find only void.</p>
+
+  <div class="container">
+    <section class="section" id="machine">
+      <h2><span class="num">04 — The Machine</span>How Draft One Works</h2>
+      <p>Axon launched Draft One on April 23, 2024. The product generates police report narratives from auto-transcribed body-worn-camera audio — audio only, not video. It is built on OpenAI's GPT-4 Turbo, accessed through Microsoft Azure OpenAI Service. Reports are available within approximately five minutes of an incident ending. Officers are required to review the AI-generated draft, edit it, and sign it before submission. According to Axon, the model has been "calibrated to prevent speculation or embellishments." Axon's default settings limit Draft One to minor incident types and charge levels, explicitly excluding incidents involving arrests and felonies. Whether the Johnson County "death investigation" fell within or outside the configured parameters at that agency is unknown.</p>
+      <p>Lt. Keven George of the Johnson County Sheriff's Office described the intended workflow: officers "review and edit the draft, fill in missing details, and approve it before submission." The disclosure statement appended to the report — "I acknowledge this report was generated using Draft One by Axon" — is customizable by agency. Johnson County used the short form. Some agencies, including Palm Beach County and Lake Havasu City, use an extended version that includes the sentence: "If needed, I am willing to testify to the accuracy of this report." Johnson County's disclosure contains no attestation of review and no willingness to testify.</p>
+
+      <div class="provenance-wrap" tabindex="0" role="region" aria-label="Draft One provenance chain">
+        <div class="provenance-chain">
+          <div class="provenance-step">
+            <span class="provenance-icon" aria-hidden="true">&#x1F399;</span>
+            <span class="provenance-label">Body-cam audio</span>
+            <span class="provenance-sublabel">Microphone capture</span>
+          </div>
+          <span class="provenance-arrow" aria-hidden="true">&#x2192;</span>
+          <div class="provenance-step">
+            <span class="provenance-icon" aria-hidden="true">&#x1F4AC;</span>
+            <span class="provenance-label">Auto-transcript</span>
+            <span class="provenance-sublabel">Speech to text</span>
+          </div>
+          <span class="provenance-arrow" aria-hidden="true">&#x2192;</span>
+          <div class="provenance-step">
+            <span class="provenance-icon" aria-hidden="true">&#x2699;</span>
+            <span class="provenance-label">GPT-4 Turbo</span>
+            <span class="provenance-sublabel">via Azure</span>
+          </div>
+          <span class="provenance-arrow" aria-hidden="true">&#x2192;</span>
+          <div class="provenance-step provenance-step-ghost">
+            <div class="provenance-ghost-border">
+              <span class="provenance-icon" aria-hidden="true">&#x1F4C4;</span>
+              <span class="provenance-label">AI draft</span>
+              <span class="provenance-sublabel">Not stored</span>
+            </div>
+          </div>
+          <span class="provenance-arrow" aria-hidden="true">&#x2192;</span>
+          <div class="provenance-step">
+            <span class="provenance-icon" aria-hidden="true">&#x270F;</span>
+            <span class="provenance-label">Officer review &amp; edit</span>
+            <span class="provenance-sublabel">Manual changes</span>
+          </div>
+          <span class="provenance-arrow" aria-hidden="true">&#x2192;</span>
+          <div class="provenance-step">
+            <span class="provenance-icon" aria-hidden="true">&#x2705;</span>
+            <span class="provenance-label">Signed record</span>
+            <span class="provenance-sublabel">Official report</span>
+          </div>
+        </div>
+        <div class="provenance-annotation">As of May 2025, the original AI-generated draft was not stored. Axon added optional retention in December 2025.</div>
+      </div>
+
+      <p>This provenance chain matters because every passage in Sgt. Bethel's report — including the statement that "deputies discussed the legal implications of the situation, noting that while the girlfriend self-administered the abortion pill, there were no criminal charges applicable under current Texas law" — is the AI model's summary of what a body-camera microphone captured. It is not a direct human account. It is a machine's interpretation of audio, processed through a large language model, reviewed and signed by an officer. What the AI generated before Bethel reviewed it — and what, if anything, Bethel changed — is unknowable. The original unedited draft no longer exists.</p>
+
+      <div class="report-doc-wrap">
+        <div class="report-doc-header">
+          <div class="report-doc-header-title">Johnson County Sheriff's Office</div>
+          <div class="report-doc-header-sub">Supplemental Report</div>
+        </div>
+        <div class="report-doc-meta">
+          <div>Reporting Officer: <span>Sgt. Damien Bethel</span></div>
+          <div>Incident Date: <span>May 9, 2025</span></div>
+        </div>
+        <div class="report-doc-body">
+          <div class="report-doc-disclosure">
+            <p>"I acknowledge this report was generated using Draft One by Axon."</p>
+            <span class="report-doc-disclosure-tag">AI-generated</span>
+          </div>
+          <p class="report-doc-passage">"Deputies discussed the legal implications of the situation, noting that while the girlfriend self-administered the abortion pill, there were no criminal charges applicable under current Texas law."</p>
+        </div>
+        <div class="report-doc-footer">This is what an AI-generated official record looks like. It reads like any police report. The disclosure line is the only signal that it was not written by a human hand.</div>
+      </div>
+    </section>
+
+    <section class="section" id="deletion">
+      <h2><span class="num">05 — By Design</span>The Deletion</h2>
+      <p>The original AI-generated draft of Sgt. Bethel's report is very likely permanently lost. This was not an accident. It was a product decision.</p>
+      <p>As of the Electronic Frontier Foundation's July 2025 investigation, Draft One did not store original AI-generated drafts. An Axon senior product manager explained the rationale: "We don't store the original draft and that's by design… the last thing we want to do is create more disclosure headaches for our customers." Once an officer copied the draft text and closed the browser window, the AI-generated version disappeared. There was no archive. There was no versioning. The intermediate form — the text that would reveal what GPT-4 Turbo produced before any human touched it — was designed to be ephemeral.</p>
+      <p>In December 2025, Axon updated Draft One to allow U.S. agencies to retain and access original unedited AI-generated narratives. Agencies can now configure retention per applicable law and agency policies. This change came seven months after Sgt. Bethel's report on the May 9 incident. No Axon corporate comment on the September 2, 2026 reporting about the Johnson County case was found.</p>
+      <p>The EFF's assessment of Draft One's design: it makes it "impossible to determine whether problematic language, inaccuracies, or falsehoods originated from the AI or the officer — undermining accountability in the criminal justice system."</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">06 — Signal</span>The Unauditable Record</h2>
+      <p>Axon CEO Rick Smith described Draft One at launch as "one of the most impactful technological advancements of our time." The specific number of agencies using Draft One is not public.</p>
+      <p>The EFF found that police departments cannot easily identify which of their own reports were generated by Draft One. A Lafayette, Indiana police captain stated: "There is no way for us to search for these on our end." Only agencies that require mandatory disclosure statements can isolate Draft One reports by keyword search. In October 2024, King County, Washington Chief Deputy Prosecutor Daniel J. Clark issued a memo instructing law enforcement to refrain from using Draft One. He cited concerns that "some of the errors are so small that they will be missed in review" and noted an AI-generated report that referenced "an officer who was not at the scene."</p>
+      <p>The Johnson County case has had concrete consequences beyond the AI question. Following the reporting on the Flock search, Prosser, Washington shut down 20 traffic cameras. Multiple Texas communities cancelled Flock contracts. These actions were responses to the surveillance apparatus, not to the AI-authored report — the Draft One revelation came later.</p>
+      <p>The body-camera audio from May 9, 2025 exists on Axon's servers. The signed report exists in Johnson County's records. The original AI-generated text that connected the two — the draft that would show what the machine wrote before a human touched it — was deleted by design, seven months before anyone thought to preserve it. The record of this investigation stands as written. There is no way to audit it.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.flock-draft-one-abortion-report-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
+  const storyHex = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#7c93c3';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const [sR, sG, sB] = hexToRgb(storyHex.startsWith('#') ? storyHex : '#7c93c3');
+
+  function stA(a: number): string { return `rgba(${sR},${sG},${sB},${a.toFixed(4)})`; }
+  function owA(a: number): string { return `rgba(232,232,232,${a.toFixed(4)})`; }
+
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas.offsetWidth; H = canvas.offsetHeight;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  });
+  ro.observe(canvas);
+
+  const dpr0 = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth; H = canvas.offsetHeight;
+  canvas.width = W * dpr0; canvas.height = H * dpr0;
+  ctx.setTransform(dpr0, 0, 0, dpr0, 0, 0);
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Phase boundaries (1200 frames = 20s at 60fps)
+  const P1 = 240, P2 = 420, P3 = 540, P4 = 660, P5 = 840, P6 = 1020, P7 = 1140, CYCLE = 1200;
+
+  interface Pt { x: number; y: number; homeX: number; homeY: number; r: number; alpha: number; osc: number; }
+  interface Ab { x: number; y: number; vx: number; vy: number; r: number; alpha: number; }
+
+  const srcPt: Pt[] = [], trnPt: Pt[] = [], outPt: Pt[] = [], recPt: Pt[] = [], ambPt: Ab[] = [];
+
+  let zoneGlow = 0.08, zoneRad = 60, gFade = 1;
+
+  function initAll() {
+    srcPt.length = 0; trnPt.length = 0; outPt.length = 0; recPt.length = 0; ambPt.length = 0;
+    const cw = W || 800, ch = H || 380;
+    const s = cw * 0.2, r = cw * 0.8, z = cw * 0.5, m = ch * 0.5;
+
+    for (let i = 0; i < 4; i++) {
+      const a = (i / 4) * Math.PI * 2 + (Math.random() - 0.5) * 0.6;
+      const d = 16 + Math.random() * 16;
+      const bx = s + Math.cos(a) * d, by = m + Math.sin(a) * d;
+      srcPt.push({ x: bx, y: by, homeX: bx, homeY: by, r: 2.5, alpha: 0.15, osc: Math.random() * 6.28 });
+    }
+    for (let i = 0; i < 8; i++) {
+      const a = (i / 8) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
+      const d = 8 + Math.random() * 24;
+      const bx = s + Math.cos(a) * d, by = m + Math.sin(a) * d;
+      trnPt.push({ x: bx, y: by, homeX: bx, homeY: by, r: 2.5, alpha: 0.15, osc: Math.random() * 6.28 });
+    }
+    for (let i = 0; i < 8; i++) {
+      const col = i % 4, row = Math.floor(i / 4);
+      outPt.push({ x: z + 30, y: m + (Math.random() - 0.5) * 6, homeX: r + (col - 1.5) * 13, homeY: m + (row - 0.5) * 13, r: 2.5, alpha: 0, osc: Math.random() * 6.28 });
+    }
+    for (let i = 0; i < 4; i++) {
+      const col = i % 2, row = Math.floor(i / 2);
+      const bx = r + (col - 0.5) * 13 + 26, by = m + (row - 0.5) * 13;
+      recPt.push({ x: bx, y: by, homeX: bx, homeY: by, r: 2.5, alpha: 0.12, osc: Math.random() * 6.28 });
+    }
+    for (let i = 0; i < 20; i++) {
+      ambPt.push({ x: Math.random() * cw, y: Math.random() * ch, vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.2, r: 1.5, alpha: 0.04 + Math.random() * 0.02 });
+    }
+    gFade = 1; zoneGlow = 0.08; zoneRad = 60;
+  }
+
+  function easeOut(t: number): number { return 1 - (1 - t) * (1 - t); }
+  function easeInOut(t: number): number { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+
+  function srcCX(): number { let x = 0; for (const p of srcPt) x += p.x; return x / Math.max(1, srcPt.length); }
+  function srcCY(): number { let y = 0; for (const p of srcPt) y += p.y; return y / Math.max(1, srcPt.length); }
+  function recCX(): number {
+    let x = 0, n = 0;
+    for (const p of recPt) { x += p.x; n++; }
+    for (const p of outPt) { if (p.alpha > 0.01) { x += p.x; n++; } }
+    return n > 0 ? x / n : W * 0.8;
+  }
+
+  function update() {
+    const cf = frame % CYCLE;
+    const z = W * 0.5, m = H * 0.5;
+
+    for (const a of ambPt) {
+      a.x += a.vx; a.y += a.vy;
+      if (a.x < -10) a.x = W + 10; if (a.x > W + 10) a.x = -10;
+      if (a.y < -10) a.y = H + 10; if (a.y > H + 10) a.y = -10;
+    }
+
+    if (cf < P7) {
+      gFade = 1;
+      for (const p of srcPt) {
+        p.x = p.homeX + Math.sin(frame * 0.012 + p.osc) * 2;
+        p.y = p.homeY + Math.cos(frame * 0.015 + p.osc) * 1.5;
+        p.alpha = 0.15;
+      }
+      for (const p of recPt) p.alpha = 0.12;
+    }
+
+    if (cf < P1) {
+      for (let i = 0; i < trnPt.length; i++) {
+        const p = trnPt[i];
+        const stg = i * 30;
+        if (cf < stg) {
+          p.x = p.homeX + Math.sin(frame * 0.012 + p.osc) * 2;
+          p.y = p.homeY + Math.cos(frame * 0.015 + p.osc) * 1.5;
+          p.alpha = 0.15;
+        } else {
+          const t = easeOut(Math.min(1, (cf - stg) / Math.max(1, P1 - stg)));
+          p.x = p.homeX + (z - p.homeX) * t;
+          p.y = p.homeY + (m - p.homeY) * t * 0.6;
+          p.alpha = 0.15;
+        }
+      }
+      for (const p of outPt) p.alpha = 0;
+      zoneGlow = 0.08; zoneRad = 60;
+    } else if (cf < P2) {
+      const et = easeInOut((cf - P1) / (P2 - P1));
+      for (let i = 0; i < trnPt.length; i++) {
+        const p = trnPt[i];
+        const angle = (i / trnPt.length) * Math.PI * 2;
+        const dist = 25 - et * 3;
+        p.x += (z + Math.cos(angle) * dist - p.x) * 0.05;
+        p.y += (m + Math.sin(angle) * dist - p.y) * 0.05;
+        p.alpha = 0.15 + et * 0.05;
+      }
+      for (const p of outPt) p.alpha = 0;
+      zoneGlow = 0.08 + et * 0.04; zoneRad = 60;
+    } else if (cf < P3) {
+      for (let i = 0; i < trnPt.length; i++) {
+        const p = trnPt[i];
+        const angle = (i / trnPt.length) * Math.PI * 2;
+        const dist = 22 + Math.sin(cf * 0.05) * 3;
+        p.x += (z + Math.cos(angle) * dist - p.x) * 0.08;
+        p.y += (m + Math.sin(angle) * dist - p.y) * 0.08;
+        p.alpha = 0.20 + Math.sin(cf * 0.05) * 0.05;
+      }
+      for (const p of outPt) p.alpha = 0;
+      zoneGlow = 0.10 + Math.sin(cf * 0.05) * 0.03; zoneRad = 60;
+    } else if (cf < P4) {
+      const el = cf - P3;
+      if (el < 30) {
+        const pt = easeInOut(el / 30);
+        zoneRad = 60 + 30 * Math.sin(pt * Math.PI);
+        zoneGlow = 0.12 + 0.08 * Math.sin(pt * Math.PI);
+      } else {
+        zoneRad = 60;
+        zoneGlow = Math.max(0.04, 0.12 - (el - 30) / 90 * 0.08);
+      }
+      for (let i = 0; i < trnPt.length; i++) {
+        const p = trnPt[i];
+        if (el >= 30) {
+          const angle = (i / trnPt.length) * Math.PI * 2;
+          p.x += Math.cos(angle) * 0.1;
+          p.y += Math.sin(angle) * 0.1;
+          p.alpha = Math.max(0, 0.2 * (1 - (el - 30) / 90));
+        }
+      }
+      for (const p of outPt) p.alpha = 0;
+    } else if (cf < P5) {
+      for (const p of trnPt) p.alpha = 0;
+      for (let i = 0; i < outPt.length; i++) {
+        const p = outPt[i];
+        const emerge = P4 + i * 22;
+        if (cf < emerge) {
+          p.alpha = 0;
+        } else {
+          const t = easeOut(Math.min(1, (cf - emerge) / Math.max(1, P5 - emerge)));
+          p.x = (z + 30) + (p.homeX - z - 30) * t;
+          p.y = m + (p.homeY - m) * t;
+          p.alpha = Math.min(0.15, t * 0.25);
+        }
+      }
+      zoneGlow = 0.04; zoneRad = 60;
+    } else if (cf < P6) {
+      for (const p of trnPt) p.alpha = 0;
+      for (const p of outPt) {
+        p.x += (p.homeX - p.x) * 0.03;
+        p.y += (p.homeY - p.y) * 0.03;
+        p.alpha = 0.15;
+      }
+      zoneGlow = 0.02; zoneRad = 60;
+    } else if (cf < P7) {
+      for (const p of trnPt) p.alpha = 0;
+      for (const p of outPt) p.alpha = 0.15;
+      zoneGlow = 0.01; zoneRad = 60;
+    } else {
+      const t = (cf - P7) / (CYCLE - P7);
+      gFade = Math.max(0, t < 0.67 ? 1 - t * 1.5 : 0);
+      zoneGlow = 0.01;
+      for (const p of trnPt) p.alpha = 0;
+      if (cf >= CYCLE - 1) initAll();
+    }
+  }
+
+  function draw() {
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, W, H);
+
+    const cf = frame % CYCLE;
+    const z = W * 0.5, m = H * 0.5;
+
+    const effZone = zoneGlow * gFade;
+    if (effZone > 0.003) {
+      const gr = ctx.createRadialGradient(z, m, 0, z, m, zoneRad);
+      gr.addColorStop(0, stA(effZone));
+      gr.addColorStop(0.6, stA(effZone * 0.4));
+      gr.addColorStop(1, stA(0));
+      ctx.fillStyle = gr;
+      ctx.beginPath();
+      ctx.arc(z, m, zoneRad, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.lineWidth = 1;
+
+    if (cf >= P1 && cf < P2) {
+      const t = (cf - P1) / (P2 - P1);
+      if (t > 0.3) {
+        ctx.strokeStyle = owA((t - 0.3) / 0.7 * 0.06 * gFade);
+        ctx.beginPath();
+        ctx.moveTo(srcCX(), srcCY());
+        ctx.lineTo(z, m);
+        ctx.stroke();
+      }
+    }
+
+    if (cf >= P2 && cf < P3) {
+      const t = (cf - P2) / (P3 - P2);
+      ctx.strokeStyle = owA(0.06 * gFade);
+      ctx.beginPath();
+      ctx.moveTo(srcCX(), srcCY());
+      ctx.lineTo(z, m);
+      ctx.stroke();
+      ctx.strokeStyle = owA(0.04 * t * gFade);
+      ctx.beginPath();
+      ctx.moveTo(z, m);
+      ctx.lineTo(W * 0.8, m);
+      ctx.stroke();
+    }
+
+    if (cf >= P3 && cf < P4) {
+      const el = cf - P3;
+      if (el < 45) {
+        const fade = 1 - el / 45;
+        ctx.strokeStyle = owA(0.06 * fade * gFade);
+        ctx.beginPath();
+        ctx.moveTo(srcCX(), srcCY());
+        ctx.lineTo(z, m);
+        ctx.stroke();
+        ctx.strokeStyle = owA(0.04 * fade * gFade);
+        ctx.beginPath();
+        ctx.moveTo(z, m);
+        ctx.lineTo(W * 0.8, m);
+        ctx.stroke();
+      }
+    }
+
+    if (cf >= P5 && cf < P6) {
+      const t = (cf - P5) / (P6 - P5);
+      const extT = easeOut(Math.min(1, t / 0.6));
+      const fadeOut = t > 0.7 ? (t - 0.7) / 0.3 : 0;
+      const alpha = 0.10 * (1 - fadeOut) * gFade;
+
+      if (alpha > 0.003) {
+        const sx1 = srcCX();
+        const sx2 = sx1 + (z - 40 - sx1) * extT;
+        const sGrad = ctx.createLinearGradient(sx1, m, sx2, m);
+        sGrad.addColorStop(0, owA(alpha));
+        sGrad.addColorStop(0.6, owA(alpha * 0.5));
+        sGrad.addColorStop(1, owA(0));
+        ctx.strokeStyle = sGrad;
+        ctx.beginPath();
+        ctx.moveTo(sx1, m);
+        ctx.lineTo(sx2, m);
+        ctx.stroke();
+
+        const rx1 = recCX();
+        const rx2 = rx1 - (rx1 - z - 40) * extT;
+        const rGrad = ctx.createLinearGradient(rx1, m, rx2, m);
+        rGrad.addColorStop(0, owA(alpha));
+        rGrad.addColorStop(0.6, owA(alpha * 0.5));
+        rGrad.addColorStop(1, owA(0));
+        ctx.strokeStyle = rGrad;
+        ctx.beginPath();
+        ctx.moveTo(rx1, m);
+        ctx.lineTo(rx2, m);
+        ctx.stroke();
+      }
+    }
+
+    ctx.globalAlpha = 1;
+
+    for (const a of ambPt) {
+      const ea = a.alpha * gFade;
+      if (ea < 0.003) continue;
+      ctx.globalAlpha = ea;
+      ctx.fillStyle = owA(1);
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    for (const p of srcPt) {
+      const ea = p.alpha * gFade;
+      if (ea < 0.003) continue;
+      ctx.globalAlpha = ea;
+      ctx.fillStyle = owA(1);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    let tint = 0;
+    if (cf >= P1 && cf < P2) tint = (cf - P1) / (P2 - P1);
+    else if (cf >= P2 && cf < P4) tint = 1;
+    const tR = Math.round(232 + (sR - 232) * tint);
+    const tG = Math.round(232 + (sG - 232) * tint);
+    const tB = Math.round(232 + (sB - 232) * tint);
+
+    for (const p of trnPt) {
+      const ea = p.alpha * gFade;
+      if (ea < 0.003) continue;
+      if (tint > 0.3 && p.alpha > 0.08) {
+        ctx.globalAlpha = ea * 0.25 * tint;
+        ctx.fillStyle = stA(1);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = ea;
+      ctx.fillStyle = `rgba(${tR},${tG},${tB},1)`;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    for (const p of outPt) {
+      const ea = p.alpha * gFade;
+      if (ea < 0.003) continue;
+      ctx.globalAlpha = ea;
+      ctx.fillStyle = owA(1);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    for (const p of recPt) {
+      const ea = p.alpha * gFade;
+      if (ea < 0.003) continue;
+      ctx.globalAlpha = ea;
+      ctx.fillStyle = owA(1);
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.globalAlpha = 1;
+  }
+
+  function tick() {
+    frame++;
+    update();
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  requestAnimationFrame(() => {
+    initAll();
+
+    if (prefersReduced) {
+      frame = P5 + Math.floor((P6 - P5) * 0.5);
+      for (const p of srcPt) { p.x = p.homeX; p.y = p.homeY; p.alpha = 0.15; }
+      for (const p of trnPt) p.alpha = 0;
+      for (const p of outPt) { p.x = p.homeX; p.y = p.homeY; p.alpha = 0.15; }
+      for (const p of recPt) p.alpha = 0.12;
+      zoneGlow = 0.02; zoneRad = 60; gFade = 1;
+      draw();
+      return;
+    }
+
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(raf); raf = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(raf);
+      io.disconnect();
+    });
+  });
+
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(raf);
+    ro.disconnect();
+  });
+})();
+</script>
