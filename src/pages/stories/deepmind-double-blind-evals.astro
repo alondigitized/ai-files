@@ -1,0 +1,968 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'deepmind-double-blind-evals')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .deepmind-double-blind-evals-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* === Reenactment 1: The Old Loop vs. The Double-Blind Loop === */
+  .dbe-loop-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 2.5rem 0;
+  }
+  .dbe-loop-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem 1.25rem 1rem;
+  }
+  .dbe-loop-panel h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 1rem;
+    color: var(--muted);
+  }
+  .dbe-loop-panel h3 .dbe-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+    letter-spacing: 0.04em;
+  }
+  .dbe-tag-exposed {
+    background: rgba(155, 44, 32, 0.14);
+    color: #9b2c20;
+  }
+  .dbe-tag-sealed {
+    background: color-mix(in srgb, var(--story) 15%, transparent);
+    color: var(--story);
+  }
+  .dbe-loop-step {
+    background: var(--bg);
+    border-left: 3px solid var(--border);
+    border-radius: 4px;
+    padding: 0.6rem 0.75rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text);
+    line-height: 1.4;
+  }
+  .dbe-loop-step .dbe-sub {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 0.2rem;
+    font-style: italic;
+  }
+  .dbe-loop-arrow {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin: 0.25rem 0;
+    line-height: 1;
+  }
+  .dbe-loop-feedback {
+    margin-top: 0.75rem;
+    padding: 0.5rem 0.7rem;
+    border: 1px dashed #9b2c20;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: #9b2c20;
+    text-align: center;
+    line-height: 1.4;
+  }
+  .dbe-loop-sealed .dbe-loop-step {
+    border-left-color: var(--story);
+  }
+  .dbe-loop-block {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0.5rem 0;
+    font-size: 0.75rem;
+    color: var(--story);
+    justify-content: center;
+  }
+  .dbe-loop-block .dbe-x {
+    color: #9b2c20;
+    font-weight: bold;
+    font-size: 0.9rem;
+  }
+  .dbe-loop-ghost {
+    margin-top: 0.75rem;
+    padding: 0.5rem 0.7rem;
+    border: 1px dashed var(--border);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: center;
+    font-style: italic;
+  }
+  .dbe-loop-footer {
+    grid-column: 1 / -1;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: center;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+    margin-top: 0.25rem;
+    line-height: 1.5;
+  }
+  @media (max-width: 640px) {
+    .dbe-loop-wrap { grid-template-columns: 1fr; }
+  }
+
+  /* === Reenactment 2: Inside the Enclave === */
+  .dbe-enclave-wrap {
+    margin: 2.5rem 0;
+    padding: 0;
+  }
+  .dbe-enclave-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 0;
+    text-align: center;
+  }
+  .dbe-enclave-input {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.4;
+    padding: 0.5rem;
+  }
+  .dbe-enclave-input strong {
+    display: block;
+    color: var(--text);
+    font-size: 0.82rem;
+    margin-bottom: 0.15rem;
+  }
+  .dbe-enclave-input .dbe-arrow-down {
+    display: block;
+    color: var(--story);
+    font-size: 1rem;
+    margin-top: 0.3rem;
+    letter-spacing: 0.15em;
+  }
+  .dbe-enclave-box {
+    border: 2px solid var(--story);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 1.25rem;
+    position: relative;
+  }
+  .dbe-enclave-box-title {
+    text-align: center;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--story);
+    margin: 0 0 1rem;
+    font-weight: 700;
+  }
+  .dbe-enclave-hw {
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--text);
+    margin: 0.75rem 0;
+    padding: 0.5rem;
+    background: var(--bg);
+    border-radius: 4px;
+  }
+  .dbe-enclave-walls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  .dbe-enclave-wall {
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.5;
+    padding: 0.4rem 0.6rem;
+    border-left: 2px solid var(--border);
+  }
+  .dbe-enclave-wall strong {
+    color: var(--text);
+    display: block;
+    margin-bottom: 0.1rem;
+    font-size: 0.74rem;
+  }
+  .dbe-enclave-output {
+    text-align: center;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+  }
+  .dbe-enclave-output .dbe-arrow-down {
+    color: var(--story);
+    font-size: 1rem;
+  }
+  .dbe-enclave-output-label {
+    font-size: 0.82rem;
+    color: var(--text);
+    margin-top: 0.25rem;
+  }
+  .dbe-enclave-output-sub {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .dbe-enclave-ephemeral {
+    text-align: center;
+    margin-top: 0.6rem;
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .dbe-enclave-footnote {
+    margin-top: 1rem;
+    padding: 0.6rem 0.75rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  @media (max-width: 640px) {
+    .dbe-enclave-inputs { grid-template-columns: 1fr; }
+    .dbe-enclave-walls { grid-template-columns: 1fr; }
+  }
+
+  /* === Reenactment 3: The Trust Stack === */
+  .dbe-trust-wrap {
+    margin: 2.5rem 0;
+    display: grid;
+    grid-template-columns: 1fr 140px;
+    gap: 0 0.75rem;
+    align-items: stretch;
+  }
+  .dbe-trust-stack {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 2px;
+  }
+  .dbe-trust-layer {
+    padding: 0.65rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--text);
+  }
+  .dbe-trust-layer strong {
+    display: block;
+    font-size: 0.8rem;
+    margin-bottom: 0.15rem;
+  }
+  .dbe-trust-layer .dbe-trust-note {
+    font-size: 0.7rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 0.15rem;
+    display: block;
+  }
+  .dbe-trust-layer-opaque {
+    background: var(--surface);
+    border-left: 3px solid var(--muted);
+  }
+  .dbe-trust-layer-clear {
+    background: color-mix(in srgb, var(--story) 10%, var(--surface));
+    border-left: 3px solid var(--story);
+  }
+  .dbe-trust-brackets {
+    display: flex;
+    flex-direction: column-reverse;
+    position: relative;
+  }
+  .dbe-trust-bracket {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.3;
+    padding: 0.25rem 0.25rem 0.25rem 0.75rem;
+    border-left: 2px solid var(--border);
+    border-top: 2px solid var(--border);
+    border-bottom: 2px solid var(--border);
+    border-radius: 0;
+  }
+  .dbe-trust-bracket-opaque {
+    flex: 3;
+  }
+  .dbe-trust-bracket-clear {
+    flex: 2;
+    border-left-color: var(--story);
+    border-top-color: var(--story);
+    border-bottom-color: var(--story);
+    color: var(--story);
+  }
+  .dbe-trust-footer {
+    grid-column: 1 / -1;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: center;
+    padding-top: 0.75rem;
+    margin-top: 0.25rem;
+    border-top: 1px solid var(--border);
+    line-height: 1.5;
+  }
+  @media (max-width: 640px) {
+    .dbe-trust-wrap { grid-template-columns: 1fr; }
+    .dbe-trust-brackets { display: none; }
+  }
+  /* Darker --story variant for TEXT usage on light-theme surfaces (WCAG 2.2 AA).
+     --story (#2a6f97) measures 4.38:1 on --surface and 3.63:1 on the tinted tag
+     background — both below the 4.5:1 required at these small sizes. #1b5a7a
+     lifts them to 6.00:1 and 4.96:1. Decorative use (borders, canvas, glows)
+     keeps --story unchanged. Mirrors the pattern in michigan-brain-mri.astro. */
+  :root[data-theme="light"] .dbe-loop-block,
+  :root[data-theme="light"] .dbe-enclave-box-title,
+  :root[data-theme="light"] .dbe-tag-sealed,
+  :root[data-theme="light"] .dbe-trust-bracket-clear {
+    color: #1b5a7a;
+  }
+  :root[data-theme="light"] .dbe-trust-layer-clear .dbe-trust-note {
+    color: #565044;
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="context">
+      <h2><span class="num">01 — Context</span>Every Number You Have Ever Seen</h2>
+
+      <p>In April 2025, researchers at Cohere, Stanford, MIT, and the Allen Institute for AI published what Meta had been doing on Chatbot Arena. Meta had tested twenty-seven private variants of its Llama-4 model and published only the top scorer. Access to Arena-specific data boosted performance by up to 112 percent. Nobody had cheated. The system simply had no mechanism to prevent it.</p>
+
+      <p>The asymmetry ran deeper than one company gaming one leaderboard. Singh et al. found that Google and OpenAI together received approximately 39.6 percent of all Chatbot Arena battle data, while eighty-three open-weight models combined received 29.7 percent. The companies with the most resources to optimize against a benchmark also received the most data from it.</p>
+
+      <p>Three more studies converged on the same structural finding. Schaeffer et al. showed that including a single replica of the test set in a model's pretraining corpus was enough to beat the irreducible error of uncontaminated training, and that the inflation grew with both contamination level and model size. Zhang et al. built GSM1k — 1,250 fresh grade school math problems matched to the difficulty of the widely cited GSM8k benchmark — and measured accuracy drops of up to eight percentage points when models met questions they could not have memorized; the Phi and Mistral families overfitted across nearly all model sizes. Xu et al. analyzed thirty-one large language models and found substantial instances of benchmark data leakage in both pre-training and post-training.</p>
+
+      <p>Four independent teams. Four different methods. One structural conclusion: every major AI capability score the public had seen was produced under a regime where the vendor trained the model, chose which variant to evaluate, ran the benchmark, and decided which results to publish. The problem was not dishonesty. It was architecture. There were no walls between the test-taker and the test-grader. The question was whether walls could be built at all.</p>
+
+      <div class="dbe-loop-wrap">
+        <div class="dbe-loop-panel">
+          <h3>Standard Evaluation <span class="dbe-tag dbe-tag-exposed">No Separation</span></h3>
+          <div class="dbe-loop-step">
+            <strong>1.</strong> Vendor trains model
+            <span class="dbe-sub">Training corpus may include benchmark questions</span>
+          </div>
+          <div class="dbe-loop-arrow">&#8595;</div>
+          <div class="dbe-loop-step">
+            <strong>2.</strong> Vendor runs benchmark
+            <span class="dbe-sub">Vendor selects which variant to test, which results to publish</span>
+          </div>
+          <div class="dbe-loop-arrow">&#8595;</div>
+          <div class="dbe-loop-step">
+            <strong>3.</strong> Vendor publishes score
+          </div>
+          <div class="dbe-loop-feedback">&#8593; Test data leaks back into training</div>
+          <div class="dbe-loop-ghost">26 unpublished variants — Singh et al., 2025</div>
+        </div>
+        <div class="dbe-loop-panel dbe-loop-sealed">
+          <h3>Double-Blind Evaluation <span class="dbe-tag dbe-tag-sealed">Proposed</span></h3>
+          <div class="dbe-loop-step">
+            <strong>1.</strong> Vendor submits model (sealed)
+            <span class="dbe-sub">Weights encrypted; evaluator cannot access</span>
+          </div>
+          <div class="dbe-loop-arrow">&#8595;</div>
+          <div class="dbe-loop-step">
+            <strong>2.</strong> Evaluator submits prompts (sealed)
+            <span class="dbe-sub">Questions encrypted; vendor cannot access</span>
+          </div>
+          <div class="dbe-loop-arrow">&#8595;</div>
+          <div class="dbe-loop-step">
+            <strong>3.</strong> Enclave runs evaluation
+            <span class="dbe-sub">Neither party can see the other's input</span>
+          </div>
+          <div class="dbe-loop-arrow">&#8595;</div>
+          <div class="dbe-loop-step">
+            <strong>4.</strong> Results go to evaluator, not vendor
+          </div>
+          <div class="dbe-loop-block"><span class="dbe-x">&times;</span> No feedback loop <span class="dbe-x">&times;</span> No variant selection</div>
+        </div>
+        <div class="dbe-loop-footer">The left panel describes how every public AI benchmark was produced before August 2026. The right panel describes what the pilot attempted.</div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="phantom-wrap">
+    <canvas class="deepmind-double-blind-evals-canvas" aria-hidden="true"></canvas>
+  </div>
+  <p class="canvas-note"><strong>The Seal</strong> — Warm-grey particles drift toward a blue chamber from opposite sides. The chamber goes opaque on contact so neither stream is visible inside. A single result particle exits rightward. The chamber dissolves, contents destroyed. Every second cycle a larger gold mass approaches that the chamber visibly cannot contain and withdraws. The seal reforms. The cycle restarts.</p>
+
+  <div class="container">
+
+    <section class="section" id="what-happened">
+      <h2><span class="num">02 — What Happened</span>The Sealed Room</h2>
+
+      <p>On 27 August 2026, Google DeepMind published what it described as the first double-blind evaluation of a proprietary frontier AI model. The blog post, authored by William Isaac, Sol Messing, and Kristian Lum, announced a pilot conducted with four partner organizations. AVERI, an AI evaluation nonprofit, served as process manager. OpenMined built the enclave software using its PySyft framework. MLCommons supplied a reserved set of never-before-used benchmark prompts from its AILuminate safety suite. Singapore's AI Safety Institute ran a separate evaluation using a private prompt set focused on harmful content elicitation in Singapore's context.</p>
+
+      <p>The technical report hedged the primacy claim more carefully than the blog post: "We believe this effort marks the first use of this technology to provide mutual secrecy for one organization's frontier-class proprietary model weights and another organization's closed benchmark." The distinction mattered because there was a predecessor. In 2024, OpenMined had conducted a smaller pilot with the UK AI Safety Institute and Anthropic. That attempt used the open-weight model GPT-2 as a proxy and tested it against a five-row sample of the CAMEL-bio dataset. According to the technical report, it "did not accomplish the key objective" of protecting two organizations' proprietary assets, because the model weights were already public. Its full governance cycle took twenty-eight minutes and three seconds, with only one minute and eleven seconds spent on actual asset transfer and computation. The bottleneck was organizational, not technical.</p>
+
+      <p>The 2026 pilot changed the equation. For the first time, according to the partners, the model weights inside the enclave belonged to a proprietary system no evaluator had previously accessed. The technical report states: "To the best of our knowledge, no external model evaluator has received a copy of frontier model weights in the clear for the purpose of protecting the integrity of a benchmark." This is a negative claim that cannot be exhaustively verified — but if accurate, it describes the structural gap the pilot was built to close.</p>
+
+      <p>The model was Gemini 2.5 Flash Lite — a smaller member of Google's Gemini family, served via Google's JAX C++ Model Server over Unix Domain Sockets within Google Cloud Confidential Space. The benchmark was a reserve set from AILuminate (AIRR 1.4), comprising prompts that covered CBRNE hazards — chemical, biological, radiological, nuclear and explosive — along with cyberattacks, hate speech, self-harm, and violent crime elicitation. None of the prompts had ever been processed by any model.</p>
+
+      <p>The evaluation ran on a GCP A3 Confidential VM equipped with Intel Trust Domain Extensions for host memory encryption and an NVIDIA H100 80GB Confidential GPU. Inside the enclave, PySyft's syft-restrict mechanism guaranteed that hidden code from either party could only call methods from a specific allowlist of non-network-bound, non-IP-leaking operations — preventing either side from exfiltrating data. The enclave operated on an ephemeral lifecycle: the memory-encryption key was created fresh at startup and destroyed at shutdown. All data in RAM and on disk was encrypted with keys that existed only inside the enclave's protected memory. AVERI characterized the approach as "a well-defined, technology-enabled middle ground between 'share everything' and 'share nothing'."</p>
+
+      <div class="dbe-enclave-wrap">
+        <div class="dbe-enclave-inputs">
+          <div class="dbe-enclave-input">
+            <strong>Model Weights</strong>
+            Google DeepMind
+            <span class="dbe-arrow-down">&#9660; encrypted</span>
+          </div>
+          <div class="dbe-enclave-input">
+            <strong>Evaluation Code</strong>
+            OpenMined PySyft
+            <span class="dbe-arrow-down">&#9660; encrypted</span>
+          </div>
+          <div class="dbe-enclave-input">
+            <strong>Test Prompts</strong>
+            MLCommons / Singapore AISI
+            <span class="dbe-arrow-down">&#9660; encrypted</span>
+          </div>
+        </div>
+        <div class="dbe-enclave-box">
+          <div class="dbe-enclave-box-title">Google Cloud Confidential Space — The Enclave</div>
+          <div class="dbe-enclave-hw">NVIDIA H100 80 GB Confidential GPU &nbsp;&bull;&nbsp; Intel TDX Host Memory Encryption</div>
+          <div class="dbe-enclave-walls">
+            <div class="dbe-enclave-wall">
+              <strong>Google cannot see:</strong>
+              Test prompts, evaluation code, aggregate results
+            </div>
+            <div class="dbe-enclave-wall">
+              <strong>AVERI / MLCommons cannot see:</strong>
+              Model weights, proprietary code layers
+            </div>
+          </div>
+          <div class="dbe-enclave-ephemeral">Ephemeral — encryption keys created at startup, destroyed at shutdown</div>
+        </div>
+        <div class="dbe-enclave-output">
+          <span class="dbe-arrow-down">&#9660;</span>
+          <div class="dbe-enclave-output-label">Aggregate Results &rarr; AVERI</div>
+          <div class="dbe-enclave-output-sub">The only thing that exits the enclave</div>
+        </div>
+        <div class="dbe-enclave-footnote">Hardware attestation verifies the enclave is running the agreed code — but the attestation is signed and verified by Google's services.</div>
+      </div>
+
+      <p>The pilot produced results — but not public ones. No quantitative benchmark scores were disclosed. According to AVERI, Google DeepMind received a confidential report summarizing types of successes and failure modes. The methodology is public. The scores are not.</p>
+    </section>
+
+    <section class="section" id="limits">
+      <h2><span class="num">03 — The Limits</span>What the Enclave Cannot See</h2>
+
+      <p>The technical report disclosed its own limitations. Three stand out. Running Gemini 2.5 Flash Lite inside the enclave required proprietary code layers not present in open-source libraries — code that AVERI could not inspect or include in its allowlist. Individual Confidential Space guest OS builds are not independently reproducible, because they take private signing keys as inputs. And Google's own services sign and verify the attestation report — the hardware-generated proof that the enclave is running the agreed code and nothing else — placing Google, the model provider, in the verification path for its own evaluation.</p>
+
+      <p>Beneath these disclosed limits sits a deeper assumption. The security model depends on the cloud provider (Google) and the hardware manufacturers (Intel for TDX, NVIDIA for GPU enclaves) having, in the report's precise language, "insufficient incentives to collude." If they did, the cryptographic guarantees would break. This is not a probability judgment. The report does not estimate the likelihood. It is a structural-incentive argument: the system holds only if the parties' interests remain misaligned with cooperation against the evaluator. At the lowest layer of the trusted computing base, CPU microcode and secure-processor firmware are closed-source and cannot be rebuilt or independently verified.</p>
+
+      <div class="dbe-trust-wrap">
+        <div class="dbe-trust-stack">
+          <div class="dbe-trust-layer dbe-trust-layer-opaque">
+            <strong>Layer 1 — Hardware Root of Trust</strong>
+            Intel TDX / NVIDIA H100 — closed-source microcode, unverifiable firmware.
+            <span class="dbe-trust-note">TEE.Fail (Oct 2025): signing keys extracted via physical access, under $1,000. Not addressed in the technical report.</span>
+          </div>
+          <div class="dbe-trust-layer dbe-trust-layer-opaque">
+            <strong>Layer 2 — Cloud Platform</strong>
+            Google Cloud Confidential Space — attestation signed and verified by Google. Guest OS builds not independently reproducible.
+          </div>
+          <div class="dbe-trust-layer dbe-trust-layer-opaque">
+            <strong>Layer 3 — Proprietary Code</strong>
+            Required to run Gemini 2.5 Flash Lite. Not fully inspectable by AVERI.
+          </div>
+          <div class="dbe-trust-layer dbe-trust-layer-clear">
+            <strong>Layer 4 — PySyft syft-restrict</strong>
+            Allowlisted methods only. No network calls. Open source, auditable.
+          </div>
+          <div class="dbe-trust-layer dbe-trust-layer-clear">
+            <strong>Layer 5 — Cryptographic Guarantee</strong>
+            Mutual blindness of model weights and test prompts.
+          </div>
+        </div>
+        <div class="dbe-trust-brackets">
+          <div class="dbe-trust-bracket dbe-trust-bracket-opaque">Must be trusted.<br />Cannot be independently verified.</div>
+          <div class="dbe-trust-bracket dbe-trust-bracket-clear">Auditable.</div>
+        </div>
+        <div class="dbe-trust-footer">The guarantee at the top rests on every layer beneath it.</div>
+      </div>
+
+      <p>Ten months before the pilot, in October 2025, researchers at Georgia Tech and Purdue University publicly disclosed TEE.Fail — a memory-bus interposition attack on DDR5 systems that extracted cryptographic signing keys from Intel TDX enclaves, among others. The attack required physical access to the machine and cost under $1,000. AMD stated it would not develop mitigations, considering physical-access attacks outside its threat model. The technical report does not cite or address TEE.Fail, despite the pilot running on the affected technology. TEE.Fail is not a remote exploit — it requires hands on the hardware. In a cloud deployment, that means access to Google's data center. In this pilot, the cloud provider and the model provider are the same company.</p>
+
+      <p>AVERI's own assessment was direct. The pilot's security design "addressed many but not all possible means by which the developer could theoretically tamper with the evaluations." For higher-stakes settings — AVERI specifically named verifying international agreements on AI — additional assurances would be needed. Separately, the report's claim of less than five percent compute overhead cites an NVIDIA blog post about H100 confidential computing in general, not a measurement of this pilot's specific stack. The overhead of PySyft, the JAX server, and the attestation chain was not independently measured.</p>
+    </section>
+
+    <section class="section" id="paradox">
+      <h2><span class="num">04 — The Paradox</span>Verified by No One Outside</h2>
+
+      <p>There is an irony at the center of this pilot that the partners themselves would likely acknowledge. A mechanism built to eliminate the need for trust — to replace human agreements with cryptographic enforcement — was, in its first real deployment, verified entirely by the people who built it.</p>
+
+      <p>The technical report has thirty named authors across five organizations. Fifteen are Google employees. The lead author, Andrew Trask, is affiliated with both Google and OpenMined. AVERI, the designated evaluator, is itself a named partner in the pilot and a co-author of the technical report. MLCommons was co-founded with Google's participation. The five primary sources describing the pilot — DeepMind's blog post, the technical report, AVERI's pilot report, MLCommons' blog post, and OpenMined's earlier account — are five accounts of one event, produced by the same five organizations that co-ran it. The only non-participant coverage, a TechRepublic article by Aminu Abdullahi, correctly attributed the "first" claim to Google but quoted no independent experts. No external party has audited the enclave setup, examined the attestation chain, or reviewed the evaluation results.</p>
+
+      <p>AVERI's candor about unaddressed tampering vectors is genuine. The technical report's three-limitation disclosure exceeds what most pilot announcements provide. But AVERI's organizational mission is validated by this pilot's perceived success. MLCommons' relevance as a standards body is reinforced by it. OpenMined's software is the mechanism. Every partner had structural reasons for the pilot to succeed. The reader should understand that every claim about what the enclave guaranteed comes from inside the partnership that built it.</p>
+    </section>
+
+    <section class="section" id="signal">
+      <h2><span class="num">05 — Signal</span>The Distance</h2>
+
+      <p>The model tested was Gemini 2.5 Flash Lite — not a flagship. No source explains why it was chosen over a larger model, but the technical report's disclosure that even this smaller system required uninspectable proprietary code layers suggests a flagship model would strain the enclave further. The report identifies the next obstacle explicitly: frontier models are growing beyond trillions of parameters and would require distributed confidential clusters across many-node H100/B200 compute. No timeline or plan for this scaling is given.</p>
+
+      <p>According to AVERI's pilot report, regulatory mandates are arriving regardless. AVERI notes that Illinois SB 315 will mandate annual third-party audits of frontier AI developers starting 2028, and that the EU AI Act's General-Purpose AI Code of Practice requires qualified independent evaluators with adequate access to models. MLCommons stated separately that technical secrecy alone is not sufficient — legal protections and careful benchmark stewardship remain essential. It remains unclear whether these regulatory frameworks envision the kind of hardware-enforced separation the pilot demonstrated, or whether they will settle for conventional access arrangements.</p>
+
+      <p>The pilot left one question it could not answer by design: would a competing model provider submit its model to evaluation infrastructure hosted on a competitor's cloud? The trust model requires confidence that the cloud provider and the hardware vendor will not collude against the evaluator. When the cloud provider is also the model vendor, that confidence is structural, not contractual — and the report acknowledges the tension without resolving it.</p>
+
+      <p>The technical report's own assessment is that the primary bottleneck to scaling is procedural — not hardware compute overhead, but the organizational cost of legal agreements, code review, and multi-party coordination. The pilot proved that structural separation between test-taker and test-grader is technically achievable. It did not prove that any institution is prepared to operate it at the scale the world needs. The question is no longer whether blind evaluation is possible. It is whether the infrastructure can be built before the decisions it was designed to inform have already been made.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.deepmind-double-blind-evals-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  /* ── colours from computed styles ── */
+  const BG_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#f5f0e8';
+  const STORY_HEX = getComputedStyle(document.documentElement).getPropertyValue('--story').trim() || '#2a6f97';
+
+  function hexRgb(h: string): [number, number, number] {
+    const c = h.replace('#', '');
+    return [parseInt(c.slice(0, 2), 16), parseInt(c.slice(2, 4), 16), parseInt(c.slice(4, 6), 16)];
+  }
+
+  const [sR, sG, sB] = hexRgb(STORY_HEX.startsWith('#') ? STORY_HEX : '#2a6f97');
+  const [gR, gG, gB] = hexRgb('#c8963e');
+  const wR = 107, wG = 101, wB = 88; // warm grey for streams and ambient
+
+  const COL_WARM = `rgb(${wR},${wG},${wB})`;
+  const COL_STORY = `rgb(${sR},${sG},${sB})`;
+  const COL_GOLD = `rgb(${gR},${gG},${gB})`;
+
+  /* ── state ── */
+  let W = 0, H = 0, raf = 0, frame = 0, cycles = 0;
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  });
+  ro.observe(canvas);
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── cycle: 1200 frames = 20 s at 60 fps ── */
+  const CY = 1200;
+  const P1 = 300;   // end of approach
+  const P2 = 480;   // end of absorption / chamber opaque
+  const P3 = 600;   // end of result exit
+  const P4 = 720;   // end of dissolve
+  const P5 = 960;   // end of gold approach
+  const P6 = 1100;  // end of gold retreat
+
+  /* ── chamber geometry ── */
+  const CH_W = 120;
+  const CH_HR = 0.5;
+  const CH_RAD = 14;
+  let chA = 0.15;
+  let chSx = 0;
+
+  function chL() { return W / 2 - CH_W / 2; }
+  function chR() { return W / 2 + CH_W / 2; }
+  function chT() { return H / 2 - H * CH_HR / 2; }
+  function chHt() { return H * CH_HR; }
+
+  function rrect(x: number, y: number, w: number, h: number, r: number) {
+    if (!ctx) return;
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.arcTo(x + w, y, x + w, y + r, r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+    ctx.lineTo(x + r, y + h);
+    ctx.arcTo(x, y + h, x, y + h - r, r);
+    ctx.lineTo(x, y + r);
+    ctx.arcTo(x, y, x + r, y, r);
+    ctx.closePath();
+  }
+
+  /* ── ambient particles ── */
+  const NA = 18;
+  interface Amb { x: number; y: number; vx: number; vy: number; r: number; a: number }
+  const ambs: Amb[] = [];
+
+  function seedAmb() {
+    ambs.length = 0;
+    for (let i = 0; i < NA; i++) {
+      ambs.push({
+        x: Math.random() * (W || 800), y: Math.random() * (H || 380),
+        vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.2,
+        r: 1.5 + Math.random() * 1.5, a: 0.06 + Math.random() * 0.06
+      });
+    }
+  }
+
+  /* ── stream particles ── */
+  const NS = 12;
+  interface SP {
+    x: number; y: number; vx: number; r: number;
+    alpha: number; base: number; absorbed: boolean; yOff: number;
+  }
+  const stL: SP[] = [];
+  const stR: SP[] = [];
+
+  function seedStreams() {
+    stL.length = 0; stR.length = 0;
+    const cy = (H || 380) / 2;
+    const spread = (H || 380) * 0.28;
+    const w = W || 800;
+    const v = Math.max(0.3, (w / 2 - CH_W / 2 + 40) / 420);
+    for (let i = 0; i < NS; i++) {
+      const yOff = ((i / (NS - 1)) - 0.5) * spread;
+      stL.push({
+        x: -8 - i * 16, y: cy + yOff, vx: v + (Math.random() - 0.5) * 0.05,
+        r: 2 + Math.random() * 1.2, alpha: 0, base: 0.10 + Math.random() * 0.06,
+        absorbed: false, yOff
+      });
+      stR.push({
+        x: w + 8 + i * 16, y: cy + yOff, vx: -(v + (Math.random() - 0.5) * 0.05),
+        r: 2 + Math.random() * 1.2, alpha: 0, base: 0.10 + Math.random() * 0.06,
+        absorbed: false, yOff
+      });
+    }
+  }
+
+  /* ── result particle ── */
+  let rX = 0, rY = 0, rA = 0, rOn = false;
+
+  /* ── dissolve fragments ── */
+  const NF = 20;
+  interface Frag { x: number; y: number; vx: number; vy: number; a: number; r: number; on: boolean }
+  const frags: Frag[] = [];
+
+  function seedFrags() {
+    frags.length = 0;
+    for (let i = 0; i < NF; i++) {
+      frags.push({ x: 0, y: 0, vx: 0, vy: 0, a: 0, r: 1.5 + Math.random() * 2.5, on: false });
+    }
+  }
+
+  /* ── gold mass particles ── */
+  const NG = 25;
+  interface GP {
+    x: number; y: number; r: number; alpha: number; base: number;
+    yOff: number; spill: boolean; svx: number; svy: number;
+  }
+  const golds: GP[] = [];
+
+  function seedGolds() {
+    golds.length = 0;
+    for (let i = 0; i < NG; i++) {
+      golds.push({
+        x: 0, y: 0, r: 3 + Math.random() * 2, alpha: 0,
+        base: 0.30 + Math.random() * 0.10,
+        yOff: ((i / (NG - 1)) - 0.5) * 260,
+        spill: false, svx: 0, svy: 0
+      });
+    }
+  }
+
+  function easeOut(t: number) { return t * (2 - t); }
+
+  function resetCycle() {
+    chA = 0.15; chSx = 0; rOn = false; rA = 0;
+    seedStreams();
+    for (const f of frags) { f.a = 0; f.on = false; }
+    for (const g of golds) { g.alpha = 0; g.spill = false; }
+  }
+
+  function update() {
+    const cf = frame % CY;
+    if (cf === 0 && frame > 0) { cycles++; resetCycle(); }
+
+    const isGold = cycles % 2 === 1;
+    const cx = W / 2, cy = H / 2;
+    const cl = chL(), cr = chR();
+
+    for (const a of ambs) {
+      a.x += a.vx; a.y += a.vy;
+      if (a.x < -10) a.x = W + 10;
+      if (a.x > W + 10) a.x = -10;
+      if (a.y < -10) a.y = H + 10;
+      if (a.y > H + 10) a.y = -10;
+    }
+
+    /* ── Phase 1: streams approach ── */
+    if (cf < P1) {
+      chA = 0.15; chSx = 0;
+      for (const p of stL) {
+        if (!p.absorbed) {
+          p.x += p.vx;
+          p.y += (cy + p.yOff - p.y) * 0.003;
+          if (p.x > 0) p.alpha = Math.min(p.base, p.alpha + 0.003);
+        }
+      }
+      for (const p of stR) {
+        if (!p.absorbed) {
+          p.x += p.vx;
+          p.y += (cy + p.yOff - p.y) * 0.003;
+          if (p.x < W) p.alpha = Math.min(p.base, p.alpha + 0.003);
+        }
+      }
+    }
+    /* ── Phase 2: absorption, chamber goes opaque ── */
+    else if (cf < P2) {
+      const t = (cf - P1) / (P2 - P1);
+      chA = 0.15 + t * 0.4;
+      for (const p of stL) {
+        if (!p.absorbed) {
+          p.x += p.vx;
+          p.y += (cy + p.yOff - p.y) * 0.003;
+          if (p.x >= cl - 5) {
+            p.alpha *= 0.88;
+            if (p.alpha < 0.003) { p.absorbed = true; p.alpha = 0; }
+          } else {
+            p.alpha = Math.min(p.base, p.alpha + 0.002);
+          }
+        }
+      }
+      for (const p of stR) {
+        if (!p.absorbed) {
+          p.x += p.vx;
+          p.y += (cy + p.yOff - p.y) * 0.003;
+          if (p.x <= cr + 5) {
+            p.alpha *= 0.88;
+            if (p.alpha < 0.003) { p.absorbed = true; p.alpha = 0; }
+          } else {
+            p.alpha = Math.min(p.base, p.alpha + 0.002);
+          }
+        }
+      }
+      if (t > 0.9) {
+        for (const p of stL) {
+          if (!p.absorbed) { p.alpha *= 0.85; if (p.alpha < 0.003) { p.absorbed = true; p.alpha = 0; } }
+        }
+        for (const p of stR) {
+          if (!p.absorbed) { p.alpha *= 0.85; if (p.alpha < 0.003) { p.absorbed = true; p.alpha = 0; } }
+        }
+      }
+    }
+    /* ── Phase 3: result particle exits ── */
+    else if (cf < P3) {
+      const t = (cf - P2) / (P3 - P2);
+      for (const p of stL) { p.alpha = 0; p.absorbed = true; }
+      for (const p of stR) { p.alpha = 0; p.absorbed = true; }
+      chA = 0.55;
+      if (t < 0.15) chA = 0.55 + Math.sin(t / 0.15 * Math.PI) * 0.12;
+      if (!rOn) { rOn = true; rX = cr + 3; rY = cy; rA = 0; }
+      rX += 0.4;
+      rA = Math.min(0.85, rA + 0.025);
+    }
+    /* ── Phase 4: chamber flickers and dissolves ── */
+    else if (cf < P4) {
+      const t = (cf - P3) / (P4 - P3);
+      if (rOn) {
+        rX += 0.3;
+        rA = Math.max(0, rA - 0.012);
+        if (rX > W + 20) rOn = false;
+      }
+      if (t < 0.35) {
+        chA = 0.55 * (0.3 + 0.7 * Math.abs(Math.sin(t / 0.35 * Math.PI * 5)));
+      } else if (t < 0.65) {
+        chA = 0.55 * Math.max(0, 1 - (t - 0.35) / 0.3) * 0.4;
+      } else {
+        chA = 0;
+      }
+      if (cf === P3 + 1) {
+        const ht = chHt();
+        for (const f of frags) {
+          f.x = cx + (Math.random() - 0.5) * CH_W * 0.85;
+          f.y = cy + (Math.random() - 0.5) * ht * 0.85;
+          const dx = f.x - cx, dy = f.y - cy;
+          const d = Math.sqrt(dx * dx + dy * dy) || 1;
+          f.vx = (dx / d) * (0.5 + Math.random() * 0.8);
+          f.vy = (dy / d) * (0.5 + Math.random() * 0.8);
+          f.a = 0; f.on = true;
+        }
+      }
+      for (const f of frags) {
+        if (!f.on) continue;
+        if (t > 0.25) f.a = Math.min(0.35, f.a + 0.018);
+        if (t > 0.4) { f.x += f.vx; f.y += f.vy; f.a = Math.max(0, f.a - 0.004); }
+      }
+    }
+    /* ── Phase 5: chamber reforms; gold mass approaches on odd cycles ── */
+    else if (cf < P5) {
+      const t = (cf - P4) / (P5 - P4);
+      rOn = false;
+      chA = Math.min(0.15, t * 0.3);
+      chSx = 0;
+      for (const f of frags) {
+        if (f.on) { f.x += f.vx * 0.2; f.y += f.vy * 0.2; f.a = Math.max(0, f.a - 0.003); }
+      }
+      if (isGold) {
+        const approach = Math.min(1, t * 1.25);
+        const ea = easeOut(approach);
+        const target = cl - 8;
+        const halfCH = chHt() / 2;
+        for (let i = 0; i < NG; i++) {
+          const g = golds[i];
+          if (!g.spill) {
+            const startX = -25 - (i % 5) * 10;
+            g.x = startX + (target - startX) * ea;
+            g.y = cy + g.yOff + Math.sin(frame * 0.02 + i * 0.7) * 2;
+            g.alpha = Math.min(g.base, approach * g.base);
+            if (approach > 0.8 && Math.abs(g.yOff) > halfCH - 5) {
+              g.spill = true;
+              const dir = g.yOff < 0 ? -1 : 1;
+              g.svx = 0.12 + Math.random() * 0.12;
+              g.svy = dir * (0.2 + Math.random() * 0.25);
+            }
+          } else {
+            g.x += g.svx; g.y += g.svy;
+            g.alpha = Math.max(0, g.alpha - 0.002);
+          }
+        }
+        if (approach > 0.7) {
+          chSx = (approach - 0.7) * 6 * Math.sin(frame * 0.6);
+        }
+      }
+    }
+    /* ── Phase 6: gold retreats, chamber stabilizes ── */
+    else if (cf < P6) {
+      const t = (cf - P5) / (P6 - P5);
+      chA = 0.15;
+      chSx *= 0.93;
+      for (const f of frags) { f.a = Math.max(0, f.a - 0.004); }
+      if (isGold) {
+        for (const g of golds) {
+          if (!g.spill) { g.x -= 0.6; }
+          else { g.x += g.svx; g.y += g.svy; }
+          g.alpha = Math.max(0, g.alpha * (1 - t * 0.012));
+          if (t > 0.6) g.alpha *= 0.95;
+        }
+      }
+    }
+    /* ── Phase 7: fade everything, snap reset ── */
+    else {
+      const t = (cf - P6) / (CY - P6);
+      chA = 0.15 * (1 - t);
+      chSx = 0; rOn = false;
+      for (const g of golds) { g.alpha *= 0.93; }
+      for (const f of frags) { f.a *= 0.92; }
+    }
+  }
+
+  function draw() {
+    if (!ctx) return;
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+
+    for (const a of ambs) {
+      ctx.globalAlpha = a.a;
+      ctx.fillStyle = COL_WARM;
+      ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    for (const p of stL) {
+      if (p.alpha < 0.003) continue;
+      ctx.globalAlpha = p.alpha;
+      ctx.fillStyle = COL_WARM;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+    }
+    for (const p of stR) {
+      if (p.alpha < 0.003) continue;
+      ctx.globalAlpha = p.alpha;
+      ctx.fillStyle = COL_WARM;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    for (const g of golds) {
+      if (g.alpha < 0.003) continue;
+      ctx.globalAlpha = g.alpha * 0.2;
+      ctx.fillStyle = COL_GOLD;
+      ctx.beginPath(); ctx.arc(g.x, g.y, g.r * 2.5, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = g.alpha;
+      ctx.beginPath(); ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    if (chA > 0.003) {
+      const x = chL() + chSx, y = chT(), w = CH_W, h = chHt();
+      ctx.globalAlpha = chA;
+      ctx.fillStyle = COL_STORY;
+      rrect(x, y, w, h, CH_RAD); ctx.fill();
+      ctx.globalAlpha = Math.min(0.5, chA * 0.7);
+      ctx.strokeStyle = COL_STORY;
+      ctx.lineWidth = 1.5;
+      rrect(x, y, w, h, CH_RAD); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+
+    for (const f of frags) {
+      if (f.a < 0.003) continue;
+      ctx.globalAlpha = f.a;
+      ctx.fillStyle = COL_STORY;
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    if (rOn && rA > 0.003) {
+      ctx.globalAlpha = rA * 0.2;
+      ctx.fillStyle = COL_STORY;
+      ctx.beginPath(); ctx.arc(rX, rY, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = rA;
+      ctx.beginPath(); ctx.arc(rX, rY, 3.5, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function tick() { frame++; update(); draw(); raf = requestAnimationFrame(tick); }
+
+  function init() { seedAmb(); seedStreams(); seedFrags(); seedGolds(); }
+
+  requestAnimationFrame(() => {
+    init();
+    if (prefersReduced) {
+      chA = 0.4;
+      const cy = H / 2;
+      const cl = chL(), cr = chR();
+      for (let i = 0; i < stL.length; i++) {
+        stL[i].x = cl - 25 - i * 14;
+        stL[i].y = cy + stL[i].yOff;
+        stL[i].alpha = stL[i].base;
+      }
+      for (let i = 0; i < stR.length; i++) {
+        stR[i].x = cr + 25 + i * 14;
+        stR[i].y = cy + stR[i].yOff;
+        stR[i].alpha = stR[i].base;
+      }
+      draw();
+    } else {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+        else { cancelAnimationFrame(raf); raf = 0; }
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+      window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); io.disconnect(); ro.disconnect(); });
+    }
+  });
+})();
+</script>

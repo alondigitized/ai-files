@@ -2450,5 +2450,81 @@
       "Outperformed OpenAI CLIP, Microsoft LLaVA, BioMedCLIP, Med-Flamingo by more than 30%.",
       "No FDA clearance, no clinical deployment; code and weights open-source on GitHub."
     ]
+  },
+  {
+    "slug": "deepmind-double-blind-evals",
+    "side": "light",
+    "chapter": 14,
+    "volume": 3,
+    "title": "The Test Nobody Could See",
+    "deck": "Google DeepMind and four partners sealed a proprietary model inside a cryptographic enclave and tested it blind — proving the test-taker can be separated from the test-grader, and showing how far that infrastructure still has to go.",
+    "date": "August 2026",
+    "isoDate": "2026-08-27",
+    "readTime": "8 min",
+    "emoji": "🔒",
+    "tags": [
+      "AI Evaluation",
+      "Benchmarks",
+      "Google DeepMind",
+      "Confidential Computing"
+    ],
+    "story": "#2a6f97",
+    "storyDark": "#e3edf4",
+    "verifyText": "Sourced to the DeepMind announcement and technical report of 27 August 2026, partner reports from AVERI, MLCommons and OpenMined, and four independent academic studies of benchmark contamination. Every account of the pilot itself comes from a participant; no external party has audited it.",
+    "sources": [
+      {
+        "label": "Google DeepMind — Piloting the World's First Double-Blind AI Evaluations",
+        "url": "https://deepmind.google/blog/piloting-the-worlds-first-double-blind-ai-evaluations/"
+      },
+      {
+        "label": "Double-Blind Evaluations — Technical Report (PDF)",
+        "url": "https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/piloting-the-worlds-first-double-blind-ai-evaluations/double-blind-evaluations-technical-report.pdf"
+      },
+      {
+        "label": "AVERI — Pilot Report: The World's First Double-Blind Eval",
+        "url": "https://www.averi.org/ourwork/averi-pilot-report-the-worlds-first-double-blind-eval"
+      },
+      {
+        "label": "MLCommons — Double-Blind Reliability Evaluation",
+        "url": "https://mlcommons.org/2026/08/double-blind-reliability-evaluation/"
+      },
+      {
+        "label": "OpenMined — Secure Enclaves for AI Evaluation",
+        "url": "https://openmined.org/blog/secure-enclaves-for-ai-evaluation/"
+      },
+      {
+        "label": "Singh et al. — The Leaderboard Illusion (arXiv 2504.20879)",
+        "url": "https://arxiv.org/abs/2504.20879"
+      },
+      {
+        "label": "Schaeffer et al. — Benchmark contamination study (arXiv 2601.04301)",
+        "url": "https://arxiv.org/abs/2601.04301"
+      },
+      {
+        "label": "Zhang et al. — GSM1k grade school math evaluation (arXiv 2405.00332)",
+        "url": "https://arxiv.org/abs/2405.00332"
+      },
+      {
+        "label": "Xu et al. — Benchmark leakage in LLMs (arXiv 2404.18824)",
+        "url": "https://arxiv.org/abs/2404.18824"
+      },
+      {
+        "label": "BleepingComputer — TEE.Fail breaks confidential computing on Intel, AMD, NVIDIA",
+        "url": "https://www.bleepingcomputer.com/news/security/teefail-attack-breaks-confidential-computing-on-intel-amd-nvidia-cpus/"
+      },
+      {
+        "label": "TechRepublic — Google DeepMind Gemini tests with Singapore AISI",
+        "url": "https://www.techrepublic.com/article/news-google-deepmind-gemini-tests-apac-singapore/"
+      }
+    ],
+    "llmsDescription": "In August 2026, Google DeepMind, AVERI, OpenMined, MLCommons, and Singapore's AI Safety Institute conducted what the partners describe as the first double-blind evaluation of a proprietary frontier AI model, testing Gemini 2.5 Flash Lite inside a Google Cloud Confidential Space enclave with Intel TDX and an NVIDIA H100 GPU using never-before-used AILuminate AIRR 1.4 safety prompts. The pilot demonstrated that structural separation between model provider and evaluator is technically achievable through hardware-enforced cryptographic enclaves, though the technical report acknowledges Google sits in the attestation verification path, proprietary code layers could not be fully inspected by the evaluator, and no quantitative scores were publicly disclosed. Four independent academic studies (Singh et al. 2025, Schaeffer et al. 2026, Zhang et al. 2024, Xu et al. 2024) document systematic benchmark contamination — the problem the pilot was designed to address — including Meta testing 27 private Llama-4 variants on Chatbot Arena and publishing only the top scorer.",
+    "abstract": [
+      "On 27 August 2026, Google DeepMind and four partners — AVERI, OpenMined, MLCommons, and Singapore's AI Safety Institute — published what they describe as the first double-blind evaluation of a proprietary frontier AI model.",
+      "The pilot tested Gemini 2.5 Flash Lite inside a Google Cloud Confidential Space enclave using Intel TDX memory encryption and an NVIDIA H100 80 GB Confidential GPU, against never-before-used AILuminate AIRR 1.4 safety prompts.",
+      "Four independent studies document systematic benchmark inflation: Meta tested 27 private Llama-4 variants on Chatbot Arena and published only the top scorer (Singh et al., 2025); a single test-set replica in pretraining beats irreducible error (Schaeffer et al., 2026).",
+      "No quantitative evaluation scores were publicly disclosed. The methodology is public; the results are not.",
+      "The technical report acknowledges Google sits in the attestation verification path, proprietary code layers could not be fully inspected, and scaling to trillion-parameter models requires distributed confidential compute that does not yet exist."
+    ],
+    "whatIf": "The pilot barely contained Gemini 2.5 Flash Lite — not a flagship model, not the system making decisions anyone worries about. The technical report identifies the next obstacle: frontier models are growing beyond trillions of parameters and would require distributed confidential clusters across many-node H100/B200 compute that does not yet exist. According to AVERI, the mandates arrive on schedule regardless — Illinois SB 315 in 2028, the EU AI Act's code of practice already operative. Consider what forms when a legal mandate arrives but its prerequisite infrastructure does not. An auditor is required to evaluate a frontier model. The enclave that could seal the evaluation cannot fit the model. The auditor cannot run it independently — the model requires proprietary code layers, specialized hardware, and a cloud environment the developer controls. So the auditor accepts the developer's self-reported test environment. The regulator accepts the auditor's report. The public accepts the regulator's certification. At every link in that chain, the structural separation the pilot was designed to provide — the guarantee that the test-taker cannot see the test — does not exist. But the paperwork does. This is not fraud. The auditor notes limitations in an appendix. The regulator files the report. The developer publishes the certification. And somewhere downstream, a procurement officer at a hospital system or a defense agency opens that certification, sees a model cleared for deployment, and signs. That signature is the last point at which anyone could have said no, and it rests on a test that no independent party was ever able to run. The system produces compliance artifacts at the speed of policy while verification infrastructure develops at the speed of hardware engineering and multi-party coordination — the 2024 predecessor needed twenty-eight minutes for a five-row dataset, twenty-seven of those minutes consumed by organizational overhead alone. Models scale faster than enclaves can expand to contain them. Every quarter the distance between what can be deployed and what can be independently verified grows wider. The question is not whether blind evaluation works — this pilot proved it does. The question is whether any institution has the authority and the means to say \"this model cannot be deployed until it has been verified inside a sealed environment that actually fits it\" — and what happens to the entire apparatus of AI governance when, for the foreseeable future, the answer is no."
   }
 ]
