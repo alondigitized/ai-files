@@ -1,0 +1,548 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'anthropic-model-hardware-standard')!;
+---
+
+<style is:global>
+  /* --- Reenactment 1: Agent Retry Loop (terminal trace) --- */
+  .mhs-agent-log { background: #0a0a0a; border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; font-family: 'Courier New', monospace; }
+  .mhs-agent-header { background: var(--surface2); padding: 0.5rem 1rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--border); font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .mhs-agent-header .mhs-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .mhs-agent-header .mhs-dot-r { background: #ff5f57; }
+  .mhs-agent-header .mhs-dot-y { background: #febc2e; }
+  .mhs-agent-header .mhs-dot-g { background: #28c840; }
+  .mhs-agent-header .mhs-tag { margin-left: auto; font-size: 0.58rem; padding: 0.15rem 0.5rem; border-radius: 3px; background: rgba(255,255,255,0.04); color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+  .mhs-step { padding: 0.9rem 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .mhs-step:last-child { border-bottom: none; }
+  .mhs-step-label { font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 0.4rem; }
+  .mhs-cmd { font-size: 0.78rem; color: var(--story); margin-bottom: 0.3rem; line-height: 1.5; }
+  .mhs-reasoning { font-size: 0.72rem; color: var(--muted); font-style: italic; margin-bottom: 0.3rem; line-height: 1.5; }
+  .mhs-result { font-size: 0.75rem; line-height: 1.5; }
+  .mhs-result-err { color: var(--accent); font-weight: 600; }
+  .mhs-result-crit { color: var(--accent); font-weight: 700; text-transform: uppercase; }
+  .mhs-step-human { background: rgba(255,255,255,0.02); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 0.78rem; font-style: italic; padding: 0.7rem 1.2rem; border-bottom: none; }
+  .mhs-agent-caption { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.5; }
+
+  /* --- Reenactment 2: Protocol Stack / The Gap --- */
+  .mhs-stack-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .mhs-stack-header { background: var(--surface2); padding: 0.55rem 1rem; font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--border); }
+  .mhs-stack-body { padding: 1.2rem 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 0; }
+  .mhs-stack-layer { text-align: center; padding: 0.6rem 0; width: 100%; max-width: 460px; }
+  .mhs-stack-layer-name { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.25rem; }
+  .mhs-stack-layer-detail { font-size: 0.72rem; color: var(--muted); font-style: italic; line-height: 1.45; }
+  .mhs-stack-layer.mhs-layer-top .mhs-stack-layer-name { color: var(--story); }
+  .mhs-stack-layer.mhs-layer-top .mhs-stack-layer-detail { color: var(--story); opacity: 0.75; }
+  .mhs-stack-layer.mhs-layer-mid .mhs-stack-layer-name { color: var(--muted); }
+  .mhs-stack-layer.mhs-layer-bottom .mhs-stack-layer-name { color: var(--story); }
+  .mhs-stack-layer.mhs-layer-bottom .mhs-stack-layer-detail { color: var(--text); }
+  .mhs-stack-arrow { font-size: 1rem; color: var(--muted); opacity: 0.4; padding: 0.15rem 0; text-align: center; }
+  .mhs-stack-arrow.mhs-arrow-error { color: var(--accent); opacity: 0.9; font-weight: 700; }
+  .mhs-stack-gap { border: 1px dashed var(--accent); border-radius: 6px; padding: 0.5rem 1rem; margin: 0.3rem 0; text-align: center; width: 100%; max-width: 460px; }
+  .mhs-stack-gap-label { font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  .mhs-stack-gap-text { font-size: 0.68rem; color: var(--muted); font-style: italic; margin-top: 0.15rem; line-height: 1.45; }
+  .mhs-stack-loop { font-size: 0.65rem; color: var(--accent); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.3rem 0; text-align: center; }
+  .mhs-stack-context { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); line-height: 1.5; }
+
+  /* --- Reenactment 3: The Spec That Isn't (document mockup) --- */
+  .mhs-spec-card { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; font-family: 'Courier New', monospace; }
+  .mhs-spec-header { background: var(--surface2); padding: 0.65rem 1rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .mhs-spec-title { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text); font-weight: 700; }
+  .mhs-spec-date { font-size: 0.6rem; color: var(--muted); letter-spacing: 0.1em; }
+  .mhs-spec-body { padding: 0; }
+  .mhs-spec-row { display: grid; grid-template-columns: 1fr auto; gap: 1rem; padding: 0.45rem 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.03); align-items: baseline; }
+  .mhs-spec-row:last-child { border-bottom: none; }
+  .mhs-spec-label { font-size: 0.75rem; color: var(--muted); }
+  .mhs-spec-absent { font-size: 0.72rem; color: var(--accent); font-weight: 600; text-align: right; white-space: nowrap; }
+  .mhs-spec-divider { padding: 0.5rem 1.2rem; border-top: 1px solid var(--border); }
+  .mhs-spec-divider-label { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 0.3rem; }
+  .mhs-spec-present { font-size: 0.72rem; color: var(--story); line-height: 1.6; }
+  .mhs-spec-context { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.5; }
+  @media (max-width: 600px) {
+    .mhs-spec-row { grid-template-columns: 1fr; gap: 0.25rem; }
+    .mhs-spec-absent { text-align: left; }
+    .mhs-stack-body { padding: 1rem; }
+  }
+
+  /* --- Canvas --- */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .anthropic-model-hardware-standard-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+  .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.6rem 0 0; padding: 0 1rem; line-height: 1.5; }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="bridge">
+      <h2><span class="num">01 — The Bridge</span>A Protocol Between Language and Matter</h2>
+
+      <p>A liquid handler pipetted bovine serum albumin into a 96-well plate. Bubbles formed in the wells. The AI agent orchestrating the experiment read an error in the absorbance data and did what software does with errors — it retried the operation with different parameters. The fluid agitated further. More bubbles.</p>
+
+      <p>The scene comes from Anthropic's own announcement. On August 27, 2026, the company published a research preview of what it calls the Model Hardware Standard, or MHS — a protocol for letting AI agents operate physical laboratory instruments through standardized driver software. Anthropic describes MHS as extending its Model Context Protocol, the open standard it released in November 2024 for connecting AI models to software tools, into the physical world. The announcement names six launch partners: Genentech, the University of Washington's Baker and Pinglay Labs, Carnegie Mellon University, HHMI Janelia Research Campus, QuEra Computing, and Tetsuwan Scientific. Additional industry supporters include Amazon Web Services, Automata, Danaher, Doosan Robotics, MBF Bioscience, QIAGEN, Tecan, and Universal Robots.</p>
+
+      <p>The scale of Anthropic's investment in laboratory AI extends beyond the standard itself. In April 2026, the company acquired Coefficient Bio for approximately $400 million in an all-stock deal. Coefficient Bio had fewer than ten employees, nearly all former Genentech computational biology researchers; its founders, Samuel Stanton and Nathan C. Frey, both came out of Genentech's Prescient Design group. In October 2025, Anthropic had launched Claude for Life Sciences, bundling scientific connectors and free API credits for researchers.</p>
+
+      <p>"There's no common way to connect a model to physical equipment," Alek Kemeny, an Anthropic researcher on the company's Beneficial Deployments team, told <em>R&amp;D World</em>. "The Model Hardware Standard changes that." His co-developer, Dr. Arco Bast, a postdoctoral scientist at HHMI Janelia, described the architecture: "With MHS, each device connects once. Any device that speaks MHS can talk to anything else that does." According to Anthropic's announcement, MHS provides device discoverability in a standard format, read commands (such as "get temperature") and write commands (such as "set temperature"), natural language tags describing device characteristics, and auto-generated reference files. No public specification document has been released.</p>
+
+      <p>The ambition is legible. So is the precedent. In December 2023, researchers at Carnegie Mellon published Coscientist in <em>Nature</em> — a system that used GPT-4 to autonomously plan and execute palladium-catalyzed cross-coupling reactions, controlling a liquid handler and a spectrophotometer without human intervention. <em>Chemistry World</em> reported that Coscientist "can produce controlled drugs and chemical weapons when prompted." A month earlier, in November 2023, the A-Lab at Lawrence Berkeley National Laboratory published a <em>Nature</em> paper claiming autonomous synthesis of 43 new materials in 17 days. Independent analysis by Robert Palgrave at UCL and Leslie Schoop at Princeton later found the AI had likely made no actual new discoveries — "two thirds of their entire predictions were just ordered versions of compounds that were already known to be disordered." The <em>Nature</em> paper was corrected; critics said the corrections did not fully address the concerns. This is not the first time an AI has touched lab hardware. What is different here is not the automation but the ambition to standardize it. The prior art shows both what is possible and what goes wrong when autonomous lab claims outrun verification.</p>
+    </section>
+  </div>
+
+  <div class="container">
+    <div class="phantom-wrap">
+      <canvas class="anthropic-model-hardware-standard-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Medium</strong> — a cold cyan node emits clean command pulses downward toward a cluster of ambient particles; each pulse scatters the cluster further, but the single dot that rises back is always identical; after three cycles the field is dispersed and flickering while the node above sits serene; hold; snap reset.</p>
+  </div>
+
+  <div class="container">
+    <section class="section" id="bubbles">
+      <h2><span class="num">02 — More Bubbles</span>The Error That Was Not an Error</h2>
+
+      <p>The experiment Anthropic disclosed in its launch post involved a BCA protein assay at Genentech. A bicinchoninic acid assay works by exploiting a reaction between peptides and copper: proteins reduce Cu²⁺ to Cu¹⁺, which then chelates with bicinchoninic acid to form a purple complex. That complex absorbs light at 562 nm. By measuring the absorbance against a standard curve of bovine serum albumin at known concentrations, a researcher can determine how much protein is in a sample. The measurement follows the Beer–Lambert law: absorbance is proportional to concentration, provided the optical path through the well is clean.</p>
+
+      <p>Bubbles break that path. Air trapped in a microplate well scatters the light before it reaches the detector, deflecting the absorbance reading. Thermo Fisher's protocol for protein quantitation assays instructs users to "pipette gently to avoid the introduction of bubbles." Standard microplate assay protocols warn against bubble formation for exactly this reason. This is established bench chemistry. A first-year lab technician learns it during orientation week.</p>
+
+      <p>According to Anthropic's launch post, the Genentech experiment coordinated three instruments via MHS: a liquid handler, a robotic arm, and a microplate reader. BSA was dispensed at known concentrations into a 96-well plate. Claude orchestrated the protocol. When bubbles formed during mixing and distorted the absorbance readings, Claude received runtime errors. Anthropic's announcement states: "Claude's default instinct was simply to retry the operation in the same plate well with different parameters. But this only agitated the fluid further and created more bubbles." Researchers had to intervene and explain the physical mechanism.</p>
+
+      <div class="mhs-agent-log">
+        <div class="mhs-agent-header">
+          <span class="mhs-dot mhs-dot-r"></span>
+          <span class="mhs-dot mhs-dot-y"></span>
+          <span class="mhs-dot mhs-dot-g"></span>
+          MHS Agent Execution Trace
+          <span class="mhs-tag">Reconstructed from Anthropic's description</span>
+        </div>
+        <div class="mhs-step">
+          <div class="mhs-step-label">Step 1 — Dispense</div>
+          <div class="mhs-cmd">write: dispense BSA, volume: 25 µL, speed: default</div>
+          <div class="mhs-result"><span class="mhs-result-err">ERROR: Absorbance anomaly detected in well B4 (expected 0.45–0.55 AU, observed 0.23 AU)</span></div>
+        </div>
+        <div class="mhs-step">
+          <div class="mhs-step-label">Step 2 — Retry</div>
+          <div class="mhs-reasoning">"Absorbance below expected range. Likely insufficient sample delivery. Retrying with adjusted parameters."</div>
+          <div class="mhs-cmd">write: dispense BSA, volume: 25 µL, speed: 120 µL/s</div>
+          <div class="mhs-result"><span class="mhs-result-err">ERROR: Absorbance anomaly in well B4 (observed 0.19 AU) — variance increasing</span></div>
+        </div>
+        <div class="mhs-step">
+          <div class="mhs-step-label">Step 3 — Retry</div>
+          <div class="mhs-reasoning">"Delivery volume may be insufficient. Increasing volume and flow rate."</div>
+          <div class="mhs-cmd">write: dispense BSA, volume: 30 µL, speed: 140 µL/s</div>
+          <div class="mhs-result"><span class="mhs-result-crit">ERROR: Absorbance anomaly in well B4 (observed 0.11 AU) — critical: readings diverging from standard curve</span></div>
+        </div>
+        <div class="mhs-step mhs-step-human">
+          [Researcher intervenes: "The problem is bubbles. Stop pipetting."]
+        </div>
+        <div class="mhs-agent-caption">"Each retry agitated the fluid further." The command syntax and error values above are illustrative. The underlying behaviour — retry with different parameters, more bubbles, researcher intervention — is directly described in Anthropic's August 27, 2026 launch post.</div>
+      </div>
+
+      <p>The logic at the software level was sound. Detect an anomalous reading. Hypothesize insufficient sample delivery. Adjust parameters. Retry. At the physical level, each retry drove the pipette tip into a viscous protein solution at increasing speed, introducing turbulence that created the very artifact the model was trying to correct. The absorbance readings did not improve. They degraded, because the model was optimizing for a metric while worsening the physical state that produced it.</p>
+
+      <p>After researchers intervened and explained the bubble mechanism, Anthropic reports that Claude eventually optimized fluid-handling parameters by conducting trial transfers with dyed liquid and analyzing absorbance readings. According to Anthropic's account, the model found that water could be dispensed at approximately 140 µL/s with an RMSE of 0.016, while the more viscous BSA required approximately 10 µL/s with an RMSE of 0.181. The resolution narrative follows the failure narrative in Anthropic's curated disclosure. The failure is an admission against interest; the optimization is self-serving. No independent Genentech publication or statement from the named Genentech scientists — Anupriya Tripathi, Matthew Bucci, Justin Nicola, and Corinne Gullekson — has been located.</p>
+
+      <p>Anthropic's announcement acknowledges that Claude's "spatial and physical reasoning have limitations" requiring expert oversight, that it cannot troubleshoot hardware failures without human guidance, and that it often "stopped to wait for human confirmation" before risky actions.</p>
+
+      <div class="mhs-stack-wrap">
+        <div class="mhs-stack-header">The Gap — Protocol Stack</div>
+        <div class="mhs-stack-body">
+          <div class="mhs-stack-layer mhs-layer-top">
+            <div class="mhs-stack-layer-name">Claude (Language Model)</div>
+            <div class="mhs-stack-layer-detail">"Absorbance reading anomalous. Retry with adjusted flow rate."</div>
+          </div>
+          <div class="mhs-stack-arrow">↓</div>
+          <div class="mhs-stack-layer mhs-layer-mid">
+            <div class="mhs-stack-layer-name">MCP / MHS Driver Layer</div>
+          </div>
+          <div class="mhs-stack-arrow">↓</div>
+          <div class="mhs-stack-layer mhs-layer-mid">
+            <div class="mhs-stack-layer-name">Device Command</div>
+            <div class="mhs-stack-layer-detail">dispense(volume=30, speed=140)</div>
+          </div>
+          <div class="mhs-stack-arrow">↓</div>
+          <div class="mhs-stack-layer mhs-layer-mid">
+            <div class="mhs-stack-layer-name">Liquid Handler Motor</div>
+          </div>
+          <div class="mhs-stack-arrow">↓</div>
+          <div class="mhs-stack-layer mhs-layer-bottom">
+            <div class="mhs-stack-layer-name">Physical World</div>
+            <div class="mhs-stack-layer-detail">Pipette tip agitates viscous BSA solution. Bubbles form. Bubbles scatter light at 562 nm. Absorbance reading: anomalous.</div>
+          </div>
+          <div class="mhs-stack-arrow mhs-arrow-error">↑</div>
+          <div class="mhs-stack-gap">
+            <div class="mhs-stack-gap-label">The Gap</div>
+            <div class="mhs-stack-gap-text">Physical state — bubbles, viscosity, surface tension — does not travel upward. Only the error code does.</div>
+          </div>
+          <div class="mhs-stack-arrow mhs-arrow-error">↑</div>
+          <div class="mhs-stack-loop">[ Error returned to Claude — loop repeats ]</div>
+        </div>
+        <div class="mhs-stack-context">Claude reasons at the top of the stack. The physics happens at the bottom. The only signal that crosses the gap is a number.</div>
+      </div>
+    </section>
+
+    <section class="section" id="instinct">
+      <h2><span class="num">03 — Software Instinct</span>Competence Pointed at the Wrong Ontology</h2>
+
+      <p>The bubble failure was not a bug in MHS. It was a property of the model the standard connects to hardware.</p>
+
+      <p>Claude learns about the physical world through text and images. When it encounters a physical anomaly manifesting as a numerical error, it reasons with the tools it has: parameter adjustment, retry logic, error-code interpretation. It has no model of fluid dynamics, no representation of surface tension, no internal simulation of what happens when a pipette tip strikes a viscous protein solution at 140 microlitres per second. Anthropic acknowledges this directly, conceding that Claude's spatial and physical reasoning has limits. Those limits are not a gap in the protocol layer. They are a property of large language models as a class. MHS does not introduce the limitation. MHS routes it to a motor.</p>
+
+      <p>The compounding math makes the structural risk precise. At 99 percent per-step reliability — an optimistic assumption for agentic tool use — a 20-step protocol succeeds approximately 82 percent of the time (0.99 raised to the 20th power is 0.818). In a software environment, a failed retry wastes compute. The process can be restarted from a clean state. In a physical environment, a failed retry changes the state of matter. The next retry acts on the changed state, not the original state. The bubbles Claude created on step two were still in the well when it retried on step three. Each corrective action compounded the physical damage from the previous one.</p>
+
+      <p>The most revealing detail in the launch is not a failure. It is a success — and what it required. QuEra Computing, which builds quantum computers, used MHS to develop an automated laser-lock recovery system for a titanium-sapphire laser. According to Anthropic's account of the QuEra work, the previous scripted approach had a 58 percent success rate at approximately 150 seconds per attempt. The prior system experienced 1.6 unlocks per hour. QuEra reports the MHS-connected Claude agent achieved 99.3 percent success (695 of 700 trials), with recovery times of 0.9 to 5.4 seconds for wavelength-preserving faults and 10 to 14 seconds for severe faults, compared to a human expert baseline of 5 to 10 minutes.</p>
+
+      <p>The number is impressive. The architecture is more interesting. What runs on QuEra's bench is, in QuEra's own words, "a deterministic, fully inspectable program." Claude was used during the development phase — to design and tune a PID controller that stabilizes the laser lock. The AI is not in the real-time control loop. The most successful quantitative result in the entire MHS launch is the one where the AI designed the system and then stepped out of it. The controller that holds QuEra's laser lock at 99.3 percent does not contain a language model. It contains the product of one.</p>
+
+      <p>This distinction matters because it draws a line between two categories of AI–hardware interaction. In the first, the AI assists engineering: it helps design a controller, optimize parameters, or generate code, and a deterministic system executes the result. In the second, the AI is in the loop: it receives sensor data, reasons about it, and issues commands in real time. The QuEra case is the first category. The Genentech case is the second. The bubble failure happened in the second category. No comparable failure has been documented in the first — because in the first, the model's reasoning errors are caught during development, not during execution.</p>
+
+      <p>Kaoutar El Maghraoui, an IBM principal research scientist, offered the only independent assessment located outside Anthropic's launch partnership. Speaking on IBM's <em>Mixture of Experts</em> podcast, she said of MHS: "It is an impressive proof of concept, but how do we ensure safety in the physical world? Because small errors can matter here."</p>
+    </section>
+
+    <section class="section" id="standard">
+      <h2><span class="num">04 — The Signal</span>The Standard Without a Standard</h2>
+
+      <p>As of this story's publication, the Model Hardware Standard does not exist as a public document.</p>
+
+      <p>No specification has been released. No SDK. No schema definition. No source repository. No license. No conformance test suite. No version number. No governance model. No threat model. No regulatory certification path. The website at modelhardwarestandard.com contains an announcement and an application form. Everything known about MHS architecture comes from Anthropic's verbal description in its launch post, not from a published document anyone can read or review.</p>
+
+      <div class="mhs-spec-card">
+        <div class="mhs-spec-header">
+          <span class="mhs-spec-title">Model Hardware Standard — Research Preview</span>
+          <span class="mhs-spec-date">Checked Sep 8, 2026</span>
+        </div>
+        <div class="mhs-spec-body">
+          <div class="mhs-spec-row"><span class="mhs-spec-label">Specification document</span><span class="mhs-spec-absent">Not published</span></div>
+          <div class="mhs-spec-row"><span class="mhs-spec-label">SDK / reference implementation</span><span class="mhs-spec-absent">Not published</span></div>
+          <div class="mhs-spec-row"><span class="mhs-spec-label">Schema definition</span><span class="mhs-spec-absent">Not published</span></div>
+          <div class="mhs-spec-row"><span class="mhs-spec-label">Source repository</span><span class="mhs-spec-absent">Not published</span></div>
+          <div class="mhs-spec-row"><span class="mhs-spec-label">License</span><span class="mhs-spec-absent">Not published</span></div>
+          <div class="mhs-spec-row"><span class="mhs-spec-label">Conformance test suite</span><span class="mhs-spec-absent">Not published</span></div>
+          <div class="mhs-spec-row"><span class="mhs-spec-label">Version number</span><span class="mhs-spec-absent">Not published</span></div>
+          <div class="mhs-spec-row"><span class="mhs-spec-label">Governance model</span><span class="mhs-spec-absent">Not published</span></div>
+          <div class="mhs-spec-row"><span class="mhs-spec-label">Threat model</span><span class="mhs-spec-absent">Not published</span></div>
+          <div class="mhs-spec-row"><span class="mhs-spec-label">Regulatory certification path</span><span class="mhs-spec-absent">Not published</span></div>
+        </div>
+        <div class="mhs-spec-divider">
+          <div class="mhs-spec-divider-label">Published</div>
+          <div class="mhs-spec-present">Blog post (Aug 27, 2026)<br />Application form</div>
+        </div>
+        <div class="mhs-spec-context">Source: modelhardwarestandard.com and Anthropic's launch post, both checked September 8, 2026.</div>
+      </div>
+
+      <p>Anthropic describes MHS as "model-agnostic," stating that "any agent harness can access it using standard protocols." Every published demonstration, case study, and partner blog uses Claude or Claude Code. No non-Claude benchmark or implementation has been made public. The claim cannot be evaluated against an implementation because the implementation has not been published.</p>
+
+      <p>Anthropic states it is "developing a physical safety roadmap to further bolster our safeguards policy" and that when it open-sources MHS, it will "release findings from the research preview as part of our guidance for deploying the standard safely." No timeline for open-sourcing has been given. The safety roadmap is a stated intention, not a delivered artifact.</p>
+
+      <p>Carnegie Mellon's safety testing, as reported in Anthropic's announcement, deliberately induced six failure conditions: a missing plate, a rotated plate, a busy reader, a disconnected camera, an unreachable device, and an active emergency stop. The system blocked all six before any device moved. Six hand-picked failure scenarios is a minimal smoke test. It is not a comprehensive safety audit, a threat model, or a regulatory certification. Anthropic did not claim it was. But six tests is the entire publicly documented safety validation for a standard that proposes to govern AI control of physical laboratory equipment.</p>
+
+      <p>The gap between the ambition and the artifact is the signal. MHS proposes a universal protocol for AI–hardware interaction. As of publication, the protocol exists as a name, a blog post, an application form, and a set of coordinated partner demonstrations whose quantitative claims have not been peer-reviewed or independently replicated. The A-Lab precedent is instructive: a <em>Nature</em> paper claimed 43 autonomously synthesized materials; independent analysis found likely zero genuine discoveries. Autonomous lab claims can be significantly overstated. No MHS performance metric has faced independent scrutiny.</p>
+
+      <p>Anthropic has built a bridge between language and matter, and its own launch post shows the bridge carries a structural property: the model on one side cannot perceive the physics on the other. The standard that will govern this bridge does not yet exist as a public document. The partners who tested it report numbers no one outside the partnership has verified. The question is not whether AI will operate lab hardware. It is whether the feedback loop between an error code and a physical consequence will have a human in it when the protocol leaves the research preview.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+  (function () {
+    const canvas = document.querySelector('.anthropic-model-hardware-standard-canvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const rootStyle = getComputedStyle(document.documentElement);
+    const BG = (rootStyle.getPropertyValue('--bg') || '#0d0d0d').trim();
+    const STORY = (rootStyle.getPropertyValue('--story') || '#67e8f9').trim();
+    const DANGER = (rootStyle.getPropertyValue('--accent') || '#ff4d4d').trim();
+
+    // Parse a hex colour into "r, g, b" so we can build rgba() strings.
+    function rgbOf(hex: string, fallback: string): string {
+      const m = /^#?([0-9a-f]{6})$/i.exec(hex);
+      if (!m) return fallback;
+      const n = parseInt(m[1], 16);
+      return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
+    }
+    const STORY_RGB = rgbOf(STORY, '103, 232, 249');
+    const DANGER_RGB = rgbOf(DANGER, '255, 77, 77');
+
+    let W = 0;
+    let H = 0;
+
+    type P = { x: number; y: number; vx: number; vy: number; r: number; tint: number };
+    let cluster: P[] = [];
+    let floaters: P[] = [];
+
+    // Cycle geometry, in frames (~60fps → ~19s per full loop).
+    const CYCLES = [
+      { start: 0, width: 2, speed: 1.5, impulse: 3 },
+      { start: 300, width: 3, speed: 1.8, impulse: 5 },
+      { start: 600, width: 4, speed: 2.0, impulse: 8 },
+    ];
+    const HOLD_END = 1080;
+    const TOTAL = 1140;
+
+    let frame = 0;
+    let rafId = 0;
+    let running = false;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function agentY() { return Math.max(44, H * 0.14); }
+    function clusterY() { return H * 0.76; }
+
+    function seed() {
+      const cx = W / 2;
+      const cy = clusterY();
+      cluster = [];
+      for (let i = 0; i < 30; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const d = Math.random() * 26;
+        cluster.push({
+          x: cx + Math.cos(a) * d,
+          y: cy + Math.sin(a) * d * 0.6,
+          vx: 0, vy: 0,
+          r: 2 + Math.random(),
+          tint: 0,
+        });
+      }
+      floaters = [];
+      for (let i = 0; i < 9; i++) {
+        floaters.push({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          vx: (Math.random() - 0.5) * 0.2,
+          vy: (Math.random() - 0.5) * 0.2,
+          r: 1 + Math.random(),
+          tint: 0,
+        });
+      }
+    }
+
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const rect = canvas!.getBoundingClientRect();
+      W = rect.width;
+      H = rect.height;
+      canvas!.width = Math.max(1, Math.round(W * dpr));
+      canvas!.height = Math.max(1, Math.round(H * dpr));
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      seed();
+      if (reduced) drawStatic();
+    }
+
+    function clear() {
+      ctx!.fillStyle = BG;
+      ctx!.fillRect(0, 0, W, H);
+    }
+
+    function drawFloaters() {
+      for (const f of floaters) {
+        f.x += f.vx; f.y += f.vy;
+        if (f.x < -5) f.x = W + 5;
+        if (f.x > W + 5) f.x = -5;
+        if (f.y < -5) f.y = H + 5;
+        if (f.y > H + 5) f.y = -5;
+        ctx!.beginPath();
+        ctx!.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+        ctx!.fillStyle = 'rgba(232,232,232,0.04)';
+        ctx!.fill();
+      }
+    }
+
+    function drawAgent(bright: number) {
+      const y = agentY();
+      const r = 6 + Math.sin(frame / 30) * 1 + bright * 3;
+      const g = ctx!.createRadialGradient(W / 2, y, 0, W / 2, y, r * 5);
+      g.addColorStop(0, `rgba(${STORY_RGB},${0.28 + bright * 0.4})`);
+      g.addColorStop(1, `rgba(${STORY_RGB},0)`);
+      ctx!.beginPath();
+      ctx!.arc(W / 2, y, r * 5, 0, Math.PI * 2);
+      ctx!.fillStyle = g;
+      ctx!.fill();
+      ctx!.beginPath();
+      ctx!.arc(W / 2, y, r, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(${STORY_RGB},${0.55 + bright * 0.45})`;
+      ctx!.fill();
+    }
+
+    function drawCluster() {
+      const cx = W / 2;
+      const cy = clusterY();
+      for (const p of cluster) {
+        // Weak inward gravity: the field stretches but never flies apart,
+        // and never fully recovers either.
+        p.vx += (cx - p.x) * 0.0006;
+        p.vy += (cy - p.y) * 0.0006;
+        p.vx *= 0.97; p.vy *= 0.97;
+        p.x += p.vx + (Math.random() - 0.5) * 0.15;
+        p.y += p.vy + (Math.random() - 0.5) * 0.15;
+        if (p.tint > 0) p.tint -= 0.016;
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx!.fillStyle = p.tint > 0
+          ? `rgba(${DANGER_RGB},${0.15 * p.tint + 0.05})`
+          : 'rgba(232,232,232,0.07)';
+        ctx!.fill();
+      }
+    }
+
+    function impact(strength: number, withRipple: boolean) {
+      const cx = W / 2;
+      const cy = clusterY();
+      for (const p of cluster) {
+        const dx = p.x - cx;
+        const dy = p.y - cy;
+        const d = Math.hypot(dx, dy) || 1;
+        const k = (strength / d) * (0.6 + Math.random() * 0.8);
+        p.vx += dx * k * 0.12 + (Math.random() - 0.5) * strength * 0.15;
+        p.vy += dy * k * 0.12 + (Math.random() - 0.5) * strength * 0.15;
+      }
+      if (withRipple) {
+        const sorted = [...cluster].sort(
+          (a, b) => Math.hypot(b.x - cx, b.y - cy) - Math.hypot(a.x - cx, a.y - cy)
+        );
+        for (let i = 0; i < 4 && i < sorted.length; i++) sorted[i].tint = 1;
+      }
+    }
+
+    function drawStatic() {
+      clear();
+      drawFloaters();
+      ctx!.beginPath();
+      ctx!.moveTo(W / 2, agentY() + 10);
+      ctx!.lineTo(W / 2, clusterY() - 24);
+      ctx!.strokeStyle = `rgba(${STORY_RGB},0.16)`;
+      ctx!.lineWidth = 2;
+      ctx!.stroke();
+      drawCluster();
+      drawAgent(0);
+    }
+
+    let rippleAt = -1;
+
+    function draw() {
+      clear();
+      drawFloaters();
+
+      const cy = clusterY();
+      const ay = agentY();
+      let bright = 0;
+
+      for (let i = 0; i < CYCLES.length; i++) {
+        const c = CYCLES[i];
+        const t = frame - c.start;
+        if (t < 0 || t >= 300) continue;
+
+        // Reasoning pulse before the command goes out.
+        if (t < 20) bright = 1 - t / 20;
+
+        const travel = cy - ay - 24;
+        const dur = travel / c.speed;
+        const tipT = t - 20;
+
+        if (tipT >= 0 && tipT < dur) {
+          const tip = ay + 10 + tipT * c.speed;
+          ctx.beginPath();
+          ctx.moveTo(W / 2, ay + 10);
+          ctx.lineTo(W / 2, tip);
+          ctx.strokeStyle = `rgba(${STORY_RGB},0.45)`;
+          ctx.lineWidth = c.width;
+          ctx.stroke();
+        }
+
+        const impactFrame = Math.round(20 + dur);
+        if (t === impactFrame) {
+          impact(c.impulse, i === 2);
+          if (i === 2) rippleAt = frame;
+        }
+
+        // Radial flash at the moment of impact.
+        if (t > impactFrame && t < impactFrame + 22) {
+          const k = 1 - (t - impactFrame) / 22;
+          const g = ctx.createRadialGradient(W / 2, cy, 0, W / 2, cy, 70);
+          g.addColorStop(0, `rgba(${STORY_RGB},${0.28 * k})`);
+          g.addColorStop(1, `rgba(${STORY_RGB},0)`);
+          ctx.beginPath();
+          ctx.arc(W / 2, cy, 70, 0, Math.PI * 2);
+          ctx.fillStyle = g;
+          ctx.fill();
+        }
+
+        // The return signal: identical every cycle, carrying nothing.
+        const riseStart = impactFrame + 22;
+        const riseDur = (cy - ay) / 1.0;
+        if (t >= riseStart && t < riseStart + riseDur) {
+          const y = cy - (t - riseStart) * 1.0;
+          ctx.beginPath();
+          ctx.arc(W / 2, y, 3, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${STORY_RGB},0.5)`;
+          ctx.fill();
+        }
+        if (t >= riseStart + riseDur && t < riseStart + riseDur + 18) {
+          bright = 1 - (t - riseStart - riseDur) / 18;
+        }
+      }
+
+      // Compounding ripple on the third impact.
+      if (rippleAt >= 0) {
+        const rt = frame - rippleAt;
+        if (rt < 40) {
+          ctx.beginPath();
+          ctx.arc(W / 2, cy, (rt / 40) * 120, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(${DANGER_RGB},${0.25 * (1 - rt / 40)})`;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+        } else {
+          rippleAt = -1;
+        }
+      }
+
+      // Reset: the field contracts back and the tint clears.
+      if (frame >= HOLD_END) {
+        const cx = W / 2;
+        for (const p of cluster) {
+          p.x += (cx - p.x) * 0.08;
+          p.y += (cy - p.y) * 0.08;
+          p.vx *= 0.8; p.vy *= 0.8;
+          p.tint = 0;
+        }
+      }
+
+      drawCluster();
+      drawAgent(bright);
+
+      frame++;
+      if (frame >= TOTAL) { frame = 0; rippleAt = -1; seed(); }
+    }
+
+    function loop() {
+      draw();
+      rafId = requestAnimationFrame(loop);
+    }
+
+    function start() {
+      if (running || reduced) return;
+      running = true;
+      rafId = requestAnimationFrame(loop);
+    }
+    function stop() {
+      if (!running) return;
+      running = false;
+      cancelAnimationFrame(rafId);
+    }
+
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas);
+    resize();
+
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) start(); else stop();
+      }
+    }, { threshold: 0 });
+    io.observe(canvas);
+
+    window.addEventListener('beforeunload', () => {
+      stop();
+      ro.disconnect();
+      io.disconnect();
+    });
+  })();
+</script>

@@ -2450,5 +2450,75 @@
       "Outperformed OpenAI CLIP, Microsoft LLaVA, BioMedCLIP, Med-Flamingo by more than 30%.",
       "No FDA clearance, no clinical deployment; code and weights open-source on GitHub."
     ]
+  },
+  {
+    "slug": "anthropic-model-hardware-standard",
+    "side": "dark",
+    "chapter": 33,
+    "volume": 6,
+    "title": "More Bubbles",
+    "deck": "Anthropic built a protocol so AI agents can run lab hardware. Its own launch post shows Claude making a physical problem worse by treating it as a software bug.",
+    "date": "September 2026",
+    "isoDate": "2026-09-08",
+    "readTime": "7 min",
+    "emoji": "🫧",
+    "tags": [
+      "Anthropic",
+      "Claude",
+      "Lab Automation",
+      "Agents",
+      "Genentech",
+      "Safety"
+    ],
+    "story": "#67e8f9",
+    "storyDark": "#0e4a52",
+    "verifyText": "Sourced from Anthropic's August 2026 MHS announcement, QuEra Computing's own write-up, Thermo Fisher assay protocols, Nature, Chemistry World, and IBM commentary. Every metric is self-reported; the Genentech anecdote rests solely on Anthropic's disclosure.",
+    "sources": [
+      {
+        "label": "Anthropic — Previewing the Model Hardware Standard",
+        "url": "https://www.anthropic.com/news/model-hardware-standard-research-preview"
+      },
+      {
+        "label": "Model Hardware Standard — research preview site",
+        "url": "https://www.modelhardwarestandard.com/"
+      },
+      {
+        "label": "QuEra Computing — Holding the Light: Teaching an AI to Lock and Tune Our Quantum Computer's Lasers",
+        "url": "https://www.quera.com/blog-posts/holding-the-light-teaching-an-ai-to-lock-and-tune-our-quantum-computers-lasers"
+      },
+      {
+        "label": "Singularity Hub — Claude Can Now Autonomously Run Science Experiments With Lab Equipment",
+        "url": "https://singularityhub.com/2026/09/04/anthropics-claude-can-now-autonomously-run-science-experiments-with-lab-equipment/"
+      },
+      {
+        "label": "R&D World — Anthropic Wants Claude to Run Life Sciences R&D",
+        "url": "https://www.rdworldonline.com/anthropic-wants-claude-to-run-life-sciences-rd-now-it-is-wiring-ai-agents-into-the-lab/"
+      },
+      {
+        "label": "Thermo Fisher — Protein Assay Quantitation Troubleshooting",
+        "url": "https://www.thermofisher.com/us/en/home/technical-resources/technical-reference-library/protein-assays-analysis-support-center/protein-assays-quantitation-support/protein-assays-quantitation-support-troubleshooting.html"
+      },
+      {
+        "label": "Nature — Autonomous chemical research with large language models (Coscientist)",
+        "url": "https://www.nature.com/articles/s41586-023-06792-0"
+      },
+      {
+        "label": "Chemistry World — New analysis raises doubts over autonomous lab's materials discoveries",
+        "url": "https://www.chemistryworld.com/news/new-analysis-raises-doubts-over-autonomous-labs-materials-discoveries/4018791.article"
+      },
+      {
+        "label": "Anthropic — Introducing the Model Context Protocol",
+        "url": "https://www.anthropic.com/news/model-context-protocol"
+      }
+    ],
+    "llmsDescription": "On August 27, 2026, Anthropic announced the Model Hardware Standard (MHS), a protocol for AI agents to operate physical laboratory instruments, with six launch partners including Genentech, QuEra Computing, and Carnegie Mellon University. Anthropic's own announcement disclosed that when Claude encountered bubbles during a BCA protein assay at Genentech, the model's \"default instinct\" was to retry the pipetting operation with different parameters, which agitated the fluid further and created more bubbles — a failure in which software-style error recovery worsened a physical problem. As of September 2026, no public MHS specification, SDK, governance model, or independent performance validation has been published.",
+    "abstract": [
+      "Anthropic announced the Model Hardware Standard (MHS) research preview on August 27, 2026, with six launch partners: Genentech, the UW Baker and Pinglay labs, Carnegie Mellon, HHMI Janelia, QuEra Computing, and Tetsuwan Scientific.",
+      "Anthropic's launch post disclosed that Claude's retry logic during a BCA protein assay at Genentech created more bubbles by agitating the fluid; researchers had to intervene and explain the physics.",
+      "QuEra Computing reported 99.3% laser-lock recovery (695 of 700 trials), but the runtime controller is a deterministic program — the AI assisted development and is not in the real-time loop.",
+      "No public MHS specification, SDK, license, governance model, threat model, or conformance suite had been published as of September 2026.",
+      "IBM principal research scientist Kaoutar El Maghraoui called MHS \"an impressive proof of concept\" but asked how safety is ensured in the physical world, \"because small errors can matter here.\""
+    ],
+    "whatIf": "The bubble failure at Genentech ruined a standard curve. BSA reagent costs dollars. The worst outcome was a wasted afternoon and a researcher walking across the lab to say stop.\n\nNow place the same failure mode in a GMP pharmaceutical compounding facility where the liquid handler is filling vials with a biologic drug at $14,000 per dose. The model encounters a pressure anomaly in the fill line — a partial occlusion, a viscosity shift from a temperature fluctuation, a micro-bubble train forming at the needle tip. The anomaly manifests as a deviation in the fill-weight sensor. The model does what it did at Genentech: it adjusts a parameter and retries. It increases line pressure. It modifies the fill speed. Each adjustment changes the physical state of the fluid in ways the model cannot observe — shear stress on a shear-sensitive protein, aeration of a formulation that cannot tolerate dissolved oxygen, foaming in a surfactant-containing buffer. The fill weights return to spec. The vials look full. The deviation clears. And the protein in those vials has been denatured by the very correction that made the numbers look right.\n\nThe economic logic of MHS is explicit: reduce integration time from weeks to hours, run protocols three times faster, eliminate the bottleneck of manual oversight. The bottleneck being eliminated is the human standing next to the machine. The postdoc who would see the foam. The technician who would feel the tubing vibrate. The operator who learned in their first month that when the fill weight drifts, you do not increase pressure — you stop the line and check the filter. The standard proposes to route an AI's reasoning to a motor. That reasoning treats a pressure reading the same way it treats an HTTP status code: as a signal to be optimized, not as a symptom of a physical state that may be irreversible once changed.\n\nWhen the feedback loop between a language model and a physical instrument has no human in it, who detects the error that does not produce an error code?"
   }
 ]
