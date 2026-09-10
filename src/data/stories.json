@@ -2450,5 +2450,66 @@
       "Outperformed OpenAI CLIP, Microsoft LLaVA, BioMedCLIP, Med-Flamingo by more than 30%.",
       "No FDA clearance, no clinical deployment; code and weights open-source on GitHub."
     ]
+  },
+  {
+    "slug": "llms-txt-agent-supply-chain",
+    "side": "dark",
+    "chapter": 33,
+    "volume": 6,
+    "title": "The Documentation Was the Payload",
+    "deck": "An attacker registered a malicious npm package on the exact name Clerk's llms.txt told AI agents to install. It sat live in the npm registry for over a month.",
+    "date": "September 2026",
+    "isoDate": "2026-09-10",
+    "readTime": "9 min",
+    "emoji": "📄",
+    "tags": [
+      "Supply Chain",
+      "AI Agents",
+      "llms.txt",
+      "npm",
+      "Security"
+    ],
+    "story": "#a3e635",
+    "storyDark": "#1f2b0d",
+    "verifyText": "Primary sources: OSV.dev record MAL-2026-11069; the llms.txt specification (Answer.AI, September 2024); npm v11 documentation; Liu et al., arXiv:2605.14460; Novee Security Black Hat 2026 disclosure (CVE-2026-54316); Cloud Security Alliance CISO Daily Briefing, 7 September 2026. Scan statistics are attributed to Compendia Labs and have not been independently replicated.",
+    "sources": [
+      {
+        "label": "OSV.dev — MAL-2026-11069",
+        "url": "https://osv.dev/vulnerability/MAL-2026-11069"
+      },
+      {
+        "label": "Answer.AI — The llms.txt proposal",
+        "url": "https://www.answer.ai/posts/2024-09-03-llmstxt.html"
+      },
+      {
+        "label": "llms.txt specification",
+        "url": "https://llmstxt.org/"
+      },
+      {
+        "label": "arXiv:2605.14460 — Liu et al., Zhejiang University",
+        "url": "https://arxiv.org/abs/2605.14460"
+      },
+      {
+        "label": "Schneier on Security — AI coding agents are installing unknown, untrusted code",
+        "url": "https://www.schneier.com/blog/archives/2026/09/ai-coding-agents-are-installing-unknown-untrusted-code-on-corporate-networks.html"
+      },
+      {
+        "label": "Cloud Security Alliance — CISO Daily Briefing, 7 Sep 2026",
+        "url": "https://labs.cloudsecurityalliance.org/research/ciso-daily-briefing-20260907/"
+      },
+      {
+        "label": "Compendia Labs — The llms.txt Trust Model",
+        "url": "https://blog.compendialabs.org/posts/2026-08-29-dk-llms-trust-model"
+      }
+    ],
+    "llmsDescription": "On July 24, 2026, a malicious npm package (MAL-2026-11069) was registered under the exact name — clerk-next-fix-auth-protection — that Clerk's llms.txt file instructed AI coding agents to install. The package, flagged by OpenSSF Package Analysis and Amazon Inspector, exfiltrated hostname, username, and working directory via HTTP. Independent academic research (Liu et al., Zhejiang University, May 2026) and Black Hat 2026 findings (Novee Security, CVE-2026-54316) separately confirmed that AI coding agents treat documentation as executable directives, with remote code execution success rates reaching 67%. The Cloud Security Alliance rated the llms.txt supply chain exposure CRITICAL URGENCY on September 7, 2026.",
+    "abstract": [
+      "Malicious npm package MAL-2026-11069 (clerk-next-fix-auth-protection) published July 24, 2026 — CWE-506, exfiltrated user data via HTTP, flagged by OpenSSF Package Analysis and Amazon Inspector",
+      "Clerk's llms.txt file contained the command npx clerk-next-fix-auth-protection pointing at an unregistered package name; Clerk has since remediated",
+      "Liu et al. (Zhejiang University, May 2026) independently found AI agents treat documentation as \"authoritative operational directives,\" with RCE success rates up to 67.33%",
+      "At Black Hat 2026, Novee Security demonstrated RCE in Claude Code Action, Gemini CLI, and Codex; Anthropic awarded three bug bounties and shipped fixes (CVE-2026-54316)",
+      "Cloud Security Alliance rated the llms.txt supply chain vector CRITICAL URGENCY (September 7, 2026), calling it \"a genuinely new, cross-vendor class of supply chain exposure\""
+    ],
+    "whatIf": "The documented attack path — a single unregistered package name in a single vendor's llms.txt — was a manual, artisanal exploit. Someone looked at one file, found one unclaimed name, registered one malicious package. Now scale it. llms.txt files are public, crawlable, and machine-readable; that is their entire purpose. An attacker does not need to hunt for unregistered package names by hand — they can scan for them programmatically, exactly as the Compendia Labs researchers did. The researchers reported approximately 227 install commands pointing at unclaimed names across 120 corporate llms.txt files, and every one of those names is registrable on a public package registry for free. npm has no ownership verification for new package names. Neither does PyPI. So a single operator, in one afternoon, could register every unclaimed package name across every llms.txt file in the Fortune 500. Not one trap. All of them. Simultaneously. Each with a different second-stage payload tuned to the target's stack — dependency confusion for the fintech, credential harvesting for the defense contractor, a cryptominer for the startup that nobody audits. The installations flow through trusted tools from trusted registries. The process tree shows an approved coding agent executing a command from an approved vendor's documentation. Endpoint detection flags nothing. Network monitoring sees standard HTTPS to npmjs.com. In the CSA's own words, the attack \"looks identical to sanctioned developer activity\" — there is no signature to write, no indicator of compromise to hunt, no anomaly to detect, because from the security stack's perspective nothing anomalous occurred. The existing correction infrastructure — OSV.dev, npm audit, OpenSSF Scorecard — was built to catch malicious packages after they are published, not to prevent attacks that arrive through trusted documentation before the package even exists. MAL-2026-11069 sat in the npm registry for over a month before it was flagged. Multiply that by 227. How many get caught on day one? How many get caught at all? When the victims are maintaining their own attack surface — publishing machine-readable files that point agents at names nobody owns — and the attacker's code enters through the same door as the vendor's code, what exactly is left to defend?"
   }
 ]
