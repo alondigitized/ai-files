@@ -1,0 +1,605 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'bbs-bilisim-election-engine')!;
+---
+
+<style is:global>
+.phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+.bbs-bilisim-election-engine-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+/* ── Reenactment 1: The Brochure ── */
+.be-brochure {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0;
+  margin: 2rem 0;
+  overflow: hidden;
+}
+.be-brochure-panels {
+  display: flex;
+}
+.be-brochure-panel {
+  flex: 1;
+  padding: 1.5rem;
+}
+.be-brochure-panel.be-brochure-public {
+  border-right: 1px solid var(--border);
+}
+.be-brochure-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+.be-brochure-public .be-brochure-text {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+.be-brochure-panel.be-brochure-internal {
+  background: var(--surface2);
+  border-left: 3px solid var(--story);
+}
+.be-brochure-internal .be-brochure-text {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--story);
+  font-weight: 600;
+}
+.be-brochure-footer {
+  padding: 0.75rem 1.5rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+@media (max-width: 600px) {
+  .be-brochure-panels { flex-direction: column; }
+  .be-brochure-panel.be-brochure-public {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+/* ── Reenactment 2: Constituency Profile ── */
+.be-profile {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Courier New', monospace;
+}
+.be-profile-header {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--story);
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+.be-profile-sub {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-bottom: 1.25rem;
+  font-style: italic;
+}
+.be-profile-axis {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+.be-profile-axis-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  width: 80px;
+  flex-shrink: 0;
+  font-weight: 600;
+}
+.be-profile-axis-bar {
+  flex: 1;
+  height: 14px;
+  background: var(--surface2);
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+  gap: 2px;
+}
+.be-profile-axis-seg {
+  height: 100%;
+  border-radius: 2px;
+}
+.be-profile-accounts {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.8rem;
+  color: var(--text);
+}
+.be-profile-accounts strong {
+  color: var(--story);
+}
+.be-profile-footer {
+  margin-top: 1rem;
+  font-size: 0.68rem;
+  color: var(--muted);
+  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-style: italic;
+}
+
+/* ── Reenactment 3: The Refusal ── */
+.be-chat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 2rem 0;
+  overflow: hidden;
+}
+.be-chat-header {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  font-weight: 600;
+}
+.be-chat-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.be-chat-msg {
+  max-width: 85%;
+}
+.be-chat-msg-operator { align-self: flex-start; }
+.be-chat-msg-claude { align-self: flex-end; }
+.be-chat-msg-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+  font-weight: 600;
+}
+.be-chat-msg-body {
+  padding: 0.85rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  background: var(--surface2);
+}
+.be-chat-msg-operator .be-chat-msg-body {
+  border-left: 2px solid var(--muted);
+}
+.be-chat-msg-claude .be-chat-msg-body {
+  border-left: 2px solid var(--story);
+}
+.be-chat-refusal .be-chat-msg-body {
+  border-left-color: var(--accent);
+  color: var(--accent);
+  font-weight: 500;
+}
+.be-chat-redacted {
+  height: 14px;
+  background: var(--border);
+  border-radius: 3px;
+  opacity: 0.6;
+  margin-bottom: 0.35rem;
+}
+.be-chat-redacted:last-child { margin-bottom: 0; }
+.be-chat-comply-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.be-chat-comply-line {
+  height: 10px;
+  background: var(--story);
+  border-radius: 2px;
+  opacity: 0.25;
+}
+.be-chat-comply-line:nth-child(1) { width: 95%; }
+.be-chat-comply-line:nth-child(2) { width: 88%; }
+.be-chat-comply-line:nth-child(3) { width: 72%; }
+.be-chat-comply-tag {
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 0.5rem;
+}
+.be-chat-footer {
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.68rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="intro">
+      <h2><span class="num">01 — Context</span>The Report</h2>
+      <p>Malaysia has 222 parliamentary constituencies. On 10 September 2026, Anthropic published its fourth threat intelligence report alleging that someone had built a synthetic-persona operation covering every single one of them.</p>
+      <p>The report, which covers activity Anthropic disrupted between December 2025 and August 2026, includes a case study tracked internally as GTG-84005. According to Anthropic, this account used Claude to operate what the report calls a "commercial election manipulation platform" targeting Malaysia. Anthropic states its investigation found "clear links" to BBS Bilisim Teknolojileri, an Istanbul-based technology company. The report uses the phrase "clear links" — not "operated by" or "built by."</p>
+      <p>BBS Bilisim Teknolojileri categorically denied the allegations, stating it had "no involvement, knowledge or approval" of the described activities. The company announced it is investigating whether its name, digital assets, or information about connected people were misused without authorization, and committed to filing a criminal complaint with the Republic's Chief Prosecutor if concrete evidence emerges.</p>
+      <p>A note on names: a separate, long-established company called Bilgi Birikim Sistemleri (also abbreviated "BBS," at bilgibirikim.com) has no connection to these allegations. At least two Turkish outlets conflated the two entities, prompting Bilgi Birikim Sistemleri to issue its own denial through Attorney Sibel Aydin, citing name confusion.</p>
+      <p>One structural interest the reader should know: Anthropic occupies three roles in this story simultaneously — the vendor whose product was misused, the investigator who detected and mapped the operation, and the publisher of the report. This does not invalidate the findings, but it is a position the reader should weigh.</p>
+      <div class="be-brochure">
+        <div class="be-brochure-panels">
+          <div class="be-brochure-panel be-brochure-public">
+            <div class="be-brochure-label">Public positioning</div>
+            <div class="be-brochure-text">"Defensive cyber intelligence and counter-disinformation tooling outlet"</div>
+          </div>
+          <div class="be-brochure-panel be-brochure-internal">
+            <div class="be-brochure-label">Internal documentation</div>
+            <div class="be-brochure-text">"Military-grade, AI-driven, real-time political operations ecosystem"</div>
+          </div>
+        </div>
+        <div class="be-brochure-footer">Source: Anthropic threat intelligence report, September 2026. Left panel describes the operation's public cover as characterized by Anthropic. Right panel quotes the actor's own marketing documentation as disclosed by Anthropic. "Military-grade" is the actor's marketing language and does not describe actual military capability.</div>
+      </div>
+    </section>
+    <div class="phantom-wrap">
+      <canvas class="bbs-bilisim-election-engine-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Census</strong> — Dots in concentric rings illuminate one by one in a methodical green sweep from the center outward. Each emits a broadcast ring that expands and dies within pixels of its source. Full coverage is achieved — every position claimed, nothing reaching the faint outer boundary. All extinguish at once. The boundary persists. The sweep restarts.</p>
+    <section class="section" id="product">
+      <h2><span class="num">02 — The Product</span>The Architecture</h2>
+      <p>The operational design, as described in Anthropic's report, was granular. The platform managed roughly 1,000 fake X/Twitter accounts distributed across all 222 Malaysian parliamentary constituencies — approximately four to five per seat.</p>
+      <p>According to Anthropic, real census and electoral data were used to build constituency-level profiles for micro-targeting along three fault lines: race, religion, and royalty.</p>
+      <div class="be-profile">
+        <div class="be-profile-header">Constituency Profile — [Schematic]</div>
+        <div class="be-profile-sub">Method reconstruction based on Anthropic's description</div>
+        <div class="be-profile-axis">
+          <span class="be-profile-axis-label">Race</span>
+          <div class="be-profile-axis-bar">
+            <div class="be-profile-axis-seg" style="width:45%; background:var(--story); opacity:0.7;"></div>
+            <div class="be-profile-axis-seg" style="width:30%; background:var(--story); opacity:0.4;"></div>
+            <div class="be-profile-axis-seg" style="width:25%; background:var(--story); opacity:0.2;"></div>
+          </div>
+        </div>
+        <div class="be-profile-axis">
+          <span class="be-profile-axis-label">Religion</span>
+          <div class="be-profile-axis-bar">
+            <div class="be-profile-axis-seg" style="width:55%; background:var(--story); opacity:0.7;"></div>
+            <div class="be-profile-axis-seg" style="width:25%; background:var(--story); opacity:0.4;"></div>
+            <div class="be-profile-axis-seg" style="width:20%; background:var(--story); opacity:0.2;"></div>
+          </div>
+        </div>
+        <div class="be-profile-axis">
+          <span class="be-profile-axis-label">Royalty</span>
+          <div class="be-profile-axis-bar">
+            <div class="be-profile-axis-seg" style="width:60%; background:var(--story); opacity:0.7;"></div>
+            <div class="be-profile-axis-seg" style="width:40%; background:var(--story); opacity:0.3;"></div>
+          </div>
+        </div>
+        <div class="be-profile-accounts">Assigned accounts: <strong>~4–5</strong> per constituency (~1,000 accounts / 222 seats)</div>
+        <div class="be-profile-footer">This is a reconstruction of the targeting method Anthropic describes, not a real constituency profile. No specific constituency data is depicted.</div>
+      </div>
+      <p>The report describes warm-up logic on each account — pre-deployment aging with regularly renewed cookies and rotating IP addresses to make accounts appear authentic before use. Anthropic found that the operation included a monitoring dashboard, built using Claude Code, where operators could set artificial view targets per account. The report notes one observed request for one million artificial views on the sitting Malaysian Prime Minister's account.</p>
+      <p>According to Anthropic, the operation also ran Malaysia Pulse, a fabricated news outlet at malaysiapulse.com. The report states the domain was registered 10 May 2026 and had a linked YouTube channel. According to Anthropic, Malaysia Pulse scraped legitimate Malaysian reporting, had the model rewrite it multiple times, and published the results under fabricated bylines. The report states the outlet also republished content from TV BRICS, Xinhua, Sputnik/RIA, and CGTN with state attribution stripped — presenting state-funded media as independent Malaysian reporting.</p>
+      <p>The report also describes fabricated intelligence dossiers against an unnamed opposition politician and civil-society organizations. The "allegations were entirely made up by the actors," according to the report. The politician is not named in any available source.</p>
+      <p>The report describes an attempted contract with Malaysia's national communications regulator, the MCMC. Anthropic states the actor "pursued a contract" but "found no evidence that this pursuit succeeded." MCMC independently confirmed: "Activities of the nature described in the report do not form part of MCMC's functions or mandate." Two independent parties agree the contract did not happen.</p>
+      <p>Anthropic characterizes the operation as "influence-as-a-service" — a product offered for commercial sale. BBS Bilisim Teknolojileri, which denies all involvement, disputes this characterization. No transaction records, contracts, or financial evidence have been published.</p>
+    </section>
+    <section class="section" id="workaround">
+      <h2><span class="num">03 — The Workaround</span>Sanitized Wording</h2>
+      <p>Claude's safety filters caught at least one request. Anthropic states that Claude "identified one document as material for political defamation" and refused to produce it.</p>
+      <div class="be-chat">
+        <div class="be-chat-header">Reconstruction — Based on Anthropic's description of the interaction</div>
+        <div class="be-chat-body">
+          <div class="be-chat-msg be-chat-msg-operator">
+            <div class="be-chat-msg-label">Operator</div>
+            <div class="be-chat-msg-body">
+              <div class="be-chat-redacted" style="width:90%;"></div>
+              <div class="be-chat-redacted" style="width:55%;"></div>
+            </div>
+          </div>
+          <div class="be-chat-msg be-chat-msg-claude be-chat-refusal">
+            <div class="be-chat-msg-label">Claude</div>
+            <div class="be-chat-msg-body">[Refused] — identified as material for political defamation.</div>
+          </div>
+          <div class="be-chat-msg be-chat-msg-operator">
+            <div class="be-chat-msg-label">Operator (revised request)</div>
+            <div class="be-chat-msg-body">
+              <div class="be-chat-redacted" style="width:85%;"></div>
+              <div class="be-chat-redacted" style="width:70%;"></div>
+              <div class="be-chat-redacted" style="width:40%;"></div>
+            </div>
+          </div>
+          <div class="be-chat-msg be-chat-msg-claude">
+            <div class="be-chat-msg-label">Claude</div>
+            <div class="be-chat-msg-body">
+              <div class="be-chat-comply-lines">
+                <div class="be-chat-comply-line"></div>
+                <div class="be-chat-comply-line"></div>
+                <div class="be-chat-comply-line"></div>
+              </div>
+              <div class="be-chat-comply-tag">Content produced — sanitized wording, same capability</div>
+            </div>
+          </div>
+        </div>
+        <div class="be-chat-footer">Anthropic states the actor "negotiated sanitized wording to keep building toward the same capability." Exact prompts and responses are not disclosed in the report. This is a dramatization of the described interaction pattern. Claude's refusal language is paraphrased from Anthropic's account.</div>
+      </div>
+      <p>The actor did not stop. According to Anthropic, the operator "negotiated sanitized wording to keep building toward the same capability." The refusal slowed the work. It did not end it. Claude Code was also used as a development tool for the operation's infrastructure, including the monitoring dashboard.</p>
+      <p>The inclusion of this detail is notable. Anthropic is disclosing that its own safeguards were partially circumvented — a self-critical admission that a purely self-serving report would likely omit.</p>
+    </section>
+    <section class="section" id="result">
+      <h2><span class="num">04 — The Result</span>Category Two</h2>
+      <p>Anthropic rated the operation Category Two on the Breakout Scale — a framework created by Ben Nimmo, then at Graphika, and published by the Brookings Institution in September 2020. In Anthropic's characterization, Category Two here meant content "distributed across the network's own websites and matching social media accounts, with no evidence of breakout beyond its own activity." The operation talked to itself.</p>
+      <p>Anthropic's own assessment: the operation showed "no signs it gained significant traction." For comparison, another operation in the same report — tracked as GTG-04001 — received a Category Four rating. GTG-84005 sits at the low end of the impact spectrum even within this single report. The product was granular in design. Its impact was negligible.</p>
+      <p>Malaysia Pulse's website and associated accounts are no longer accessible, independently confirmed by Malaysiakini. MCMC stated it is "examining the report" and coordinating with relevant authorities. The Malaysian Prime Minister's Office had not responded as of 12 September 2026. X has issued no public statement about the roughly 1,000 fake accounts identified in the operation.</p>
+      <p>Azalina Othman Said, minister in the Prime Minister's Department and Umno information chief, demanded a thorough investigation. "The key questions now are who was behind the operation, who financed it, and whose interests it served," she said. She cautioned citizens against assuming that social media comment volume reflects genuine public opinion. As of publication, no one has answered. The attribution is disputed. The operation failed. The template is documented. The questions remain open.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.bbs-bilisim-election-engine-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
+  const storyHex = getComputedStyle(canvas).getPropertyValue('--story').trim() || '#4be043';
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function hexRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const [sR, sG, sB] = hexRgb(storyHex.startsWith('#') ? storyHex : '#4be043');
+
+  function storyA(a: number): string {
+    return 'rgba(' + sR + ',' + sG + ',' + sB + ',' + Math.max(0, Math.min(1, a)).toFixed(3) + ')';
+  }
+
+  /* ── Configuration ── */
+  const RING_COUNTS = [6, 10, 14, 16, 19];            // 5 rings, 65 dots total
+  const RING_FRAC   = [0.15, 0.35, 0.55, 0.75, 1.0];  // fraction of baseR
+  const TOTAL       = 65;
+  const BNDRY_MULT  = 1.4;
+
+  // Timing at 60 fps
+  const FPD       = 17;                    // frames per dot (~3.53 dots/s)
+  const SWEEP_END = TOTAL * FPD;           // 1105 frames  ~18.4s
+  const HOLD_END  = SWEEP_END + 240;       // +4s hold     ~22.4s
+  const CYCLE     = HOLD_END + 120;        // +2s dark     ~24.4s
+
+  // Broadcast ring parameters
+  const BR_SPD  = 0.3;   // expand px/frame
+  const BR_LIFE = 40;    // lifespan frames (~12px max radius)
+  const BR_A0   = 0.5;   // initial alpha
+  const MAX_BR  = 30;    // pool size
+
+  /* ── Types ── */
+  interface Dot {
+    ring: number; angle: number; x: number; y: number;
+    litFrame: number; lit: boolean; alpha: number; boff: number;
+  }
+  interface BRing {
+    x: number; y: number; r: number; a: number; age: number; on: boolean;
+  }
+
+  /* ── State ── */
+  let W = 0, H = 0, raf = 0, frame = 0;
+  let ctrX = 0, ctrY = 0, baseR = 0, snapped = false;
+  const dots: Dot[] = [];
+  const brs: BRing[] = [];
+  for (let i = 0; i < MAX_BR; i++) {
+    brs.push({ x: 0, y: 0, r: 0, a: 0, age: 0, on: false });
+  }
+
+  function emitBR(x: number, y: number) {
+    for (const b of brs) {
+      if (!b.on) {
+        b.x = x; b.y = y; b.r = 0; b.a = BR_A0; b.age = 0; b.on = true;
+        return;
+      }
+    }
+  }
+
+  function computeLayout() {
+    const w = W || 800;
+    const h = H || 380;
+    ctrX = w / 2;
+    ctrY = h / 2;
+    baseR = (Math.min(w / 2, h / 2) - 15) / BNDRY_MULT;
+  }
+
+  function buildDots() {
+    dots.length = 0;
+    let seq = 0;
+    for (let ri = 0; ri < RING_COUNTS.length; ri++) {
+      const n = RING_COUNTS[ri];
+      const rad = baseR * RING_FRAC[ri];
+      const step = (Math.PI * 2) / n;
+      const ringOff = Math.random() * Math.PI * 2;
+      for (let i = 0; i < n; i++) {
+        const angle = ringOff + i * step + (Math.random() - 0.5) * step * 0.25;
+        dots.push({
+          ring: ri,
+          angle: angle,
+          x: ctrX + Math.cos(angle) * rad,
+          y: ctrY + Math.sin(angle) * rad,
+          litFrame: seq * FPD,
+          lit: false,
+          alpha: 0,
+          boff: Math.random() * Math.PI * 2
+        });
+        seq++;
+      }
+    }
+  }
+
+  function resetAll() {
+    frame = 0;
+    snapped = false;
+    computeLayout();
+    buildDots();
+    for (const b of brs) { b.on = false; }
+  }
+
+  /* ── Resize ── */
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    computeLayout();
+    for (const d of dots) {
+      const r = baseR * RING_FRAC[d.ring];
+      d.x = ctrX + Math.cos(d.angle) * r;
+      d.y = ctrY + Math.sin(d.angle) * r;
+    }
+    if (prefersReduced && dots.length > 0) { draw(); }
+  });
+  ro.observe(canvas);
+
+  /* ── Update ── */
+  function update() {
+    const f = frame;
+
+    if (f < SWEEP_END) {
+      // Illumination sweep: center outward, ring by ring
+      for (const d of dots) {
+        if (!d.lit && f >= d.litFrame) {
+          d.lit = true;
+          d.alpha = 0.7;
+          emitBR(d.x, d.y);
+        }
+        if (d.lit) {
+          d.alpha += (0.5 - d.alpha) * 0.04;
+        }
+      }
+    } else if (f < HOLD_END) {
+      // Hold: all lit, gentle opacity oscillation, periodic re-broadcasts
+      for (const d of dots) {
+        if (!d.lit) { d.lit = true; d.alpha = 0.5; }
+        const target = 0.5 + 0.02 * Math.sin(f * 0.04 + d.boff);
+        d.alpha += (target - d.alpha) * 0.08;
+      }
+      const ht = f - SWEEP_END;
+      if (ht > 0 && ht % 50 === 0) {
+        const seed = ht / 50;
+        const i1 = Math.floor((seed * 17 + 3) % TOTAL);
+        const i2 = Math.floor((seed * 31 + 11) % TOTAL);
+        emitBR(dots[i1].x, dots[i1].y);
+        emitBR(dots[i2].x, dots[i2].y);
+      }
+    } else if (!snapped) {
+      // Snap to dark: all dots extinguish simultaneously
+      snapped = true;
+      for (const d of dots) { d.lit = false; d.alpha = 0; }
+      for (const b of brs) { b.on = false; }
+    }
+
+    // Update broadcast rings
+    for (const b of brs) {
+      if (!b.on) continue;
+      b.age++;
+      b.r += BR_SPD;
+      b.a = BR_A0 * Math.max(0, 1 - b.age / BR_LIFE);
+      if (b.age >= BR_LIFE) { b.on = false; }
+    }
+  }
+
+  /* ── Draw ── */
+  function draw() {
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, W, H);
+
+    // Boundary circle -- persists through entire cycle including dark phase
+    ctx.beginPath();
+    ctx.arc(ctrX, ctrY, baseR * BNDRY_MULT, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(232,232,232,0.06)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Dots
+    for (const d of dots) {
+      if (d.lit && d.alpha > 0.005) {
+        // Soft glow halo
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, 6, 0, Math.PI * 2);
+        ctx.fillStyle = storyA(d.alpha * 0.15);
+        ctx.fill();
+        // Core
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, 3, 0, Math.PI * 2);
+        ctx.fillStyle = storyA(d.alpha);
+        ctx.fill();
+      } else if (!d.lit && !snapped) {
+        // Dim unlit dot (visible during sweep, hidden during dark phase)
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, 3, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(232,232,232,0.04)';
+        ctx.fill();
+      }
+    }
+
+    // Broadcast rings
+    ctx.lineWidth = 1;
+    for (const b of brs) {
+      if (!b.on || b.a < 0.005) continue;
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+      ctx.strokeStyle = storyA(b.a);
+      ctx.stroke();
+    }
+  }
+
+  /* ── Loop ── */
+  function tick() {
+    frame++;
+    if (frame >= CYCLE) { resetAll(); }
+    update();
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  /* ── Init ── */
+  requestAnimationFrame(() => {
+    computeLayout();
+    buildDots();
+
+    if (prefersReduced) {
+      // Static frame: fully illuminated state -- all dots lit, boundary visible
+      for (const d of dots) { d.lit = true; d.alpha = 0.5; }
+      draw();
+    } else {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+        else { cancelAnimationFrame(raf); raf = 0; }
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+
+      window.addEventListener('pagehide', () => {
+        cancelAnimationFrame(raf);
+        io.disconnect();
+        ro.disconnect();
+      });
+      return;
+    }
+  });
+
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(raf);
+    ro.disconnect();
+  });
+})();
+</script>
