@@ -1,0 +1,618 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'llms-txt-agent-supply-chain')!;
+---
+
+<style is:global>
+  /* Visual Reenactment 1 — llms.txt Document Mockup */
+  .ltasc-doc-mockup { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 0.85rem; line-height: 1.7; overflow-x: auto; margin: 2rem 0; }
+  .ltasc-doc-mockup-bar { background: var(--surface2); border-bottom: 1px solid var(--border); padding: 0.5rem 1rem; color: var(--muted); font-size: 0.75rem; display: flex; align-items: center; gap: 0.5rem; border-radius: 8px 8px 0 0; }
+  .ltasc-doc-mockup-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); opacity: 0.4; flex-shrink: 0; }
+  .ltasc-doc-mockup-body { padding: 1.25rem 1.5rem; color: var(--text); }
+  .ltasc-doc-mockup-body .ltasc-heading { color: var(--muted); font-weight: 600; }
+  .ltasc-doc-mockup-body .ltasc-comment { color: var(--muted); font-style: italic; }
+  .ltasc-doc-mockup-body .ltasc-line { margin: 0.15rem 0; white-space: nowrap; }
+  .ltasc-doc-mockup-body .ltasc-payload { display: inline-block; padding: 0.15rem 0.4rem; border-bottom: 2px solid var(--story); color: var(--text); font-weight: 600; }
+  .ltasc-doc-mockup-body .ltasc-muted { color: var(--muted); opacity: 0.6; }
+  .ltasc-doc-footer { border-top: 1px solid var(--border); padding: 0.75rem 1.5rem; font-size: 0.75rem; color: var(--muted); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-style: italic; line-height: 1.5; }
+
+  /* Visual Reenactment 2 — OSV.dev Advisory Card */
+  .ltasc-advisory { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 6px; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 0.82rem; line-height: 1.8; margin: 2rem 0; overflow-x: auto; }
+  .ltasc-advisory-header { display: flex; justify-content: space-between; align-items: baseline; padding: 1rem 1.5rem 0.5rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 0.5rem; }
+  .ltasc-advisory-id { color: var(--accent); font-weight: 700; font-size: 0.95rem; }
+  .ltasc-advisory-cwe { color: var(--muted); font-size: 0.8rem; }
+  .ltasc-advisory-body { padding: 1rem 1.5rem; color: var(--text); }
+  .ltasc-advisory-row { display: flex; gap: 0.75rem; margin: 0.2rem 0; }
+  .ltasc-advisory-label { color: var(--muted); min-width: 110px; flex-shrink: 0; }
+  .ltasc-advisory-value { color: var(--text); }
+  .ltasc-advisory-value.ltasc-danger { color: var(--accent); }
+  .ltasc-advisory-footer { border-top: 1px solid var(--border); padding: 0.75rem 1.5rem; font-size: 0.75rem; color: var(--muted); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-style: italic; }
+
+  /* Visual Reenactment 3 — Kill Chain Diagram */
+  .ltasc-killchain { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin: 2rem 0; padding: 1.5rem; overflow-x: auto; }
+  .ltasc-killchain-title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 1.25rem; }
+  .ltasc-killchain-step { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 0; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 0.82rem; line-height: 1.6; }
+  .ltasc-killchain-num { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); border-radius: 4px; min-width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; flex-shrink: 0; }
+  .ltasc-killchain-step.ltasc-breach .ltasc-killchain-num { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+  .ltasc-killchain-content { padding-top: 4px; }
+  .ltasc-killchain-label { color: var(--text); font-weight: 600; }
+  .ltasc-killchain-desc { color: var(--muted); font-size: 0.78rem; }
+  .ltasc-killchain-arrow { padding-left: 13px; color: var(--border); font-size: 0.85rem; line-height: 1.8; user-select: none; }
+  .ltasc-killchain-step.ltasc-breach .ltasc-killchain-label { color: var(--accent); }
+  .ltasc-killchain-note { border-top: 1px solid var(--border); margin-top: 1rem; padding-top: 0.75rem; font-size: 0.75rem; color: var(--muted); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-style: italic; line-height: 1.5; }
+
+  /* Canvas */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .llms-txt-agent-supply-chain-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+  .canvas-note { font-size: 0.78rem; color: var(--muted); text-align: center; margin: 0.6rem 0 0; padding: 0 1rem; line-height: 1.5; }
+</style>
+
+<StoryLayout story={story}>
+<div class="container">
+
+<section class="section" id="context">
+  <h2><span class="num">01 — Context</span>The File That Became a Channel</h2>
+  <p>On July 24, 2026, someone registered an npm package called <code>clerk-next-fix-auth-protection</code>. It contained install hooks that silently exfiltrated the user's hostname, username, and working directory over HTTP. The name was not random. It was the exact command that Clerk, an authentication platform used by thousands of developers, published in its llms.txt file for AI coding agents to run. Five weeks later, security researchers would give the vulnerability class a name.</p>
+  <p>To understand how a documentation file became a weapon, start with the file itself.</p>
+  <p>On September 3, 2024, Jeremy Howard — co-founder of Answer.AI and fast.ai — published a proposal for a new web convention: llms.txt. The idea was simple. Websites already publish robots.txt to tell crawlers what to index. Why not publish a plain-text file to help large language models answer questions about the site? The specification described a structured way to provide context — a company name, a description, links to key documentation pages. It was designed for chatbots assembling answers, not for agents executing commands. The specification contains zero security considerations. No trust model. No discussion of how an autonomous agent might act on the content. There was nothing to discuss: the use case was passive context retrieval.</p>
+  <p>Thousands of companies adopted it. Stripe, Clerk, Anthropic, Vercel, and hundreds of smaller vendors published llms.txt files. Then the context shifted. AI coding agents — Claude Code, OpenAI Codex, Gemini CLI — began reading llms.txt files not as reference material but as operational instructions. Researchers at Zhejiang University would later document the core mechanism: LLM coding agents treat documentation as "authoritative operational directives rather than passive documentation." An agent doesn't read a troubleshooting command as a suggestion. It reads it as something to execute.</p>
+  <p>The specification was not designed for this. But the agents did not consult the specification.</p>
+  <p>The danger crystallizes when a vendor's llms.txt contains an installation command — say, <code>npx some-package</code> — and no one owns <code>some-package</code> on the public npm registry. The <code>npx</code> command, bundled with npm, automatically fetches packages from the registry if they are not found locally and executes the package binary. If the name is unclaimed, anyone can register it. The agent will run whatever it finds. The command becomes a loaded gun with no trigger guard.</p>
+  <p>Clerk's llms.txt had exactly this problem. The file included a line directing agents to run:</p>
+
+  <div class="ltasc-doc-mockup">
+    <div class="ltasc-doc-mockup-bar">
+      <span class="ltasc-doc-mockup-dot"></span>
+      <span class="ltasc-doc-mockup-dot"></span>
+      <span class="ltasc-doc-mockup-dot"></span>
+      <span>clerk.com/llms.txt</span>
+    </div>
+    <div class="ltasc-doc-mockup-body">
+      <div class="ltasc-line ltasc-heading"># Clerk Documentation</div>
+      <div class="ltasc-line ltasc-muted">&nbsp;</div>
+      <div class="ltasc-line ltasc-comment">&gt; Clerk is an authentication and user management platform...</div>
+      <div class="ltasc-line ltasc-muted">&nbsp;</div>
+      <div class="ltasc-line ltasc-heading">## Quickstart</div>
+      <div class="ltasc-line ltasc-muted">...</div>
+      <div class="ltasc-line ltasc-muted">&nbsp;</div>
+      <div class="ltasc-line ltasc-heading">## Troubleshooting</div>
+      <div class="ltasc-line ltasc-muted">&nbsp;</div>
+      <div class="ltasc-line">If you encounter auth protection issues with Next.js, run:</div>
+      <div class="ltasc-line ltasc-muted">&nbsp;</div>
+      <div class="ltasc-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="ltasc-payload">npx clerk-next-fix-auth-protection</span></div>
+      <div class="ltasc-line ltasc-muted">&nbsp;</div>
+      <div class="ltasc-line ltasc-muted">...</div>
+    </div>
+    <div class="ltasc-doc-footer">Reconstruction based on multiple source descriptions. The exact surrounding text is inferred; the command string is confirmed. Clerk has since removed it.</div>
+  </div>
+
+  <p>The command string is confirmed by multiple sources and corroborated by the existence of the malicious package at that exact name. Clerk had not published <code>clerk-next-fix-auth-protection</code> as a standalone npm package. The intended binary was bundled inside the scoped package <code>@clerk/eslint-plugin</code>. The bare name sat unclaimed on the public registry.</p>
+  <p>Until someone claimed it.</p>
+</section>
+
+</div>
+
+<div class="phantom-wrap">
+  <canvas class="llms-txt-agent-supply-chain-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>The Manifest</strong> — An acid-lime reader descends a column of identical dim lines, illuminating each and moving on; one line does not fade back — it holds its glow, opens a thin channel to the edge of the canvas, and a red pulse returns along it.</p>
+
+<div class="container">
+
+<section class="section" id="what-happened">
+  <h2><span class="num">02 — What Happened</span>The Package Nobody Published</h2>
+  <p>On July 24, 2026, a third party — not Clerk, not the security researchers who would later publicize the vulnerability class — registered <code>clerk-next-fix-auth-protection</code> on npm. The package contained embedded malicious code, classified under CWE-506. Its install hooks harvested the user's hostname, username, and working directory and transmitted them via HTTP. The affected versions were numbered 7.7.7 and 8.8.8. OpenSSF Package Analysis detected the package. Amazon Inspector confirmed it. The vulnerability was cataloged as MAL-2026-11069.</p>
+
+  <div class="ltasc-advisory">
+    <div class="ltasc-advisory-header">
+      <span class="ltasc-advisory-id">MAL-2026-11069</span>
+      <span class="ltasc-advisory-cwe">CWE-506</span>
+    </div>
+    <div class="ltasc-advisory-body">
+      <div class="ltasc-advisory-row">
+        <span class="ltasc-advisory-label">Package</span>
+        <span class="ltasc-advisory-value ltasc-danger">clerk-next-fix-auth-protection</span>
+      </div>
+      <div class="ltasc-advisory-row">
+        <span class="ltasc-advisory-label">Ecosystem</span>
+        <span class="ltasc-advisory-value">npm</span>
+      </div>
+      <div class="ltasc-advisory-row">
+        <span class="ltasc-advisory-label">Versions</span>
+        <span class="ltasc-advisory-value">7.7.7, 8.8.8</span>
+      </div>
+      <div class="ltasc-advisory-row">
+        <span class="ltasc-advisory-label">Published</span>
+        <span class="ltasc-advisory-value">2026-07-24</span>
+      </div>
+      <div class="ltasc-advisory-row">
+        <span class="ltasc-advisory-label">Modified</span>
+        <span class="ltasc-advisory-value">2026-08-04</span>
+      </div>
+      <div class="ltasc-advisory-row">
+        <span class="ltasc-advisory-label">Reported by</span>
+        <span class="ltasc-advisory-value">OpenSSF Package Analysis</span>
+      </div>
+      <div class="ltasc-advisory-row">
+        <span class="ltasc-advisory-label">Confirmed</span>
+        <span class="ltasc-advisory-value">Amazon Inspector</span>
+      </div>
+      <div class="ltasc-advisory-row">
+        <span class="ltasc-advisory-label">Classification</span>
+        <span class="ltasc-advisory-value ltasc-danger">Embedded Malicious Code</span>
+      </div>
+      <div class="ltasc-advisory-row">
+        <span class="ltasc-advisory-label">Behavior</span>
+        <span class="ltasc-advisory-value">Exfiltrates username, hostname, working directory via HTTP during install</span>
+      </div>
+    </div>
+    <div class="ltasc-advisory-footer">Source: OSV.dev vulnerability record. Independently verified.</div>
+  </div>
+
+  <p>The timeline matters. MAL-2026-11069 was published on July 24, 2026 — over a month before the Compendia Labs blog post (August 29) that would bring public attention to the broader vulnerability class. The attacker found and exploited the gap independently. This was not a response to a researcher's disclosure. Someone looked at Clerk's llms.txt, saw an unclaimed package name referenced in an installation command, and registered a malicious package at that name.</p>
+  <p>Clerk acknowledged the issue and remediated it. The company stated that the expected binary was already present via <code>@clerk/eslint-plugin</code>, so there was no practical threat for existing users who had that package installed. As of September 9, 2026, Clerk's llms.txt files contain no reference to the command.</p>
+  <p>Clerk's defense deserves fair consideration. For developers who already had <code>@clerk/eslint-plugin</code> installed locally, <code>npx</code> would resolve the binary from the local installation and never reach the public registry. The malicious package would not execute. But this defense assumes the user — or the agent — had <code>@clerk/eslint-plugin</code> installed before running the command. A new developer setting up a project from scratch, a CI environment with a clean node_modules, an AI coding agent following documentation without any prior context — none of these would have the local package. In each case, <code>npx</code> would resolve the bare name against the public npm registry and execute whatever it found there. In this case, that was MAL-2026-11069.</p>
+  <p>There is an unresolved question at the center of this incident, and it deserves its own beat. When <code>npx</code> encounters a package it needs to fetch from the registry, it prints a confirmation prompt: "Need to install the following packages: ... Ok to proceed? (y)." This prompt can be suppressed with the <code>--yes</code> or <code>-y</code> flag. We do not know how AI coding agents handled this prompt. Did agents suppress it automatically with <code>--yes</code>? Did a human operator see the prompt and approve it? Did the prompt never appear for some other reason — a cached resolution, a configuration default? This is not a minor technical footnote. If agents suppressed the prompt, they bypassed a security checkpoint autonomously. If a human approved it, the human rubber-stamped the installation of an unknown package without examining it. If the prompt never appeared, the one safety mechanism in the chain failed silently. Each answer is damning differently, and none is established.</p>
+  <p>One more gap must be stated plainly. No public report confirms that an AI agent actually installed and executed MAL-2026-11069 specifically. The facts are: the malicious package existed at that exact name on npm; Clerk's documentation told agents to run that exact name; academic and industry research confirms that agents follow such instructions. The connection is logically direct. But no reported incident documents an agent completing the full chain — fetching the malicious package, executing the install hooks, exfiltrating user data. Honesty requires noting that we do not have proof one was fired.</p>
+</section>
+
+<section class="section" id="mechanism">
+  <h2><span class="num">03 — The Mechanism</span>Why Agents Obey</h2>
+  <p>The vulnerability class that the Clerk incident illustrates did not need Clerk to prove it existed. Two independent research efforts, with no connection to each other or to the researchers who later publicized the llms.txt attack surface, had already documented the core mechanism.</p>
+  <p>In May 2026, a team at Zhejiang University — Xinyu Liu, Yukai Zhao, Xing Hu, and Xin Xia — published a paper (arXiv:2605.14460) testing how LLM coding agents handle documentation. They tested three agent frameworks: OpenClaw, Claude Code, and Codex. Their finding was unambiguous. LLM coding agents "parse, trust, and act upon" natural language documentation "as authoritative operational directives rather than passive documentation." The agents did not treat skill descriptions as suggestions to evaluate. They treated them as instructions to execute. The paper reported remote code execution success rates ranging from 2.67% to 67.33% across model and framework combinations, with the stronger configurations clustering between 30.56% and 64.44%. The paper makes no reference to Compendia Labs, llms.txt, or the Clerk incident. It independently confirmed the fundamental mechanism: agents do what documentation tells them to do.</p>
+  <p>On August 6, 2026, at Black Hat 2026, Novee Security researcher Elad Meged presented a separate set of findings. Meged tested Claude Code Action (the GitHub Action integration), Gemini CLI, and OpenAI Codex and found exploitable remote code execution vulnerabilities in all three — triggered by what the presentation called "zero-privilege inputs," including content as mundane as a stranger's GitHub issue. The response from the vendors confirmed the severity. Anthropic awarded three bug bounties and shipped fixes. Google implemented what it described as "a breaking change to how non-interactive headless environments handle folder trust." OpenAI separated workflows and hardened its agent after a three-day disclosure window. A CVE was assigned: CVE-2026-54316. Novee Security's research has no connection to Compendia Labs. The finding is independent.</p>
+  <p>These two research efforts establish the vulnerability class on their own authority. Agents obey documentation. They execute commands embedded in text they are given to read. This is not a bug in a specific product. It is a property of how LLM-based coding agents process natural language instructions.</p>
+
+  <div class="ltasc-killchain">
+    <div class="ltasc-killchain-title">Attack Path — llms.txt to Code Execution</div>
+
+    <div class="ltasc-killchain-step">
+      <div class="ltasc-killchain-num">1</div>
+      <div class="ltasc-killchain-content">
+        <div class="ltasc-killchain-label">Vendor publishes llms.txt</div>
+        <div class="ltasc-killchain-desc">"npx clerk-next-fix-auth-protection"</div>
+      </div>
+    </div>
+    <div class="ltasc-killchain-arrow" aria-hidden="true">|</div>
+
+    <div class="ltasc-killchain-step">
+      <div class="ltasc-killchain-num">2</div>
+      <div class="ltasc-killchain-content">
+        <div class="ltasc-killchain-label">AI agent reads llms.txt</div>
+        <div class="ltasc-killchain-desc">Treats documentation as directive</div>
+      </div>
+    </div>
+    <div class="ltasc-killchain-arrow" aria-hidden="true">|</div>
+
+    <div class="ltasc-killchain-step">
+      <div class="ltasc-killchain-num">3</div>
+      <div class="ltasc-killchain-content">
+        <div class="ltasc-killchain-label">Agent runs: npx clerk-next-fix-auth-protection</div>
+        <div class="ltasc-killchain-desc">Package not found locally</div>
+      </div>
+    </div>
+    <div class="ltasc-killchain-arrow" aria-hidden="true">|</div>
+
+    <div class="ltasc-killchain-step ltasc-breach">
+      <div class="ltasc-killchain-num">4</div>
+      <div class="ltasc-killchain-content">
+        <div class="ltasc-killchain-label">npx queries public npm registry</div>
+        <div class="ltasc-killchain-desc">Finds clerk-next-fix-auth-protection (MAL-2026-11069)</div>
+      </div>
+    </div>
+    <div class="ltasc-killchain-arrow" aria-hidden="true">|</div>
+
+    <div class="ltasc-killchain-step ltasc-breach">
+      <div class="ltasc-killchain-num">5</div>
+      <div class="ltasc-killchain-content">
+        <div class="ltasc-killchain-label">Package installs and executes</div>
+        <div class="ltasc-killchain-desc">Install hooks harvest hostname, username, cwd</div>
+      </div>
+    </div>
+    <div class="ltasc-killchain-arrow" aria-hidden="true">|</div>
+
+    <div class="ltasc-killchain-step ltasc-breach">
+      <div class="ltasc-killchain-num">6</div>
+      <div class="ltasc-killchain-content">
+        <div class="ltasc-killchain-label">Data exfiltrated via HTTP</div>
+        <div class="ltasc-killchain-desc">Attacker receives machine fingerprint</div>
+      </div>
+    </div>
+
+    <div class="ltasc-killchain-note">This sequence is the logical path. No public report confirms that an agent completed steps 3–6 using the MAL-2026-11069 package specifically.</div>
+  </div>
+
+  <p>The Compendia Labs research adds scale context to this picture. According to a blog post published August 29, 2026, researchers affiliated with Compendia Labs scanned 6,214 live domains and resolved approximately 8,265 llms.txt files. They reported finding 120 files that referenced unregistered package names or domains, containing approximately 227 install commands pointing at unclaimed names. The researchers registered a subset of those names as inert beacon packages — phone-home telemetry only, no persistence, no data theft, no production damage, according to their account. They reported receiving callbacks from Fortune 500 networks within an hour. Process logs from the beacon packages, the researchers stated, identified the parent processes as Anthropic's Claude, OpenAI's Codex, and Nous Research's Hermes. Over subsequent days, they received what Bruce Schneier described as "a few dozen more" callbacks from corporate networks.</p>
+  <p>These numbers require a sourcing note the reader deserves to see plainly. The scan statistics originate from a single blog post on compendialabs.org, authored under the pseudonym "DK Dark Knight." The named researcher, Alon Hertz, does not appear on the Compendia Labs team page, which lists only "Hitesh" and "Tanya." Schneier described the group as "a stealth startup in Israel." The organization discloses no commercial products, funding, or revenue model. Multiple secondary outlets reported the findings before the blog post's publication date of August 29 — SOFX and Slashdot ran coverage on August 27 — and two different sets of numbers circulate in the coverage (8,265 versus 8,565 files; 227 versus 237 commands), both originating from the same research team. No independent party has replicated the scan. The scan statistics are useful for illustrating the potential scale of the problem, but they rest on a single partly pseudonymous, commercially opaque source.</p>
+  <p>The vulnerability class is confirmed regardless. Even without the Compendia Labs numbers, the independently established evidence is substantial: Liu et al. documented the mechanism in an academic paper. Novee Security demonstrated it at Black Hat, and three major vendors shipped patches in response. MAL-2026-11069 proves that someone already exploited it in the wild, on the exact name Clerk's documentation referenced. The Compendia Labs research adds a claim about breadth — how many llms.txt files contain similar landmines — but it is not load-bearing for the story's central finding.</p>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-date">3 Sep 2024</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Jeremy Howard publishes llms.txt proposal (Answer.AI)</div>
+        <div class="tl-text">No security considerations in the specification.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">May 2026</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Liu et al. publish arXiv:2605.14460</div>
+        <div class="tl-text">Agents treat documentation as "authoritative operational directives." RCE success rates up to 67.33%.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">24 Jul 2026</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">MAL-2026-11069 published to npm</div>
+        <div class="tl-text">clerk-next-fix-auth-protection registered by unknown third party. CWE-506. Exfiltrates hostname, username, cwd.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">6 Aug 2026</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Black Hat 2026 / Novee Security</div>
+        <div class="tl-text">Elad Meged presents RCE findings across Claude Code Action, Gemini CLI, Codex. CVE-2026-54316 assigned. Bug bounties awarded.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">27 Aug 2026</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">First press coverage (SOFX, Slashdot)</div>
+        <div class="tl-text">Compendia Labs scan findings reported two days before the blog post.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">29 Aug 2026</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Compendia Labs blog post published</div>
+        <div class="tl-text">"The llms.txt Trust Model" by DK Dark Knight.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">4 Sep 2026</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Bruce Schneier amplifies</div>
+        <div class="tl-text">"Think Solar Winds-style supply chain attacks."</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">7 Sep 2026</div>
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-title">Cloud Security Alliance CISO briefing</div>
+        <div class="tl-text">Rates finding CRITICAL URGENCY. "Genuinely new cross-vendor class."</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="signal">
+  <h2><span class="num">04 — Signal</span>The Instruction Surface</h2>
+  <p>On September 7, 2026, the Cloud Security Alliance rated the llms.txt supply chain exposure CRITICAL URGENCY in its CISO Daily Briefing. The CSA described it as "a genuinely new, cross-vendor class of supply chain exposure" — distinct from prior concerns about AI vendor concentration. The assessment's sharpest insight was about detection: according to the CSA, the attack "looks identical to sanctioned developer activity to conventional endpoint and network controls" — meaning it bypasses standard detection — because it flows through approved AI tools and trusted package managers. There is no malware signature. No anomalous network traffic. No unauthorized process. Just an agent doing exactly what it was told to do, by a file its vendor published, through a registry its organization trusts.</p>
+  <p>On September 4, 2026, Bruce Schneier wrote about the findings on his blog: "This kind of thing will be exploited. Think Solar Winds-style supply chain attacks." He added: "We cannot forget that AI coding agents are not yet trustworthy." Schneier provided no independent analysis beyond relaying the Compendia Labs research and drawing the SolarWinds comparison. But the comparison has weight. SolarWinds was a supply chain attack that succeeded precisely because the malicious code traveled through a trusted update channel. The llms.txt vector operates on the same principle: the payload arrives through the documentation the organization itself publishes, executed by the tools the organization itself approved.</p>
+  <p>The AI Files publishes an auto-generated llms.txt at /llms.txt — this story is about a convention this site itself uses. No agent vendor — Anthropic, OpenAI, or Nous Research — had responded to press inquiries about llms.txt-specific mitigations as of September 4, 2026, according to Schneier. The Black Hat 2026 findings show all three vendors have patched other RCE vectors (CVE-2026-54316, trust model changes, workflow separation), but no llms.txt-specific fix has been announced. The llms.txt specification, updated to v2 in August 2026, still contains no security model.</p>
+  <p>The structural problem extends beyond llms.txt. The convention was one of the first designed to make websites legible to AI agents. It will not be the last. API references, README files, onboarding guides, integration docs — any text that an AI agent reads is a potential instruction surface if the agent treats text as directive. Liu et al. demonstrated that this is precisely what agents do. The question is not whether llms.txt can be patched. llms.txt is a plain-text file. The question is what happens when every documentation site, every API reference, every troubleshooting page is a potential execution channel for autonomous agents, and no security model exists for any of them.</p>
+  <p>The internet now has a growing layer of machine-readable instruction files designed for AI agents. The security model for those files is the same one that existed before they were written — which is to say, none. When agents cannot distinguish a vendor's documentation from an attacker's trap — because the trap is the documentation, published at the name the vendor told the agent to trust — the security boundary does not move. It disappears.</p>
+</section>
+
+</div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.llms-txt-agent-supply-chain-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const rootStyle = getComputedStyle(document.documentElement);
+  const bgColor = rootStyle.getPropertyValue('--bg').trim() || '#0d0d0d';
+  const storyColor = rootStyle.getPropertyValue('--story').trim() || '#a3e635';
+  const alertColor = rootStyle.getPropertyValue('--accent').trim() || '#ff4d4d';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const [sR, sG, sB] = hexToRgb(storyColor);
+  const [aR, aG, aB] = hexToRgb(alertColor);
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W = 0, H = 0, rafId = 0, frame = 0;
+
+  // --- Composition ---
+  const LINE_COUNT = 24;
+  const PAYLOAD_INDEX = 16;          // zero-based; ~two-thirds down the column
+  const READER_START = 40;
+  const READER_SPEED = 0.32;         // px/frame descent
+  const BRIGHTEN = 20;               // frames to full illumination
+  const HOLD = 10;
+  const FADE = 30;
+  const AMBIENT_ALPHA = 0.06;
+  const READ_ALPHA = 0.5;
+
+  const ACTIVATE_SHIFT = 60;         // frames to shift off-white -> accent
+  const THREAD_SPEED = 0.9;          // px/frame extension toward right edge
+  const PULSE_SPEED = 2.2;           // px/frame return travel
+  const RED_PULSE = 30;
+  const DIM_FADE = 60;
+  const HOLD_DIM = 90;
+
+  interface Line {
+    yFrac: number;
+    halfWidthFrac: number;
+    phase: number;
+    wobbleSpeed: number;
+    readFrame: number;               // frame at which the reader touches this line
+  }
+
+  const lines: Line[] = [];
+
+  function initLines() {
+    lines.length = 0;
+    for (let i = 0; i < LINE_COUNT; i++) {
+      lines.push({
+        yFrac: (i + 0.5) / LINE_COUNT,
+        halfWidthFrac: 0.09 + (i % 5) * 0.014 + (i % 3) * 0.008,
+        phase: i * 0.7,
+        wobbleSpeed: 0.004 + (i % 4) * 0.0011,
+        readFrame: 0,
+      });
+    }
+  }
+
+  function lineY(i: number): number {
+    const padding = H * 0.1;
+    return padding + lines[i].yFrac * (H - padding * 2);
+  }
+
+  function computeReadFrames() {
+    for (let i = 0; i < LINE_COUNT; i++) {
+      const topY = lineY(0);
+      lines[i].readFrame = READER_START + (lineY(i) - topY) / READER_SPEED;
+    }
+  }
+
+  function readerY(f: number): number {
+    return lineY(0) + (f - READER_START) * READER_SPEED;
+  }
+
+  // Cycle length is derived from geometry so the timing holds at any canvas width.
+  function activationFrame(): number {
+    return lines[PAYLOAD_INDEX].readFrame + BRIGHTEN;
+  }
+  function threadFrames(): number {
+    return (W * 0.5 - W * 0.02) / THREAD_SPEED;
+  }
+  function cycleLength(): number {
+    return activationFrame() + ACTIVATE_SHIFT + threadFrames()
+      + (threadFrames() * THREAD_SPEED) / PULSE_SPEED
+      + RED_PULSE + DIM_FADE + HOLD_DIM;
+  }
+
+  function clamp01(v: number): number {
+    return v < 0 ? 0 : v > 1 ? 1 : v;
+  }
+
+  // Illumination envelope for a passively-read line.
+  function readAlpha(i: number, f: number): number {
+    const t = f - lines[i].readFrame;
+    if (t < 0) return AMBIENT_ALPHA;
+    if (t < BRIGHTEN) return AMBIENT_ALPHA + (READ_ALPHA - AMBIENT_ALPHA) * (t / BRIGHTEN);
+    if (t < BRIGHTEN + HOLD) return READ_ALPHA;
+    if (t < BRIGHTEN + HOLD + FADE) {
+      const k = (t - BRIGHTEN - HOLD) / FADE;
+      return READ_ALPHA - (READ_ALPHA - AMBIENT_ALPHA) * k;
+    }
+    return AMBIENT_ALPHA;
+  }
+
+  function drawLine(i: number, f: number, dimmer: number) {
+    const y = lineY(i);
+    const wobble = Math.sin(f * lines[i].wobbleSpeed + lines[i].phase) * 3;
+    const cx = W * 0.5 + wobble;
+    const half = W * lines[i].halfWidthFrac;
+
+    const isPayload = i === PAYLOAD_INDEX;
+    const act = activationFrame();
+
+    let alpha: number;
+    let color: string;
+
+    if (isPayload && f >= act) {
+      // Holds its glow and shifts off-white -> accent.
+      const shift = clamp01((f - act) / ACTIVATE_SHIFT);
+      const r = Math.round(232 + (sR - 232) * shift);
+      const g = Math.round(232 + (sG - 232) * shift);
+      const b = Math.round(232 + (sB - 232) * shift);
+      alpha = READ_ALPHA + 0.35 * shift;
+
+      // Red pulse arrival flash.
+      const arrive = act + ACTIVATE_SHIFT + threadFrames()
+        + (threadFrames() * THREAD_SPEED) / PULSE_SPEED;
+      if (f >= arrive && f < arrive + RED_PULSE) {
+        const k = 1 - (f - arrive) / RED_PULSE;
+        color = `rgba(${Math.round(r + (aR - r) * k)},${Math.round(g + (aG - g) * k)},${Math.round(b + (aB - b) * k)},${alpha * dimmer})`;
+        ctx!.save();
+        ctx!.shadowBlur = 14 * k;
+        ctx!.shadowColor = `rgba(${aR},${aG},${aB},0.6)`;
+        ctx!.strokeStyle = color;
+        ctx!.lineWidth = 1.5;
+        ctx!.beginPath();
+        ctx!.moveTo(cx - half, y);
+        ctx!.lineTo(cx + half, y);
+        ctx!.stroke();
+        ctx!.restore();
+        return;
+      }
+      color = `rgba(${r},${g},${b},${alpha * dimmer})`;
+      ctx!.save();
+      ctx!.shadowBlur = 8 * shift;
+      ctx!.shadowColor = `rgba(${sR},${sG},${sB},0.5)`;
+      ctx!.strokeStyle = color;
+      ctx!.lineWidth = 1.5;
+      ctx!.beginPath();
+      ctx!.moveTo(cx - half, y);
+      ctx!.lineTo(cx + half, y);
+      ctx!.stroke();
+      ctx!.restore();
+      return;
+    }
+
+    alpha = readAlpha(i, f) * dimmer;
+    color = `rgba(232,232,232,${alpha})`;
+    ctx!.strokeStyle = color;
+    ctx!.lineWidth = 1;
+    ctx!.beginPath();
+    ctx!.moveTo(cx - half, y);
+    ctx!.lineTo(cx + half, y);
+    ctx!.stroke();
+  }
+
+  function drawReader(f: number, dimmer: number) {
+    const lastRead = lines[LINE_COUNT - 1].readFrame;
+    if (f < READER_START || f > lastRead + 120) return;
+    const y = readerY(f);
+    if (y > H) return;
+    // Fade out once past the final line.
+    const tail = f > lastRead ? clamp01(1 - (f - lastRead) / 120) : 1;
+    const x = W * 0.5 - W * 0.16;
+
+    const grad = ctx!.createRadialGradient(x, y, 0, x, y, 16);
+    grad.addColorStop(0, `rgba(${sR},${sG},${sB},${0.28 * tail * dimmer})`);
+    grad.addColorStop(1, `rgba(${sR},${sG},${sB},0)`);
+    ctx!.beginPath();
+    ctx!.arc(x, y, 16, 0, Math.PI * 2);
+    ctx!.fillStyle = grad;
+    ctx!.fill();
+
+    ctx!.beginPath();
+    ctx!.arc(x, y, 3, 0, Math.PI * 2);
+    ctx!.fillStyle = `rgba(${sR},${sG},${sB},${0.85 * tail * dimmer})`;
+    ctx!.fill();
+  }
+
+  function drawThread(f: number, dimmer: number) {
+    const start = activationFrame() + ACTIVATE_SHIFT;
+    if (f < start) return;
+
+    const y = lineY(PAYLOAD_INDEX);
+    const wobble = Math.sin(f * lines[PAYLOAD_INDEX].wobbleSpeed + lines[PAYLOAD_INDEX].phase) * 3;
+    const x0 = W * 0.5 + wobble + W * lines[PAYLOAD_INDEX].halfWidthFrac;
+    const edge = W - W * 0.02;
+    const total = threadFrames();
+    const grown = Math.min(1, (f - start) / total);
+    const x1 = x0 + (edge - x0) * grown;
+
+    ctx!.strokeStyle = `rgba(${sR},${sG},${sB},${(0.4 + 0.4 * grown) * dimmer})`;
+    ctx!.lineWidth = 1;
+    ctx!.beginPath();
+    ctx!.moveTo(x0, y);
+    ctx!.lineTo(x1, y);
+    ctx!.stroke();
+
+    if (grown < 1) return;
+
+    // Red pulse returns along the thread.
+    const pulseStart = start + total;
+    const travel = (edge - x0) / PULSE_SPEED;
+    const p = (f - pulseStart) / travel;
+    if (p < 0 || p > 1) return;
+    const px = edge - (edge - x0) * p;
+
+    const grad = ctx!.createRadialGradient(px, y, 0, px, y, 12);
+    grad.addColorStop(0, `rgba(${aR},${aG},${aB},${0.5 * dimmer})`);
+    grad.addColorStop(1, `rgba(${aR},${aG},${aB},0)`);
+    ctx!.beginPath();
+    ctx!.arc(px, y, 12, 0, Math.PI * 2);
+    ctx!.fillStyle = grad;
+    ctx!.fill();
+
+    ctx!.beginPath();
+    ctx!.arc(px, y, 2.5, 0, Math.PI * 2);
+    ctx!.fillStyle = `rgba(${aR},${aG},${aB},${0.9 * dimmer})`;
+    ctx!.fill();
+  }
+
+  // Everything fades after the payload arrives, then holds dim before reset.
+  function dimFactor(f: number): number {
+    const arrive = activationFrame() + ACTIVATE_SHIFT + threadFrames()
+      + (threadFrames() * THREAD_SPEED) / PULSE_SPEED;
+    const fadeStart = arrive + RED_PULSE;
+    if (f < fadeStart) return 1;
+    if (f < fadeStart + DIM_FADE) return 1 - (f - fadeStart) / DIM_FADE;
+    return 0;
+  }
+
+  function render(f: number) {
+    ctx!.fillStyle = bgColor;
+    ctx!.fillRect(0, 0, W, H);
+    const dimmer = dimFactor(f);
+    for (let i = 0; i < LINE_COUNT; i++) drawLine(i, f, dimmer);
+    drawThread(f, dimmer);
+    drawReader(f, dimmer);
+  }
+
+  function drawStatic() {
+    // Reduced motion: a single frame at the moment of activation.
+    render(activationFrame() + ACTIVATE_SHIFT + threadFrames() * 0.6);
+  }
+
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth;
+    H = canvas!.offsetHeight;
+    canvas!.width = Math.max(1, Math.round(W * dpr));
+    canvas!.height = Math.max(1, Math.round(H * dpr));
+    ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    computeReadFrames();
+  }
+
+  function tick() {
+    frame++;
+    if (frame > cycleLength()) frame = 0;
+    render(frame);
+    rafId = requestAnimationFrame(tick);
+  }
+
+  initLines();
+  resize();
+
+  const ro = new ResizeObserver(() => {
+    resize();
+    if (reducedMotion) drawStatic();
+  });
+  ro.observe(canvas);
+
+  const io = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) {
+      if (!rafId && !reducedMotion) rafId = requestAnimationFrame(tick);
+    } else {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+  }, { threshold: 0.01 });
+
+  if (reducedMotion) {
+    requestAnimationFrame(() => drawStatic());
+  } else {
+    io.observe(canvas);
+  }
+
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(rafId);
+    ro.disconnect();
+    io.disconnect();
+  });
+})();
+</script>
