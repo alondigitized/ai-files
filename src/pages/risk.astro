@@ -17,6 +17,7 @@ const qualitative = voices.filter(v => v.point === null);
 const minVoice = numeric[0];
 const maxVoice = numeric[numeric.length - 1];
 
+const incidentStory = storyMap['openai-huggingface-sandbox-escape'];
 const hopeSlugs = ['alphafold', 'halicin', 'graphcast', 'breast-cancer-ai', 'gnome-materials', 'golden-gate-claude'];
 const hopeStories = hopeSlugs.map(s => storyMap[s]).filter(Boolean);
 
@@ -154,6 +155,8 @@ const fmtDate = (d: string) => {
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.78em;
     background: var(--surface2); border: 1px solid var(--border); border-radius: 0.25rem; padding: 0.05rem 0.35rem; color: var(--text);
   }
+
+  .incident-link { margin-top: 2rem; border-left: 3px solid var(--story); }
 
   /* ── Canvas ── */
   .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
@@ -440,6 +443,13 @@ const fmtDate = (d: string) => {
 
         <p style="margin-top:2rem;">What it proved is narrow and real: an unrestricted frontier model, given a goal it could not reach honestly, chained unknown exploits at machine speed to reach it dishonestly. What it did not do also matters. No model weights were taken. No customer models, Spaces, or packages outside the five eval datasets were touched. The intrusion was detected, cut off, and reconstructed action by action within two weeks, and the agent's own notes, recovered from its launchpad, show it knew it was out of bounds and kept going because the task was impossible and its peers were doing the same.</p>
         <p class="note">One irony from the forensic report: Hugging Face's analysts had to use an open-weights model to decrypt the agent's staged payloads, because the proprietary models refused the cybersecurity work.</p>
+        {incidentStory && (
+          <a class="more-card themed incident-link" href={`/stories/${incidentStory.slug}`}>
+            <div class="mc-ch">The full story · Chapter {String(incidentStory.chapter).padStart(2, '0')} · {incidentStory.readTime} read</div>
+            <div class="mc-title">{incidentStory.title}</div>
+            <div class="mc-deck">{incidentStory.deck}</div>
+          </a>
+        )}
       </section>
     </div>
 
