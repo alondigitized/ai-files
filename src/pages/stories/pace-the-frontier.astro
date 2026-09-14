@@ -1,0 +1,476 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'pace-the-frontier')!;
+---
+
+<style is:global>
+  /* === CANVAS === */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .pace-the-frontier-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* === REENACTMENT 1 — THE THREAD === */
+  .ptf-thread-wrap {
+    margin: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+  .ptf-thread-card {
+    background: var(--surface);
+    border-left: 3px solid var(--story);
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .ptf-thread-card:last-of-type { border-bottom: none; }
+  .ptf-thread-handle {
+    font-family: 'Courier New', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.03em;
+  }
+  .ptf-thread-body {
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--text);
+  }
+  .ptf-thread-detail {
+    display: block;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 0.35rem;
+  }
+  .ptf-thread-context {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+    padding: 0.55rem 1.2rem;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+  }
+
+  /* === REENACTMENT 2 — SAME DAY === */
+  .ptf-sameday-wrap {
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+  .ptf-elapsed {
+    font-family: 'Courier New', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--story);
+    font-weight: 700;
+    padding: 0.55rem 1.2rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .ptf-sameday-card { background: var(--surface); padding: 1rem 1.2rem; }
+  .ptf-sameday-handle {
+    font-family: 'Courier New', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.03em;
+  }
+  .ptf-sameday-body {
+    font-size: 0.88rem;
+    line-height: 1.65;
+    color: var(--text);
+  }
+  .ptf-sameday-pullout {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 0.75rem;
+    padding-top: 0.55rem;
+    border-top: 1px solid var(--border);
+    letter-spacing: 0.02em;
+  }
+  .ptf-sameday-pullout::before {
+    content: "Key phrase: ";
+    font-style: normal;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+    margin-right: 0.4rem;
+  }
+
+  /* === REENACTMENT 3 — WHO HAS TO ACT === */
+  .ptf-escalation-wrap {
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+  .ptf-escalation-header {
+    display: grid;
+    grid-template-columns: 48px 1fr 1fr;
+    gap: 0.75rem;
+    padding: 0.55rem 1rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+  }
+  .ptf-escalation-row {
+    display: grid;
+    grid-template-columns: 48px 1fr 1fr;
+    gap: 0.75rem;
+    padding: 0.8rem 1rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    align-items: baseline;
+  }
+  .ptf-escalation-row:last-of-type { border-bottom: none; }
+  .ptf-step-num {
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+  .ptf-proposal { font-size: 0.82rem; line-height: 1.55; }
+  .ptf-actor { font-size: 0.82rem; line-height: 1.55; }
+  .ptf-actor strong { font-weight: 700; }
+  .ptf-row-active .ptf-step-num { color: var(--story); }
+  .ptf-row-active .ptf-proposal { color: var(--text); }
+  .ptf-row-active .ptf-actor { color: var(--story); }
+  .ptf-row-dim .ptf-step-num { color: var(--muted); }
+  .ptf-row-dim .ptf-proposal { color: var(--muted); }
+  .ptf-row-dim .ptf-actor { color: var(--muted); }
+  .ptf-escalation-context {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+    padding: 0.55rem 1rem;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+  }
+  @media (max-width: 640px) {
+    .ptf-escalation-header { grid-template-columns: 40px 1fr; }
+    .ptf-escalation-header span:last-child { display: none; }
+    .ptf-escalation-row { grid-template-columns: 1fr; gap: 0.25rem; }
+    .ptf-step-num { font-size: 0.7rem; }
+    .ptf-actor {
+      font-size: 0.75rem;
+      margin-top: 0.15rem;
+      padding-top: 0.15rem;
+      border-top: 1px solid var(--border);
+    }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="the-offer">
+      <h2><span class="num">01 — THE OFFER</span>What Anthropic Agreed to Give Away</h2>
+      <p>“Desks in our offices, access badges, and company laptops.”</p>
+      <p>The words appeared on 12 September 2026, inside an essay about the possible extinction of the human species. The author was Dario Amodei, CEO of Anthropic. The essay, titled “We Must Pace the Frontier,” was published on his personal website. The words described what Anthropic would give third-party safety evaluators — METR named specifically — who would be embedded inside the company to examine its most powerful models from the inside.</p>
+      <p>The commitment was detailed. Evaluators would receive permanent, employee-level system access. Permissions comparable to internal risk teams. The right to publish findings without Anthropic editorial control, with exceptions only for security, legal, and commercial redactions. The right to say publicly if important material had been redacted. Office space. Credentials. Hardware.</p>
+      <p>Of everything Amodei proposed across three escalating steps — evaluators inside labs, coordinated national standards, a global safety regime — this was the only step Anthropic could take without asking anyone's permission.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="pace-the-frontier-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Observer</strong> — a stream accelerates past a single fixed point that watches, records, and slows nothing.</p>
+
+    <section class="section" id="the-argument">
+      <h2><span class="num">02 — THE ARGUMENT</span>A Speed Limit Nobody Can Set Alone</h2>
+      <p>The essay laid out a three-step plan under three headings. Embedded Evaluators: third-party assessors inside frontier labs, with Anthropic committing unilaterally. Democratic Coordination: standards agreed among democratic nations, including compute limits and chip export controls. Global Coordination: narrow prohibitions on AI for bioweapons, mutual pre-release testing, and speed limits on recursive self-improvement.</p>
+      <p>The delay Amodei argued for would buy time for operational improvements in alignment, interpretability, and evaluation — “if slowing down bought us even an extra year or two before models reach critical levels.” He was specific about the gap that time would fill: “Rare and unexpected examples of undesirable behavior still sometimes emerge; extra time from a paced frontier would help our researchers improve.”</p>
+      <p>He addressed the pause proposals of 2023 directly. “The idea of pausing or slowing AI has been floated as far back as 2023,” he wrote. “I think it made little sense back then.” Conditions had materially changed.</p>
+      <p>In October 2024, the same author published <a href="/stories/machines-of-loving-grace">“Machines of Loving Grace,”</a> an essay about what advanced AI could cure. The subject had shifted. The question was no longer what the technology would deliver but how fast it should be allowed to arrive.</p>
+      <p>The structure of the plan carried a fact the reader would need later: steps two and three require actors who are not in the room.</p>
+    </section>
+
+    <section class="section" id="what-changed-his-mind">
+      <h2><span class="num">03 — WHAT CHANGED HIS MIND</span>Six to Twelve Months</h2>
+      <p>Amodei named two triggers. The first was recursive self-improvement: “AI has been advancing drastically faster, driven primarily by AI's growing ability to build the next generation of AI,” a shift he dated to roughly summer 2026. The second was the OpenAI agent swarm that <a href="/stories/openai-huggingface-sandbox-escape">infiltrated Hugging Face</a>, an incident already documented in this archive.</p>
+      <p>The number he attached to the risk was specific. “Given the accelerating rate of AI capability development,” he wrote, “it's my worry that in 6–12 months such a swarm could be capable of taking over the entire internet with a persistent botnet (potentially causing hundreds of billions of dollars in damage).” The essay does not show the working behind that interval. It is a stated worry, not a modelled forecast.</p>
+      <p>Context that cuts against the novelty of the moment: OpenAI had already held its largest planned frontier training run — codenamed Astra — for more than two weeks in August 2026, triggered by the same Hugging Face incident. That pause happened before the essay was published.</p>
+    </section>
+
+    <section class="section" id="the-one-who-left">
+      <h2><span class="num">04 — THE ONE WHO LEFT</span>Four Days Earlier</h2>
+      <p>Jacob Coxon resigned from Anthropic on 8 September 2026. He was 27. A pretraining researcher, educated in mathematics at Cambridge, he had spent roughly three years combined at OpenAI — where he worked on GPT-4o — and Anthropic. He had been at Anthropic for about four months.</p>
+      <p>His X thread that evening opened: “I resigned from Anthropic today. Neither company is acting responsibly. They are racing straight to self-improving superintelligence and gambling with our lives.” Later in the thread: “The people building AI earnestly believe that it could kill us all by the end of the decade. This is not a marketing stunt.”</p>
+      <p>NBC News reported that Coxon told colleagues on Anthropic's internal Slack that without more caution and cooperation, superintelligent AI carried “a risk of causing human extinction.” No verbatim Slack transcript has been published.</p>
+      <p>Anthropic's equity vests at six months. Coxon left at about four. According to IBTimes, citing an Axios interview, he said: “I no longer have anything to gain by juicing up Anthropic's valuation.”</p>
+
+      <div class="ptf-thread-wrap">
+        <div class="ptf-thread-card">
+          <div class="ptf-thread-handle">@jacobcoxon &middot; 8 Sep 2026</div>
+          <div class="ptf-thread-body">“I resigned from Anthropic today. Neither company is acting responsibly. They are racing straight to self-improving superintelligence and gambling with our lives.”</div>
+        </div>
+        <div class="ptf-thread-card">
+          <div class="ptf-thread-handle">@EvanHubinger &middot; Anthropic, alignment science &middot; 9 Sep 2026</div>
+          <div class="ptf-thread-body">“Jacob is correct here — we really do earnestly believe AI could kill all humans!”<span class="ptf-thread-detail">Personal estimate: above 10% probability of extinction within the decade.</span></div>
+        </div>
+        <div class="ptf-thread-card">
+          <div class="ptf-thread-handle">@saprmarks &middot; Anthropic &middot; 9 Sep 2026</div>
+          <div class="ptf-thread-body">“in a personal capacity, not on behalf of my employer (Anthropic)” — AI developers believe their technology could cause human extinction. The concern increases with seniority.</div>
+        </div>
+        <div class="ptf-thread-context">The second and third posts are from people who still work at Anthropic.</div>
+      </div>
+
+      <p>Inside the company, his claims were not contested. Evan Hubinger, who leads alignment science at Anthropic and still works there, posted publicly the next day. Samuel Marks, an Anthropic researcher, posted the day after that, prefaced “in a personal capacity, not on behalf of my employer (Anthropic),” writing that AI developers believe their technology could cause human extinction and that the concern increases with seniority.</p>
+      <p>Anthropic did not respond on the record. The essay, published four days later, does not mention Coxon.</p>
+      <p>Fortune, in its analysis of the week's events, explicitly declined to assert a causal link between the resignation and the essay. Nothing in the record establishes one. What the record establishes is a sequence: four days, one departure, one essay that answers the same fears in the language of policy rather than of conscience.</p>
+    </section>
+
+    <section class="section" id="within-hours">
+      <h2><span class="num">05 — WITHIN HOURS</span>Everyone Agreed Immediately</h2>
+      <p>Sam Altman posted on X the same day. OpenAI matched the evaluator pledge specifically. No timeline was given.</p>
+
+      <div class="ptf-sameday-wrap">
+        <div class="ptf-elapsed">Essay published 12 Sep &middot; Response posted 12 Sep &middot; Same day</div>
+        <div class="ptf-sameday-card">
+          <div class="ptf-sameday-handle">@sama &middot; OpenAI CEO &middot; 12 Sep 2026</div>
+          <div class="ptf-sameday-body">“I agree with Dario that we need to pace the frontier. This has been a primary topic of discussions we've had at OpenAI in recent weeks. Committing to having independent evaluators with employee-like access is a great idea, and we will do the same. We'll have more to share soon.”</div>
+          <div class="ptf-sameday-pullout">“in recent weeks”</div>
+        </div>
+      </div>
+
+      <p>According to SiliconAngle, Elon Musk posted “Dario is right” about an hour after Amodei shared the essay. Demis Hassabis, according to reporting, endorsed the direction roughly nine hours later, noting that the details needed working through, and pointed to DeepMind's own July 2026 proposal for an industry standards body modelled on FINRA. Satya Nadella welcomed deliberate pacing and embedded evaluators, and said Microsoft would open its MAI model Code of Conduct for public consultation.</p>
+      <p>Same day, separately: Altman told Fortune that OpenAI would not go public in 2026 — “given everything happening with safety, right now would be an ill-advised moment to go public.” On extinction-risk estimates: “Whether it's 10 or eight or six, the point is, we all have a tremendous amount of responsibility.”</p>
+      <p>One phrase in Altman's post bears noting. He said pacing had been “a primary topic of discussions we've had at OpenAI in recent weeks.” The response was not improvised. Whether that means the two companies coordinated in advance or reached the same conclusion through parallel internal processes, the evidence does not say.</p>
+    </section>
+
+    <section class="section" id="the-shape-of-the-ask">
+      <h2><span class="num">06 — THE SHAPE OF THE ASK</span>Everything He Asked For, Someone Else Has to Do</h2>
+      <p>The structural shape is visible now. Step one — embedded evaluators — is the only step Anthropic can perform alone, and it is an inspection, not a brake. Steps two and three are addressed to the United States government and to the world. Nothing in the plan commits Anthropic to train less, release later, or stop.</p>
+
+      <div class="ptf-escalation-wrap">
+        <div class="ptf-escalation-header">
+          <span>Step</span>
+          <span>Proposal</span>
+          <span>Who must act</span>
+        </div>
+        <div class="ptf-escalation-row ptf-row-active">
+          <span class="ptf-step-num">01</span>
+          <span class="ptf-proposal">Embedded Evaluators — third-party assessors inside the labs</span>
+          <span class="ptf-actor"><strong>Anthropic</strong> — done, unilaterally</span>
+        </div>
+        <div class="ptf-escalation-row ptf-row-dim">
+          <span class="ptf-step-num">02</span>
+          <span class="ptf-proposal">Democratic Coordination — standards among democratic nations, compute limits, export controls</span>
+          <span class="ptf-actor"><strong>The United States government</strong> — not asked, not agreed</span>
+        </div>
+        <div class="ptf-escalation-row ptf-row-dim">
+          <span class="ptf-step-num">03</span>
+          <span class="ptf-proposal">Global Coordination — bioweapon prohibitions, mutual pre-release testing, RSI speed limits</span>
+          <span class="ptf-actor"><strong>Every state with a frontier lab</strong> — no mechanism exists</span>
+        </div>
+        <div class="ptf-escalation-context">Only the top row is a thing that can be done by the person proposing it.</div>
+      </div>
+
+      <p>The July precedent makes the shape explicit. On 28 July 2026, the “Pacing the Frontier” open letter was published at pacingthefrontier.com with 1,386 signatories from employees at OpenAI, Anthropic, Google DeepMind, Meta AI, Thinking Machines, and SSI — including Amodei, Jakub Pachocki, Jared Kaplan, Shane Legg, and Ilya Sutskever. The letter asked the U.S. government to support an international effort to build the technical and governance tools needed to deliberately pace the frontier of automated AI development. It did not call for a slowdown. It asked for the tools that would make a future slowdown possible.</p>
+      <p>The obvious reading — that a man asking the world to slow down while his own company accelerates is not serious — is the wrong one. A lab that unilaterally slows while its competitor does not simply loses, and the safety argument for its own existence collapses with it. The proposals route outward because outward is the only direction from which a binding brake can arrive. This is a coordination problem, described out loud by the people caught inside it.</p>
+    </section>
+
+    <section class="section" id="the-ledger">
+      <h2><span class="num">07 — THE LEDGER</span>What Has Actually Happened</h2>
+      <p>As of this writing, no lab has changed a model release decision citing the essay. Anthropic's evaluator commitment is a commitment; no evaluator has started. OpenAI's match has no timeline — “more to share soon.” Microsoft's Code of Conduct consultation is a consultation. Altman's IPO delay is a decision about a share offering. The Astra training pause predates the essay.</p>
+      <p>The critics arrived quickly. Brian Merchant, writing in TechCrunch, said he had yet to see “a credible, step-by-step documentation of how exactly AI might move from self-recursively improving AI to killing every single human on the planet,” and called the proposal potential regulatory capture. Parmy Olson, in Bloomberg Opinion, argued the warning was far too weak — her column's headline said exactly that. According to The Register, Daryl Plummer of Gartner said: “I will believe that when I see it.” According to SiliconAngle, citing a CNBC interview, Alex Karp of Palantir offered the geopolitical counterweight: “If we didn't have adversaries, I would be very in favor of pausing this technology completely, but we do.” Speaker Mike Johnson warned the plan could “smother innovation.” And President Trump, on 13 September, told reporters: “whoever wins with AI wins.”</p>
+      <p>It remains unclear whether any government has begun the process of building the standards Amodei's second step requires, or whether any international body has taken up the third. The essay asks for both. Neither has answered.</p>
+      <p>Of everything proposed — embedded inspectors, national standards, an international regime spanning every state with a frontier lab — exactly one thing is within the power of the person proposing it. He did it. He offered a stranger a desk inside the building. The rest is a request, addressed to governments that have not agreed and a world that has no mechanism to act. The essay describes a technology that might kill everyone on a six-to-twelve-month clock. What it produced was a badge.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+  (function () {
+    const canvas = document.querySelector('.pace-the-frontier-canvas') as HTMLCanvasElement | null;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const ACCENT = '#6b9dc2';
+    const CYCLE = 1200;          // 20s at 60fps
+    const OBSERVER_IN = 180;     // observer fades in
+    const OBSERVER_FULL = 270;
+    const RAMP_END = 1080;       // acceleration finishes
+    const HOLD_END = 1140;
+    const SPEED_MIN = 0.3;
+    const SPEED_MAX = 1.5;
+    const COUNT_MIN = 35;
+    const COUNT_MAX = 70;
+    const ARC_RATE = 0.5 * Math.PI / 180;  // constant, forever
+    const TOUCH_RADIUS = 14;
+
+    let W = 0, H = 0, dpr = 1;
+    let frame = 0;
+    let rafId = 0;
+    let running = false;
+    let particles: { x: number; y: number; r: number; s: number; lit: number }[] = [];
+
+    function bg() {
+      return getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
+    }
+
+    function seed(n: number) {
+      particles = [];
+      for (let i = 0; i < n; i++) {
+        particles.push({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          r: 0.8 + Math.random() * 1.4,
+          s: 0.75 + Math.random() * 0.5,
+          lit: 0,
+        });
+      }
+    }
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const rect = canvas.getBoundingClientRect();
+      W = rect.width;
+      H = rect.height;
+      canvas.width = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      if (!particles.length) seed(COUNT_MIN);
+    }
+
+    function ease(t: number) {
+      return t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t);
+    }
+
+    function draw() {
+      const c = ctx!;
+      c.fillStyle = bg();
+      c.fillRect(0, 0, W, H);
+
+      // cycle-global fade at the very end, then reset
+      const fade = frame > HOLD_END ? 1 - (frame - HOLD_END) / (CYCLE - HOLD_END) : 1;
+
+      // acceleration ramp
+      const rampT = ease((frame - OBSERVER_FULL) / (RAMP_END - OBSERVER_FULL));
+      const speed = SPEED_MIN + (SPEED_MAX - SPEED_MIN) * rampT;
+      const want = Math.round(COUNT_MIN + (COUNT_MAX - COUNT_MIN) * rampT);
+      while (particles.length < want) {
+        particles.push({ x: -5, y: Math.random() * H, r: 0.8 + Math.random() * 1.4, s: 0.75 + Math.random() * 0.5, lit: 0 });
+      }
+
+      // observer
+      const obsAlpha = ease((frame - OBSERVER_IN) / (OBSERVER_FULL - OBSERVER_IN)) * fade;
+      const ox = W * 0.5;
+      const oy = H * 0.5;
+      const arcAngle = frame * ARC_RATE;   // never speeds up
+      const arcLen = Math.min(W, H) * 0.38;
+      const ax = ox + Math.cos(arcAngle) * arcLen;
+      const ay = oy + Math.sin(arcAngle) * arcLen;
+
+      // particles — the frontier, running
+      for (const p of particles) {
+        p.x += speed * p.s;
+        if (p.x > W + 5) {
+          p.x = -5;
+          p.y = Math.random() * H;
+        }
+        // the scan touches, and changes nothing
+        if (obsAlpha > 0.2) {
+          const dx = p.x - ax;
+          const dy = p.y - ay;
+          if (dx * dx + dy * dy < TOUCH_RADIUS * TOUCH_RADIUS) p.lit = 45;
+        }
+        if (p.lit > 0) p.lit--;
+        const litT = p.lit > 30 ? 1 : p.lit / 30;
+        const alpha = (0.06 + 0.39 * litT) * fade;
+        c.fillStyle = 'rgba(232,232,232,' + alpha.toFixed(3) + ')';
+        c.beginPath();
+        c.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        c.fill();
+      }
+
+      if (obsAlpha > 0) {
+        // scan arc
+        c.strokeStyle = 'rgba(107,157,194,' + (0.22 * obsAlpha).toFixed(3) + ')';
+        c.lineWidth = 1;
+        c.beginPath();
+        c.moveTo(ox, oy);
+        c.lineTo(ax, ay);
+        c.stroke();
+
+        c.fillStyle = 'rgba(107,157,194,' + (0.5 * obsAlpha).toFixed(3) + ')';
+        c.beginPath();
+        c.arc(ax, ay, 2, 0, Math.PI * 2);
+        c.fill();
+
+        // the fixed point
+        c.fillStyle = ACCENT;
+        c.globalAlpha = obsAlpha;
+        c.beginPath();
+        c.arc(ox, oy, 3.2, 0, Math.PI * 2);
+        c.fill();
+        c.globalAlpha = 1;
+
+        c.strokeStyle = 'rgba(107,157,194,' + (0.15 * obsAlpha).toFixed(3) + ')';
+        c.beginPath();
+        c.arc(ox, oy, 8, 0, Math.PI * 2);
+        c.stroke();
+      }
+
+      frame++;
+      if (frame >= CYCLE) {
+        frame = 0;
+        seed(COUNT_MIN);
+      }
+    }
+
+    function loop() {
+      draw();
+      rafId = requestAnimationFrame(loop);
+    }
+
+    function start() {
+      if (running) return;
+      running = true;
+      rafId = requestAnimationFrame(loop);
+    }
+    function stop() {
+      running = false;
+      cancelAnimationFrame(rafId);
+    }
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    const ro = new ResizeObserver(() => {
+      resize();
+      if (reduced.matches) {
+        frame = RAMP_END;
+        draw();
+      }
+    });
+    ro.observe(canvas);
+    resize();
+
+    if (reduced.matches) {
+      frame = RAMP_END;
+      draw();
+    } else {
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) start();
+          else stop();
+        }
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+    }
+
+    window.addEventListener('beforeunload', stop);
+  })();
+</script>
