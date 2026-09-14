@@ -34,6 +34,7 @@ export default defineConfig({
         // Non-story pages: use build time so Google knows the index refreshed
         if (item.url === `${SITE}/`) return { ...item, priority: 1.0, lastmod: buildTime };
         if (item.url.includes('/stories/')) return { ...item, priority: 0.9, lastmod: buildTime };
+        if (item.url === `${SITE}/risk/` || item.url === `${SITE}/risk`) return { ...item, priority: 0.8, lastmod: buildTime };
         return { ...item, priority: 0.7, lastmod: buildTime };
       },
     }),
