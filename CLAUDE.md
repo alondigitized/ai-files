@@ -20,7 +20,10 @@ src/
   pages/
     index.astro           ← Archive landing page (featured story + card grid)
     feed.xml.ts           ← RSS 2.0 feed (sorted by isoDate, newest first)
-    llms.txt.ts           ← GEO manifest for AI citation systems (auto-generated from stories.json)
+    llms.txt.ts           ← GEO manifest for AI citation systems (auto-generated from stories.json; also lists non-story pages)
+    risk.astro            ← The Risk Ledger (/risk): p(doom) dashboard, uses BaseLayout directly; data in src/data/risk-voices.json
+    how-it-works.astro    ← Editorial pipeline explainer (BaseLayout directly)
+    ideas.astro           ← Reader idea board (BaseLayout directly)
     stories/
       *.astro             ← One file per story (44+ total)
   styles/
@@ -90,6 +93,7 @@ Stories have a `side` field: `"dark"` or `"light"`. Dark stories use the existin
 - **StoryLayout.astro** reads `story.side` and passes it to BaseLayout; "more stories" prioritizes same-side stories
 - **Index page** has a two-state toggle (`◐ Dark Side` / `○ Light Side`) that switches the full page theme (`data-theme` on `<html>`), swaps the tagline, swaps the Editor's Pick (dark: 3-slide carousel; light: single rosie-vaccine card), and shows/hides volume sections via `data-side` on `.vol-section` and `data-ep` on Editor's Pick elements. Default is dark.
 - Volume 5 ("What Went Right") contains light-side stories
+- **`/risk` (The Risk Ledger)** uses both palettes on one page: it starts dark and flips `data-theme` to `light` when the reader scrolls past the `#ledger-turn` sentinel (scroll listener, 55% viewport), flipping back on the way up. It sets `--story` per theme in its own `<style>` (`:root[data-theme="dark"]` teal / `:root[data-theme="light"]` gold) so global components recolor. Color transitions are disabled under `prefers-reduced-motion`.
 
 ### Light theme CSS variables (`:root[data-theme="light"]`)
 | Variable | Value | Notes |
@@ -284,6 +288,7 @@ Every story includes a **full-width canvas animation** placed at a dramatically 
 | anthropic-pentagon | `anthropic-pentagon.astro` | **The Line** — a horizontal line divides the canvas; orange particles drift freely across it; the line flares bright periodically (enforcement attempts) but particles keep crossing; a mega-flare sends 6 particles through simultaneously; the line persists, accomplishes nothing |
 | cloud-strike | `cloud-strike.astro` | **The Convergence** — off-white civilian and accent-colored military particles drift toward a central node; colors merge as they approach until indistinguishable; a red impact hits the node; both types scatter equally; streams reform and converge again |
 | whale-language | `whale-language.astro` | **The Coda** — scattered teal click-pulses drift randomly; they self-organize into rhythmic clusters with connecting arc-lines; clusters glow warm gold at peak coherence; structure dissolves back to scattered pulses; the cycle of recognizing and losing the pattern repeats |
+| (page) risk | `risk.astro` | **The Ledger** — a stream of futures falls to a thin divider; ~1 in 10 veers left, flares red, dissolves; the rest pass right and settle as a pool of light that fills the frame; reset. Reads `--bg`/`--story`/`--accent` from computed style and re-reads on the page's dark→light scroll flip |
 
 ### Adding a New Story
 
