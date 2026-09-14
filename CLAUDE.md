@@ -92,7 +92,9 @@ Stories have a `side` field: `"dark"` or `"light"`. Dark stories use the existin
 - **BaseLayout.astro** sets `<html data-theme={side}>` which activates the light CSS override block in `global.css`
 - **StoryLayout.astro** reads `story.side` and passes it to BaseLayout; "more stories" prioritizes same-side stories
 - **Index page** has a two-state toggle (`◐ Dark Side` / `○ Light Side`) that switches the full page theme (`data-theme` on `<html>`), swaps the tagline, swaps the Editor's Pick (dark: 3-slide carousel; light: single rosie-vaccine card), and shows/hides volume sections via `data-side` on `.vol-section` and `data-ep` on Editor's Pick elements. Default is dark.
-- Volume 5 ("What Went Right") contains light-side stories
+- Dark side: Vols I–VI are full (6 chapters each, Ch 1–36). Vol VII "What We Handed Over" (color #f472b6) opened 2026-09-14 for the agent era: things we delegated to machines and what they did with it.
+- Light side: Vol I (Ch 1–6), Vol II (Ch 7–12), Vol III "What It Learned" (Ch 13–14, open)
+- `index.astro` renders only volumes that have at least one published story; `validate-story.ts` accepts volumes 1–7
 - **`/risk` (The Risk Ledger)** uses both palettes on one page: it starts dark and flips `data-theme` to `light` when the reader scrolls past the `#ledger-turn` sentinel (scroll listener, 55% viewport), flipping back on the way up. It sets `--story` per theme in its own `<style>` (`:root[data-theme="dark"]` teal / `:root[data-theme="light"]` gold) so global components recolor. Color transitions are disabled under `prefers-reduced-motion`.
 
 ### Light theme CSS variables (`:root[data-theme="light"]`)
@@ -114,7 +116,7 @@ Each entry in `src/data/stories.json`:
   "slug": "my-story",           // matches filename and URL
   "side": "dark",               // "dark" or "light" — determines page theme
   "chapter": 1,                 // integer, used for ordering and display
-  "volume": 1,                  // integer (1, 2, 3, 4, or 5)
+  "volume": 1,                  // integer (dark 1–7, light 1–3)
   "title": "Story Title",
   "deck": "One-sentence summary shown in hero and cards",
   "date": "January 2024",       // human-readable display date

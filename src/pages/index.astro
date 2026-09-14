@@ -39,12 +39,13 @@ const VOLUMES = [
   { num: 4, side: 'dark', color: '#00ff88', title: "What We're Left With", tagline: 'The stories still being written.' },
   { num: 5, side: 'dark', color: '#a78bfa', title: 'What Comes Next', tagline: 'The stories we saw coming.' },
   { num: 6, side: 'dark', color: '#5eead4', title: 'What Has No Name', tagline: 'The stories the lab could measure but not explain.' },
+  { num: 7, side: 'dark', color: '#f472b6', title: 'What We Handed Over', tagline: 'The stories about the keys we gave away.' },
   { num: 1, side: 'light', color: '#c8963e', title: 'What Went Right', tagline: 'The stories that gave us hope.' },
   { num: 2, side: 'light', color: '#10b981', title: 'What It Unlocked', tagline: 'The stories that changed what was possible.' },
   { num: 3, side: 'light', color: '#8b5cf6', title: 'What It Learned', tagline: 'The stories that made the skeptics pause.' },
 ];
 
-const VOL_LABELS = ['I','II','III','IV','V','VI'];
+const VOL_LABELS = ['I','II','III','IV','V','VI','VII'];
 
 const volumeData = VOLUMES.map(v => ({
   ...v,
@@ -52,7 +53,7 @@ const volumeData = VOLUMES.map(v => ({
   stories: activeStories
     .filter(s => s.volume === v.num && (s.side ?? 'dark') === v.side)
     .sort((a, b) => a.chapter - b.chapter),
-}));
+})).filter(v => v.stories.length > 0); // a volume with no published stories yet is not rendered
 
 const darkCount = activeStories.filter(s => (s.side ?? 'dark') === 'dark').length;
 const lightCount = activeStories.filter(s => s.side === 'light').length;
@@ -1127,8 +1128,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
       </div>
     </a>
 
-    {/* Dark-side Vol VI: claude-bliss-attractor, claude-blackmail-study, openai-huggingface-sandbox-escape, pace-the-frontier */}
-    {/* Light-side stories: rosie-vaccine, move-37, air-canada, halicin, alphafold, graphcast, vesuvius-scrolls, breast-cancer-ai, gnome-materials, whale-language, founder-mode-cancer, golden-gate-claude, michigan-brain-mri */}
+    {/* Volume membership is driven by stories.json (volume + side); see VOLUMES above for titles. */}
+    {/* Light-side stories: rosie-vaccine, move-37, air-canada, halicin, alphafold, graphcast, vesuvius-scrolls, breast-cancer-ai, gnome-materials, whale-language, founder-mode-cancer, golden-gate-claude, michigan-brain-mri, deepmind-double-blind-evals */}
     {volumeData.map(vol => (
       <div class={`vol-section${vol.side === 'light' ? ' hidden-by-filter' : ''}`} data-side={vol.side}>
         <div class="vol-header">
