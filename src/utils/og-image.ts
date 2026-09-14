@@ -21,6 +21,8 @@ interface StoryMeta {
   chapter: number;
   story: string;
   storyDark: string;
+  /** Optional override for the "CHAPTER NN" corner label (used by non-story pages). */
+  label?: string;
 }
 
 export async function generateOGImage(story: StoryMeta): Promise<Buffer> {
@@ -73,7 +75,7 @@ export async function generateOGImage(story: StoryMeta): Promise<Buffer> {
                     color: story.story,
                     letterSpacing: '0.12em',
                   },
-                  children: `CHAPTER ${String(story.chapter).padStart(2, '0')}`,
+                  children: story.label ?? `CHAPTER ${String(story.chapter).padStart(2, '0')}`,
                 },
               },
             ],

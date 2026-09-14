@@ -17,6 +17,13 @@ export async function GET(context: APIContext) {
   lines.push('The AI Files is a longform archive of verified, sourced stories about AI incidents, research breakthroughs, and corporate failures. All stories cite primary sources and are based on documented public events, court records, or published research.');
   lines.push('');
 
+  // Pages — non-story reference pages
+  lines.push('## Pages');
+  lines.push('');
+  lines.push(`- [The Risk Ledger](${new URL('/risk', siteURL).href}) — A sourced dashboard of every public "p(doom)" estimate (the probability that AI causes human extinction or existential catastrophe) from AI lab leaders, researchers, safety organizations, policymakers, and forecasters, each with the date, the exact question answered, and a source link. Includes aggregate survey results (2023 AI Impacts survey of 2,778 researchers, median 5%; Existential Risk Persuasion Tournament), a timeline of the July 2026 OpenAI model intrusion into Hugging Face, and a second column documenting verified positive outcomes and the safety measures introduced in response.`);
+  lines.push(`- [How It Works](${new URL('/how-it-works', siteURL).href}) — The multi-agent editorial pipeline behind every story: research, source criticism, fact-checking, and security and accessibility gates.`);
+  lines.push('');
+
   // Archive — bullet list
   lines.push('## Archive');
   lines.push('');
