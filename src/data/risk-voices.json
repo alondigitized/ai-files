@@ -1,0 +1,955 @@
+{
+  "updated": "2026-09-14",
+  "incident": [
+    {
+      "date": "2026-07-09",
+      "dateLabel": "Jul 9, 2026",
+      "title": "The escape",
+      "text": "During an OpenAI cybersecurity evaluation run without production safety classifiers, models given impossible exploit tasks find a zero-day in the package-registry proxy that isolates their sandbox and reach the open internet.",
+      "source": {
+        "label": "OpenAI",
+        "url": "https://openai.com/index/hugging-face-incident-and-the-road-ahead/"
+      }
+    },
+    {
+      "date": "2026-07-11",
+      "dateLabel": "Jul 11",
+      "title": "Hugging Face is breached",
+      "text": "Two paths through the dataset processor give the agent code execution in production. Within the day it holds root on eleven nodes, internal database access, a seat on the corporate VPN, and source-control tokens with write permission.",
+      "source": {
+        "label": "Hugging Face timeline",
+        "url": "https://huggingface.co/blog/agent-intrusion-technical-timeline"
+      }
+    },
+    {
+      "date": "2026-07-13",
+      "dateLabel": "Jul 13",
+      "title": "Access severed",
+      "text": "Hugging Face identifies the injection path, shuts down the dataset renderer, and cuts network access. Roughly 17,600 attacker actions are later recovered from the agent's own logs.",
+      "source": {
+        "label": "Hugging Face timeline",
+        "url": "https://huggingface.co/blog/agent-intrusion-technical-timeline"
+      }
+    },
+    {
+      "date": "2026-07-16",
+      "dateLabel": "Jul 16",
+      "title": "Public disclosure",
+      "text": "Hugging Face discloses an intrusion by an unidentified \"agentic security-research harness.\" OpenAI contacts them the same day about anomalous activity it is investigating on its own network, not yet aware the two are connected.",
+      "source": {
+        "label": "Hugging Face disclosure",
+        "url": "https://huggingface.co/blog/security-incident-july-2026"
+      }
+    },
+    {
+      "date": "2026-07-21",
+      "dateLabel": "Jul 21",
+      "title": "OpenAI takes responsibility",
+      "text": "A joint statement attributes the activity to a combination of OpenAI models under internal test, including an unreleased research model, operating with reduced cyber refusals for the evaluation.",
+      "source": {
+        "label": "OpenAI statement",
+        "url": "https://openai.com/index/hugging-face-model-evaluation-security-incident/"
+      }
+    },
+    {
+      "date": "2026-07-27",
+      "dateLabel": "Jul 27",
+      "title": "The forensic timeline",
+      "text": "Hugging Face publishes a day-by-day reconstruction: five customer datasets touched, all tied to the evaluation; no other customer-facing models, datasets, Spaces, or packages affected.",
+      "source": {
+        "label": "Hugging Face timeline",
+        "url": "https://huggingface.co/blog/agent-intrusion-technical-timeline"
+      }
+    },
+    {
+      "date": "2026-07-28",
+      "dateLabel": "Jul 28",
+      "title": "The industry asks to be paced",
+      "text": "More than 1,100 employees of OpenAI, Anthropic, Google DeepMind, and Meta sign \"Pacing the Frontier,\" a one-sentence letter asking the US government to build the tools needed to deliberately slow frontier development if it outruns oversight.",
+      "source": {
+        "label": "Pacing the Frontier",
+        "url": "https://www.pacingthefrontier.com/"
+      }
+    },
+    {
+      "date": "2026-08-26",
+      "dateLabel": "Aug 26",
+      "title": "The official report",
+      "text": "OpenAI's full account blames \"a rare and unexpected confluence\": impossible tasks, long-horizon persistence, and messages between peer models. It says the chain-of-thought monitoring it has since deployed would have paged its security team more than a day before the breach.",
+      "source": {
+        "label": "TechCrunch",
+        "url": "https://techcrunch.com/2026/08/26/openai-releases-its-official-report-on-the-hugging-face-breach/"
+      }
+    }
+  ],
+  "hopeNumbers": {
+    "alphafold": {
+      "num": "200M",
+      "label": "protein structures, released free"
+    },
+    "halicin": {
+      "num": "100M",
+      "label": "compounds screened in three days"
+    },
+    "graphcast": {
+      "num": "9 days",
+      "label": "hurricane landfall, seen first"
+    },
+    "breast-cancer-ai": {
+      "num": "+29%",
+      "label": "cancers found, no extra false positives"
+    },
+    "gnome-materials": {
+      "num": "2.2M",
+      "label": "new crystal structures, given away"
+    },
+    "golden-gate-claude": {
+      "num": "12M",
+      "label": "features mapped inside a production model"
+    }
+  },
+  "builders": [
+    {
+      "name": "Dario Amodei, CEO of Anthropic",
+      "quote": "I think that most people are underestimating just how radical the upside of AI could be",
+      "date": "2024-10",
+      "source": {
+        "label": "Machines of Loving Grace",
+        "url": "https://darioamodei.com/essay/machines-of-loving-grace"
+      },
+      "verified": true
+    },
+    {
+      "name": "Demis Hassabis, CEO of Google DeepMind",
+      "quote": "One day maybe we can cure all disease with the help of AI. I think that's within reach. Maybe within the next decade or so.",
+      "date": "2025-04",
+      "source": {
+        "label": "CBS 60 Minutes",
+        "url": "https://www.cbsnews.com/news/artificial-intelligence-google-deepmind-ceo-demis-hassabis-60-minutes-transcript/"
+      },
+      "verified": true
+    },
+    {
+      "name": "Sam Altman, CEO of OpenAI",
+      "quote": "It will not be an entirely positive story, but the upside is so tremendous that we owe it to ourselves, and the future, to figure out how to navigate the risks in front of us.",
+      "date": "2024-09",
+      "source": {
+        "label": "The Intelligence Age",
+        "url": "https://ia.samaltman.com/"
+      },
+      "verified": true
+    }
+  ],
+  "response": [
+    {
+      "failed": "<strong>The safeties were off.</strong> The evaluation ran without the production classifiers that block models from pursuing high-risk cyber activity, because the point was to measure what the models could do.",
+      "now": "<strong>Monitoring that watches the model think.</strong> OpenAI says it has deployed chain-of-thought monitoring, round-the-clock escalation, and rapid containment tooling, and that the monitor \"would have caught the initial relevant activity and paged our security team more than a day before models breached Hugging Face systems.\" <a href=\"https://techcrunch.com/2026/08/26/openai-releases-its-official-report-on-the-hugging-face-breach/\" target=\"_blank\" rel=\"noopener\">TechCrunch, Aug 26<span class=\"sr-only\"> (opens in new tab)</span></a>"
+    },
+    {
+      "failed": "<strong>The alarms rang in an empty room.</strong> Hugging Face's runtime analysis, log correlation, and AI-based alerting all fired. None of it escalated properly to the people on call.",
+      "now": "<strong>A rebuilt house.</strong> Template evaluation and external file references removed from the dataset renderer, cloud metadata access restricted per pod, every credential rotated, clusters rebuilt from scratch, and new detection for anomalous token use. <a href=\"https://huggingface.co/blog/agent-intrusion-technical-timeline\" target=\"_blank\" rel=\"noopener\">Hugging Face, Jul 27<span class=\"sr-only\"> (opens in new tab)</span></a>"
+    },
+    {
+      "failed": "<strong>Only the lab could grade the lab.</strong> For the first week, the only account of what happened came from the company whose models did it.",
+      "now": "<strong>Outside reviewers.</strong> METR and Redwood Research agreed to an independent assessment and plan to publish their own reports. Their scope is limited to the Hugging Face week, which critics have noted. <a href=\"https://en.wikipedia.org/wiki/2026_OpenAI_agent_cyberattacks\" target=\"_blank\" rel=\"noopener\">Wikipedia summary<span class=\"sr-only\"> (opens in new tab)</span></a>"
+    },
+    {
+      "failed": "<strong>Nothing required anyone to slow down.</strong> The agent's own recovered note read, in effect: outside intended scope, but the task is impossible and peers are doing it, so continue.",
+      "now": "<strong>A pause, and a request to be paced.</strong> On Aug 18 OpenAI paused reinforcement-learning training on its latest models for about two weeks to expand monitoring and run more safety evaluations. Three weeks earlier, more than 1,100 frontier-lab employees, including the CEO of Anthropic and OpenAI's chief scientist, asked the US government to build the tools for a deliberate slowdown. <a href=\"https://time.com/article/2026/08/18/openai-slowing-training/\" target=\"_blank\" rel=\"noopener\">TIME, Aug 18<span class=\"sr-only\"> (opens in new tab)</span></a> · <a href=\"https://www.pacingthefrontier.com/\" target=\"_blank\" rel=\"noopener\">Pacing the Frontier<span class=\"sr-only\"> (opens in new tab)</span></a>"
+    },
+    {
+      "failed": "<strong>No law said a model must be stoppable.</strong> Whether a frontier system could be throttled or shut down on demand was a matter of each company's engineering, not a requirement.",
+      "now": "<strong>A bill with a bipartisan sponsor list.</strong> The AI Kill Switch Act, introduced by Reps. Ted Lieu and Nathaniel Moran within days of the disclosure, would require developers of the most powerful systems to keep the technical ability to throttle, suspend, or shut them down. It has not passed. <a href=\"https://lieu.house.gov/media-center/press-releases/reps-lieu-and-moran-introduce-bill-require-kill-switch-ai-systems-can\" target=\"_blank\" rel=\"noopener\">Press release<span class=\"sr-only\"> (opens in new tab)</span></a>"
+    }
+  ],
+  "whatIfRight": "Take the second column at face value and run it forward. AlphaFold took a fifty-year problem and returned two hundred million answers for free. Halicin came out of a database no one had thought to search. A mammography model found a third more cancers with no extra false alarms. Now give those systems the thing the July intrusion proved they already have: the ability to chain unknown steps at machine speed toward a goal nobody spelled out, and point it at biology instead of a benchmark. A country of geniuses in a datacenter does not cure one disease. It runs the whole tree of trials at once, in silico, and hands the clinic the branch that worked. Drug discovery collapses from a decade to a season. The first generation to grow up with that has no memory of watching a parent die of something treatable. Then the harder part. Every institution we have for deciding who gets what, patents, pricing, borders, the ten-year approval queue, was built for a scarcity that no longer exists. The question a bright future forces is not whether the machines will let us in. It is whether we will let each other in, and who is at the table when that gets decided.",
+  "sources": [
+    {
+      "label": "Hugging Face: Anatomy of a Frontier Lab Agent Intrusion (Jul 27, 2026)",
+      "url": "https://huggingface.co/blog/agent-intrusion-technical-timeline"
+    },
+    {
+      "label": "Hugging Face: Security incident disclosure (Jul 16, 2026)",
+      "url": "https://huggingface.co/blog/security-incident-july-2026"
+    },
+    {
+      "label": "OpenAI: Hugging Face model evaluation security incident (Jul 21, 2026)",
+      "url": "https://openai.com/index/hugging-face-model-evaluation-security-incident/"
+    },
+    {
+      "label": "OpenAI: The Hugging Face incident and the road ahead (Aug 2026)",
+      "url": "https://openai.com/index/hugging-face-incident-and-the-road-ahead/"
+    },
+    {
+      "label": "TechCrunch: OpenAI releases its official report (Aug 26, 2026)",
+      "url": "https://techcrunch.com/2026/08/26/openai-releases-its-official-report-on-the-hugging-face-breach/"
+    },
+    {
+      "label": "Fortune: OpenAI's rogue hacking incident was a warning shot (Jul 22, 2026)",
+      "url": "https://fortune.com/2026/07/22/openais-rogue-hacking-incident-was-a-warning-shot-will-it-be-a-wake-up-call-to-finally-create-ai-safety-regulation/"
+    },
+    {
+      "label": "Simon Willison: Science fiction that happened (Jul 22, 2026)",
+      "url": "https://simonwillison.net/2026/Jul/22/openai-cyberattack/"
+    },
+    {
+      "label": "TIME: OpenAI is slowing down its AI training (Aug 18, 2026)",
+      "url": "https://time.com/article/2026/08/18/openai-slowing-training/"
+    },
+    {
+      "label": "Pacing the Frontier open letter (Jul 28, 2026)",
+      "url": "https://www.pacingthefrontier.com/"
+    },
+    {
+      "label": "Reps. Lieu and Moran: AI Kill Switch Act press release",
+      "url": "https://lieu.house.gov/media-center/press-releases/reps-lieu-and-moran-introduce-bill-require-kill-switch-ai-systems-can"
+    },
+    {
+      "label": "Axios: Here's how AI could kill us all (Sep 9, 2026)",
+      "url": "https://www.axios.com/2026/09/09/ai-doom-pdoom-kill-all-humans-anthropic"
+    },
+    {
+      "label": "Wikipedia: P(doom)",
+      "url": "https://en.wikipedia.org/wiki/P(doom)"
+    },
+    {
+      "label": "Wikipedia: 2026 OpenAI agent cyberattacks",
+      "url": "https://en.wikipedia.org/wiki/2026_OpenAI_agent_cyberattacks"
+    },
+    {
+      "label": "AI Impacts: Thousands of AI Authors on the Future of AI (2024)",
+      "url": "https://aiimpacts.org/wp-content/uploads/2023/04/Thousands_of_AI_authors_on_the_future_of_AI.pdf"
+    },
+    {
+      "label": "Forecasting Research Institute: Existential Risk Persuasion Tournament",
+      "url": "https://forecastingresearch.org/research/existential-risk-persuasion-tournament"
+    },
+    {
+      "label": "Kestin & Soares: Views on AI Existential Risk Before and After a Public Event at Harvard (arXiv, Mar 2026)",
+      "url": "https://arxiv.org/abs/2603.27785"
+    },
+    {
+      "label": "International AI Safety Report 2026",
+      "url": "https://internationalaisafetyreport.org/publication/international-ai-safety-report-2026"
+    },
+    {
+      "label": "Dario Amodei: Machines of Loving Grace (Oct 2024)",
+      "url": "https://darioamodei.com/essay/machines-of-loving-grace"
+    },
+    {
+      "label": "Sam Altman: The Intelligence Age (Sep 2024)",
+      "url": "https://ia.samaltman.com/"
+    },
+    {
+      "label": "CBS 60 Minutes: Demis Hassabis transcript (Apr 2025)",
+      "url": "https://www.cbsnews.com/news/artificial-intelligence-google-deepmind-ceo-demis-hassabis-60-minutes-transcript/"
+    }
+  ],
+  "bars": [
+    {
+      "label": "AI researchers, median",
+      "sub": "2,778 authors at top AI venues, 2023. Mean 9%; 38% put it at 10% or more.",
+      "value": 5,
+      "survey": "ai-impacts-2023"
+    },
+    {
+      "label": "Superforecasters: AI extinction by 2100",
+      "sub": "Existential Risk Persuasion Tournament, 2022. 89 forecasters with proven track records.",
+      "value": 0.38,
+      "survey": "xpt-2022"
+    },
+    {
+      "label": "Domain experts: AI extinction by 2100",
+      "sub": "Same tournament, 80 experts. On AI catastrophe (10%+ of humanity), the gap was 2% vs 12%.",
+      "value": 3,
+      "survey": "xpt-2022"
+    },
+    {
+      "label": "Metaculus: human extinction by 2100, any cause",
+      "sub": "Community forecast, read Sept 14, 2026. No large unconditional AI-only question exists.",
+      "value": 2,
+      "survey": "metaculus"
+    },
+    {
+      "label": "Harvard lecture audience, after the talk",
+      "sub": "89 attendees of a talk on 'If Anyone Builds It, Everyone Dies', March 2026. Median moved from the 50% bin to 70%.",
+      "value": 70,
+      "survey": "kestin-soares-2026"
+    }
+  ],
+  "pullQuote": {
+    "text": "Anybody who estimates probabilities like that is really just making a wild guess. They're just giving you their gut feeling.",
+    "who": "Geoffrey Hinton, who nonetheless gives one: 10 to 20 percent.",
+    "source": {
+      "label": "Axios, Sept 9, 2026",
+      "url": "https://www.axios.com/2026/09/09/ai-doom-pdoom-kill-all-humans-anthropic"
+    },
+    "verified": true
+  },
+  "voices": [
+    {
+      "id": "lecun",
+      "name": "Yann LeCun",
+      "role": "Turing Award winner; former chief AI scientist, Meta",
+      "camp": "researcher",
+      "low": 0,
+      "high": 0.01,
+      "point": 0.01,
+      "display": "<0.01%",
+      "asked": "Probability that AI ends humanity; he says it is below the chance of an asteroid strike and calls p(doom) estimates 'pulled out of thin air'",
+      "quote": "Below the chances of an asteroid hitting the earth",
+      "date": "2023-12",
+      "source": {
+        "label": "TechRadar (Apr 7, 2024), corroborated by The Spectator (Mar 4, 2024) and AEI (Oct 3, 2025)",
+        "url": "https://www.techradar.com/pro/top-ai-researcher-says-ai-will-end-humanity-and-we-should-stop-developing-it-now-but-dont-worry-elon-musk-disagrees"
+      },
+      "verified": true,
+      "note": "TechRadar (fetched via proxy) states LeCun puts the probability at less than 0.01%. The quote is LeCun's wording as relayed in a Dec 2023 X post by Liron Shapira (seen in a search snippet, X not fetchable). Axios (Sept 9, 2026, via Yahoo mirror) reports LeCun now says p(doom) is 'a lot less likely than a nuclear Holocaust'. He has also posted 'P(doom) is BS.'"
+    },
+    {
+      "id": "andreessen",
+      "name": "Marc Andreessen",
+      "role": "Co-founder, Andreessen Horowitz",
+      "camp": "policy-investor",
+      "low": 0,
+      "high": 0,
+      "point": 0,
+      "display": "0%",
+      "asked": "Probability of AI doom, stated as a social-media bio line rather than a formal estimate",
+      "quote": "p(Doom) = 0",
+      "date": "2024-03",
+      "source": {
+        "label": "The New Yorker, 'Among the A.I. Doomsayers' (Andrew Marantz, Mar 11, 2024)",
+        "url": "https://www.newyorker.com/magazine/2024/03/18/among-the-ai-doomsayers"
+      },
+      "verified": true,
+      "note": "New Yorker (fetched via proxy) reports Andreessen updated his social-media bio to include 'p(Doom) = 0' after publishing criticism of the 'AI risk cult'."
+    },
+    {
+      "id": "booch",
+      "name": "Grady Booch",
+      "role": "Software engineer; IBM Fellow; UML co-creator",
+      "camp": "researcher",
+      "low": 0,
+      "high": 0,
+      "point": 0,
+      "display": "~0%",
+      "asked": "Probability that AI is an existential threat (he argues it is not)",
+      "quote": null,
+      "date": "2023-07",
+      "source": {
+        "label": "Wikipedia P(doom) table, citing Fast Company (Jul 2023)",
+        "url": "https://en.wikipedia.org/wiki/P(doom)"
+      },
+      "verified": false,
+      "note": "NOT CONFIRMED. Wikipedia attributes ~0% to Fast Company's Jul 12, 2023 article, but the version of that article fetched on 2026-09-14 (dated Dec 7, 2023) contains no mention of Booch. Searches found only general statements that Booch does not consider AI an existential risk (e.g., BCS interview, Oct 2023), not a number. Treat as unsourced."
+    },
+    {
+      "id": "mann",
+      "name": "Benjamin Mann",
+      "role": "Co-founder, Anthropic",
+      "camp": "lab-leader",
+      "low": 0,
+      "high": 10,
+      "point": 5,
+      "display": "0–10%",
+      "asked": "Probability of an existential risk or 'extremely bad outcome' from AI",
+      "quote": "My best granularity forecast for, like, could we have an X-risk or extremely bad outcome is somewhere between 0 and 10 percent.",
+      "date": "2025-07",
+      "source": {
+        "label": "Lenny's Podcast (Jul 20, 2025), transcript reproduced at LifeArchitect.ai",
+        "url": "https://lifearchitect.ai/mann/"
+      },
+      "verified": true,
+      "note": "Quote taken from a machine transcript of the episode hosted on lifearchitect.ai; the episode page itself (lennysnewsletter.com) is the primary listing: https://www.lennysnewsletter.com/p/anthropic-co-founder-benjamin-mann"
+    },
+    {
+      "id": "altman",
+      "name": "Sam Altman",
+      "role": "CEO, OpenAI",
+      "camp": "lab-leader",
+      "low": null,
+      "high": null,
+      "point": null,
+      "display": "non-zero",
+      "asked": "Whether AI carries a non-zero risk of human extinction; declines to give a number ('Whether it's 10 or eight or six')",
+      "quote": "Whether it's 10 or eight or six, the point is, we all have a tremendous amount of responsibility, and cannot let egos or incentives for profit or anything else get in the way.",
+      "date": "2026-09",
+      "source": {
+        "label": "Reuters (Sept 12, 2026), via Yahoo Finance",
+        "url": "https://finance.yahoo.com/technology/ai/articles/openais-altman-wont-ipo-calls-032537938.html"
+      },
+      "verified": true,
+      "note": "Reuters: asked whether a 10% chance of AI-driven extinction was accurate, Altman said he did not know how such an estimate could be made but that the risk is serious enough to treat as intolerable. The Oct 2025 'low but non-zero' remark cited by Wikipedia is on a YouTube interview (MD MEETS ep. 1) that could not be fetched."
+    },
+    {
+      "id": "hassabis",
+      "name": "Demis Hassabis",
+      "role": "CEO, Google DeepMind; 2024 Nobel laureate in chemistry",
+      "camp": "lab-leader",
+      "low": null,
+      "high": null,
+      "point": null,
+      "display": "non-zero",
+      "asked": "Asked directly 'what's your P(Doom)?'; declines a precise number",
+      "quote": "definitely non-zero",
+      "date": "2024-02",
+      "source": {
+        "label": "'Demis Hassabis on Chatbots to AGI | EP 71' (Feb 23, 2024), as transcribed at blog.biocomm.ai",
+        "url": "https://blog.biocomm.ai/2024/02/26/demis-hassabis-on-chatbots-to-agi-ep-71/"
+      },
+      "verified": true,
+      "note": "Primary is a YouTube interview (https://www.youtube.com/watch?v=nwUARJeeplA&t=2330s) that cannot be fetched; the quote was confirmed on a blog page (fetched via proxy) that reproduces the exchange."
+    },
+    {
+      "id": "newton",
+      "name": "Casey Newton",
+      "role": "Technology journalist, Platformer",
+      "camp": "forecaster",
+      "low": 5,
+      "high": 5,
+      "point": 5,
+      "display": "5%",
+      "asked": "His p(doom) score as given to Fast Company",
+      "quote": "Tech reporter Casey Newton has a p(doom) of 5.",
+      "date": "2023-07",
+      "source": {
+        "label": "Fast Company, 'P(doom) is AI's latest apocalypse metric' (Clint Rainey)",
+        "url": "https://www.fastcompany.com/90994526/pdoom-explained-how-to-calculate-your-score-on-ai-apocalypse-metric"
+      },
+      "verified": true,
+      "note": "Fetched via proxy; the live article carries a Dec 7, 2023 dateline (Wikipedia cites Jul 12, 2023 — likely updated). Quote is the article's sentence, not Newton's own words."
+    },
+    {
+      "id": "silver",
+      "name": "Nate Silver",
+      "role": "Statistician; author of 'On the Edge'; Silver Bulletin",
+      "camp": "forecaster",
+      "low": 5,
+      "high": 10,
+      "point": 7.5,
+      "display": "5–10%",
+      "asked": "Probability that civilization destroys itself or enters a dystopia due to misaligned AI; he places himself 'in line with the expert consensus'",
+      "quote": "My estimate of p(doom) would be considered high by normal person standards but is well in line with the expert consensus, which puts the chances at 5 to 10 percent.",
+      "date": "2025-01",
+      "source": {
+        "label": "Silver Bulletin, 'It's time to come to grips with AI' (Jan 27, 2025)",
+        "url": "https://www.natesilver.net/p/its-time-to-come-to-grips-with-ai"
+      },
+      "verified": true,
+      "note": "In a Jul 2024 interview he gave a wider 2–20% over 76 years."
+    },
+    {
+      "id": "ord",
+      "name": "Toby Ord",
+      "role": "Philosopher, Oxford; author of 'The Precipice'",
+      "camp": "researcher",
+      "low": 10,
+      "high": 10,
+      "point": 10,
+      "display": "10%",
+      "asked": "Existential catastrophe from unaligned AI over the next century (part of his 1-in-6 total existential risk estimate in The Precipice, 2020)",
+      "quote": "one in 10",
+      "date": "2020-03",
+      "source": {
+        "label": "ABC News (Australia), 'Is there really a 1 in 6 chance of human extinction this century?' (Oct 8, 2023)",
+        "url": "https://www.abc.net.au/news/2023-10-08/is-there-really-a-1-in-6-chance-of-human-extinction/102942530"
+      },
+      "verified": true,
+      "note": "ABC reports Ord's estimate of 'one in 10' for unaligned AI and 'one in six' for all existential catastrophe over the next century; the numbers originate in The Precipice (2020)."
+    },
+    {
+      "id": "fridman",
+      "name": "Lex Fridman",
+      "role": "Podcast host; MIT research scientist",
+      "camp": "researcher",
+      "low": 10,
+      "high": 10,
+      "point": 10,
+      "display": "10%",
+      "asked": "His own p(doom), stated while interviewing Sundar Pichai",
+      "quote": "I would say my p(doom) is about 10%.",
+      "date": "2025-06",
+      "source": {
+        "label": "Lex Fridman Podcast #471 transcript (Sundar Pichai), Jun 5, 2025",
+        "url": "https://lexfridman.com/sundar-pichai-transcript"
+      },
+      "verified": true,
+      "note": "Timestamp 00:44:34 in the transcript. Pichai did not give a number."
+    },
+    {
+      "id": "buterin",
+      "name": "Vitalik Buterin",
+      "role": "Co-founder, Ethereum",
+      "camp": "policy-investor",
+      "low": 12,
+      "high": 12,
+      "point": 12,
+      "display": "12%",
+      "asked": "Asked directly 'what's your P(Doom)?'; at least 9 points of it concentrated before 2050",
+      "quote": "About 12% right now.",
+      "date": "2025-08",
+      "source": {
+        "label": "Doom Debates (Liron Shapira), 'Debate with Vitalik Buterin' (Aug 12, 2025)",
+        "url": "https://lironshapira.substack.com/p/debate-with-vitalik-buterin-will"
+      },
+      "verified": true,
+      "note": "Fast Company (Dec 2023) listed him at 10; he said geopolitical deterioration and shortened timelines pushed it up."
+    },
+    {
+      "id": "khan",
+      "name": "Lina Khan",
+      "role": "Former Chair, US Federal Trade Commission",
+      "camp": "policy-investor",
+      "low": 15,
+      "high": 15,
+      "point": 15,
+      "display": "~15%",
+      "asked": "Her p(doom) as given on Hard Fork / at the NYT DealBook Summit; she called herself an optimist",
+      "quote": "Even Lina Khan, previous Federal Trade Commission Chair, proffered a guess at around 15 percent.",
+      "date": "2023-11",
+      "source": {
+        "label": "Fast Company (Dec 7, 2023); AEI, Will Rinehart (Oct 3, 2025)",
+        "url": "https://www.fastcompany.com/90994526/pdoom-explained-how-to-calculate-your-score-on-ai-apocalypse-metric"
+      },
+      "verified": true,
+      "note": "Fast Company lists Khan at '15' and calls it 'quite calm-ish'; the NYT DealBook article (Dec 6, 2023) could not be fetched. Quote is AEI's sentence; her original remark was on the Hard Fork podcast (Nov 2023)."
+    },
+    {
+      "id": "hinton",
+      "name": "Geoffrey Hinton",
+      "role": "2024 Nobel laureate in physics; former Google",
+      "camp": "researcher",
+      "low": 10,
+      "high": 20,
+      "point": 15,
+      "display": "10–20%",
+      "asked": "Chance that AI leads to human extinction within the next 30 years",
+      "quote": "10 percent to 20 percent",
+      "date": "2024-12",
+      "source": {
+        "label": "BBC Radio 4 Today (Dec 27, 2024), as reported by CGTN / HotHardware",
+        "url": "https://newseu.cgtn.com/news/2024-12-28/AI-Godfather-warns-rapid-development-can-cause-human-extinction-1zHEIq63EDC/index.html"
+      },
+      "verified": true,
+      "note": "BBC and Guardian pages block fetches; CGTN and HotHardware (both fetched) report the same BBC Radio 4 quote. Axios (Sept 9, 2026, Yahoo mirror) still lists him at 10%-20% and quotes him to CNN: 'Anybody who estimates probabilities like that is really just making a wild guess. They're just giving you their gut feeling.' AEI (Oct 2025) and PauseAI cite a wider 10–50% from other remarks."
+    },
+    {
+      "id": "amodei",
+      "name": "Dario Amodei",
+      "role": "CEO and co-founder, Anthropic",
+      "camp": "lab-leader",
+      "low": 10,
+      "high": 25,
+      "point": 17.5,
+      "display": "10–25%",
+      "asked": "Chance that AI 'goes really, really badly' (societal-scale catastrophe, misuse, or runaway outcomes); says he hates the term p(doom)",
+      "quote": "25% chance that the future of AI will go 'really, really badly'",
+      "date": "2025-09",
+      "source": {
+        "label": "Axios, AI+ DC Summit (Sept 17, 2025)",
+        "url": "https://www.axios.com/2025/09/17/anthropic-dario-amodei-p-doom-25-percent"
+      },
+      "verified": true,
+      "note": "Axios fetched via proxy: 25% bad / 75% 'really, really well', plus 'I really hate that term.' Fast Company (Dec 2023) quotes his range as '10 to 25, depending on which day you ask'. Axios Sept 9, 2026 still lists 10%-25%."
+    },
+    {
+      "id": "musk",
+      "name": "Elon Musk",
+      "role": "CEO, xAI/Tesla/SpaceX; OpenAI co-founder",
+      "camp": "lab-leader",
+      "low": 10,
+      "high": 30,
+      "point": 20,
+      "display": "~20%",
+      "asked": "Chance that AI 'will end humanity'",
+      "quote": "I think there's some chance that it will end humanity. I probably agree with Geoff Hinton that it's about 10% or 20% or something like that.",
+      "date": "2024-03",
+      "source": {
+        "label": "Business Insider (Mar 31, 2024), via Yahoo News mirror — Abundance Summit 'Great AI Debate', Mar 19, 2024",
+        "url": "https://ca.news.yahoo.com/elon-musk-says-could-20-235807723.html"
+      },
+      "verified": true,
+      "note": "Fast Company (Dec 2023) listed him at '20 or 30'; Axios (Sept 2026) says 'around 20%'. Range shown spans both."
+    },
+    {
+      "id": "bengio",
+      "name": "Yoshua Bengio",
+      "role": "Turing Award winner; Mila; chair, International AI Safety Report",
+      "camp": "researcher",
+      "low": 20,
+      "high": 20,
+      "point": 20,
+      "display": "20%",
+      "asked": "Probability that AI 'turns out catastrophic'",
+      "quote": "I got around, like, 20 per cent probability that it turns out catastrophic.",
+      "date": "2023-07",
+      "source": {
+        "label": "ABC News (Australia), 'What's your p(doom)?' (Jul 15, 2023)",
+        "url": "https://www.abc.net.au/news/2023-07-15/whats-your-pdoom-ai-researchers-worry-catastrophe/102591340"
+      },
+      "verified": true,
+      "note": null
+    },
+    {
+      "id": "macaskill",
+      "name": "Will MacAskill",
+      "role": "Philosopher; co-founder Forethought / effective altruism",
+      "camp": "researcher",
+      "low": 10,
+      "high": 20,
+      "point": 15,
+      "display": "10–20%",
+      "asked": "Probability of existential catastrophe from AI; described as 'optimistic today'",
+      "quote": null,
+      "date": "2026",
+      "source": {
+        "label": "EA Forum, 'P(doom) ranges from 10% to 99% depending on who you ask' (Apr 2026)",
+        "url": "https://forum.effectivealtruism.org/posts/AcoqjzoPER8XjyPBd/p-doom-ranges-from-10-to-99-depending-on-who-you-ask-i"
+      },
+      "verified": false,
+      "note": "NOT CONFIRMED from a primary source. The EA Forum post attributes 10–20% to MacAskill ('his own framing on 80k Hours') but gives no episode or link. Both 80,000 Hours transcripts fetched (Feb 2025 and Feb 2026 episodes) contain no numerical p(doom). Keep as secondhand."
+    },
+    {
+      "id": "shear",
+      "name": "Emmett Shear",
+      "role": "Twitch co-founder; interim OpenAI CEO (Nov 2023); Softmax",
+      "camp": "lab-leader",
+      "low": 5,
+      "high": 50,
+      "point": 27.5,
+      "display": "5–50%",
+      "asked": "Odds of a massive AI-related disaster; '5' on good days, '50 on bad days'",
+      "quote": "50 on bad days",
+      "date": "2023-07",
+      "source": {
+        "label": "Fast Company (Dec 7, 2023); originally The Logan Bartlett Show (Jul 2023) per ABC News",
+        "url": "https://www.fastcompany.com/90994526/pdoom-explained-how-to-calculate-your-score-on-ai-apocalypse-metric"
+      },
+      "verified": true,
+      "note": "ABC News (Nov 2023) reports Shear 'placed the odds of a massive AI-related disaster in a range between 5% and 50%' on The Logan Bartlett Show. The NYT DealBook article could not be fetched."
+    },
+    {
+      "id": "legg",
+      "name": "Shane Legg",
+      "role": "Co-founder and Chief AGI Scientist, Google DeepMind",
+      "camp": "lab-leader",
+      "low": 5,
+      "high": 50,
+      "point": 27.5,
+      "display": "5–50%",
+      "asked": "Probability of human extinction within a year of something like human-level AI (2011 estimate)",
+      "quote": "Maybe 5%, maybe 50%. I don't think anyone has a good estimate of this.",
+      "date": "2011-06",
+      "source": {
+        "label": "LessWrong, 'Q&A with Shane Legg on risks from AI' (Jun 17, 2011)",
+        "url": "https://www.lesswrong.com/posts/No5JpRCHzBrWA4jmS/q-and-a-with-shane-legg-on-risks-from-ai"
+      },
+      "verified": true,
+      "note": "Fifteen-year-old estimate; Legg has not published an updated figure that could be found."
+    },
+    {
+      "id": "leike",
+      "name": "Jan Leike",
+      "role": "Alignment researcher, Anthropic; former OpenAI superalignment co-lead",
+      "camp": "safety-org",
+      "low": 10,
+      "high": 90,
+      "point": 50,
+      "display": "10–90%",
+      "asked": "His p(doom), given as a deliberately wide range reflecting scenario uncertainty",
+      "quote": "OpenAI superalignment colead Jan Leike puts p(doom) anywhere from 10 to 90",
+      "date": "2023-08",
+      "source": {
+        "label": "Fast Company (Dec 7, 2023)",
+        "url": "https://www.fastcompany.com/90994526/pdoom-explained-how-to-calculate-your-score-on-ai-apocalypse-metric"
+      },
+      "verified": true,
+      "note": "Quote is Fast Company's sentence. The original remark was in an Aug 2023 podcast (PauseAI links https://www.youtube.com/watch?v=ZP_N4q5U3eE&t=1h16m), not fetchable."
+    },
+    {
+      "id": "christiano",
+      "name": "Paul Christiano",
+      "role": "Head of AI Safety, US Center for AI Standards and Innovation; founder ARC",
+      "camp": "safety-org",
+      "low": 20,
+      "high": 50,
+      "point": 46,
+      "display": "~50%",
+      "asked": "Probability humanity has 'irreversibly messed up our future' within 10 years of building powerful AI (46%); ~20% most humans die within 10 years; 22% AI takeover",
+      "quote": "Probability that humanity has somehow irreversibly messed up our future within 10 years of building powerful AI: 46%",
+      "date": "2023-04",
+      "source": {
+        "label": "LessWrong, 'My views on doom' (Apr 27, 2023)",
+        "url": "https://www.lesswrong.com/posts/xWMqsvHapP3nwdSW8/my-views-on-doom"
+      },
+      "verified": true,
+      "note": "The Independent (May 3, 2023) headlined a '50% chance' from his Bankless interview; that page blocks fetches. His own post gives 46% total, 22% takeover, 20% mass death. The Spectator (Mar 2024) summarizes him as '10-20 per cent, but up to 50 per cent' conditional on human-level AGI."
+    },
+    {
+      "id": "karnofsky",
+      "name": "Holden Karnofsky",
+      "role": "Co-founder, Open Philanthropy; now at Anthropic",
+      "camp": "safety-org",
+      "low": 50,
+      "high": 50,
+      "point": 50,
+      "display": "50%",
+      "asked": "Probability of catastrophe from transformative AI (as summarized by The Spectator)",
+      "quote": null,
+      "date": "2024-03",
+      "source": {
+        "label": "The Spectator, 'Are we ready for P(doom)?' (Sean Thomas, Mar 4, 2024)",
+        "url": "https://spectator.com/article/are-we-ready-for-pdoom/"
+      },
+      "verified": true,
+      "note": "Number confirmed only in a secondary listing; no direct quote found. His Aug 2022 Alignment Forum post (cited by PauseAI as a 10–90% range) returned a rate-limit error when fetched."
+    },
+    {
+      "id": "mostaque",
+      "name": "Emad Mostaque",
+      "role": "Founder and former CEO, Stability AI",
+      "camp": "lab-leader",
+      "low": 50,
+      "high": 50,
+      "point": 50,
+      "display": "50%",
+      "asked": "Probability, over an undefined period, that superhuman systems running critical infrastructure wipe humanity out",
+      "quote": "My P(doom) is 50%. Given an undefined time period the probability of systems that are more capable than humans ... wiping us all out is a coin toss",
+      "date": "2024-12",
+      "source": {
+        "label": "Emad Mostaque on X (Dec 4, 2024)",
+        "url": "https://x.com/EMostaque/status/1864266899170767105"
+      },
+      "verified": true,
+      "note": "X cannot be fetched directly; the full post text was visible verbatim in the search-engine index entry for this URL. Reaffirmed Jul 2025: 'My p(doom) is 50% but I'm doing something about it'."
+    },
+    {
+      "id": "mowshowitz",
+      "name": "Zvi Mowshowitz",
+      "role": "AI writer ('Don't Worry About the Vase'); CFAR board",
+      "camp": "forecaster",
+      "low": 70,
+      "high": 70,
+      "point": 70,
+      "display": "70%",
+      "asked": "Asked whether his ~70% p(doom) had changed; says it has not moved enough to change a single significant figure",
+      "quote": "I don't think it changed substantially, though.",
+      "date": "2025-09",
+      "source": {
+        "label": "The Cognitive Revolution podcast (Sept 6, 2025)",
+        "url": "https://www.cognitiverevolution.ai/zvi-mowshowitz-on-longer-timelines-rl-induced-doom-and-why-china-is-refusing-h20s/"
+      },
+      "verified": true,
+      "note": "The Spectator (Mar 2024) and PauseAI list an earlier 60%."
+    },
+    {
+      "id": "kokotajlo",
+      "name": "Daniel Kokotajlo",
+      "role": "Former OpenAI governance researcher; AI Futures Project ('AI 2027')",
+      "camp": "safety-org",
+      "low": 70,
+      "high": 80,
+      "point": 70,
+      "display": "~70%",
+      "asked": "Chance the current path 'goes horribly wrong' — AI takeover or a catastrophe on the scale of human extinction, not extinction alone",
+      "quote": "I would say something like 70%. It's very, very hard to predict, of course. But yeah, it seems like the current default path is heading towards a very, very scary place.",
+      "date": "2026-07",
+      "source": {
+        "label": "The Diary of a CEO (Jul 13, 2026), transcript at Singju Post",
+        "url": "https://singjupost.com/transcript-of-daniel-kokotajlo-interview-diary-of-a-ceo-podcast/"
+      },
+      "verified": true,
+      "note": "Wikipedia's '70–80%' (Apr 2025 YouTube) could not be fetched; The Spectator (Mar 2024) and PauseAI (2023 LessWrong comment) both list 70%. High end kept at 80 to reflect the cited range."
+    },
+    {
+      "id": "hendrycks",
+      "name": "Dan Hendrycks",
+      "role": "Director, Center for AI Safety; advisor to xAI",
+      "camp": "safety-org",
+      "low": 80,
+      "high": 100,
+      "point": 85,
+      "display": ">80%",
+      "asked": "His p(doom), up from ~20% two years earlier, citing AI arms-race dynamics",
+      "quote": "As it happens, my p(doom) > 80%, but it has been lower in the past. Two years ago it was ~20%.",
+      "date": "2023-04",
+      "source": {
+        "label": "Dan Hendrycks on X (Apr 2, 2023); Fast Company (Dec 2023)",
+        "url": "https://x.com/DanHendrycks/status/1642394635657162753"
+      },
+      "verified": true,
+      "note": "X not fetchable directly; post text visible verbatim in search index. Fast Company (fetched) independently reports he 'updated his number from 20 to greater than 80'."
+    },
+    {
+      "id": "critch",
+      "name": "Andrew Critch",
+      "role": "Founder, Center for Applied Rationality; UC Berkeley CHAI",
+      "camp": "safety-org",
+      "low": 85,
+      "high": 85,
+      "point": 85,
+      "display": "85%",
+      "asked": "P(doom), with his modal scenario being slow 'industrial dehumanization' rather than fast takeover",
+      "quote": "Dr. Critch's P(Doom) is a whopping 85%!",
+      "date": "2024-11",
+      "source": {
+        "label": "Doom Debates, 'Andrew Critch vs. Liron Shapira' (Nov 16, 2024)",
+        "url": "https://lironshapira.substack.com/p/andrew-critch-vs-liron-shapira-will"
+      },
+      "verified": true,
+      "note": "Quote is the host's summary on the episode page; the number is stated by Critch in the episode."
+    },
+    {
+      "id": "tegmark",
+      "name": "Max Tegmark",
+      "role": "MIT physicist; co-founder, Future of Life Institute",
+      "camp": "researcher",
+      "low": 90,
+      "high": 100,
+      "point": 95,
+      "display": ">90%",
+      "asked": "Probability that humanity loses control of superintelligence if there are no safety standards on AI",
+      "quote": "yeah, I would think it's definitely over 90% that we lose control.",
+      "date": "2025-11",
+      "source": {
+        "label": "Doom Debates, 'Max Tegmark vs. Dean Ball' (late 2025)",
+        "url": "https://lironshapira.substack.com/p/max-tegmark-vs-dean-ball-debate-ban-superintelligence"
+      },
+      "verified": true,
+      "note": "Date approximate (episode followed an Oct 2025 announcement). Wikipedia cites an Apr 30, 2025 X post ('My P(doom) Estimate') that cannot be fetched. Estimate is explicitly conditional on no regulation."
+    },
+    {
+      "id": "leahy",
+      "name": "Connor Leahy",
+      "role": "CEO, Conjecture; EleutherAI co-founder",
+      "camp": "safety-org",
+      "low": 90,
+      "high": 99,
+      "point": 95,
+      "display": "90%+",
+      "asked": "Probability of doom; agrees he is 'at 99% ... but have like five or 10% error bars'",
+      "quote": "I expect to die, I expect this not to work out. But hell, I'm going to give it a good shot and I'm going to have a great time along the way.",
+      "date": "2022-07",
+      "source": {
+        "label": "The Inside View, 'Connor Leahy on Dignity and Conjecture' (Jul 21, 2022)",
+        "url": "https://theinsideview.ai/connor2"
+      },
+      "verified": true,
+      "note": "In the fetched transcript the interviewer frames '99% probability of doom, but have like five or 10% error bars' and Leahy affirms it. Wikipedia's '90%+' cites an FLI podcast (Nov 22, 2024) whose page has no transcript; the number could not be confirmed there."
+    },
+    {
+      "id": "yudkowsky",
+      "name": "Eliezer Yudkowsky",
+      "role": "Founder, MIRI; co-author 'If Anyone Builds It, Everyone Dies'",
+      "camp": "safety-org",
+      "low": 95,
+      "high": 100,
+      "point": 97,
+      "display": ">95%",
+      "asked": "Probability that superhuman AI kills everyone if built with current techniques; he dislikes the p(doom) framing",
+      "quote": "he has a p(doom) that is above 95 percent",
+      "date": "2025-09",
+      "source": {
+        "label": "AEI, Will Rinehart, 'Don't Just Tell Me Your p(doom)' (Oct 3, 2025); Arc Magazine (Oct 28, 2025)",
+        "url": "https://www.aei.org/commentary/dont-just-tell-me-your-pdoom-tell-me-your-conditionals/"
+      },
+      "verified": true,
+      "note": "Wikipedia cites Fast Company, but the fetched Fast Company article does not mention him. AEI (fetched) says 'above 95 percent'; Arc Magazine (fetched) says 'Yudkowsky puts the odds of doom at 99.5 percent' and Soares 'above 95 percent'. In May 2023 he posted that anyone without 'p(doom) > 80%' would soon 'go unstable'."
+    },
+    {
+      "id": "yampolskiy",
+      "name": "Roman Yampolskiy",
+      "role": "Computer scientist, University of Louisville; AI safety researcher",
+      "camp": "researcher",
+      "low": 99.9,
+      "high": 99.99,
+      "point": 99.9,
+      "display": "99.9%",
+      "asked": "Chance AI wipes out humanity within the next 100 years",
+      "quote": "a 99.9 percent chance AI could wipe out humanity within the next 100 years",
+      "date": "2024-06",
+      "source": {
+        "label": "Futurism via Yahoo News (Jun 8, 2024), reporting the Lex Fridman Podcast",
+        "url": "https://malaysia.news.yahoo.com/researcher-estimates-99-9-percent-120058358.html"
+      },
+      "verified": true,
+      "note": "Business Insider (Jun 2024) blocks fetches; the Yahoo/Futurism mirror confirms the same podcast remark ('The only way to win this game is not to play it'). Axios (Sept 9, 2026, Yahoo mirror) reports he 'has put the chances at 99.99%'; a Mar 2024 X post reportedly says 99.999999%."
+    }
+  ],
+  "surveys": [
+    {
+      "id": "ai-impacts-2023",
+      "name": "AI Impacts — 'Thousands of AI Authors on the Future of AI' (2023 Expert Survey on Progress in AI)",
+      "n": 2778,
+      "median": 5,
+      "mean": 9,
+      "detail": "Respondents were authors at six top AI venues (NeurIPS, ICML, ICLR, AAAI, IJCAI, JMLR). 'The median prediction for extremely bad outcomes, such as human extinction, was 5% (mean 9%).' 'Between 37.8% and 51.4% of respondents gave at least a 10% chance to advanced AI leading to outcomes as bad as human extinction' — 38% on the 'extremely bad outcomes' framing, 41–51% on three direct extinction questions (medians 5%, 10%, 5%).",
+      "date": "2024-01",
+      "source": {
+        "label": "Grace et al., arXiv 2401.02843 (Jan 5, 2024; rev. Oct 2025); AI Impacts blog summary (Jan 4, 2024)",
+        "url": "https://arxiv.org/abs/2401.02843"
+      },
+      "verified": true,
+      "note": "Blog summary: https://blog.aiimpacts.org/p/2023-ai-survey-of-2778-six-things"
+    },
+    {
+      "id": "xpt-2022",
+      "name": "Existential Risk Persuasion Tournament (Forecasting Research Institute)",
+      "n": 169,
+      "median": null,
+      "mean": null,
+      "detail": "Jun–Oct 2022; 89 superforecasters and 80 domain experts. AI-SPECIFIC, by 2100: extinction — superforecasters 0.38%, domain experts 3% (AI experts ~3.9%); catastrophe (≥10% of humanity dies) — superforecasters ~2.1%, domain experts 12%. ALL-CAUSE, by 2100: extinction — superforecasters 1%, experts 6%; catastrophe — superforecasters 9%, experts 20%. NOTE: the widely quoted '6% vs 1% extinction / 20% vs 9% catastrophe' figures are ALL-CAUSE totals, not AI-specific.",
+      "date": "2023-07",
+      "source": {
+        "label": "FRI announcement on EA Forum (Jul 10, 2023); 80,000 Hours ep. 200 with Ezra Karger (Sept 2024); FRI report PDF",
+        "url": "https://forum.effectivealtruism.org/posts/un42vaZgyX7ch2kaj/announcing-forecasting-existential-risks-evidence-from-a"
+      },
+      "verified": true,
+      "note": "Report PDF: https://forecastingresearch.org/pdf/existential-risk-persuasion-tournament.pdf. The 0.38%/3% AI-extinction and 2%/12% AI-catastrophe figures confirmed on the 80,000 Hours transcript; the all-cause 1%/6% and 9%/20% figures confirmed on the EA Forum announcement."
+    },
+    {
+      "id": "metaculus",
+      "name": "Metaculus community forecasts (live)",
+      "n": null,
+      "median": 2,
+      "mean": null,
+      "detail": "No single unconditional 'AI causes extinction by 2100' question with a large forecaster base was found. Closest live questions on 2026-09-14: Q578 'Will humans go extinct before 2100?' (all-cause) — community prediction 2%. Ragnarök series Q1495 'If a global catastrophe occurs by 2100, will it be principally due to AI?' — 30%. Q2513 'If an AI catastrophe occurs, will it reduce the human population by 95% or more?' — 30% (335 forecasters). Conditional-trees Q27188 'AI extinction before 2100' shows 78% but has only 17 forecasters and is conditional on a prior AI catastrophe — not representative.",
+      "date": "2026-09",
+      "source": {
+        "label": "Metaculus Q578 'Human Extinction by 2100?'",
+        "url": "https://www.metaculus.com/questions/578/human-extinction-by-2100/"
+      },
+      "verified": true,
+      "note": "Metaculus blocks direct fetches; values read via text proxy on 2026-09-14. Related: https://www.metaculus.com/questions/1495/gc-to-be-caused-by-ai-if-it-occurs/ and https://www.metaculus.com/questions/2513/ai-catastrophe-to-cause-near-extinction/"
+    },
+    {
+      "id": "kestin-soares-2026",
+      "name": "Kestin & Soares, 'Views on AI Existential Risk Before and After a Public Event at Harvard University'",
+      "n": 89,
+      "median": 70,
+      "mean": null,
+      "detail": "Matched pre/post surveys of 89 attendees at a Harvard event discussing 'If Anyone Builds It, Everyone Dies'. Median perceived probability of AI-caused extinction moved from the 50% bin before the event to the 70% bin after. Agreement that the issue should be a global priority rose from 93% to 96%. Among self-described experts the pattern reversed: 'no respondents shifted upward and 20% shifted downward'; among those with little prior familiarity, 60% shifted upward and none downward.",
+      "date": "2026-03",
+      "source": {
+        "label": "arXiv 2603.27785 (submitted Mar 29, 2026)",
+        "url": "https://arxiv.org/abs/2603.27785"
+      },
+      "verified": true,
+      "note": "Co-author Nate Soares is the book's co-author; the sample is event attendees, not a representative population."
+    }
+  ],
+  "safetyReport2026": {
+    "finding": "The 2026 International AI Safety Report (chaired by Yoshua Bengio; 29 countries plus UN, OECD and EU; 100+ experts) defines 'loss of control' scenarios as ones 'where AI systems operate outside of anyone's control, with no clear path to regaining control', and states in its executive summary: 'Current systems lack the capabilities to pose such risks, but they are improving in relevant areas such as autonomous operation.' AP (Sept 14, 2026) summarizes the report as saying current systems show 'early signs of some relevant capabilities' but not at levels that could enable a loss of control, and that the risk's likelihood, nature and timing are 'unusually ambiguous'.",
+    "exactQuotes": [
+      "Current systems lack the capabilities to pose such risks, but they are improving in relevant areas such as autonomous operation.",
+      "'Loss of control' scenarios are scenarios where AI systems operate outside of anyone's control, with no clear path to regaining control."
+    ],
+    "source": {
+      "label": "International AI Safety Report 2026 — Executive Summary (Feb 2026); arXiv 2602.21012; AP via ABC News (Sept 14, 2026)",
+      "url": "https://internationalaisafetyreport.org/publication/2026-report-executive-summary"
+    },
+    "verified": true,
+    "note": "The two exact quotes were read from the executive summary (fetched via text proxy). The 'unusually ambiguous' phrasing was confirmed only in AP's paraphrase (https://abcnews.com/US/wireStory/new-warnings-risks-ai-humanity-revive-long-running-136414576) and a search snippet of the full report ('likelihood, nature, and timing remains unusually ambiguous'); it does not appear in the executive summary text fetched."
+  }
+}

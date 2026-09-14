@@ -75,6 +75,26 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .nav-logo { font-size: 1rem; font-weight: 800; color: var(--text); text-decoration: none; letter-spacing: -0.01em; }
   .nav-logo span { color: var(--accent); }
 
+  /* ── Risk Ledger callout ── */
+  .ledger-callout {
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    margin: 2rem 0 0.5rem; padding: 0.9rem 1.25rem;
+    background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border));
+    border-radius: 0.75rem; text-decoration: none; color: var(--muted);
+    font-size: 0.85rem; line-height: 1.5;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .ledger-callout:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .ledger-callout-tag {
+    font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 800;
+    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    border-radius: 2rem; padding: 0.15rem 0.6rem; flex: 0 0 auto;
+  }
+  .ledger-callout-text { flex: 1 1 320px; }
+  .ledger-callout-text strong { color: var(--text); }
+  .ledger-callout-cta { color: var(--accent); font-weight: 700; white-space: nowrap; flex: 0 0 auto; }
+
   /* ── Masthead ── */
   .masthead {
     position: relative; overflow: hidden;
@@ -500,8 +520,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(itemListSchema)} />
   <script async src="https://subscribe-forms.beehiiv.com/embed.js"></script>
 
-  <!-- Intro Splash Overlay -->
-  <div id="intro-splash" class="splash-overlay" aria-hidden="true">
+  <!-- Intro Splash Overlay — hidden by default; only shown via the masthead "AI" easter egg (window.__replaySplash) -->
+  <div id="intro-splash" class="splash-overlay hidden" aria-hidden="true">
     <canvas class="splash-canvas" aria-hidden="true"></canvas>
     <button class="splash-skip" aria-label="Skip intro">Skip</button>
     <div class="splash-progress">
@@ -511,7 +531,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
   <script>
     (function () {
-      const SPLASH_KEY = 'splashSeen';
       const overlay = document.getElementById('intro-splash') as HTMLDivElement | null;
       if (!overlay) return;
 
@@ -673,7 +692,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
         if (ro) ro.disconnect();
         overlay.classList.add('dismissed');
         document.body.classList.remove('splash-active');
-        sessionStorage.setItem(SPLASH_KEY, '1');
         setTimeout(() => overlay.classList.add('hidden'), 850);
       }
 
@@ -907,24 +925,16 @@ const pad = (n: number) => String(n).padStart(2, '0');
         runSplash();
       };
 
-      /* ── Initial run (with guards) ── */
-      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (sessionStorage.getItem(SPLASH_KEY)) {
-        overlay.classList.add('hidden');
-        dismissed = true;
-      } else if (reduced) {
-        overlay.classList.add('hidden');
-        sessionStorage.setItem(SPLASH_KEY, '1');
-        dismissed = true;
-      } else {
-        runSplash();
-      }
+      /* ── No automatic run. The splash never plays on page load (it delayed
+         content paint and hurt SEO/LCP); it only plays when the visitor clicks
+         the "AI" in the masthead, which calls window.__replaySplash. ── */
+      dismissed = true;
     })();
   </script>
 
   <nav class="site-nav" aria-label="Site navigation">
     <a href="/" class="nav-logo">The <span>AI</span> Files</a>
-
+    <a href="/risk" class="nav-link">Risk Ledger →</a>
   </nav>
 
   <header class="masthead">
@@ -989,6 +999,12 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
   <main id="main-content">
   <div class="idx-container">
+
+    <a class="ledger-callout" href="/risk">
+      <span class="ledger-callout-tag">New</span>
+      <span class="ledger-callout-text"><strong>The Risk Ledger.</strong> After the Hugging Face intrusion, every p(doom) estimate on one page, from 0% to 99.9%, and the other column: what has already gone right.</span>
+      <span class="ledger-callout-cta">Open the ledger →</span>
+    </a>
 
     <div class="section-header" data-ep="dark">
       <h2>Editor's Pick</h2>
@@ -1111,7 +1127,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
       </div>
     </a>
 
-    {/* Dark-side Vol VI: claude-bliss-attractor, claude-blackmail-study, pace-the-frontier */}
+    {/* Dark-side Vol VI: claude-bliss-attractor, claude-blackmail-study, openai-huggingface-sandbox-escape, pace-the-frontier */}
     {/* Light-side stories: rosie-vaccine, move-37, air-canada, halicin, alphafold, graphcast, vesuvius-scrolls, breast-cancer-ai, gnome-materials, whale-language, founder-mode-cancer, golden-gate-claude, michigan-brain-mri */}
     {volumeData.map(vol => (
       <div class={`vol-section${vol.side === 'light' ? ' hidden-by-filter' : ''}`} data-side={vol.side}>
@@ -1687,6 +1703,7 @@ const pad = (n: number) => String(n).padStart(2, '0');
       <a href="/feed.xml">RSS</a> &middot;
       <a href="/llms.txt">for AI systems</a> &middot;
       <a href="/how-it-works">How it works</a> &middot;
+      <a href="/risk">Risk Ledger</a> &middot;
       <a href="https://ko-fi.com/theaifiles" target="_blank" rel="noopener">Support this project<span class="sr-only"> (opens in new tab)</span></a>
     </p>
   </footer>
