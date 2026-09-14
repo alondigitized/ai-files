@@ -297,11 +297,7 @@ Every story includes a **full-width canvas animation** placed at a dramatically 
 1. Add entry to `src/data/stories.json` with all required fields including `isoDate` and `llmsDescription`
 2. Create `src/pages/stories/[slug].astro` using the pattern above
 3. Design a canvas animation concept thematically matched to the story (see principles above)
-4. In `src/pages/index.astro`:
-   - Add the story card to the correct volume section
-   - Update chapter range in the vol-section header (e.g. `Chapters 17 – 23`)
-   - Remove the story from "Coming Next" if it was teased there
-   - (Story counts in about/footer are dynamic — no manual update needed)
+4. `src/pages/index.astro` renders cards, chapter ranges, and volume sections from `stories.json` — no per-story edit. Only edit it to open a new volume (add to `VOLUMES` + `VOL_LABELS`; max 6 chapters per volume) or to remove the story from "Coming Next".
 5. `llms.txt` is auto-generated at build time from stories.json — no manual update needed
 6. Add the animation to the canvas table above
 7. Run `python3 qa.py` before deploying
