@@ -355,11 +355,17 @@ function checkIndexAstro(slug: string): ValidationResult[] {
 
   const content = readFileSync(indexPath, 'utf-8');
 
-  if (content.includes(slug)) {
-    return [pass('index.astro entry', `Slug "${slug}" referenced in index.astro`)];
-  } else {
-    return [fail('index.astro entry', `Slug "${slug}" not found in index.astro — story card may be missing`)];
+  // Cards are rendered from stories.json (volume + side), so the page only needs
+  // a VOLUMES entry for this story's volume on its side.
+  const stories = JSON.parse(readFileSync(join(ROOT, 'src/data/stories.json'), 'utf-8'));
+  const entry = stories.find((s: any) => s.slug === slug);
+  if (!entry) return [fail('index.astro entry', `Slug "${slug}" not in stories.json`)];
+  const side = entry.side ?? 'dark';
+  const volRe = new RegExp(`num:\\s*${entry.volume},\\s*side:\\s*'${side}'`);
+  if (volRe.test(content) || content.includes(slug)) {
+    return [pass('index.astro entry', `Volume ${entry.volume} (${side}) is defined in index.astro VOLUMES`)];
   }
+  return [fail('index.astro entry', `No VOLUMES entry for volume ${entry.volume} (${side}) in index.astro — add one or the card will not render`)];
 }
 
 // ─── Reporter ─────────────────────────────────────────────────────────────────
