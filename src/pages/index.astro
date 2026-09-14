@@ -520,8 +520,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(itemListSchema)} />
   <script async src="https://subscribe-forms.beehiiv.com/embed.js"></script>
 
-  <!-- Intro Splash Overlay -->
-  <div id="intro-splash" class="splash-overlay" aria-hidden="true">
+  <!-- Intro Splash Overlay — hidden by default; only shown via the masthead "AI" easter egg (window.__replaySplash) -->
+  <div id="intro-splash" class="splash-overlay hidden" aria-hidden="true">
     <canvas class="splash-canvas" aria-hidden="true"></canvas>
     <button class="splash-skip" aria-label="Skip intro">Skip</button>
     <div class="splash-progress">
@@ -531,7 +531,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
   <script>
     (function () {
-      const SPLASH_KEY = 'splashSeen';
       const overlay = document.getElementById('intro-splash') as HTMLDivElement | null;
       if (!overlay) return;
 
@@ -693,7 +692,6 @@ const pad = (n: number) => String(n).padStart(2, '0');
         if (ro) ro.disconnect();
         overlay.classList.add('dismissed');
         document.body.classList.remove('splash-active');
-        sessionStorage.setItem(SPLASH_KEY, '1');
         setTimeout(() => overlay.classList.add('hidden'), 850);
       }
 
@@ -927,18 +925,10 @@ const pad = (n: number) => String(n).padStart(2, '0');
         runSplash();
       };
 
-      /* ── Initial run (with guards) ── */
-      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (sessionStorage.getItem(SPLASH_KEY)) {
-        overlay.classList.add('hidden');
-        dismissed = true;
-      } else if (reduced) {
-        overlay.classList.add('hidden');
-        sessionStorage.setItem(SPLASH_KEY, '1');
-        dismissed = true;
-      } else {
-        runSplash();
-      }
+      /* ── No automatic run. The splash never plays on page load (it delayed
+         content paint and hurt SEO/LCP); it only plays when the visitor clicks
+         the "AI" in the masthead, which calls window.__replaySplash. ── */
+      dismissed = true;
     })();
   </script>
 
