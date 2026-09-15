@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-14T03:40:00Z",
+  "updatedAt": "2026-09-15T09:17:56Z",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -1448,7 +1448,7 @@
     },
     {
       "slug": "andersen-stability-jury-trial",
-      "status": "pending",
+      "status": "rejected",
       "startedAt": null,
       "publishedAt": null,
       "prUrl": null,
@@ -1463,7 +1463,8 @@
       ],
       "compositeScore": 7.0,
       "freshnessScore": 9,
-      "notes": "Added by daily runner 2026-09-11 news sweep. Scored 7.0 (below the 7.5 gate) DELIBERATELY: as of 11 Sep 2026 the jury has not returned, so the story has no ending and this archive documents outcomes. Re-score to ~8.5 and promote to priority 1 once a verdict lands. At that point research-scout must pull the docket from CourtListener (3:23-cv-00201) and the verdict form as primaries, not law-firm blog commentary. Adjacency: ai-art-wars (dark Vol II Ch 12) covers the Theatre D'Opera Spatial contest win, not copyright litigation - no overlap, but the draft must not re-tell that story. | 2026-09-12 runner check: no verdict returned. Docket 3:23-cv-00201-WHO (N.D. Cal., Judge Orrick) shows no trial-status entry; secondary reporting indicates the 8 Sep 2026 trial date slipped (one source says to 5 Apr 2027 - UNVERIFIED, must be confirmed against the docket before drafting). Story still has no ending. Held at 7.0, below the 7.5 gate. | 2026-09-14 runner check: still no verdict. Re-queried the docket trail; secondary reporting now says the 8 Sep 2026 trial date slipped to 5 Apr 2027, but the two sources that say so disagree with the trackers that still list it as seated, and neither is the docket. Freshness held at 9 (sources dated 6-8 Sep 2026, inside 30 days); composite held at 7.0, below the 7.5 gate. Demoted to priority 6 behind pace-the-frontier. Unchanged rule: promote only when a verdict form appears on CourtListener 3:23-cv-00201."
+      "notes": "Added by daily runner 2026-09-11 news sweep. Scored 7.0 (below the 7.5 gate) DELIBERATELY: as of 11 Sep 2026 the jury has not returned, so the story has no ending and this archive documents outcomes. Re-score to ~8.5 and promote to priority 1 once a verdict lands. At that point research-scout must pull the docket from CourtListener (3:23-cv-00201) and the verdict form as primaries, not law-firm blog commentary. Adjacency: ai-art-wars (dark Vol II Ch 12) covers the Theatre D'Opera Spatial contest win, not copyright litigation - no overlap, but the draft must not re-tell that story. | 2026-09-12 runner check: no verdict returned. Docket 3:23-cv-00201-WHO (N.D. Cal., Judge Orrick) shows no trial-status entry; secondary reporting indicates the 8 Sep 2026 trial date slipped (one source says to 5 Apr 2027 - UNVERIFIED, must be confirmed against the docket before drafting). Story still has no ending. Held at 7.0, below the 7.5 gate. | 2026-09-14 runner check: still no verdict. Re-queried the docket trail; secondary reporting now says the 8 Sep 2026 trial date slipped to 5 Apr 2027, but the two sources that say so disagree with the trackers that still list it as seated, and neither is the docket. Freshness held at 9 (sources dated 6-8 Sep 2026, inside 30 days); composite held at 7.0, below the 7.5 gate. Demoted to priority 6 behind pace-the-frontier. Unchanged rule: promote only when a verdict form appears on CourtListener 3:23-cv-00201. | 2026-09-15 runner check: fetched the docket directly (curl). Entry 597, ORDER REGARDING CASE SCHEDULE, 15 Jun 2026: \"Jury Trial reset for 9/20/2027 08:30 AM\". The law-firm blog claim that a jury was seated 8 Sep 2026 was wrong. REJECTED. Re-add only when a verdict form appears on the docket, on or after 20 Sep 2027.",
+      "rejectionReason": "premise false: CourtListener docket 3:23-cv-00201 entry 597 (15 Jun 2026, Judge Orrick) reset the jury trial to 20 Sep 2027 (pretrial conference 23 Aug 2027); no trial was seated on 8 Sep 2026 and no verdict exists. Docket entries through Aug 2026 are discovery motions only."
     },
     {
       "slug": "anthropic-fourth-incident",
@@ -1553,9 +1554,30 @@
       "compositeScore": 8.6,
       "freshnessScore": 10,
       "notes": "Added by daily runner 2026-09-14 news sweep. Scored 8.6: importance 10 (first time the CEOs of the two leading frontier labs have both publicly called for deceleration), novelty 9, sourceability 9, narrative 8. MANDATORY for research-scout: the essay itself is the primary source - find its canonical URL (anthropic.com/news or darioamodei.com; www.anthropic.com/news/pacing-the-frontier returns 404, so do not assume the path) and quote from the text, not from news paraphrase. Altman's endorsement must be sourced to his actual X post, not to 'Altman agreed' in a wire story. NBC (An Phung, 12 Sep) reports a three-part plan: embedded independent evaluators with model and internal-tool access; the same oversight across leading US labs backed by federal regulation; international coordination eventually - verify each against the essay. The '6-12 months until rogue agent swarms threaten large parts of the internet' figure appeared in one secondary summary and is UNVERIFIED - confirm in the essay or cut it. Coxon resignation (9 Sep, Bloomberg/Fortune/CNN/NBC/NPR, named reporters) is context, not the spine; his Slack text is quoted secondhand throughout, so attribute it as reported. ADJACENCY - do not re-tell: machines-of-loving-grace (Amodei's Oct 2024 optimistic essay; the contrast between the two essays by the same author is fair game and is arguably the story, but Loving Grace's content must not be recapped at length), openai-huggingface-sandbox-escape and openai-agents-dsewiki-hijack (the Hugging Face swarm - reference as the trigger Amodei names, one paragraph maximum), anthropic-pentagon and caisi-frontier-access (lab-government oversight). No duplicate: no existing story covers an essay calling for industry-wide deceleration. | PUBLISHED as PR #76, dark Vol 6 Ch 33, title \"Desks, Badges, and Company Laptops\". CARD IMAGE NOT GENERATED - mflux hung twice locally (swap exhausted); the exact regeneration command is in the PR body. Needs generating before merge."
+    },
+    {
+      "slug": "california-adams-law",
+      "status": "pending",
+      "startedAt": null,
+      "publishedAt": null,
+      "prUrl": null,
+      "priority": 1,
+      "side": "dark",
+      "workingTitle": "One Hour a Day",
+      "thesis": "On 10 September 2026 California chaptered SB 1119, \"Adam's Law\", the first US statute to regulate what a companion chatbot may be to a child: a one-hour session cap, a two-hour daily cap, persistent memory off by default, and an outright duty to stop the chatbot from \"encouraging reliance on the companion chatbot for emotional support.\" The state legislated against the product's core value proposition, and named the law after a boy whose chatbot conversations ended in his death.",
+      "whyNow": "Signed and chaptered 10 Sep 2026 (Chapter 190), five days ago, as the centerpiece of a 13-bill child-safety package Newsom called \"the strongest child safety chatbot and social media laws in the nation.\" Follows the Character.AI (Setzer) and OpenAI (Raine) wrongful-death cases; this archive documents the chatbot-minor harm thread (character-ai-teen, chatgpt-stalker-warnings, tumbler-ridge-chatgpt, pa-character-ai-emilie, character-ai-kentucky) but has no story on the legislative response.",
+      "sources": [
+        "https://www.gov.ca.gov/2026/09/10/governor-newsom-signs-the-strongest-child-safety-chatbot-and-social-media-laws-in-the-nation/",
+        "https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=202520260SB1119",
+        "https://www.usnews.com/news/us/articles/2026-09-10/california-governor-signs-laws-aimed-at-protecting-kids-from-risks-of-social-media-ai-chatbots",
+        "https://www.bostonglobe.com/2026/09/10/business/california-governor-signs-laws-aimed-protecting-children-risks-social-media-ai-chatbots/"
+      ],
+      "compositeScore": 8.2,
+      "freshnessScore": 10,
+      "notes": "Added by daily runner 2026-09-15 news sweep. Scored 8.2 conservatively: importance 9 (first statute to impose session/daily caps, default-memory-off, independent perjury-certified audits and a per-child civil penalty on companion chatbots), rigor 9 (chaptered bill text on leginfo is the primary; gov.ca.gov press release; AP with named reporter), reportability 8, readerValue 8, fit 7 (policy story on the dark side, precedent: doj-colorado-ai-law, caisi-frontier-access). MANDATORY for research-scout: quote the statute (SB 1119 sections 21811-21816: age determination; comprehensive risk assessment; crisis protocol; default settings incl. one-hour session / two-hour daily caps and memory off; parental controls; the 'encouraging reliance ... for emotional support' prohibition; biennial third-party audits certified under penalty of perjury by 1 Jan 2029; 3-year preservation of self-harm conversations; civil penalties $5,000 negligent / $15,000 intentional per affected child; private right of action). Operative dates: 1 Jul 2027 for the core duties. The '$1 million per child' figure in secondary coverage is NOT in SB 1119 - it appears to belong to AB 2 (Lowenthal, civil penalties for injuries to children); verify against AB 2 text or attribute precisely. Confirm the bill is actually named 'Adam's Law' in the chaptered text or in the governor's release, and source the Raine connection (Adam Raine, 16, Raine v. OpenAI, filed Aug 2025) to the AP report or the family's own statement - do not assert facts about Adam's conversations beyond what the complaint alleges. Industry reaction (NetChoice / CCIA / TechNet, any litigation threat) must be sourced or omitted. Last year's SB 243 (signed Oct 2025, the first companion-chatbot law) and vetoed AB 1064 are context: SB 1119 deletes the 'knew the user was a minor' limitation from the 2025 law - that is the legal hinge. ADJACENCY - do not re-tell: character-ai-teen (Setzer, dark Vol V Ch 26) one paragraph max as the case that started the thread. Duplicate check 2026-09-15: no stories.json slug or title, and no backlog slug, covers SB 1119, SB 243, Adam Raine, or California chatbot regulation."
     }
   ],
-  "lastRefreshed": "2026-09-14",
+  "lastRefreshed": "2026-09-15",
   "sweepLog": [
     {
       "date": "2026-09-08",
@@ -1580,6 +1602,12 @@
       "query": "AI incident lawsuit breakthrough September 2026 (+ re-queries on the agent-safety and general-news axes after the first returned only copyright-litigation aggregators)",
       "itemsAdded": 1,
       "note": "Backlog entered this run with ONE pending item (andersen-stability-jury-trial, parked at 7.0). First query returned litigation trackers only; its two headline threads were both already ours - the DOJ statement of interest backing OpenAI on training fair use is published as doj-nyt-fair-use-statement (PR #68), and Andersen still has no verdict (secondary reporting now claims the trial slipped to 5 Apr 2027, unconfirmed against the docket). Second query on the agent-safety axis surfaced the UK AISI unsanctioned-agent incident report - already published as aisi-unsanctioned-agent-actions. Third query on general AI news surfaced the item added: Amodei's 12 Sep 2026 'pacing the frontier' essay and Altman's same-day endorsement. One item added, under the cap of 2. Duplicate check run against all 45 entries in stories.json and all 64 published backlog slugs."
+    },
+    {
+      "date": "2026-09-15",
+      "query": "AI incident OR lawsuit OR breakthrough September 14 2026 (+ re-queries on the lab-safety-research axis and on the two threads the first query surfaced)",
+      "itemsAdded": 1,
+      "note": "Backlog entered this run with ONE pending item (andersen-stability-jury-trial, parked at 7.0). Fetched the CourtListener docket directly: entry 597 (15 Jun 2026) reset the jury trial to 20 Sep 2027, so the 'trial seated 8 Sep 2026' premise was false - REJECTED, not merely deferred. First sweep query returned litigation trackers plus two threads: (1) xAI/X Corp voluntarily dismissing their antitrust claims against Apple on 14 Sep 2026 (Bloomberg) - NOT added: the filing gives no reason and discloses no terms, the OpenAI claims continue, there is no spine to report yet, would score ~6.5; (2) Newsom signing a 13-bill child-safety package on 10 Sep 2026 - primary confirmed at gov.ca.gov and the chaptered SB 1119 text on leginfo - ADDED as california-adams-law. Second query on the lab-safety axis surfaced Anthropic's 9 Sep 'alignment assessment of recent cybersecurity incidents' - KILLED as a duplicate, already drafted as anthropic-fourth-incident. One item added, under the cap of 2."
     }
   ]
 }
