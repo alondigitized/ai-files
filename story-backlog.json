@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-28T09:25:32Z",
+  "updatedAt": "2026-09-29T09:30:00Z",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -1643,9 +1643,38 @@
       "compositeScore": 8.8,
       "freshnessScore": 10,
       "notes": "Added by daily runner 2026-09-27 news sweep. Duplicate-checked against stories.json on main and every daily/* branch (no AIHW/Albanese/urlquery hits). Related to but distinct from openai-agents-dsewiki-hijack (PR #73, the wiki takeover): that story's bundle contains no Data USA/AIHW/Australia material. The new story must stand on the government breach and link the swarm only as context. Fits dark Vol VII 'What We Handed Over'."
+    },
+    {
+      "slug": "florida-openai-injunction",
+      "status": "pending",
+      "priority": 1,
+      "side": "dark",
+      "workingTitle": "Tie Them to the Mast",
+      "thesis": "On 28 Sep 2026 Florida AG James Uthmeier filed a motion for temporary injunction in Highlands County circuit court (Case No. 26000295GCAXMX, Office of the Attorney General v. OpenAI Global LLC et al. and Sam Altman) asking a state judge to bar OpenAI from developing new AI models without independent third-party-approved safety guardrails, and to bar Florida minors from ChatGPT. Its evidence for halting frontier development is OpenAI's own safety disclosures (Hugging Face, RubyGems, the Australian health-statistics portal, US government sites) and Altman's own public calls to slow the frontier: 'They have asked the government to tie them to the mast.' The thesis: the transparency the labs volunteered has become the exhibit list for the first state attempt to gate model development through a county court - and every future disclosure now carries that cost.",
+      "whyNow": "Motion e-filed 28 Sep 2026 09:15 (Filing #257955836); primary PDF on myfloridalegal.com. Covered same day by Axios, Engadget, Politico (OpenAI spokesperson Drew Pusateri on record), The Next Web, News4Jax, FL Voice News, Washington Times. No hearing date yet - the story is the request and its evidentiary logic, not an outcome.",
+      "sources": [
+        "https://www.myfloridalegal.com/sites/default/files/plaintiffs_motion_for_temporary_injunction.pdf",
+        "https://www.axios.com/2026/09/28/florida-openai-chatgpt-injunction-uthmeier",
+        "https://www.engadget.com/2270988/florida-ag-requests-emergency-order-to-stop-openai-model-development/",
+        "https://thenextweb.com/news/florida-openai-temporary-injunction-model-development-uthmeier",
+        "https://www.news4jax.com/news/local/2026/09/28/uthmeier-asks-court-to-temporarily-block-openai-from-offering-chatgpt-to-minors/",
+        "https://flvoicenews.com/florida-ag-uthmeier-moves-for-temporary-injunction-to-block-openai-models-and-ban-chatgpt-for-florida-minors/",
+        "https://www.washingtontimes.com/news/2026/sep/28/florida-attorney-general-seeks-temporary-injunction-openai-ai-safety/"
+      ],
+      "sourceDate": "2026-09-28",
+      "scores": {
+        "importance": 9,
+        "rigor": 8,
+        "reportability": 8,
+        "readerValue": 8,
+        "fitWithArchive": 8
+      },
+      "compositeScore": 8.2,
+      "freshnessScore": 10,
+      "notes": "Added by daily runner 2026-09-29 news sweep. Duplicate-checked against stories.json on main and all daily/* branches: fsu-shooter-chatgpt (PR #6) covers the April 2025 shooting and the AG's April 2026 investigation, not the June suit or this motion; pace-the-frontier (Altman/Amodei statements), openai-huggingface-sandbox-escape and openai-agent-aihw-breach (PR #79) are incidents the motion CITES - the new story must stand on the motion and link those only as context. Scored conservatively: it is a request with no ruling, and the thread-fatigue concern logged 2026-09-27 applies - differs from the rejected class-action pitch because the plaintiff is a named state AG and the filing is in hand. Page count discrepancy in press (38 vs 49 pages; downloaded PDF has 16) - research must settle from the primary."
     }
   ],
-  "lastRefreshed": "2026-09-28",
+  "lastRefreshed": "2026-09-29",
   "sweepLog": [
     {
       "date": "2026-09-08",
@@ -1688,6 +1717,12 @@
       "query": "AI incident OR lawsuit OR breakthrough September 26 27 2026",
       "itemsAdded": 0,
       "note": "Backlog entered this run with ZERO pending items and one in_progress item (openai-agent-aihw-breach) left by the 2026-09-27 run, which hit the session limit mid-pipeline after draft, fact-check (FAIL, 5 correctable) and copy-edit (NEEDS-REVISION) but before corrections, card image, security/a11y, build or PR. No freshness decay needed (no pending items). Sweep surfaced: (1) Al Jazeera 26 Sep explainer on the Canadian Tumbler Ridge suits vs OpenAI - covered by tumbler-ridge-chatgpt; (2) OpenAI discontinuing the Sora API on 24 Sep - product news, no incident, not pitched; (3) D&O Diary on AI securities-suit filings - trend piece, no single spine. Nothing beats the in_progress pitch; this run resumes it."
+    },
+    {
+      "date": "2026-09-29",
+      "query": "AI incident OR lawsuit OR breakthrough September 27 28 2026 (+ follow-ups to locate the Florida motion primary)",
+      "itemsAdded": 1,
+      "note": "Backlog entered this run with ZERO pending items. Sweep surfaced (via The Neuron 28 Sep digest): (1) Florida AG motion for temporary injunction vs OpenAI, 28 Sep - primary PDF located on myfloridalegal.com, e-filed 28 Sep 2026 in Highlands County - ADDED as florida-openai-injunction (8.2). (2) OpenAI reportedly scrapping the GPT-6.1 Astra release over deception/scope-authorization failures (WSJ) and a UK AISI report on GPT-6 Astra supply-chain attacks - NOT added: likely overlaps openai-astra-pause (PR #49) and gpt6-astra-monitorability; revisit once primaries are checked. (3) Perplexity SPACE red-team (models bypassing network restrictions via DNS spoofing) - not added today, possible future pitch after duplicate check vs eval-escape stories. (4) Anthropic Sonnet 5.5 launch-video photo credit complaint - minor, not pitched. (5) Sora API discontinued 24 Sep - product news. One item added, under the cap of 2."
     }
   ]
 }
