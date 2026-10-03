@@ -1,0 +1,842 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'thomson-reuters-ross-third-circuit')!;
+---
+
+<style is:global>
+/* === CANVAS === */
+.phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+.thomson-reuters-ross-third-circuit-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+/* === Reenactment 1: Copying Mechanism (Two-Panel Document) === */
+.ross-doc-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin: 2rem 0;
+  overflow: hidden;
+}
+.ross-doc-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.ross-doc-panel {
+  border-bottom: 1px solid var(--border);
+}
+.ross-doc-panel + .ross-doc-panel {
+  border-left: 1px solid var(--border);
+}
+.ross-doc-panel-header {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ross-doc-panel:first-child .ross-doc-panel-header {
+  background: var(--surface2);
+  color: var(--muted);
+}
+.ross-doc-panel:last-child .ross-doc-panel-header {
+  background: var(--surface2);
+  color: var(--story);
+}
+.ross-doc-panel-body {
+  padding: 1rem;
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: var(--text);
+}
+.ross-doc-topic {
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-bottom: 0.6rem;
+  letter-spacing: 0.04em;
+}
+.ross-doc-headnote-text {
+  font-style: italic;
+  color: var(--text);
+  margin-bottom: 0.8rem;
+  line-height: 1.6;
+}
+.ross-doc-jump {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.ross-doc-question {
+  font-weight: 600;
+  color: var(--story);
+  margin-bottom: 0.8rem;
+  line-height: 1.5;
+}
+.ross-doc-passages {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.ross-doc-passages li {
+  font-size: 0.75rem;
+  color: var(--muted);
+  padding-left: 0;
+}
+.ross-doc-rating {
+  display: inline-block;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  width: 80px;
+}
+.ross-doc-rating-great { color: var(--green); }
+.ross-doc-rating-good { color: var(--story); }
+.ross-doc-rating-topical { color: var(--muted); }
+.ross-doc-rating-irrelevant { color: var(--accent); }
+.ross-doc-label {
+  padding: 0.5rem 1rem;
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-align: center;
+  font-style: italic;
+  border-top: 1px solid var(--border);
+}
+.ross-doc-footer {
+  padding: 0.7rem 1rem;
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-style: italic;
+  line-height: 1.55;
+}
+
+/* === Reenactment 2: Four-Factor Scorecard === */
+.ross-score-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin: 2rem 0;
+  overflow: hidden;
+}
+.ross-score-header {
+  background: var(--surface2);
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ross-score-row {
+  display: grid;
+  grid-template-columns: 200px 90px 1fr;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+.ross-score-factor {
+  padding: 0.65rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.ross-score-verdict {
+  padding: 0.65rem 0.5rem;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+.ross-score-verdict-against { color: var(--accent); }
+.ross-score-verdict-for { color: var(--green); }
+.ross-score-reason {
+  padding: 0.65rem 1rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.5;
+  font-style: italic;
+  border-left: 1px solid var(--border);
+}
+.ross-score-result {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1rem;
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface2));
+  border-top: 2px solid var(--accent);
+}
+.ross-score-result-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+.ross-score-result-text {
+  font-size: 0.72rem;
+  color: var(--text-body);
+  font-style: italic;
+}
+
+/* === Reenactment 3: Footnote 7 Document Excerpt === */
+.ross-fn7-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--story);
+  border-radius: 0 6px 6px 0;
+  margin: 2rem 0;
+  padding: 1.2rem 1.4rem;
+  position: relative;
+}
+.ross-fn7-num {
+  position: absolute;
+  top: 0.8rem;
+  left: -0.2rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--story);
+  vertical-align: super;
+  line-height: 1;
+}
+.ross-fn7-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.8rem;
+}
+.ross-fn7-text {
+  font-size: 0.85rem;
+  line-height: 1.75;
+  color: var(--text);
+}
+.ross-fn7-text .ross-fn7-cite {
+  font-style: italic;
+}
+.ross-fn7-hl {
+  background: color-mix(in srgb, var(--story) 15%, transparent);
+  padding: 0.05em 0.2em;
+  border-radius: 2px;
+}
+.ross-fn7-footer {
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* === Responsive === */
+@media (max-width: 600px) {
+  .ross-doc-panels { grid-template-columns: 1fr; }
+  .ross-doc-panel + .ross-doc-panel { border-left: none; border-top: 1px solid var(--border); }
+  .ross-score-row { grid-template-columns: 1fr; }
+  .ross-score-verdict { text-align: left; padding-left: 1rem; }
+  .ross-score-reason { border-left: none; border-top: 1px solid var(--border); }
+}
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="the-shortcut">
+      <h2><span class="num">01 — CONTEXT</span>The Shortcut</h2>
+      <p>On September 29, 2026, the Third Circuit issued what legal commentators across multiple outlets called the first federal appellate ruling on AI training and copyright. The court called it something else: "no more than an ordinary copyright case."</p>
+      <p>The case involved ROSS Intelligence, a legal search startup founded by three University of Toronto computer science students after an IBM Watson competition. ROSS was not a generative AI. It could not write briefs, draft contracts, or produce new text. It was a retrieval engine: users typed plain-language legal questions, and ROSS returned relevant passages from approximately ten million uncopyrighted judicial opinions already in the public domain.</p>
+      <p>What ROSS needed was training data — examples of legal questions paired with good answers, so its AI could learn which opinion passages responded to which queries. ROSS hired a company called LegalEase Solutions, which, along with subcontractor Morae Global, produced approximately 25,000 training memos. Each memo contained a legal question and four to six judicial opinion passages rated by relevance. The questions were supposed to be original. They were not. Drafters used thousands of Westlaw headnotes — brief editorial annotations written by Thomson Reuters's human editors to summarize points of law in judicial opinions — because the headnotes provided, in the court's words, "an easy way [to] fram[e] questions."</p>
+<div class="ross-doc-wrap">
+  <div class="ross-doc-panels">
+    <div class="ross-doc-panel">
+      <div class="ross-doc-panel-header">Westlaw Headnote</div>
+      <div class="ross-doc-panel-body">
+        <div class="ross-doc-topic">Contracts ⬩ 143(2) — Construction Against Drafter</div>
+        <div class="ross-doc-headnote-text">Where a contract provision is ambiguous, the court will construe the language against the drafter and in favor of the non-drafting party, provided extrinsic evidence does not resolve the ambiguity.</div>
+        <div class="ross-doc-jump">▼ Click to jump to opinion passage</div>
+      </div>
+      <div class="ross-doc-label">Written by Thomson Reuters editors · 800 characters where possible · must stand alone without reference to the opinion</div>
+    </div>
+    <div class="ross-doc-panel">
+      <div class="ross-doc-panel-header">LegalEase Training Memo</div>
+      <div class="ross-doc-panel-body">
+        <div class="ross-doc-question">Q: Under what circumstances can a facially neutral contract provision be construed against the drafting party?</div>
+        <ul class="ross-doc-passages">
+          <li><span class="ross-doc-rating ross-doc-rating-great">GREAT</span> Passage from opinion linked to the headnote above</li>
+          <li><span class="ross-doc-rating ross-doc-rating-good">GOOD</span> Related passage on ambiguity standards</li>
+          <li><span class="ross-doc-rating ross-doc-rating-topical">TOPICAL</span> Tangentially relevant passage</li>
+          <li><span class="ross-doc-rating ross-doc-rating-irrelevant">IRRELEVANT</span> Unrelated procedural passage</li>
+        </ul>
+      </div>
+      <div class="ross-doc-label">Used to train ROSS's AI · ~25,000 memos created</div>
+    </div>
+  </div>
+  <div class="ross-doc-footer">An expert for ROSS found that the memo questions "closely resembled the headnote text but differed significantly from the underlying judicial opinions' text." The District Court scrutinized 2,830 headnotes and concluded that for 2,243, the memo questions were "so similar to the headnote text but so dissimilar to the opinion text that no reasonable juror could conclude these headnotes were not copied." Illustrative mockup — the headnote, topic number and memo above are invented examples, not actual Westlaw or LegalEase text.</div>
+</div>
+      <p>Westlaw headnotes are not the law itself. They are editorial products. Thomson Reuters's editors follow precise drafting guidelines: each headnote is to be limited to 800 characters where possible, must convey only the legal contention or holding, and must be clear enough "to stand on its own, and make sense to a reader who doesn't have the opinion." Thomson Reuters also used its headnotes to train its own AI product, WestSearch Plus.</p>
+      <p>ROSS was not coy about its ambitions. It ran ads directly comparing its platform to Westlaw, priced its product "in line with" Westlaw, and successfully persuaded some law firms to switch. The court noted undisputed evidence of bad faith: ROSS employees attempted to access Westlaw using law-firm investor credentials, used a student account while concealing their employment by a competitor, and inquired about an account under the guise of a solo practitioner. The court noted the Supreme Court has expressed "skepticism about whether good faith still plays any role in the fair use analysis," then said that "to the extent good faith remains relevant," the evidence weighed against ROSS.</p>
+      <p>Thomson Reuters sued on May 6, 2020. Seven months later, on December 11, 2020, ROSS announced it would shut down. "Litigation is expensive," the company stated, "no matter how speculative the claims against you nor how worthy your position." CEO Andrew Arruda framed it broadly: "We're fighting for not just ROSS, but for every legal tech startup that exists today and which may exist in the future." The platform ceased operations on January 31, 2021. ROSS was dead. The litigation continued.</p>
+    </section>
+
+<div class="phantom-wrap">
+  <canvas class="thomson-reuters-ross-third-circuit-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>The Margin</strong> — A dense block of particles assembles and falls still. A small cluster separates to the bottom edge, pulses with indigo light, and sends faint connection lines toward solitary particles drifting at the far reaches of the canvas. The margin burns brighter than the body ever was. The connections dissolve. The block scatters and reforms.</p>
+
+    <section class="section" id="an-ordinary-copyright-case">
+      <h2><span class="num">02 — THE RULING</span>An Ordinary Copyright Case</h2>
+      <p>In September 2023, Judge Stephanos Bibas — a Third Circuit judge sitting by designation in the District of Delaware — largely denied summary judgment and sent the case toward trial. Then he reconsidered. "A smart man knows when he is right; a wise man knows when he is wrong," Bibas wrote. He stated he "realized that my prior summary-judgment ruling had not gone far enough." On February 11, 2025, he issued a revised opinion granting partial summary judgment for Thomson Reuters: ROSS had infringed 2,243 Westlaw headnotes, and its fair use defense failed as a matter of law. ROSS sought interlocutory appeal under 28 U.S.C. 1292(b). The Third Circuit granted it on June 17, 2025. Oral argument was heard on June 11, 2026.</p>
+      <p>The panel — Restrepo, Montgomery-Reeves, and Bove — affirmed unanimously. No concurrence. No dissent. Montgomery-Reeves, writing for the court, rejected the AI frame from the opening paragraph: "In truth, this is no more than an ordinary copyright case."</p>
+      <p>On originality, the court held that all 2,243 headnotes possess "some creative spark." Thomson Reuters's editors "made creative decisions about which points of law were important enough to include in a headnote and how to word those points of law consistent with Westlaw's drafting criteria." The court cited Callaghan v. Myers (1888), in which the Supreme Court suggested that headnotes prepared by private reporters are copyrightable. When ROSS invoked the merger doctrine — arguing that headnote content can be expressed only one way — the court was unpersuaded: "just as a banana costume can take myriad designs, so too can headnotes have differing expressions." It pointed to LexisNexis's own amicus brief, which demonstrated that Lexis generates different headnotes for the same judicial opinions. ROSS forfeited the question of whether the Key Number System itself is original by failing to raise it in any of its briefing.</p>
+      <p>The four fair use factors followed. <strong>Factor 1 — purpose and character.</strong> The court found ROSS's use "highly commercial and minimally transformative." Both Thomson Reuters and ROSS use headnotes for the same end: to help legal researchers find judicial opinions. The court held this was "the same ultimate purpose." It distinguished Google Books, where scanning entire books to create a snippet-search feature served "a highly transformative purpose" that may have driven users toward purchasing the books. No such transformative purpose existed here: "ROSS's platform uses Thomson Reuters's headnotes to help users find judicial opinions related to their legal research inquiries, something Thomson Reuters already does with its headnotes." The court then distinguished intermediate-copying precedents — Google v. Oracle, Sega v. Accolade, Sony v. Connectix — in which software code was copied because copying was necessary to access unprotected functional aspects. ROSS did not need the headnotes. It had access to ten million judicial opinions and "could freely copy them to make the memos needed to train its AI." It copied the headnotes because copying them was easier. The court's sentence: "Unlike necessity, ease is not a justification for copying."</p>
+      <p><strong>Factor 2 — nature of the work.</strong> This factor "favors fair use" because headnotes "are more factual than fictional" — they must accurately convey the law. But the court noted this factor "has rarely played a significant role" in fair use determinations.</p>
+      <p><strong>Factor 3 — amount and substantiality.</strong> Weighs against fair use. ROSS "copied the entire text of the 25,000 Westlaw-written headnotes into its memos." ROSS argued it took only 0.08% of Thomson Reuters's 28 million total headnotes. The court rejected this: qualitative significance matters, not just the quantitative fraction. And because "each individual headnote is a copyrightable work," "for each headnote taken, ROSS copied an entire work."</p>
+      <p><strong>Factor 4 — effect on the market.</strong> Weighs against fair use. The court drew an analogy to Video Pipeline v. Buena Vista: headnotes draw users to Westlaw the way movie trailers draw viewers to Disney's platform — appropriating the trailers diminished their value as a draw, even though no standalone trailer market existed. On the derivative-works market, the court found that "the market for licensing headnotes as text to train AI is rapidly developing" and that Thomson Reuters uses its headnotes to train its own AI search products. ROSS argued its tool would benefit the public by increasing access to the law, that the ruling would halt AI development, and that AI is critical for national security. The court rejected all three: the underlying judicial opinions are freely available and ROSS charged Westlaw-level prices; ROSS offered "no evidence" for the AI-development claim; the DOJ did not raise national security concerns in this case.</p>
+<div class="ross-score-wrap">
+  <div class="ross-score-header">Fair Use Analysis — Thomson Reuters v. ROSS Intelligence (3d Cir. 2026)</div>
+  <div class="ross-score-row">
+    <div class="ross-score-factor">1. Purpose & Character</div>
+    <div class="ross-score-verdict ross-score-verdict-against">AGAINST</div>
+    <div class="ross-score-reason">"Highly commercial and minimally transformative" — same ultimate purpose as Westlaw</div>
+  </div>
+  <div class="ross-score-row">
+    <div class="ross-score-factor">2. Nature of Work</div>
+    <div class="ross-score-verdict ross-score-verdict-for">FOR</div>
+    <div class="ross-score-reason">Headnotes are factual — but this factor "has rarely played a significant role"</div>
+  </div>
+  <div class="ross-score-row">
+    <div class="ross-score-factor">3. Amount & Substantiality</div>
+    <div class="ross-score-verdict ross-score-verdict-against">AGAINST</div>
+    <div class="ross-score-reason">"For each headnote taken, ROSS copied an entire work"</div>
+  </div>
+  <div class="ross-score-row">
+    <div class="ross-score-factor">4. Market Effect</div>
+    <div class="ross-score-verdict ross-score-verdict-against">AGAINST</div>
+    <div class="ross-score-reason">Market for licensing headnotes as AI training data "rapidly developing"</div>
+  </div>
+  <div class="ross-score-result">
+    <span class="ross-score-result-label">RESULT: NOT FAIR USE</span>
+    <span class="ross-score-result-text">"the first, third, and fourth factors weigh against it"</span>
+  </div>
+</div>
+      <p>The overall conclusion: "the second factor weighs slightly in favor of fair use, but the first, third, and fourth factors weigh against it. Evaluating these factors together, and in light of copyright's purposes, we hold that ROSS's use was not fair."</p>
+      <p>This is an interlocutory appeal — a mid-case review of a pretrial ruling — not a final judgment. The copyright and fair use questions are settled for 2,243 headnotes. But the case returns to the District Court. Issues remaining on remand include whether certain copyrights have expired, whether ROSS copied the Key Number System, contributory and vicarious liability (whether ROSS answers for copying done by others), tortious interference, and damages.</p>
+    </section>
+
+    <section class="section" id="the-line-the-court-drew-around-itself">
+      <h2><span class="num">03 — THE FOOTNOTE</span>The Line the Court Drew Around Itself</h2>
+      <p>The opinion's most consequential passage for anyone outside this specific dispute appears on pages 17 and 18, in smaller type. It is footnote 7.</p>
+<div class="ross-fn7-wrap">
+  <span class="ross-fn7-num">7</span>
+  <div class="ross-fn7-label">Footnote 7 — Opinion pp. 17–18</div>
+  <div class="ross-fn7-text">
+    We note that the United States Department of Justice ("DOJ") filed a statement of interest relating to generative AI in a pending case in the Southern District of New York. <span class="ross-fn7-cite">Statement of Interest of the United States, In re: OpenAI, Inc. Copyright Infringement Litig., No. 1:25-md-3143 (S.D.N.Y. Sept. 1, 2026)</span>. The concerns raised in that separate case do not apply here. The DOJ relied on <span class="ross-fn7-cite">Bartz v. Anthropic PBC, 787 F. Supp. 3d 1007, 1014 (N.D. Cal. 2025)</span> to contend that training an AI large language model, which can "generate original responses," is a transformative use. <span class="ross-fn7-cite">DOJ Statement at 10</span>; see also <span class="ross-fn7-cite">Kadrey v. Meta Platforms, Inc., 788 F. Supp. 3d 1026, 1034 (N.D. Cal. 2025)</span> (exploring whether generative AI programs transformatively use training materials). <span class="ross-fn7-hl">Unlike the AI models in Bartz and In re: OpenAI, ROSS's AI platform cannot generate original expression</span>, and the evidence here supports the opposite conclusion about transformativeness. The DOJ also argued that the large language model training in OpenAI did not result in "substitutive competition." <span class="ross-fn7-cite">DOJ Statement at 13</span> (citation modified). <span class="ross-fn7-hl">Here, ROSS trained its AI for the purpose of creating a commercial substitute for Westlaw.</span> In any event, the DOJ's filing in In re: OpenAI demonstrates that the DOJ is tracking these issues and knows how to assert its interests, but <span class="ross-fn7-hl">the DOJ notably did not do so here.</span>
+  </div>
+  <div class="ross-fn7-footer">Text of footnote 7, with the parenthetical short-form citation omitted. Highlighted phrases mark the court's two-part distinction — generativeness and substitution — and the pointed observation about the DOJ's absence. This passage is dicta: a distinction drawn by the court, not a holding about generative AI.</div>
+</div>
+      <p>Twenty-eight days before the Third Circuit filed its opinion, on September 1, 2026, the DOJ filed a Statement of Interest in In re: OpenAI, Inc. Copyright Infringement Litigation in the Southern District of New York. The DOJ argued that training a generative large language model on copyrighted material is a transformative use and does not result in "substitutive competition." The Third Circuit acknowledged this filing — and distinguished ROSS on two grounds. First, generativeness: "Unlike the AI models in Bartz and In re: OpenAI, ROSS's AI platform cannot generate original expression." ROSS was retrieval; the generative models produce new text. Second, substitution: "Here, ROSS trained its AI for the purpose of creating a commercial substitute for Westlaw." The DOJ's position in the OpenAI case was that the AI did not create substitutive competition with its training sources — but ROSS's entire business model was to replace the source of what it copied. The footnote's closing observation is pointed: the DOJ "is tracking these issues and knows how to assert its interests, but the DOJ notably did not do so here."</p>
+      <p>This passage is dicta — a remark distinguishing this case from others, not a binding ruling on generative AI. The court does not hold that generative AI training is fair use. It does not endorse the DOJ's position. It notes that other courts and the government have argued that generative AI training is transformative, and it says explicitly: "the concerns raised in that separate case do not apply here." What the footnote does is draw a visible boundary around the opinion's reach.</p>
+      <p>In the district courts, two Northern District of California rulings had already addressed generative AI training directly. In Bartz v. Anthropic, Judge Alsup found that training a large language model on copyrighted books was transformative fair use — though downloading pirated copies of those books was not. That case subsequently settled for $1.5 billion covering approximately 482,460 works. In Kadrey v. Meta, Judge Chhabria reached a similar conclusion on the narrow training question. Both were district court rulings. Both involved generative AI. This is the first appellate ruling on AI training, according to commentators across multiple outlets — and its holding points the other direction, for a non-generative system built as a direct commercial substitute for its source.</p>
+      <p>After the opinion was unsealed on September 30, a Thomson Reuters spokesperson said the company was "pleased with the ruling" and "firmly believes that respecting copyright is essential for fostering innovation." ROSS's counsel, Yar Chaikovsky of White & Case, stated: "We respectfully disagree with the Third Circuit's decision and believe it creates continued uncertainty around the application of copyright law to AI model training. We intend to seek review by the Supreme Court to obtain much-needed clarity on these issues." As of this writing, no certiorari petition (the request asking the Supreme Court to hear the case) has been filed. ROSS has been defunct since January 2021. Who funds a cert petition for a defunct startup represented by three major law firms is an open question.</p>
+      <p>The amicus landscape had signaled the stakes before the ruling. Twenty-two briefs were filed at the Third Circuit: twelve supporting Thomson Reuters — including competitor LexisNexis, the RIAA and NMPA, major film studios, and news media organizations — and ten supporting ROSS, including the EFF, the Internet Archive, the American Library Association, and Public Knowledge. Brandon Butler of Re:Create warned that the ruling could disadvantage smaller developers competing against better-resourced companies. When your principal competitor files on the other side's behalf, the stakes extend beyond one case.</p>
+    </section>
+
+    <section class="section" id="two-readings-of-one-opinion">
+      <h2><span class="num">04 — SIGNAL</span>Two Readings of One Opinion</h2>
+      <p>Both sides will cite this opinion. They will cite different parts.</p>
+      <p>Rightsholders will cite the holding: copying editorial content to train a competing AI is infringement, not fair use. The copying was commercial. The purpose was substitutive. Ease does not justify it. AI companies will cite footnote 7: generative AI is explicitly distinguished, the DOJ's argument that LLM training is transformative was acknowledged by name, and the government chose not to intervene here. The district court landscape supports the AI companies' reading — Bartz found training transformative, Kadrey agreed on the narrow question. Both were district court rulings. This is the first at the appellate level, and it reached the opposite result — for a non-generative system that shared "the same ultimate purpose" as its source. The two variables footnote 7 puts on the table are generativeness and substitution: does the AI produce new expression, or return pre-existing text? Does the AI compete directly with the source of its training data, or serve a different market?</p>
+      <p>The opinion that commentators called the "first federal appellate ruling on AI training" was written by a court that insisted it was deciding "an ordinary copyright case." The passage most important to AI companies is a footnote. The passage most important to rightsholders is that the footnote is dicta.</p>
+      <p>The court answered the easy case: a defunct startup that copied human editors' work to build a direct substitute, priced to match, while employees borrowed credentials to access the competitor's platform. The hard case — a generative model trained on the open internet, producing novel expression, with no intention of replacing its sources — got a footnote. Whether the next court, with a generative AI case, a full trial record, and no direct-competitor facts, accepts the line where the Third Circuit drew it, or moves it, is the question this opinion both raises and declines to answer.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.thomson-reuters-ross-third-circuit-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  /* --- CSS vars --- */
+  const cs = getComputedStyle(document.documentElement);
+  const bgColor = cs.getPropertyValue('--bg').trim() || '#0d0d0d';
+  const storyHex = cs.getPropertyValue('--story').trim() || '#5c7cfa';
+
+  function hexRgb(hex: string): [number, number, number] {
+    const v = hex.replace('#', '');
+    return [
+      parseInt(v.slice(0, 2), 16),
+      parseInt(v.slice(2, 4), 16),
+      parseInt(v.slice(4, 6), 16)
+    ];
+  }
+  const [sR, sG, sB] = hexRgb(storyHex);
+
+  function storyA(a: number): string {
+    return 'rgba(' + sR + ',' + sG + ',' + sB + ',' + a.toFixed(3) + ')';
+  }
+  function dimA(a: number): string {
+    return 'rgba(232,232,232,' + a.toFixed(3) + ')';
+  }
+
+  /* --- Timing (18s at 60fps) --- */
+  const CYCLE = 1080;
+  const P1 = 240;   /* assemble */
+  const P2 = 360;   /* separate footnote */
+  const P3 = 600;   /* block dims, margin glows */
+  const P4 = 840;   /* peak hold */
+  const P5 = 1020;  /* dissolve */
+  /* 1020–1080: scatter + reset */
+
+  const BLOCK_N = 50;
+  const FN_N = 4;
+  const EDGE_N = 5;
+
+  /* --- State --- */
+  let W = 0, H = 0, rafId = 0, frame = 0, running = false;
+
+  type BlockP = {
+    sx: number; sy: number;
+    bx: number; by: number;
+    fx: number; fy: number;
+    x: number; y: number;
+    alpha: number;
+    isFN: boolean;
+    delay: number;
+    seed: number;
+  };
+
+  type EdgeP = {
+    x: number; y: number;
+    vx: number; vy: number;
+    alpha: number;
+  };
+
+  let bp: BlockP[] = [];
+  let ep: EdgeP[] = [];
+  let fnIdx: number[] = [];
+
+  /* --- Layout --- */
+  function computeTargets() {
+    const rW = W * 0.55;
+    const rH = H * 0.40;
+    const rX = (W - rW) / 2;
+    const rY = H * 0.16;
+
+    const cols = 10;
+    const rows = 5;
+    const spX = rW / (cols + 1);
+    const spY = rH / (rows + 1);
+
+    for (let i = 0; i < BLOCK_N && i < bp.length; i++) {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      bp[i].bx = rX + (col + 1) * spX + Math.sin(bp[i].seed * 7.3) * spX * 0.18;
+      bp[i].by = rY + (row + 1) * spY + Math.cos(bp[i].seed * 5.1) * spY * 0.18;
+    }
+
+    /* Footnote targets: centered below block with gap */
+    fnIdx = [];
+    const fnBaseY = rY + rH + 38;
+    const fnSpread = 56;
+    const fnCX = W / 2;
+
+    for (let i = 0; i < FN_N; i++) {
+      const idx = BLOCK_N - FN_N + i;
+      if (idx < bp.length) {
+        fnIdx.push(idx);
+        bp[idx].isFN = true;
+        bp[idx].fx = fnCX + (i - (FN_N - 1) / 2) * (fnSpread / Math.max(1, FN_N - 1))
+                     + Math.sin(bp[idx].seed * 3.7) * 4;
+        bp[idx].fy = fnBaseY + Math.cos(bp[idx].seed * 2.3) * 5;
+      }
+    }
+  }
+
+  function initEdges() {
+    ep = [];
+    const spots: [number, number][] = [
+      [W * 0.06, H * 0.48],
+      [W * 0.94, H * 0.22],
+      [W * 0.93, H * 0.78],
+      [W * 0.10, H * 0.10],
+      [W * 0.90, H * 0.90]
+    ];
+    for (let i = 0; i < EDGE_N; i++) {
+      const a = (i / EDGE_N) * Math.PI * 2 + 0.7;
+      ep.push({
+        x: spots[i][0], y: spots[i][1],
+        vx: Math.cos(a) * 0.12,
+        vy: Math.sin(a) * 0.12,
+        alpha: 0.035
+      });
+    }
+  }
+
+  function init() {
+    bp = [];
+    for (let i = 0; i < BLOCK_N; i++) {
+      bp.push({
+        sx: Math.random() * W, sy: Math.random() * H,
+        bx: 0, by: 0, fx: 0, fy: 0,
+        x: 0, y: 0, alpha: 0.015,
+        isFN: false,
+        delay: Math.random() * 50,
+        seed: i + Math.random()
+      });
+    }
+    computeTargets();
+    for (const p of bp) { p.x = p.sx; p.y = p.sy; }
+    initEdges();
+    frame = 0;
+  }
+
+  /* --- Helpers --- */
+  function ease(t: number): number {
+    const c = t < 0 ? 0 : t > 1 ? 1 : t;
+    return c * c * (3 - 2 * c);
+  }
+
+  function lerp(a: number, b: number, t: number): number {
+    return a + (b - a) * t;
+  }
+
+  /* --- Draw --- */
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, W, H);
+
+    /* Update edge drift */
+    for (const e of ep) {
+      e.x += e.vx;
+      e.y += e.vy;
+      if (e.x < W * 0.03 || e.x > W * 0.97) e.vx *= -1;
+      if (e.y < H * 0.03 || e.y > H * 0.97) e.vy *= -1;
+    }
+
+    const f = frame;
+    let fnStoryMix = 0;
+    let lineAlpha = 0;
+    let edgeGlow = 0;
+    let globalFade = 1;
+
+    /* ---- PHASE 1: ASSEMBLE ---- */
+    if (f < P1) {
+      for (let i = 0; i < bp.length; i++) {
+        const p = bp[i];
+        const t = ease(Math.max(0, (f - p.delay) / (P1 - p.delay)));
+        p.x = lerp(p.sx, p.bx, t);
+        p.y = lerp(p.sy, p.by, t);
+        p.alpha = lerp(0.015, 0.065, t);
+      }
+      for (const e of ep) e.alpha = 0.03;
+    }
+
+    /* ---- PHASE 2: SEPARATE ---- */
+    else if (f < P2) {
+      const t = ease((f - P1) / (P2 - P1));
+      for (const p of bp) {
+        if (p.isFN) {
+          p.x = lerp(p.bx, p.fx, t);
+          p.y = lerp(p.by, p.fy, t);
+        }
+        p.alpha = 0.065;
+      }
+      for (const e of ep) e.alpha = 0.03;
+    }
+
+    /* ---- PHASE 3: GLOW ---- */
+    else if (f < P3) {
+      const t = ease((f - P2) / (P3 - P2));
+      fnStoryMix = t;
+      lineAlpha = t * 0.08;
+      edgeGlow = t * 0.025;
+      const pulse = 0.4 + 0.4 * Math.sin(f * 0.033);
+      for (const p of bp) {
+        if (p.isFN) {
+          p.alpha = lerp(0.065, pulse, t);
+        } else {
+          p.alpha = lerp(0.065, 0.018, t);
+          /* subtle breathing on dim block */
+          p.x = p.bx + Math.sin(f * 0.018 + p.seed * 1.5) * 0.3;
+          p.y = p.by + Math.cos(f * 0.022 + p.seed * 2.1) * 0.2;
+        }
+      }
+      for (const e of ep) e.alpha = 0.03 + edgeGlow;
+    }
+
+    /* ---- PHASE 4: PEAK HOLD ---- */
+    else if (f < P4) {
+      const t = (f - P3) / (P4 - P3);
+      fnStoryMix = 1;
+      const pulseCurve = t < 0.4 ? ease(t / 0.4) : 1 - ease((t - 0.4) / 0.6);
+      lineAlpha = 0.08 + 0.07 * pulseCurve;
+      edgeGlow = 0.025 + 0.075 * pulseCurve;
+      const pulse = 0.5 + 0.4 * Math.sin(f * 0.033);
+      for (const p of bp) {
+        if (p.isFN) {
+          p.alpha = pulse;
+        } else {
+          p.alpha = 0.018;
+          p.x = p.bx + Math.sin(f * 0.018 + p.seed * 1.5) * 0.3;
+          p.y = p.by + Math.cos(f * 0.022 + p.seed * 2.1) * 0.2;
+        }
+      }
+      for (const e of ep) e.alpha = 0.03 + edgeGlow;
+    }
+
+    /* ---- PHASE 5: DISSOLVE ---- */
+    else if (f < P5) {
+      const t = ease((f - P4) / (P5 - P4));
+      fnStoryMix = 1 - t;
+      lineAlpha = lerp(0.08, 0, t);
+      edgeGlow = lerp(0.025, 0, t);
+      for (const p of bp) {
+        if (p.isFN) {
+          p.alpha = lerp(0.5, 0.06, t);
+        } else {
+          p.alpha = 0.018;
+          p.x = p.bx + Math.sin(f * 0.018 + p.seed * 1.5) * 0.3;
+          p.y = p.by + Math.cos(f * 0.022 + p.seed * 2.1) * 0.2;
+        }
+      }
+      for (const e of ep) e.alpha = lerp(0.04, 0.015, t);
+    }
+
+    /* ---- PHASE 6: SCATTER + RESET ---- */
+    else {
+      const t = ease((f - P5) / (CYCLE - P5));
+      globalFade = 1 - t;
+      const cx = W / 2, cy = H / 2;
+      for (const p of bp) {
+        const refX = p.isFN ? p.fx : p.bx;
+        const refY = p.isFN ? p.fy : p.by;
+        const dx = refX - cx;
+        const dy = refY - cy;
+        p.x = refX + dx * t * 0.7;
+        p.y = refY + dy * t * 0.7;
+        p.alpha = lerp(0.04, 0, t);
+      }
+      for (const e of ep) e.alpha = lerp(0.015, 0, t);
+    }
+
+    /* --- Render block particles --- */
+    for (const p of bp) {
+      const a = p.alpha * globalFade;
+      if (a < 0.004) continue;
+
+      if (p.isFN && fnStoryMix > 0.01) {
+        const cr = Math.round(lerp(232, sR, fnStoryMix));
+        const cg = Math.round(lerp(232, sG, fnStoryMix));
+        const cb = Math.round(lerp(232, sB, fnStoryMix));
+        const cStr = cr + ',' + cg + ',' + cb;
+
+        /* radial glow when bright */
+        if (a > 0.15) {
+          const gr = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 16);
+          gr.addColorStop(0, 'rgba(' + cStr + ',' + (a * 0.28).toFixed(3) + ')');
+          gr.addColorStop(1, 'rgba(' + cStr + ',0)');
+          ctx.fillStyle = gr;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 16, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.fillStyle = 'rgba(' + cStr + ',' + a.toFixed(3) + ')';
+      } else {
+        ctx.fillStyle = dimA(a);
+      }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    /* --- Render connection lines --- */
+    const la = lineAlpha * globalFade;
+    if (la > 0.004 && fnIdx.length > 0) {
+      let fcx = 0, fcy = 0;
+      for (const idx of fnIdx) { fcx += bp[idx].x; fcy += bp[idx].y; }
+      fcx /= fnIdx.length;
+      fcy /= fnIdx.length;
+
+      ctx.strokeStyle = storyA(la);
+      ctx.lineWidth = 0.5;
+      for (const e of ep) {
+        ctx.beginPath();
+        ctx.moveTo(fcx, fcy);
+        ctx.lineTo(e.x, e.y);
+        ctx.stroke();
+      }
+    }
+
+    /* --- Render edge particles --- */
+    for (const e of ep) {
+      const a = e.alpha * globalFade;
+      if (a < 0.004) continue;
+
+      /* story-color halo when glowing */
+      if (edgeGlow > 0.02 && globalFade > 0.5) {
+        const ha = edgeGlow * 0.45 * globalFade;
+        const gr = ctx.createRadialGradient(e.x, e.y, 0, e.x, e.y, 9);
+        gr.addColorStop(0, storyA(ha));
+        gr.addColorStop(1, storyA(0));
+        ctx.fillStyle = gr;
+        ctx.beginPath();
+        ctx.arc(e.x, e.y, 9, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = dimA(a);
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    /* --- Advance --- */
+    frame++;
+    if (frame >= CYCLE) {
+      for (const p of bp) {
+        p.sx = Math.random() * W;
+        p.sy = Math.random() * H;
+        p.x = p.sx;
+        p.y = p.sy;
+        p.alpha = 0.015;
+        p.isFN = false;
+        p.delay = Math.random() * 50;
+      }
+      computeTargets();
+      frame = 0;
+    }
+  }
+
+  /* --- Static frame (reduced motion) --- */
+  function drawStatic() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, W, H);
+
+    computeTargets();
+
+    /* dim block */
+    for (let i = 0; i < bp.length; i++) {
+      if (bp[i].isFN) continue;
+      ctx.fillStyle = dimA(0.02);
+      ctx.beginPath();
+      ctx.arc(bp[i].bx, bp[i].by, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    /* bright footnote */
+    for (const idx of fnIdx) {
+      const p = bp[idx];
+      const gr = ctx.createRadialGradient(p.fx, p.fy, 0, p.fx, p.fy, 16);
+      gr.addColorStop(0, storyA(0.2));
+      gr.addColorStop(1, storyA(0));
+      ctx.fillStyle = gr;
+      ctx.beginPath();
+      ctx.arc(p.fx, p.fy, 16, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = storyA(0.6);
+      ctx.beginPath();
+      ctx.arc(p.fx, p.fy, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    /* connection lines */
+    let fcx = 0, fcy = 0;
+    for (const idx of fnIdx) { fcx += bp[idx].fx; fcy += bp[idx].fy; }
+    if (fnIdx.length > 0) { fcx /= fnIdx.length; fcy /= fnIdx.length; }
+
+    const spots: [number, number][] = [
+      [W * 0.06, H * 0.48], [W * 0.94, H * 0.22],
+      [W * 0.93, H * 0.78], [W * 0.10, H * 0.10],
+      [W * 0.90, H * 0.90]
+    ];
+
+    ctx.strokeStyle = storyA(0.08);
+    ctx.lineWidth = 0.5;
+    for (const s of spots) {
+      ctx.beginPath();
+      ctx.moveTo(fcx, fcy);
+      ctx.lineTo(s[0], s[1]);
+      ctx.stroke();
+
+      ctx.fillStyle = dimA(0.045);
+      ctx.beginPath();
+      ctx.arc(s[0], s[1], 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  /* --- Loop --- */
+  function tick() {
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function start() {
+    if (running) return;
+    running = true;
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function stop() {
+    running = false;
+    cancelAnimationFrame(rafId);
+    rafId = 0;
+  }
+
+  /* --- Resize --- */
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  const ro = new ResizeObserver(() => {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    computeTargets();
+    if (reduced.matches) drawStatic();
+  });
+  ro.observe(canvas);
+
+  /* Initial sizing */
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  W = canvas.offsetWidth;
+  H = canvas.offsetHeight;
+  canvas.width = Math.round(W * dpr);
+  canvas.height = Math.round(H * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  init();
+
+  if (reduced.matches) {
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) start();
+      else stop();
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+      ro.disconnect();
+    });
+  }
+})();
+</script>
