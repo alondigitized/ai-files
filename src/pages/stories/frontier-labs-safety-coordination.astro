@@ -1,0 +1,598 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'frontier-labs-safety-coordination')!;
+---
+
+<style is:global>
+  /* === CANVAS === */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .frontier-labs-safety-coordination-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* === REENACTMENT CSS — prefix: flsc- === */
+
+  /* Wire-feed timeline */
+  .flsc-timeline {
+    background: var(--surface, #161616);
+    border: 1px solid var(--border, #2a2a2a);
+    border-radius: 6px;
+    padding: 1.25rem 1.5rem;
+    margin: 2rem 0;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.85rem;
+    line-height: 1.7;
+  }
+  .flsc-tl-header {
+    color: var(--muted, #888);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border, #2a2a2a);
+  }
+  .flsc-tl-entry {
+    color: var(--text, #e8e8e8);
+    padding: 0.25rem 0;
+  }
+  .flsc-tl-date {
+    color: var(--muted, #888);
+    display: inline-block;
+    width: 4.5rem;
+    font-weight: 600;
+  }
+  .flsc-tl-active {
+    color: #ff6b7a;
+    font-weight: 600;
+  }
+  .flsc-tl-active .flsc-tl-date {
+    color: #ff6b7a;
+  }
+  .flsc-tl-footer {
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border, #2a2a2a);
+    font-size: 0.7rem;
+    color: var(--muted, #888);
+    font-style: italic;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+
+  /* Statute card — two columns */
+  .flsc-statute {
+    background: var(--surface, #161616);
+    border: 1px solid var(--border, #2a2a2a);
+    border-radius: 6px;
+    margin: 2rem 0;
+    overflow: hidden;
+  }
+  .flsc-statute-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border, #2a2a2a);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .flsc-statute-header .flsc-statute-col-left,
+  .flsc-statute-header .flsc-statute-col-right {
+    padding: 0.75rem 1rem;
+    background: var(--surface2, #1e1e1e);
+    color: var(--text, #e8e8e8);
+  }
+  .flsc-statute-header .flsc-statute-col-right {
+    color: #ff6b7a;
+  }
+  .flsc-statute-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border, #2a2a2a);
+    font-size: 0.85rem;
+  }
+  .flsc-statute-row .flsc-statute-col-left,
+  .flsc-statute-row .flsc-statute-col-right {
+    padding: 0.6rem 1rem;
+    background: var(--surface, #161616);
+    color: var(--text, #e8e8e8);
+  }
+  .flsc-statute-row .flsc-statute-col-right {
+    color: #ff6b7a;
+    font-weight: 500;
+  }
+  .flsc-statute-footer {
+    padding: 0.6rem 1rem;
+    font-size: 0.7rem;
+    color: var(--muted, #888);
+    font-style: italic;
+    border-top: 1px solid var(--border, #2a2a2a);
+  }
+
+  /* Truth Social post mockup */
+  .flsc-truth-social {
+    background: var(--surface, #161616);
+    border: 1px solid var(--border, #2a2a2a);
+    border-left: 3px solid #e11d48;
+    border-radius: 6px;
+    padding: 1.25rem 1.5rem;
+    margin: 2rem 0;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  }
+  .flsc-ts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border, #2a2a2a);
+  }
+  .flsc-ts-handle {
+    font-weight: 700;
+    color: var(--text, #e8e8e8);
+    font-size: 0.85rem;
+  }
+  .flsc-ts-date {
+    color: var(--muted, #888);
+    font-size: 0.75rem;
+  }
+  .flsc-ts-body {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--text, #e8e8e8);
+  }
+  .flsc-ts-body p {
+    margin: 0.5rem 0;
+  }
+  .flsc-ts-footer {
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border, #2a2a2a);
+    font-size: 0.7rem;
+    color: var(--muted, #888);
+    font-style: italic;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+
+  /* Ledger table */
+  .flsc-ledger {
+    background: var(--surface, #161616);
+    border: 1px solid var(--border, #2a2a2a);
+    border-radius: 6px;
+    margin: 2rem 0;
+    overflow: hidden;
+  }
+  .flsc-ledger-header {
+    padding: 0.75rem 1rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted, #888);
+    border-bottom: 1px solid var(--border, #2a2a2a);
+    background: var(--surface2, #1e1e1e);
+  }
+  .flsc-ledger-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  .flsc-ledger-table tr {
+    border-bottom: 1px solid var(--border, #2a2a2a);
+  }
+  .flsc-ledger-table tr:last-child {
+    border-bottom: none;
+  }
+  .flsc-ledger-caption {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .flsc-ledger-table thead th {
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted, #888);
+  }
+  .flsc-ledger-item {
+    text-align: left;
+    padding: 0.6rem 1rem;
+    font-weight: 600;
+    color: var(--text, #e8e8e8);
+    white-space: nowrap;
+    vertical-align: top;
+    width: 35%;
+  }
+  .flsc-ledger-status {
+    padding: 0.6rem 1rem;
+    color: #ff6b7a;
+    vertical-align: top;
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="the-briefing">
+      <h2><span class="num">01 — The Briefing</span>The Briefing</h2>
+      <p>Washington, 15 September 2026. Three men spoke in one city on one day about the same question — whether anyone should slow down artificial intelligence — and gave three incompatible answers.</p>
+
+      <p>At a press briefing, OpenAI global policy chief Chris Lehane told reporters that OpenAI had been working with Anthropic and Google DeepMind on AI safety for several weeks. Bloomberg first reported the briefing; Reuters, TechCrunch, and Quartz carried accounts from the same event. "It's better to try to work together to prioritize safety," Lehane said, according to Bloomberg. "I think it was important for them to hear that and hear it from us, and we wanted to be really clear about that."</p>
+
+      <p>Lehane said OpenAI does not see the need for an antitrust waiver for the conversations. He cited the airline industry: "There are many instances over time where companies are trying to help each other on safety." No antitrust lawyer or scholar quoted in coverage has evaluated the analogy.</p>
+
+      <p>At the Capitol Hill Club, House Speaker Mike Johnson told reporters: "They can self-regulate. They don't need the government to tell them to slow it down."</p>
+
+      <p>At Georgetown University, Federal Trade Commission Chair Andrew Ferguson, speaking for himself, said: "If companies are simultaneously coming to Washington and asking for a host of regulations and an antitrust exemption, all of my alarm bells go off."</p>
+
+      <p>Spokespeople for Anthropic and Google DeepMind did not respond to requests for comment from Bloomberg, Quartz, or TechCrunch. Neither company has issued an on-record confirmation as of 17 September. No source reports any agreement, shared threshold, joint body, or delayed release resulting from the talks.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="frontier-labs-safety-coordination-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Brake</strong> — three crimson particles slow only when they gather; a faint line flares where they meet and flings them back to speed; a fourth lane never slows.</p>
+
+    <section class="section" id="sixty-three-days">
+      <h2><span class="num">02 — Sixty-Three Days</span>Sixty-Three Days</h2>
+      <div class="flsc-timeline">
+        <div class="flsc-tl-header">WIRE FEED — 14 JUL TO 16 SEP 2026</div>
+        <div class="flsc-tl-entry"><span class="flsc-tl-date">14 JUL</span> Hassabis proposes FINRA-model AI standards body on X</div>
+        <div class="flsc-tl-entry"><span class="flsc-tl-date">09 SEP</span> OpenAI calls for mandatory safety rules, endorses bills it once opposed</div>
+        <div class="flsc-tl-entry"><span class="flsc-tl-date">12 SEP</span> Amodei asks Washington for an antitrust waiver for lab coordination</div>
+        <div class="flsc-tl-entry"><span class="flsc-tl-date">13 SEP</span> Johnson on CNN: rejects moratorium, proposes White House summit</div>
+        <div class="flsc-tl-entry"><span class="flsc-tl-date">14 SEP</span> Trump on Truth Social: AI safety concerns are "a HOAX"</div>
+        <div class="flsc-tl-entry flsc-tl-active"><span class="flsc-tl-date">15 SEP</span> Lehane confirms three-lab talks. Ferguson: "alarm bells." Johnson: "self-regulate."</div>
+        <div class="flsc-tl-entry"><span class="flsc-tl-date">16 SEP</span> 107 House Democrats demand Congress cancel recess</div>
+        <div class="flsc-tl-footer">The host of Lehane's 15 Sep briefing has not been identified by any outlet.</div>
+      </div>
+
+      <p>The path to the briefing stretched back sixty-three days.</p>
+
+      <p>On 14 July, Google DeepMind CEO Demis Hassabis published an essay on X titled "A Framework for Frontier AI and the Dawning of a New Age." He proposed a standards body modeled on FINRA — the Financial Industry Regulatory Authority — to test frontier AI models before release. Labs would voluntarily submit models for a 30-day screening period. After the protocol proved effective, compliance would become mandatory. TechCrunch's Russell Brandom reported the proposal.</p>
+
+      <p>On 9 September, Lehane published a post on OpenAI's blog: "The AI policy window is open. We need to act." According to the AP, the post expressed OpenAI's support for working with other frontier labs "with or without government support." The post stated: "We will advocate for compatible international approaches to measuring capabilities, managing risk, preserving human control, and determining when and how development should slow or stop, even if that means slowing the advancement of model capabilities." It endorsed several state bills OpenAI had previously opposed, including California's SB 53 and SB 1119. "Some of these bills we did not endorse in the past," Lehane wrote, as confirmed by GovInfoSecurity, "and are now supporting after reconsidering in light of the recent jump in capabilities we have seen."</p>
+
+      <p>On 12 September, Anthropic CEO Dario Amodei published "We Must Pace the Frontier." The essay proposed that labs in democratic countries agree on shared safety standards "with the U.S. government mediating." For that to happen, Amodei wrote, Washington would "need to issue a narrow waiver for certain kinds of safety conversations" for antitrust reasons. Three days later, his counterpart at OpenAI said no waiver was needed.</p>
+    </section>
+
+    <section class="section" id="per-se">
+      <h2><span class="num">03 — Per Se</span>Per Se</h2>
+      <p>Section 1 of the Sherman Act prohibits agreements in restraint of trade. The question of whether a coordinated pause among frontier AI labs would violate it was analyzed months before the three-lab talks became public.</p>
+
+      <p>Nicholas Felstead, an AI policy fellow at the Center for Law & AI Risk, wrote in Lawfare on 29 June 2026 that a coordinated pause among frontier labs "raises the antitrust risk level significantly" and could invite "per se antitrust treatment." His structural argument: the mechanisms that make a safety pause credible to participants are the same mechanisms that antitrust law reads as evidence of a conspiracy. Felstead noted that the Justice Department and the FTC had opened a public inquiry in February 2026 on revised competitor-collaboration guidance, after withdrawing the prior framework in late 2024.</p>
+
+      <p>Kylie Chiseul Kim, an antitrust partner at Massey & Gail, wrote in a Bloomberg Law commentary on 1 July 2026: "Decisions about what constitutes sufficient testing, acceptable risk, or responsible deployment could shape market structure as much as product quality." She posed the central question: "When does coordination that benefits the industry become coordination that limits competition?"</p>
+
+      <p>Both analyses predate the three-lab talks and address the general question of competitor coordination on AI safety, not this specific arrangement. Neither is a court ruling or regulatory finding.</p>
+
+      <div class="flsc-statute">
+        <div class="flsc-statute-header">
+          <div class="flsc-statute-col-left">What makes a pause work</div>
+          <div class="flsc-statute-col-right">What &sect;1 sees</div>
+        </div>
+        <div class="flsc-statute-row">
+          <div class="flsc-statute-col-left">Labs agree on shared safety tests</div>
+          <div class="flsc-statute-col-right">Horizontal output restriction</div>
+        </div>
+        <div class="flsc-statute-row">
+          <div class="flsc-statute-col-left">Labs coordinate release timing</div>
+          <div class="flsc-statute-col-right">Agreement in restraint of trade</div>
+        </div>
+        <div class="flsc-statute-row">
+          <div class="flsc-statute-col-left">Labs verify each other's compliance</div>
+          <div class="flsc-statute-col-right">Evidence of coordinated action</div>
+        </div>
+        <div class="flsc-statute-row">
+          <div class="flsc-statute-col-left">Joint decisions shape deployment</div>
+          <div class="flsc-statute-col-right">Competitors shape market structure</div>
+        </div>
+        <div class="flsc-statute-footer">A reading of the Felstead (Lawfare, 29 Jun 2026) and Kim (Bloomberg Law, 1 Jul 2026) analyses. Not a legal finding.</div>
+      </div>
+    </section>
+
+    <section class="section" id="alarm-bells">
+      <h2><span class="num">04 — Alarm Bells</span>Alarm Bells</h2>
+      <p>Ferguson did not name Anthropic at Georgetown. He did not need to. "They're asking for barriers to entry that will insulate their incumbency from challenge," he said, in remarks reported by Reuters' Jody Godoy. "And I think if you combine that with the requested antitrust exemption, everyone should be deeply suspicious about this." Ferguson also said, according to Quartz: "That sure sounds like moat digging."</p>
+
+      <p>Not everyone in the industry backed the coordination effort. In remarks reported by the AP on 16 September, Meta CEO Mark Zuckerberg said: "Every lab has the responsibility and incentive to move at the pace required to train its models safely." Nvidia CEO Jensen Huang said: "The market forces are already there — we don't need any new laws, we don't need new regulations."</p>
+
+      <p>Cohere co-founder and CEO Aidan Gomez was sharper. "Once again using fear under the pretext of protecting the public, these oligopolies are now requesting to bend competition rules," he wrote in an essay quoted by Gizmodo. "A wolf in sheep's clothing, a cartel by another name." Gizmodo did not specify the date of Gomez's essay or whether he was responding to the three-lab talks, to Amodei's September 12 essay, or to the broader coordination push.</p>
+    </section>
+
+    <section class="section" id="self-regulate">
+      <h2><span class="num">05 — Self-Regulate</span>Self-Regulate</h2>
+      <p>Two days before the briefing, on 13 September, Johnson appeared on CNN's "State of the Union." He said: "We have to resist Congress jumping in and imposing some sort of emergency moratorium." He said: "We cannot put a moratorium on this because China will overlap us." He proposed a summit: "We've got to summon everybody together... They probably should be summoned together at the White House."</p>
+
+      <p>The next day, President Trump posted on Truth Social.</p>
+
+      <div class="flsc-truth-social">
+        <div class="flsc-ts-header">
+          <span class="flsc-ts-handle">@realDonaldTrump</span>
+          <span class="flsc-ts-date">14 Sep 2026</span>
+        </div>
+        <div class="flsc-ts-body">
+          <p>AI taking over the World, destroying Humanity, and all other things bad, is a HOAX...</p>
+          <p>There is a SICK conspiracy going on against AI and Data Centers...</p>
+          <p>Dario (Anthropic!), who is now pretending to be a perfect little angel...</p>
+          <p>...a STRONG AND SMART (High IQ!) PRESIDENT, and the U.S.A. has that, in spades!</p>
+        </div>
+        <div class="flsc-ts-footer">Verbatim excerpts confirmed by NBC News. "Hoax Buster" passage not independently verified and omitted.</div>
+      </div>
+
+      <p>On 15 September, at the Capitol Hill Club press conference reported by Reuters and Al Jazeera, Johnson repeated the China argument: "We cannot have a moratorium on the development of AI. Because then we will lose our edge to China, and that has serious national security implications for every American family." He disclosed that he had spoken with Trump on Monday night. He said AI company executives would be summoned to the White House within the week. As of 17 September, no meeting has been scheduled.</p>
+
+      <p>Then the pivot. "They can self-regulate," Johnson said. "They don't need the government to tell them to slow it down. If they want to slow it down, they should." He added: "I think you need independent auditors. I think you need transparency from the people who are developing this."</p>
+
+      <p>In a letter released this week, 107 House Democrats led by Representatives Sam Liccardo, George Whitesides, Ted Lieu, and Lori Trahan demanded that Congress cancel the upcoming recess to advance AI safeguards.</p>
+
+      <p>The inversion was complete. The companies were asking for mandatory federal rules. Lehane's position on legislation: "Whatever we can get through." The Speaker of the House was telling them to police themselves.</p>
+    </section>
+
+    <section class="section" id="two-doors">
+      <h2><span class="num">06 — Two Doors</span>Two Doors</h2>
+      <p>There are two ways the private brake becomes lawful. Neither is open.</p>
+
+      <p>The first is a safe harbor. The National Cooperative Research Act of 1984 (15 U.S.C. sections 4301--4306) provides the precedent: registered research joint ventures receive rule-of-reason review instead of per se analysis and face single rather than treble damages if found liable. The live vehicle is the CATS Act, introduced 23 July 2026 by Senators Jim Banks (R-IN) and Adam Schiff (D-CA). It creates a narrowly tailored antitrust safe harbor for sharing threat information and coordinating defensive measures for defined national-security risks. It has been folded into the defense bill. It covers threat-sharing. It does not cover coordinated release timing.</p>
+
+      <p>The second is a federal mandate that makes coordination unnecessary. The FRONTIER Act (H.R. 9925), introduced the same day by Representatives Jay Obernolte (R-CA) and Lori Trahan (D-MA), establishes independent verification organizations licensed to assess AI developers, with the Department of Commerce setting standards. OpenAI supports the verification-organization provision. The AI Kill Switch Act, introduced the same day by Representatives Ted Lieu (D-CA) and Nathaniel Moran (R-TX), requires developers of the most powerful AI systems to maintain the technical ability to throttle, suspend, or shut them down, and authorizes DHS to order it. In the Senate, Semafor reported a bipartisan bill by Thune, Cruz, and Klobuchar gaining momentum; the text has not been released. Klobuchar said: "It's clear we need to act now and not wait."</p>
+
+      <p>None of these bills has passed.</p>
+
+      <p>OpenAI's own arc traces the distance. On 13 March 2025, the company submitted proposals to the White House Office of Science and Technology Policy asking the federal government to preempt state AI laws. On 9 September 2026, it endorsed the state bills it once opposed and asked for federal rules. Lehane, at the 15 September briefing: "Whatever we can get through." He also said that Trump would set AI policy for the federal government.</p>
+    </section>
+
+    <section class="section" id="the-ledger">
+      <h2><span class="num">07 — The Ledger</span>The Ledger</h2>
+      <div class="flsc-ledger">
+        <div class="flsc-ledger-header">As of 17 September 2026</div>
+        <table class="flsc-ledger-table">
+        <caption class="flsc-ledger-caption">Status of the frontier-lab safety coordination, as of 17 September 2026</caption>
+        <thead>
+          <tr>
+            <th scope="col" class="flsc-ledger-item">Item</th>
+            <th scope="col" class="flsc-ledger-item">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row" class="flsc-ledger-item">Three-lab coordination</th>
+            <td class="flsc-ledger-status">Confirmed by OpenAI only. Anthropic, DeepMind: no comment.</td>
+          </tr>
+          <tr>
+            <th scope="row" class="flsc-ledger-item">Agreements reached</th>
+            <td class="flsc-ledger-status">None reported.</td>
+          </tr>
+          <tr>
+            <th scope="row" class="flsc-ledger-item">Antitrust waiver</th>
+            <td class="flsc-ledger-status">Amodei: needed. Lehane: not needed. Ferguson: alarm bells. Granted: no.</td>
+          </tr>
+          <tr>
+            <th scope="row" class="flsc-ledger-item">Federal standard</th>
+            <td class="flsc-ledger-status">Three bills introduced 23 Jul. None passed. White House meeting: proposed 13 Sep, unscheduled.</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+
+      <p>The brake exists only as a conversation that one party has acknowledged, which the law may not permit, and which the people who could permit it have declined to discuss.</p>
+
+      <p>On 15 September, at the Capitol Hill Club, the Speaker's answer was already on the record: "They can self-regulate. They don't need the government to tell them to slow it down."</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.frontier-labs-safety-coordination-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const AR = 225, AG = 29, AB = 72; // #e11d48 decomposed
+  const CYCLE = 1080;
+  const BASE = 0.35;
+  const LANES = [0.25, 0.40, 0.55];
+  const FIELD_F = 0.78;
+  const STAT_F = 0.40;
+  const P1 = 300, P2 = 540, P3 = 660, P4 = 700;
+  const SPECK_N = 14;
+
+  let W = 0, H = 0, frame = 0, rafId = 0, running = false;
+
+  const labs = [{ x: 0, y: 0, gR: 10 }, { x: 0, y: 0, gR: 10 }, { x: 0, y: 0, gR: 10 }];
+  const fieldP = { x: 0 };
+  const trails = [{ x: 0, y: 0, a: 0 }, { x: 0, y: 0, a: 0 }, { x: 0, y: 0, a: 0 }];
+  const specks: { x: number; y: number; vx: number; vy: number }[] = [];
+
+  function bgC(): string {
+    return getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
+  }
+  function ease(t: number): number {
+    const v = t < 0 ? 0 : t > 1 ? 1 : t;
+    return v * v * (3 - 2 * v);
+  }
+
+  function initPos(): void {
+    for (let i = 0; i < 3; i++) {
+      labs[i].x = W * (0.15 + i * 0.2);
+      labs[i].y = LANES[i] * H;
+    }
+    fieldP.x = W * 0.4;
+    specks.length = 0;
+    for (let i = 0; i < SPECK_N; i++) {
+      specks.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.12, vy: (Math.random() - 0.5) * 0.12,
+      });
+    }
+    trails[0].a = trails[1].a = trails[2].a = 0;
+  }
+
+  function resize(): void {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    initPos();
+  }
+
+  function draw(): void {
+    const c = ctx!;
+    c.fillStyle = bgC();
+    c.fillRect(0, 0, W, H);
+    if (!W || !H) return;
+
+    const f = frame;
+    const sY = STAT_F * H;
+    let conv = 0, spd = BASE, glow = 10, sA = 0.05, flash = 0;
+
+    if (f < P1) {
+      /* Phase 1 -- Race */
+    } else if (f < P2) {
+      /* Phase 2 -- Convergence */
+      conv = ease((f - P1) / (P2 - P1));
+      spd = BASE + (0.06 - BASE) * conv;
+      glow = 10 + 8 * conv;
+    } else if (f < P3) {
+      /* Phase 3 -- Hold */
+      conv = 1;
+      spd = 0.06;
+      glow = 18 + 3 * Math.sin((f - P2) * Math.PI * 2 / 90);
+      sA = 0.05 + 0.55 * ease(Math.max(0, (f - P3 + 60) / 60));
+    } else if (f < P4) {
+      /* Phase 4 -- Snap */
+      const sf = f - P3;
+      conv = 1 - ease(Math.min(sf / 40, 1));
+      spd = 0.5;
+      if (sf < 6) { flash = 0.9; sA = 0.9; }
+      if (sf === 0) {
+        for (let i = 0; i < 3; i++) {
+          trails[i].x = labs[i].x;
+          trails[i].y = sY;
+          trails[i].a = 0.25;
+        }
+      }
+    } else {
+      /* Phase 5 -- Race again */
+      spd = 0.5 + (BASE - 0.5) * ease(Math.min((f - P4) / 120, 1));
+    }
+
+    // Update lab positions
+    for (let i = 0; i < 3; i++) {
+      const laneY = LANES[i] * H;
+      labs[i].y = laneY + (sY - laneY) * conv + (conv < 0.3 ? 2 * Math.sin(f * 0.02 + i * 2.1) : 0);
+      labs[i].x += spd;
+      if (labs[i].x > W + 10) labs[i].x -= W + 20;
+      labs[i].gR = glow;
+    }
+    // Horizontal clustering proportional to convergence
+    if (conv > 0.1) {
+      const cx = (labs[0].x + labs[1].x + labs[2].x) / 3;
+      for (let i = 0; i < 3; i++) labs[i].x += (cx + (i - 1) * 12 - labs[i].x) * 0.06 * conv;
+    }
+
+    // Field particle -- constant speed, never interacts
+    fieldP.x += BASE;
+    if (fieldP.x > W + 10) fieldP.x -= W + 20;
+    const fY = FIELD_F * H;
+
+    // Ambient specks
+    for (const sp of specks) {
+      sp.x += sp.vx; sp.y += sp.vy;
+      if (sp.x < 0) sp.x += W; else if (sp.x > W) sp.x -= W;
+      if (sp.y < 0) sp.y += H; else if (sp.y > H) sp.y -= H;
+    }
+    // Fade afterimage trails
+    for (const tr of trails) { if (tr.a > 0) tr.a = Math.max(0, tr.a - 1.25e-3); }
+
+    // --- Render ---
+
+    // Specks
+    for (const sp of specks) {
+      c.fillStyle = 'rgba(232,232,232,' + (0.04 + 0.015 * Math.sin(f * 0.008 + sp.x * 0.1)).toFixed(4) + ')';
+      c.beginPath(); c.arc(sp.x, sp.y, 1, 0, Math.PI * 2); c.fill();
+    }
+
+    // Statute line -- full width, faint
+    c.strokeStyle = 'rgba(232,232,232,0.05)';
+    c.lineWidth = 1;
+    c.beginPath(); c.moveTo(0, sY); c.lineTo(W, sY); c.stroke();
+
+    // Statute bright segment near cluster
+    if (sA > 0.06 || flash > 0) {
+      const cx = (labs[0].x + labs[1].x + labs[2].x) / 3;
+      const a = Math.max(sA, flash);
+      const g = c.createLinearGradient(cx - 80, 0, cx + 80, 0);
+      g.addColorStop(0, 'rgba(232,232,232,0.05)');
+      g.addColorStop(0.25, 'rgba(232,232,232,' + a.toFixed(3) + ')');
+      g.addColorStop(0.75, 'rgba(232,232,232,' + a.toFixed(3) + ')');
+      g.addColorStop(1, 'rgba(232,232,232,0.05)');
+      c.strokeStyle = g;
+      c.lineWidth = flash > 0 ? 2 : 1;
+      c.beginPath(); c.moveTo(cx - 80, sY); c.lineTo(cx + 80, sY); c.stroke();
+    }
+
+    // Afterimage trails
+    for (const tr of trails) {
+      if (tr.a > 0.001) {
+        c.fillStyle = 'rgba(' + AR + ',' + AG + ',' + AB + ',' + tr.a.toFixed(4) + ')';
+        c.fillRect(tr.x - 10, tr.y - 0.5, 20, 1);
+      }
+    }
+
+    // Field particle
+    c.fillStyle = 'rgba(232,232,232,0.35)';
+    c.beginPath(); c.arc(fieldP.x, fY, 2.5, 0, Math.PI * 2); c.fill();
+
+    // Lab particles -- glow + core
+    for (const lab of labs) {
+      const gr = c.createRadialGradient(lab.x, lab.y, 0, lab.x, lab.y, lab.gR);
+      gr.addColorStop(0, 'rgba(' + AR + ',' + AG + ',' + AB + ',0.12)');
+      gr.addColorStop(1, 'rgba(' + AR + ',' + AG + ',' + AB + ',0)');
+      c.fillStyle = gr;
+      c.beginPath(); c.arc(lab.x, lab.y, lab.gR, 0, Math.PI * 2); c.fill();
+      c.fillStyle = 'rgba(' + AR + ',' + AG + ',' + AB + ',0.85)';
+      c.beginPath(); c.arc(lab.x, lab.y, 3, 0, Math.PI * 2); c.fill();
+    }
+  }
+
+  function loop(): void {
+    draw();
+    frame = (frame + 1) % CYCLE;
+    rafId = requestAnimationFrame(loop);
+  }
+  function start(): void { if (running) return; running = true; rafId = requestAnimationFrame(loop); }
+  function stop(): void { running = false; cancelAnimationFrame(rafId); }
+
+  function staticFrame(): void {
+    frame = P3 - 20;
+    const cx = W * 0.5;
+    for (let i = 0; i < 3; i++) { labs[i].x = cx + (i - 1) * 12; labs[i].y = STAT_F * H; }
+    draw();
+  }
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const ro = new ResizeObserver(() => { resize(); if (reduced.matches) staticFrame(); });
+  ro.observe(canvas);
+  resize();
+
+  if (reduced.matches) {
+    staticFrame();
+  } else {
+    const io = new IntersectionObserver((entries: IntersectionObserverEntry[]) => {
+      for (const e of entries) { e.isIntersecting ? start() : stop(); }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+  }
+
+  window.addEventListener('pagehide', stop);
+})();
+</script>
