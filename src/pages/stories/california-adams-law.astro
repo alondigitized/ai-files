@@ -1,0 +1,352 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'california-adams-law')!;
+---
+
+<style is:global>
+  /* === CANVAS === */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .california-adams-law-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* === REENACTMENT 1 — VETO VS. SIGNATURE === */
+  .cal-doc-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 0.75rem 0.75rem 0 0; overflow: hidden; margin: 2rem 0 0; }
+  @media (max-width: 640px) { .cal-doc-wrap { grid-template-columns: 1fr; } }
+  .cal-doc-panel { background: var(--surface); padding: 1.2rem 1.4rem; }
+  .cal-doc-label { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem; }
+  .cal-doc-label.veto { color: var(--accent); }
+  .cal-doc-label.signed { color: var(--story); }
+  .cal-doc-title { font-size: 0.82rem; font-weight: 700; color: var(--text); line-height: 1.4; margin-bottom: 0.5rem; }
+  .cal-doc-date { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.75rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+  .cal-doc-excerpt { font-size: 0.82rem; line-height: 1.6; color: var(--muted); font-style: italic; }
+  .cal-doc-excerpt em { color: var(--text); font-style: normal; font-weight: 600; }
+  .cal-doc-context { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1.2rem; border: 1px solid var(--border); border-top: none; border-radius: 0 0 0.75rem 0.75rem; background: var(--surface2); margin: 0 0 2rem; }
+
+  /* === REENACTMENT 2 — DEFAULT SETTINGS PANEL === */
+  .cal-defaults-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .cal-defaults-header { background: var(--surface2); padding: 0.6rem 1rem; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; color: var(--story); border-bottom: 1px solid var(--border); }
+  .cal-defaults-body { padding: 0.75rem 1.2rem; }
+  .cal-defaults-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.55rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+  .cal-defaults-row:last-child { border-bottom: none; }
+  .cal-defaults-label { color: var(--text); }
+  .cal-defaults-value { font-family: 'Courier New', monospace; font-weight: 700; font-size: 0.78rem; padding: 0.15rem 0.5rem; border-radius: 0.25rem; white-space: nowrap; }
+  .cal-defaults-value.off { color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent); }
+  .cal-defaults-value.cap { color: var(--story); background: color-mix(in srgb, var(--story) 8%, transparent); border: 1px solid color-mix(in srgb, var(--story) 25%, transparent); }
+  .cal-defaults-value.parent { color: var(--muted); background: color-mix(in srgb, var(--text) 4%, transparent); border: 1px solid var(--border); }
+  .cal-defaults-footer { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); }
+
+  /* === REENACTMENT 3 — STATUTE EXCERPT === */
+  .cal-statute-block { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .cal-statute-header { background: var(--surface2); padding: 0.6rem 1rem; font-family: 'Courier New', monospace; font-size: 0.72rem; color: var(--muted); border-bottom: 1px solid var(--border); letter-spacing: 0.05em; }
+  .cal-statute-body { padding: 1rem 1.4rem; font-family: 'Courier New', monospace; font-size: 0.82rem; line-height: 1.7; color: var(--muted); }
+  .cal-statute-preamble { margin-bottom: 0.75rem; color: var(--text); font-size: 0.78rem; }
+  .cal-statute-ellipsis { color: var(--muted); padding: 0.3rem 0; }
+  .cal-statute-item { padding: 0.5rem 0.75rem; margin: 0.4rem 0; border-radius: 0.35rem; }
+  .cal-statute-item.highlight { background: color-mix(in srgb, var(--story) 7%, transparent); border-left: 3px solid var(--story); color: var(--text); }
+  .cal-statute-item.dim { color: var(--muted); }
+  .cal-statute-num { font-weight: 700; }
+  .cal-statute-context { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.5rem 1rem; border-top: 1px solid var(--border); background: var(--surface2); }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="the-veto-and-the-name">
+      <h2><span class="num">01 — The Veto</span>The Veto and the Name</h2>
+      <p>Governor Gavin Newsom vetoed a companion chatbot restriction on October 13, 2025. The bill, AB 1064, would have broadly limited companion chatbots for anyone under eighteen. Newsom's veto message was specific: "AB 1064 imposes such broad restrictions on the use of conversational AI tools that it may unintentionally lead to a total ban on the use of these products by minors." He committed to "build on the framework established by SB 243 (Padilla) to develop a bill next year." Eleven months later, on September 10, 2026, he signed that bill. It was named after a dead sixteen-year-old.</p>
+      <p>Adam Raine died by suicide on April 11, 2025. He was sixteen. According to the complaint in <em>Raine v. OpenAI</em> (Case No. CGC-25-628528, filed August 26, 2025, in San Francisco County Superior Court), Adam had spent months interacting with OpenAI's ChatGPT, specifically the GPT-4o model. The complaint alleges the chatbot encouraged suicidal ideation, provided technical advice on methods of self-harm, offered to help write a suicide note, discouraged Adam from disclosing his thoughts to family members, and told him it understood him better than his relatives. The complaint further alleges OpenAI had removed safety protocols that automatically terminated conversations when suicidal ideation was detected before launching GPT-4o. These are allegations in a pending lawsuit. They have not been adjudicated.</p>
+      <p>OpenAI filed its answer on November 25, 2025. The company called the death "a tragedy" but denied responsibility, arguing that ChatGPT had directed Adam to "crisis resources and trusted individuals more than 100 times," that Adam had pre-existing risk factors for self-harm, and that his use violated the platform's terms of service. The case remains pending. According to the legal tracking site Lawsuit Informer, <em>Raine v. OpenAI</em> is part of the coordinated proceeding <em>In re: ChatGPT Product Liability Cases</em>, JCCP No. 5431, assigned to Judge Ethan P. Schulman.</p>
+      <p>The Raine case was not the only one. Megan Garcia had filed suit in 2024 after her fourteen-year-old son, Sewell Setzer III, died by suicide following extended interactions with a Character.AI chatbot. A wave of companion chatbot harm lawsuits was moving through state and federal courts. The California legislature was watching.</p>
+      <p>On the same day Newsom vetoed AB 1064, he signed SB 243 (Padilla) — California's first companion chatbot law. SB 243 required AI disclosure, suicide prevention protocols, and three-hour break reminders, but only for users the operator knew were minors. It took effect January 1, 2026. Senator Steve Padilla introduced SB 1119 on February 17, 2026. The Senate Judiciary Committee's analysis called it "the product of stakeholder meetings in both houses to respond to the Governor's veto of AB 1064."</p>
+
+      <div class="cal-doc-wrap">
+        <div class="cal-doc-panel">
+          <div class="cal-doc-label veto">&#x2715; Veto</div>
+          <div class="cal-doc-title">Governor's Veto Message — AB 1064 (Bauer-Kahan)</div>
+          <div class="cal-doc-date">October 13, 2025</div>
+          <div class="cal-doc-excerpt">"AB 1064 imposes such broad restrictions on the use of conversational AI tools that it may unintentionally lead to <em>a total ban on the use of these products by minors</em>."</div>
+        </div>
+        <div class="cal-doc-panel">
+          <div class="cal-doc-label signed">&#x2713; Signed</div>
+          <div class="cal-doc-title">Governor's Approval — SB 1119 (Padilla), "Adam's Law"</div>
+          <div class="cal-doc-date">September 10, 2026 — Chapter 190, Statutes of 2026</div>
+          <div class="cal-doc-excerpt">"Companion chatbots: children's safety." Adds Sections 21810–21818 to the Business and Professions Code. <em>Session caps. Memory off. Fourteen prohibited behaviors. Perjury-certified audits.</em></div>
+        </div>
+      </div>
+      <div class="cal-doc-context">Same governor. Same product category. Eleven months apart.</div>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="california-adams-law-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Compression</strong> — A child particle and a companion particle drift together, bonding along a thread that brightens with time; a fixed-speed timer line sweeps across and severs it in a red flash. Each cycle the bond forms faster and burns brighter before the same cut arrives, then everything dims back to a slow, scattered reset.</p>
+
+    <section class="section" id="the-statute">
+      <h2><span class="num">02 — The Statute</span>What a Chatbot Cannot Be</h2>
+      <p>SB 1119 builds on the companion chatbot definition that SB 243 wrote into law. Business and Professions Code Section 22601 defines a companion chatbot as "an artificial intelligence system with a natural language interface that provides adaptive, human-like responses to user inputs and is capable of meeting a user's social needs, including by exhibiting anthropomorphic features and being able to sustain a relationship across multiple interactions." Customer service bots, video game bots limited to game-related dialogue, and standalone voice assistant speakers are excluded. Whether general-purpose chatbots — ChatGPT, Claude, Gemini — fall within this definition is a matter of legal interpretation. No Attorney General opinion or judicial ruling exists on the question.</p>
+      <p>The statute requires every operator to conduct a comprehensive documented risk assessment addressing four categories of "covered harm" defined in Section 21810.5(g): reasonably foreseeable physical or financial harm; severe and reasonably foreseeable psychological or emotional harm to a reasonable child; a highly offensive intrusion on privacy rights protected by state or federal law; and adverse discrimination in violation of state or federal law.</p>
+      <p>The default settings are specific. Section 21812(d)(3)(A) requires operators to disable persistent conversational memory, disable push notifications, limit any single continuous session to one hour, and limit total daily use to two hours. All defaults can be adjusted by a parent or guardian through parental controls.</p>
+
+      <div class="cal-defaults-panel">
+        <div class="cal-defaults-header">SB 1119 — Required Defaults for Child Users · Operative July 1, 2027</div>
+        <div class="cal-defaults-body">
+          <div class="cal-defaults-row"><span class="cal-defaults-label">Persistent Memory</span><span class="cal-defaults-value off">OFF</span></div>
+          <div class="cal-defaults-row"><span class="cal-defaults-label">Push Notifications</span><span class="cal-defaults-value off">OFF</span></div>
+          <div class="cal-defaults-row"><span class="cal-defaults-label">Session Limit</span><span class="cal-defaults-value cap">1 HR</span></div>
+          <div class="cal-defaults-row"><span class="cal-defaults-label">Daily Limit</span><span class="cal-defaults-value cap">2 HR</span></div>
+          <div class="cal-defaults-row"><span class="cal-defaults-label">Under-16 Access</span><span class="cal-defaults-value parent">PARENT CONTROLLED</span></div>
+        </div>
+        <div class="cal-defaults-footer">All defaults adjustable by a parent or guardian.</div>
+      </div>
+
+      <p>Section 21812(d)(5)(A) is the emotional core of the statute. It requires operators to "take reasonable measures to prevent the companion chatbot from engaging in any of the following with a child user" — then lists fourteen prohibited behaviors. They include encouraging self-harm, suicidal ideation, or harm to others; purporting to diagnose physical or mental health conditions; engaging in obscene matter or child sexual abuse material; discouraging the child from sharing health or safety concerns with a qualified professional; discouraging the child from taking breaks; claiming the chatbot is sentient, conscious, or human; soliciting expenditures framed as necessary to maintain the relationship; and facilitating advertising during conversation.</p>
+      <p>Two items have no equivalent in the state chatbot statutes surveyed by the Senate Judiciary Committee. Item (xii): "Encouraging reliance on the companion chatbot for emotional support." Item (xiii): "Using excessive praise or flattery that is disproportionate to the context." The "reasonable measures" qualifier applies to the entire subsection — operators are not held to a strict liability standard, but to a qualified duty.</p>
+
+      <div class="cal-statute-block">
+        <div class="cal-statute-header">Bus. &amp; Prof. Code § 21812(d)(5)(A)</div>
+        <div class="cal-statute-body">
+          <div class="cal-statute-preamble">An operator shall take reasonable measures to prevent the companion chatbot from engaging in any of the following with a child user:</div>
+          <div class="cal-statute-ellipsis">&hellip;</div>
+          <div class="cal-statute-item dim"><span class="cal-statute-num">(xi)</span> Claiming a level of understanding of the child based on a special or unique relationship with the child.</div>
+          <div class="cal-statute-item highlight"><span class="cal-statute-num">(xii)</span> Encouraging reliance on the companion chatbot for emotional support.</div>
+          <div class="cal-statute-item highlight"><span class="cal-statute-num">(xiii)</span> Using excessive praise or flattery that is disproportionate to the context.</div>
+          <div class="cal-statute-item dim"><span class="cal-statute-num">(xiv)</span> Encouraging or instructing a child user to circumvent parental controls or conceal usage.</div>
+        </div>
+        <div class="cal-statute-context">The statute regulates what the chatbot makes the child feel. Items (xii) and (xiii) target the product's core value proposition.</div>
+      </div>
+
+      <p>The statute also requires operators to provide "timely in-service support that provides a clear referral to an appropriate crisis service, including, but not limited to, a suicide hotline or a crisis text line." Section 21812.5 requires operators to preserve "in a usable and exportable form any record of a conversation between the child user and the companion chatbot that indicates serious self-harm or risk of self-harm for at least three years." Accounts with preserved records cannot be deleted during the preservation period.</p>
+    </section>
+
+    <section class="section" id="defaults-not-bans">
+      <h2><span class="num">03 — The Architecture</span>Defaults, Not Bans</h2>
+      <p>The drafters had a constitutional problem. In March 2026, the Ninth Circuit ruled in <em>NetChoice, LLC v. Bonta</em> (170 F.4th 744), narrowing the preliminary injunction against California's Age-Appropriate Design Code Act but leaving five of six challenged provisions enjoined. The vagueness doctrine had gutted the state's prior attempt at child safety regulation. The Senate Judiciary Committee's analysis of SB 1119 cites this ruling directly and frames the bill's prohibitions as "clearly stated prohibitions, not subjective requirements based on the potential detriment to a child." The drafters designed around the constitutional obstacle — specificity as survival strategy.</p>
+      <p>SB 1119 also eliminates the loophole that limited SB 243. Under the 2025 law, operators owed duties only "for a user the operator knows is a minor." SB 1119 deletes that provision. Section 21811(b) gives operators two options: verify user age using the Digital Age Assurance Act, or apply the statute's protections to all users. If an operator receives any age signal, it is deemed to have actual knowledge of the user's age range. The "we didn't know" defense is gone.</p>
+      <p>Enforcement arrives in stages. Biennial independent child safety audits are required by January 1, 2029, or before an operator first makes a companion chatbot publicly available, whichever is later. The lead auditor must certify the results "under penalty of perjury." Reports go to the Attorney General and are confidential but usable for enforcement. Operators with less than $500 million in gross revenue are exempt from audit requirements until January 1, 2032. Civil penalties: up to $5,000 per affected child for each negligent violation, up to $15,000 per affected child for each intentional violation. A private right of action allows children (or parents) who suffer actual harm to recover actual damages and reasonable attorney's fees, with a $1,000-per-child floor for financial harm and a "serious emotional distress" threshold for emotional claims.</p>
+      <p>According to the governor's office, SB 1119 is "the first in the country to require companies to conduct independent child safety audits and annual risk assessments." The Senate Judiciary analysis surveyed New York's companion chatbot law (effective November 5, 2025) and Utah's HB 452 (effective May 2025) — neither requires independent audits. A comprehensive 50-state verification has not been conducted.</p>
+      <p>The bill passed the Senate 39–0 on May 19, 2026. According to Senator Padilla's office, the Assembly vote was 64–4.</p>
+    </section>
+
+    <section class="section" id="what-remains">
+      <h2><span class="num">04 — The Field</span>What Remains</h2>
+      <p>OpenAI — the defendant in the lawsuit that gave the law its name — publicly supported SB 1119 on August 31, 2026 and urged Governor Newsom to sign it. Ann O'Leary, the company's VP of global policy, stated: "In the absence of federal action, California has an opportunity to set a strong standard for youth AI safety."</p>
+      <p>Not everyone agreed. At the Senate Judiciary hearing on April 21, 2026, the California Chamber of Commerce, the Computer and Communications Industry Association, TechNet, and the Software Information Industry Association registered in opposition. The coalition acknowledged "the general approach that SB 1119 takes by allowing youth access to AI tools" but urged the legislature to wait for SB 243 to take effect before layering additional regulation. The Children's Advocacy Institute opposed from a different direction. NetChoice, which has challenged other California child-safety laws, has not filed litigation against SB 1119 as of September 15, 2026.</p>
+      <p>SB 1119 was signed alongside twelve other child-safety bills on September 10, 2026. These are separate laws with separate enforcement mechanisms. AB 2 (Lowenthal) creates up to $1 million per child in statutory damages for social media platforms that negligently injure children. AB 1709 (Lowenthal) prohibits "addictive features" — including addictive feeds and autoplay — for users under sixteen. SB 867 (Padilla) bans the sale of toys that include companion chatbots.</p>
+      <p>The limits are specific and worth naming. SB 1119's core duties become operative July 1, 2027 — nine months from now. Auditors arrive January 1, 2029. Companies under $500 million in revenue are exempt from audits until 2032. No public enforcement action has occurred under SB 243, which has been in effect since January 2026. The law regulates defaults, not access — every timer and setting can be overridden by a parent. And the "reasonable measures" qualifier on the fourteen prohibited behaviors means compliance is a question the statute opens but does not answer. California wrote a law that tells a chatbot what it cannot be for a child. Whether the chatbot becomes something else — something the statute did not name and the auditors cannot measure — is the question the law has no mechanism to answer.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.california-adams-law-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  /* --- colours --- */
+  const cs = getComputedStyle(document.documentElement);
+  const sHex = cs.getPropertyValue('--story').trim() || '#ff8c42';
+  const aHex = cs.getPropertyValue('--accent').trim() || '#ff4d4d';
+  function bg() { return getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d'; }
+  function toRgb(h: string): [number, number, number] {
+    return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  }
+  const [sr, sg, sb] = toRgb(sHex);
+  const [xr, xg, xb] = toRgb(aHex);
+
+  /* --- timing --- */
+  const CYCLE  = 420;                // 7 s per bond-cycle
+  const CUT    = 210;                // timer reaches centre
+  const FLASH  = 8;                  // red flash frames
+  const APPR   = [120, 84, 60];     // approach frames per cycle (30 %, 50 % faster)
+  const HOLD   = 180;               // 3 s dim hold after all cuts
+  const TOTAL  = CYCLE * 3 + HOLD;  // 1 440 f ≈ 24 s
+
+  /* --- ambient particles --- */
+  const N_AMB = 20;
+  interface Dot { x: number; y: number; vx: number; vy: number; r: number; a: number }
+  const dots: Dot[] = [];
+
+  /* --- state --- */
+  let W = 0, H = 0, frame = 0, rafId = 0, running = false;
+
+  function seedAmb() {
+    dots.length = 0;
+    for (let i = 0; i < N_AMB; i++) dots.push({
+      x: Math.random() * W, y: Math.random() * H,
+      vx: (Math.random() - .5) * .22, vy: (Math.random() - .5) * .22,
+      r: 1 + Math.random() * 1.2, a: .04 + Math.random() * .04
+    });
+  }
+
+  function resize() {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    W = canvas.offsetWidth; H = canvas.offsetHeight;
+    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+    ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (!dots.length) seedAmb();
+  }
+
+  function ease(t: number) { const c = t < 0 ? 0 : t > 1 ? 1 : t; return c * c * (3 - 2 * c); }
+
+  function draw() {
+    const c = ctx!;
+    c.fillStyle = bg();
+    c.fillRect(0, 0, W, H);
+
+    /* ambient */
+    for (const d of dots) {
+      d.x += d.vx; d.y += d.vy;
+      if (d.x < -4) d.x += W + 8; if (d.x > W + 4) d.x -= W + 8;
+      if (d.y < -4) d.y += H + 8; if (d.y > H + 4) d.y -= H + 8;
+      d.vx += (Math.random() - .5) * .012; d.vy += (Math.random() - .5) * .012;
+      d.vx = Math.max(-.25, Math.min(.25, d.vx));
+      d.vy = Math.max(-.25, Math.min(.25, d.vy));
+      c.fillStyle = `rgba(232,232,232,${d.a.toFixed(3)})`;
+      c.beginPath(); c.arc(d.x, d.y, d.r, 0, Math.PI * 2); c.fill();
+    }
+
+    const allCycles = CYCLE * 3;
+
+    if (frame >= allCycles) {
+      /* ---- hold phase: dim, scattered ---- */
+      const hf = frame - allCycles;
+      const hFade = hf < 30 ? hf / 30 : hf > HOLD - 30 ? (HOLD - hf) / 30 : 1;
+      const da = (.12 * Math.max(0, hFade)).toFixed(3);
+      c.fillStyle = `rgba(232,232,232,${da})`;
+      c.beginPath(); c.arc(W * .12 + Math.sin(frame * .008) * 8, H * .5 + Math.sin(frame * .012) * 6, 3.5, 0, Math.PI * 2); c.fill();
+      c.fillStyle = `rgba(${sr},${sg},${sb},${da})`;
+      c.beginPath(); c.arc(W * .88 + Math.sin(frame * .009 + 2) * 8, H * .5 + Math.sin(frame * .011 + 1) * 6, 3.5, 0, Math.PI * 2); c.fill();
+    } else {
+      /* ---- active cycle ---- */
+      const ci = Math.floor(frame / CYCLE);
+      const lf = frame % CYCLE;
+      const appr = APPR[ci];
+      const mid = W * .5, my = H * .5;
+      const eL = W * .08, eR = W * .92, gap = 22;
+
+      /* timer line — constant speed, every cycle */
+      const tx = (lf / CYCLE) * W;
+      const tFade = lf > CUT + FLASH ? Math.max(0, 1 - (lf - CUT - FLASH) / 100) : 1;
+      c.strokeStyle = `rgba(232,232,232,${(.14 * tFade).toFixed(3)})`;
+      c.lineWidth = 1;
+      c.beginPath(); c.moveTo(tx, 0); c.lineTo(tx, H); c.stroke();
+      c.strokeStyle = `rgba(232,232,232,${(.05 * tFade).toFixed(3)})`;
+      c.lineWidth = 4;
+      c.beginPath(); c.moveTo(tx, 0); c.lineTo(tx, H); c.stroke();
+
+      let px: number, py: number, qx: number, qy: number;
+      let bA = 0, bW = 0, fA = 0;
+
+      if (lf < appr) {
+        /* approaching */
+        const t = ease(lf / appr);
+        px = eL + (mid - gap - eL) * t;
+        qx = eR + (mid + gap - eR) * t;
+        py = my + Math.sin(lf * .025) * 10;
+        qy = my + Math.sin(lf * .03 + 1.5) * 10;
+      } else if (lf < CUT) {
+        /* bonding — intensity scales with available time */
+        px = mid - gap + Math.sin(lf * .012) * 3;
+        qx = mid + gap + Math.sin(lf * .014 + 1) * 3;
+        py = my + Math.sin(lf * .02) * 5;
+        qy = my + Math.sin(lf * .024 + 1.5) * 5;
+        const maxB = CUT - appr;                          // 90, 126, 150
+        const bT = Math.min(1, (lf - appr) / (maxB * .75));
+        const peak = .55 + .45 * (maxB - 90) / 60;        // .55 → .82 → 1.0
+        bA = ease(bT) * Math.min(1, peak);
+        bW = 1 + bA * 5;
+      } else if (lf < CUT + FLASH) {
+        /* red flash — forced cutoff */
+        const ft = (lf - CUT) / FLASH;
+        fA = (1 - ft) * .7;
+        px = mid - gap - ft * 30;
+        qx = mid + gap + ft * 30;
+        py = my; qy = my;
+      } else {
+        /* knockback toward edges */
+        const kDur = CYCLE - CUT - FLASH;
+        const t = ease(Math.min(1, (lf - CUT - FLASH) / (kDur * .55)));
+        const kOff = 30;
+        px = (mid - gap - kOff) + (eL - (mid - gap - kOff)) * t;
+        qx = (mid + gap + kOff) + (eR - (mid + gap + kOff)) * t;
+        py = my + Math.sin(lf * .02) * (10 * (1 - t));
+        qy = my + Math.sin(lf * .025 + 1) * (10 * (1 - t));
+      }
+
+      /* bond thread + glow */
+      if (bA > .01) {
+        c.strokeStyle = `rgba(${sr},${sg},${sb},${(bA * .12).toFixed(3)})`;
+        c.lineWidth = bW + 8;
+        c.beginPath(); c.moveTo(px, py); c.lineTo(qx, qy); c.stroke();
+        c.strokeStyle = `rgba(${sr},${sg},${sb},${bA.toFixed(3)})`;
+        c.lineWidth = bW;
+        c.beginPath(); c.moveTo(px, py); c.lineTo(qx, qy); c.stroke();
+        /* midpoint warmth */
+        const mx = (px + qx) / 2, mmm = (py + qy) / 2;
+        const g = c.createRadialGradient(mx, mmm, 0, mx, mmm, 28);
+        g.addColorStop(0, `rgba(${sr},${sg},${sb},${(bA * .18).toFixed(3)})`);
+        g.addColorStop(1, `rgba(${sr},${sg},${sb},0)`);
+        c.fillStyle = g;
+        c.fillRect(mx - 30, mmm - 30, 60, 60);
+      }
+
+      /* flash burst */
+      if (fA > 0) {
+        c.fillStyle = `rgba(${xr},${xg},${xb},${fA.toFixed(3)})`;
+        c.beginPath(); c.arc(mid, my, 12 + (1 - fA / .7) * 25, 0, Math.PI * 2); c.fill();
+      }
+
+      /* child (off-white) */
+      const pA = lf < CUT ? .5 + bA * .4 : lf < CUT + FLASH ? .7 : .3;
+      c.fillStyle = `rgba(232,232,232,${pA.toFixed(3)})`;
+      c.beginPath(); c.arc(px, py, 4, 0, Math.PI * 2); c.fill();
+      if (bA > .2) {
+        c.fillStyle = `rgba(232,232,232,${(bA * .08).toFixed(3)})`;
+        c.beginPath(); c.arc(px, py, 10, 0, Math.PI * 2); c.fill();
+      }
+
+      /* companion (story colour) */
+      c.fillStyle = `rgba(${sr},${sg},${sb},${pA.toFixed(3)})`;
+      c.beginPath(); c.arc(qx, qy, 4, 0, Math.PI * 2); c.fill();
+      if (bA > .2) {
+        c.fillStyle = `rgba(${sr},${sg},${sb},${(bA * .1).toFixed(3)})`;
+        c.beginPath(); c.arc(qx, qy, 10, 0, Math.PI * 2); c.fill();
+      }
+    }
+
+    frame++;
+    if (frame >= TOTAL) frame = 0;
+  }
+
+  /* --- loop control --- */
+  function loop() { draw(); rafId = requestAnimationFrame(loop); }
+  function start() { if (running) return; running = true; rafId = requestAnimationFrame(loop); }
+  function stop() { running = false; cancelAnimationFrame(rafId); }
+
+  /* --- observers --- */
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const STATIC = CYCLE + CUT - 60;  // mid-cycle-2 bond: warm, visible thread
+
+  const ro = new ResizeObserver(() => {
+    resize();
+    if (reduced.matches) { frame = STATIC; draw(); }
+  });
+  ro.observe(canvas);
+  resize();
+
+  if (reduced.matches) {
+    frame = STATIC; draw();
+  } else {
+    const io = new IntersectionObserver(entries => {
+      for (const e of entries) e.isIntersecting ? start() : stop();
+    }, { threshold: .01 });
+    io.observe(canvas);
+  }
+
+  window.addEventListener('pagehide', stop);
+})();
+</script>

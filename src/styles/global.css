@@ -569,12 +569,15 @@ footer .footer-sub { margin-top: 0.5rem; font-size: 0.75rem; color: var(--muted)
 /* ── Reactions Follow-up ── */
 .reactions-followup {
   max-height: 0; overflow: hidden;
-  transition: max-height 0.35s ease, opacity 0.25s ease;
+  transition: max-height 0.35s ease, opacity 0.25s ease, visibility 0s linear 0.35s;
   opacity: 0;
+  visibility: hidden; /* removes the clipped buttons from the tab order while collapsed */
 }
 .reactions-followup.open {
   max-height: 160px;
   opacity: 1;
+  visibility: visible;
+  transition: max-height 0.35s ease, opacity 0.25s ease, visibility 0s;
 }
 .followup-label {
   font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase;
