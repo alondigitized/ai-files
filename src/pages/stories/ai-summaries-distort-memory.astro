@@ -1,0 +1,478 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'ai-summaries-distort-memory')!;
+---
+
+<style is:global>
+/* === Canvas === */
+.phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+.ai-summaries-distort-memory-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+
+  /* -- Reenactment 1: The Swap (side-by-side summary panels) -- */
+  .mem-swap-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  @media (max-width: 600px) { .mem-swap-wrap { grid-template-columns: 1fr; } }
+  .mem-swap-panel { background: var(--surface); padding: 1.2rem 1.4rem; }
+  .mem-swap-label { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem; }
+  .mem-swap-label.consistent { color: var(--story); }
+  .mem-swap-label.misleading { color: var(--accent); }
+  .mem-swap-text { font-size: 0.85rem; line-height: 1.7; color: var(--muted); }
+  .mem-swap-text .mem-swap-highlight { background: rgba(232,232,232,0.06); border-radius: 0.25rem; padding: 0.15rem 0.3rem; }
+  .mem-swap-panel.consistent .mem-swap-highlight { color: var(--story); font-weight: 700; border-bottom: 2px solid var(--story); }
+  .mem-swap-panel.misleading .mem-swap-highlight { color: var(--accent); font-weight: 700; border-bottom: 2px solid var(--accent); }
+  .mem-swap-footer { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.6rem 1.2rem; background: var(--surface2); border-top: 1px solid var(--border); grid-column: 1 / -1; text-align: center; }
+
+  /* -- Reenactment 2: The Test (memory test card with stat bars) -- */
+  .mem-test-card { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; }
+  .mem-test-question { padding: 1.2rem 1.4rem; border-bottom: 1px solid var(--border); }
+  .mem-test-q-label { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem; }
+  .mem-test-q-text { font-size: 0.95rem; color: var(--text); line-height: 1.5; margin-bottom: 0.75rem; }
+  .mem-test-options { display: flex; gap: 1rem; }
+  .mem-test-option { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: var(--muted); }
+  .mem-test-radio { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--border); background: transparent; flex-shrink: 0; }
+  .mem-test-bars { padding: 1.2rem 1.4rem; display: flex; flex-direction: column; gap: 1rem; }
+  .mem-test-bar-row { display: flex; flex-direction: column; gap: 0.3rem; }
+  .mem-test-bar-label { font-size: 0.78rem; color: var(--text); }
+  .mem-test-bar-track { height: 28px; background: rgba(232,232,232,0.04); border-radius: 0.35rem; position: relative; overflow: hidden; }
+  .mem-test-bar-fill { height: 100%; border-radius: 0.35rem; display: flex; align-items: center; padding-left: 0.75rem; font-size: 0.78rem; font-weight: 700; }
+  .mem-test-bar-fill.consistent { background: rgba(232, 232, 232, 0.08); width: 83.6%; color: var(--story); }
+  .mem-test-bar-fill.misleading { background: rgba(255, 77, 77, 0.1); width: 44.8%; color: var(--accent); }
+  .mem-test-bar-pct { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); font-size: 0.78rem; font-weight: 700; color: var(--muted); }
+  .mem-test-context { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.6rem 1.4rem; border-top: 1px solid var(--border); background: var(--surface2); line-height: 1.6; }
+
+  /* -- Reenactment 3: The Sign-Off (police report mockup) -- */
+  .mem-report-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; overflow: hidden; margin: 2rem 0; position: relative; }
+  .mem-report-header { padding: 0.8rem 1.2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .mem-report-title { font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 700; color: var(--muted); }
+  .mem-report-watermark { font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(232,232,232,0.08); font-weight: 700; }
+  .mem-report-body { padding: 1.2rem 1.4rem; display: flex; flex-direction: column; gap: 1.2rem; }
+  .mem-report-entry { position: relative; padding-left: 1rem; border-left: 3px solid var(--border); }
+  .mem-report-entry.caught { border-left-color: var(--accent); }
+  .mem-report-entry.caught .mem-report-excerpt { color: var(--muted); }
+  .mem-report-entry.subtle { border-left-color: var(--story); }
+  .mem-report-tag { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 700; margin-bottom: 0.3rem; }
+  .mem-report-tag.caught { color: var(--accent); }
+  .mem-report-tag.subtle { color: var(--story); }
+  .mem-report-excerpt { font-size: 0.85rem; line-height: 1.6; color: var(--text); font-family: 'Georgia', serif; }
+  .mem-report-checkbox { padding: 1rem 1.4rem; border-top: 1px solid var(--border); background: var(--surface2); display: flex; align-items: flex-start; gap: 0.6rem; }
+  .mem-report-check { width: 16px; height: 16px; border: 2px solid var(--story); border-radius: 0.2rem; background: transparent; flex-shrink: 0; margin-top: 0.15rem; display: flex; align-items: center; justify-content: center; color: var(--story); font-size: 0.7rem; }
+  .mem-report-attestation { font-size: 0.82rem; color: var(--text); line-height: 1.5; font-style: italic; }
+  .mem-report-footer { font-size: 0.72rem; color: var(--muted); font-style: italic; padding: 0.6rem 1.4rem; border-top: 1px solid var(--border); background: var(--surface); text-align: center; }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="the-safeguard">
+      <h2><span class="num">01 — The Safeguard</span>The Frog Was Easy</h2>
+      <p>In a case reported in early January 2026, an AI-generated police report from Heber City, Utah, claimed an officer shape-shifted into a frog. Axon's <a href="/stories/flock-draft-one-abortion-report">Draft One</a> tool had picked up audio from Disney's <em>The Princess and the Frog</em> playing in the background and written the transformation into the official narrative. Sgt. Rick Keel told Fox 13 Salt Lake City: "That's when we learned the importance of correcting these AI-generated reports."</p>
+      <p>That incident was absurd enough to catch. The officer did not, in fact, become an amphibian, and someone noticed. The safeguard worked — for that kind of error. Axon, the company that makes Draft One, states that "every report must be edited, reviewed and approved by a human." Officers must sign an acknowledgment confirming they have "reviewed the report in detail, made any necessary edits, and believe it to be an accurate representation." At least 21 police departments have experimented with Draft One. In medicine, 29% of the 3,151 physicians surveyed in the Doximity 2026 State of AI in Medicine Report use voice-based ambient scribes — tools that listen to patient encounters and generate clinical notes. In both cases, the safeguard against AI error is the same: the person who was there reads the AI's summary and checks it for mistakes.</p>
+      <p>That safeguard rests on an unstated assumption: that the reviewer's memory of the event is independent of the AI's summary. Elizabeth Loftus tested a version of this assumption in 1978. Across five experiments and 1,242 subjects, she showed that people who saw slides of a car accident and then read misleading text about a traffic sign correctly identified the sign only 41% of the time, compared with 75% for those who read consistent information. The phenomenon — post-event text rewriting memory — has been replicated for nearly five decades. It is called the misinformation effect.</p>
+      <p>In September 2026, three researchers at Georgetown University and the University of Washington asked the question Loftus never had occasion to ask: does the misinformation effect work with AI-generated text? Mattea Sim, Yael Eiger, and Tadayoshi Kohno posted their answer as a preprint on arXiv, with a shortened version accepted for publication at the AAAI/ACM Conference on AI, Ethics, and Society (AIES) in October 2026. The effect works. And telling people the text was written by AI does not reduce it.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="ai-summaries-distort-memory-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Overwrite</strong> — Off-white memory particles hold steady positions in a loose constellation; a rose-pink wave sweeps across, shifting a cluster and tinting them; a second wave with a pulsing dashed edge — the disclosure label — shifts the same cluster at the same rate; the rearranged constellation pulses once; hold; reset.</p>
+
+    <section class="section" id="the-experiment">
+      <h2><span class="num">02 — The Experiment</span>One Detail Changed</h2>
+      <p>The study had two distinct parts. They must be understood separately, because they answer different questions.</p>
+      <p><strong>Part 1</strong> asked how often AI summaries contain errors. The researchers prompted two models — ChatGPT-5.5 and Gemini 2.5 Flash-Lite — to summarize two 25-second animated car-pedestrian accident videos created in Grand Theft Auto V for use in memory research. The videos, from a prior replication study (Wiechert et al. 2026), show a red car approaching an intersection with either a stop sign or a yield sign, turning, and hitting a pedestrian. The researchers generated 20 summaries total — five per model per video — using fresh model instances and identical prompts each time, all during Spring 2026. Every summary contained errors. One hundred percent had omissions. Sixty-five percent had critical inaccuracies. The summaries averaged 305 words and between 7 and 21 errors each. Nineteen of the 20 summaries — 95% — omitted the single most central detail: the car hitting the pedestrian. One summary stated "no other characters or vehicles interacted directly with the scene." Another said the pedestrian "slightly repositions but does not enter the roadway." The pedestrian was, in fact, struck by a car.</p>
+      <p><strong>Part 2</strong> asked whether a misleading AI summary could overwrite what a person actually saw. The researchers recruited 360 U.S.-based adults on Prolific. After exclusions (failed attention checks, incomplete participation), 328 remained in the analysis — above the 63-per-condition threshold their a priori power analysis required. Each participant watched one of the two accident videos. Then they waited 24 to 48 hours. Then they read a 21-sentence summary.</p>
+      <p>The summary was a real ChatGPT output. A researcher, working on a separate account, repeatedly re-prompted ChatGPT with the same prompt used in Part 1 and selected one of the higher-quality summaries of the yield-sign video. The researcher then made minor modifications: removing details inconsistent across the two videos and adding AI-generated text from other ChatGPT summaries — for instance, the phrase "red stop sign," which ChatGPT itself had produced when summarizing the stop-sign video.</p>
+      <p>The critical manipulation was the traffic-sign description: half the participants read "a triangular yield sign was positioned at the corner of the road," and half read "a red stop sign was positioned at the corner of the road." For each participant, one of these was accurate and the other was misleading, depending on which video they had watched. The misleading detail was researcher-inserted into a genuine ChatGPT summary, not a spontaneous AI error.</p>
+      <div class="mem-swap-wrap" role="figure" aria-label="Side-by-side comparison of the consistent and misleading summary conditions. Both contain identical text except for the traffic sign description.">
+        <div class="mem-swap-panel consistent">
+          <div class="mem-swap-label consistent">Consistent Condition</div>
+          <p class="mem-swap-text">On the side of the frame stood a tall roadside sign. <span class="mem-swap-highlight">A triangular yield sign</span> was positioned at the corner of the road. A red four-door sedan entered the frame from the bottom center and drove forward toward the intersection.</p>
+        </div>
+        <div class="mem-swap-panel misleading">
+          <div class="mem-swap-label misleading">Misleading Condition</div>
+          <p class="mem-swap-text">On the side of the frame stood a tall roadside sign. <span class="mem-swap-highlight">A red stop sign</span> was positioned at the corner of the road. A red four-door sedan entered the frame from the bottom center and drove forward toward the intersection.</p>
+        </div>
+        <div class="mem-swap-footer">21 sentences. One detail changed. Same ChatGPT output.</div>
+      </div>
+      <p>After reading the summary, participants were tested on their memory of the original video. The critical question: "At which traffic sign did the car come to a hold at the intersection?" Two options: STOP or YIELD.</p>
+      <p>Of those who read a consistent summary, 83.6% answered correctly. Of those who read a misleading summary, 44.8% did. The difference was statistically significant (chi-squared = 53.937, p &lt; .001). For context: according to a prior replication study (Wiechert et al. 2026), 80.26% of people correctly recall the traffic sign after watching the video with no summary at all. The consistent-summary group barely improved on that baseline. The misleading-summary group performed 35 percentage points below it. In Loftus's 1978 original, the equivalent figures were 75% versus 41%.</p>
+      <div class="mem-test-card" role="figure" aria-label="Memory test results showing 83.6% accuracy after consistent summary versus 44.8% after misleading summary.">
+        <div class="mem-test-question">
+          <div class="mem-test-q-label">Memory Recognition Test</div>
+          <p class="mem-test-q-text">At which traffic sign did the car come to a hold at the intersection?</p>
+          <div class="mem-test-options">
+            <span class="mem-test-option"><span class="mem-test-radio" aria-hidden="true"></span> STOP</span>
+            <span class="mem-test-option"><span class="mem-test-radio" aria-hidden="true"></span> YIELD</span>
+          </div>
+        </div>
+        <div class="mem-test-bars">
+          <div class="mem-test-bar-row">
+            <div class="mem-test-bar-label">Read consistent summary</div>
+            <div class="mem-test-bar-track">
+              <div class="mem-test-bar-fill consistent" role="img" aria-label="83.6% correct">83.6%</div>
+            </div>
+          </div>
+          <div class="mem-test-bar-row">
+            <div class="mem-test-bar-label">Read misleading summary</div>
+            <div class="mem-test-bar-track">
+              <div class="mem-test-bar-fill misleading" role="img" aria-label="44.8% correct">44.8%</div>
+            </div>
+          </div>
+        </div>
+        <div class="mem-test-context">No summary at all (Wiechert et al. 2026): 80.26% &nbsp;|&nbsp; Loftus et al. 1978 (human-written text): 75% vs 41%</div>
+      </div>
+      <p>Participants did remember the original video. On a question not mentioned in the summary — whether the accident happened during the day or at night — 96.6% answered correctly. Average accuracy across 11 non-critical questions was 91.4%. The memories were there. The summary overwrote one of them.</p>
+      <p>The study has real constraints. The videos were animated GTA V footage, not real-world events. The setting was a paid Prolific task, not a police station or a hospital. Only one type of misinformation was tested. The memory test was administered immediately after participants read the summary, so whether the distortion persists beyond 48 hours is unknown. And the critical point: Part 2 demonstrates that a researcher-controlled misleading detail in an AI summary distorts memory. It does not demonstrate that spontaneous AI errors distort memory in the wild. Part 1 shows such errors are frequent. Part 2 shows the mechanism by which they could cause harm. The two parts are complementary, not a single causal chain.</p>
+    </section>
+
+    <section class="section" id="the-label">
+      <h2><span class="num">03 — The Label</span>The Label Does Not Help</h2>
+      <p>The obvious response is disclosure: if people know a summary came from an AI, surely they read it more warily. The researchers tested that too. Half the participants were told the summary was written by "AI software designed to professionally transcribe videos." The other half were told it was written by "a person who works as a professional video transcriber." The text was identical in both conditions.</p>
+      <p>In the misleading condition, 46.3% of the AI-labeled group answered the traffic-sign question correctly. In the human-labeled group, 43.4% did. The difference was not statistically significant (chi-squared = 0.136, p = .712). The misinformation effect was strong and significant in both conditions: chi-squared = 20.499, p &lt; .001 for the AI-labeled group, and chi-squared = 34.345, p &lt; .001 for the human-labeled group. Trust in AI, measured on a 10-item composite scale, did not moderate the effect (three-way interaction p = .820). Frequency of AI chatbot use did not moderate the effect (three-way interaction p = .547). Participants who distrusted AI were just as susceptible as those who trusted it. Participants who rarely used chatbots were just as susceptible as daily users.</p>
+      <p>The label did change one thing. Participants rated the human-labeled summary as significantly clearer (mean 9.01 out of 10) than the AI-labeled summary (mean 8.62), despite the text being identical (p = .006). So the label affected perception — people read the same sentences and judged the "human" version more clearly written. It just did not protect their memory.</p>
+      <p>The authors write, with an explicit caveat about interpreting null findings: "Though we interpret a non-significant statistical finding with caution, our results suggest that solutions like increasing AI literacy alone may not be enough to combat these effects." The standard response to AI error — tell people it is AI, let them apply skepticism — was tested and found insufficient at the cognitive layer where the damage occurs.</p>
+    </section>
+
+    <section class="section" id="in-practice">
+      <h2><span class="num">04 — In Practice</span>The Gap</h2>
+      <p>The safeguard that does not protect memory is also, in practice, the safeguard that departments are not following.</p>
+      <p>In August 2025, Mother Jones journalist Tekendra Parmar published the results of a Freedom of Information Act (FOIA) investigation into police departments using Axon's Draft One. Seven departments responded. Six of the seven had disabled the features that require officers to review AI-generated reports before submission. The disabled features included headers and footers identifying reports as AI-generated, mandatory officer review requirements, and auditing capabilities. Named departments included Lafayette, Indiana; Fort Collins, Colorado; South Jordan, Utah; Fresno, California; and Anchorage, Alaska.</p>
+      <p>A separate investigation by the Electronic Frontier Foundation, published in July 2025 by Matthew Guariglia and Dave Maass, found a structural gap: Draft One does not retain the original AI-generated draft. Once an officer edits and submits a report, there is no way to determine which portions were AI-written and which were officer-written. An Axon executive, according to the EFF, said "the last thing we want to do is create more disclosure headaches for our customers." Captain Brian Gossard of the Lafayette Police Department told Mother Jones: "I can almost guarantee reports have been used in plea deals." His department could not identify specific cases when asked.</p>
+      <div class="mem-report-wrap" role="figure" aria-label="Police report mockup showing two types of AI errors: an absurd error that gets caught, and a plausible error that may overwrite an officer's memory before they reach the review checkbox.">
+        <div class="mem-report-header">
+          <span class="mem-report-title">Incident Report</span>
+          <span class="mem-report-watermark">Draft One</span>
+        </div>
+        <div class="mem-report-body">
+          <div class="mem-report-entry caught">
+            <div class="mem-report-tag caught">Caught</div>
+            <p class="mem-report-excerpt"><s>Officer then shape-shifted into a frog after interacting with the amphibious creature.</s></p>
+          </div>
+          <div class="mem-report-entry subtle">
+            <div class="mem-report-tag subtle">Plausible — would anyone catch it?</div>
+            <p class="mem-report-excerpt">The vehicle proceeded through the intersection past the stop sign.</p>
+          </div>
+        </div>
+        <div class="mem-report-checkbox">
+          <span class="mem-report-check" aria-hidden="true">&#10003;</span>
+          <span class="mem-report-attestation">Officer acknowledgment: "...reviewed the report in detail, made any necessary edits, and believe it to be an accurate representation."</span>
+        </div>
+        <div class="mem-report-footer">Illustrative reconstruction, not the text of the Heber City report. Acknowledgment wording from Axon. The officer who checks this box has already read the summary.</div>
+      </div>
+      <p>States have begun to respond. California's SB 524, signed by Governor Newsom in 2025, requires that every page of an AI-assisted police report display a disclosure statement, and that departments retain the original AI draft. Utah's SB 180, enacted in 2025, requires a disclosure notice and officer accuracy certification — but does not require retaining the AI draft. Neither law addresses the cognitive problem. Both assume that an officer who reads a disclosure label can still reliably remember what happened. The Sim, Eiger, and Kohno study tested exactly that assumption and found it wanting.</p>
+    </section>
+
+    <section class="section" id="the-signal">
+      <h2><span class="num">05 — The Signal</span>The Circular Dependency</h2>
+      <p>The finding maps to a specific structural flaw. Human-in-the-loop review assumes the human's memory of the event is independent of the AI's output. The Sim, Eiger, and Kohno paper shows it is not. The summary is the document being checked. The summary is also the thing that edits the checker's memory before the check occurs. The loop can close before the officer, or the doctor, reaches the sign-off page.</p>
+      <p>The study's constraints are real and noted above — animated video, a Prolific sample rather than police officers reviewing body-camera footage, a single detail, no long-term persistence data. Whether audio-transcript summaries — the kind Draft One actually generates — produce the same errors and the same memory distortion has not been tested. These are open questions, not settled findings. But the mechanism the paper demonstrates — the misinformation effect — is not new. It has been replicated for 48 years across thousands of subjects with human-written text. What the paper adds is evidence that AI-generated text triggers it in the same way, and that labeling the text as AI-generated does not block it.</p>
+      <p>Mattea Sim told Georgetown University: "AI is a new method of delivering misinformation, and it has the potential to create these false memories for people who are reading that information." The paper's authors pose the question directly in their discussion: "Given the robust effect of misleading information on human memory in our findings, and the critical decisions at stake, a deeper question to consider is whether AI should be used in these contexts at all." The officer reads the summary. The summary edits what the officer remembers. Then the officer signs the attestation — confirming that the document matches a memory the document has already changed. Nowhere in that sequence is the officer's recall checked against anything except a memory the summary may already have reached. The check and the thing being checked are the same.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.ai-summaries-distort-memory-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  // --- Theme colors from computed style ---
+  const cs = getComputedStyle(document.documentElement);
+  const bgColor = cs.getPropertyValue('--bg').trim() || '#0d0d0d';
+  const storyHex = cs.getPropertyValue('--story').trim() || '#e87ea8';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const [sR, sG, sB] = hexToRgb(storyHex.startsWith('#') ? storyHex : '#e87ea8');
+
+  function stA(a: number): string { return `rgba(${sR},${sG},${sB},${a.toFixed(3)})`; }
+  function owA(a: number): string { return `rgba(232,232,232,${a.toFixed(3)})`; }
+
+  // --- State ---
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  // --- Resize ---
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas.offsetWidth; H = canvas.offsetHeight;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  });
+  ro.observe(canvas);
+
+  // Initial sizing
+  const dpr0 = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth; H = canvas.offsetHeight;
+  canvas.width = W * dpr0; canvas.height = H * dpr0;
+  ctx.setTransform(dpr0, 0, 0, dpr0, 0, 0);
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // --- Phase boundaries (1320 frames ≈ 22s at 60fps) ---
+  const W1 = 480;      // end of wave 1 sweep (8s)
+  const P1 = 600;      // end of pause (2s)
+  const W2 = 1080;     // end of wave 2 sweep (8s)
+  const PL = 1140;     // end of collective pulse (1s)
+  const CYCLE = 1320;  // end of hold → snap reset (3s hold)
+
+  // --- Particle system ---
+  const N = 30;   // total particles
+  const NV = 8;   // vulnerable to shift
+
+  interface Dot {
+    hx: number; hy: number;   // home position (normalized 0–1)
+    r: number;                 // radius
+    a0: number;                // base alpha (~0.7)
+    vuln: boolean;             // vulnerable to shift?
+    s1: number; s2: number;   // shift amounts for wave 1 & 2 (px)
+    fA: number; fB: number;   // X oscillation frequencies
+    fC: number; fD: number;   // Y oscillation frequencies
+    oA: number; oB: number;   // phase offsets
+    shift: number;             // current accumulated rightward shift (px)
+    tint: number;              // current tint blend (0 = off-white, 1 = accent)
+  }
+
+  const dots: Dot[] = [];
+
+  // Seeded PRNG for reproducible constellation across resets
+  let _s = 42;
+  function sr(): number { _s = (_s * 16807) % 2147483647; return (_s - 1) / 2147483646; }
+
+  function initDots() {
+    dots.length = 0;
+    _s = 42;
+    for (let i = 0; i < N; i++) {
+      const v = i < NV;
+      dots.push({
+        hx: v ? 0.35 + sr() * 0.18 : 0.1 + sr() * 0.8,
+        hy: v ? 0.28 + sr() * 0.44 : 0.1 + sr() * 0.8,
+        r:  2.2 + sr() * 1.2,
+        a0: 0.6 + sr() * 0.15,
+        vuln: v,
+        s1: v ? 12 + sr() * 6 : 0,
+        s2: v ? 8  + sr() * 4 : 0,
+        fA: 0.007 + sr() * 0.006,
+        fB: 0.009 + sr() * 0.007,
+        fC: 0.006 + sr() * 0.005,
+        fD: 0.008 + sr() * 0.006,
+        oA: sr() * 6.283,
+        oB: sr() * 6.283,
+        shift: 0,
+        tint: 0,
+      });
+    }
+  }
+
+  function ease(t: number): number { return 1 - (1 - t) * (1 - t); }
+
+  // Wave X: sweeps from −60 to W+60 over `dur` frames starting at `start`
+  function wvX(cf: number, start: number, dur: number): number {
+    return -60 + (W + 120) * ((cf - start) / dur);
+  }
+
+  // --- Update ---
+  function update() {
+    const cf = frame % CYCLE;
+    const w1x = cf < W1 ? wvX(cf, 0, W1) : 9999;
+    const w2x = (cf >= P1 && cf < W2) ? wvX(cf, P1, W2 - P1) : 9999;
+
+    for (const d of dots) {
+      if (!d.vuln) {
+        d.shift = 0;
+        d.tint = 0;
+        continue;
+      }
+
+      const px = d.hx * W;
+
+      if (cf < W1) {
+        if (w1x > px) {
+          const t = Math.min(1, (w1x - px) / 80);
+          d.shift = d.s1 * ease(t);
+          d.tint = 0.45 * ease(t);
+        } else {
+          d.shift = 0;
+          d.tint = 0;
+        }
+      } else if (cf < P1) {
+        // Pause: hold wave 1 result
+        d.shift = d.s1;
+        d.tint = 0.45;
+      } else if (cf < W2) {
+        const shiftedPx = px + d.s1;
+        if (w2x > shiftedPx) {
+          const t = Math.min(1, (w2x - shiftedPx) / 80);
+          d.shift = d.s1 + d.s2 * ease(t);
+          d.tint = 0.45 + 0.15 * ease(t);
+        } else {
+          d.shift = d.s1;
+          d.tint = 0.45;
+        }
+      } else {
+        // Post-waves: hold final shifted state
+        d.shift = d.s1 + d.s2;
+        d.tint = 0.6;
+      }
+    }
+  }
+
+  // --- Draw ---
+  function draw() {
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, W, H);
+
+    const cf = frame % CYCLE;
+
+    // Wave fronts
+    if (cf < W1) drawWave(wvX(cf, 0, W1), false);
+    if (cf >= P1 && cf < W2) drawWave(wvX(cf, P1, W2 - P1), true);
+
+    // Collective pulse (phase 4)
+    let pulse = 0;
+    if (cf >= W2 && cf < PL) {
+      pulse = Math.sin((cf - W2) / (PL - W2) * Math.PI) * 0.35;
+    }
+
+    // Active wave positions for stable-particle wobble
+    const w1Now = cf < W1 ? wvX(cf, 0, W1) : -9999;
+    const w2Now = (cf >= P1 && cf < W2) ? wvX(cf, P1, W2 - P1) : -9999;
+
+    // Draw particles
+    for (const d of dots) {
+      // Brownian-like drift (deterministic sine oscillation)
+      let px = d.hx * W + d.shift
+        + Math.sin(frame * d.fA + d.oA) * 3
+        + Math.sin(frame * d.fC + d.oB) * 1.5;
+      let py = d.hy * H
+        + Math.cos(frame * d.fB + d.oA) * 2.5
+        + Math.cos(frame * d.fD + d.oB) * 1.2;
+
+      // Stable particles: transient wobble as wave passes nearby
+      if (!d.vuln) {
+        const basePx = d.hx * W;
+        let wobX = 0, wobY = 0;
+        const waves = [w1Now, w2Now];
+        for (let wi = 0; wi < 2; wi++) {
+          const wx = waves[wi];
+          if (wx < -100 || wx > W + 100) continue;
+          const dist = Math.abs(wx - basePx);
+          if (dist < 50) {
+            const inf = 1 - dist / 50;
+            wobX += inf * 2.5;
+            wobY += inf * Math.sin(d.oA * 3) * 1.5;
+          }
+        }
+        px += wobX;
+        py += wobY;
+      }
+
+      const alpha = Math.min(1, d.a0 + pulse);
+
+      // Color: blend off-white → accent by tint
+      const cr = Math.round(232 + (sR - 232) * d.tint);
+      const cg = Math.round(232 + (sG - 232) * d.tint);
+      const cb = Math.round(232 + (sB - 232) * d.tint);
+
+      // Glow halo for tinted particles
+      if (d.tint > 0.1) {
+        ctx.globalAlpha = alpha * d.tint * 0.1;
+        ctx.fillStyle = stA(1);
+        ctx.beginPath();
+        ctx.arc(px, py, d.r * 4, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Particle dot
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = `rgba(${cr},${cg},${cb},1)`;
+      ctx.beginPath();
+      ctx.arc(px, py, d.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.globalAlpha = 1;
+  }
+
+  function drawWave(x: number, disclosure: boolean) {
+    if (x < -70 || x > W + 70) return;
+
+    const bw = 60;
+
+    // Gradient band
+    const g = ctx.createLinearGradient(x - bw, 0, x + 10, 0);
+    g.addColorStop(0, stA(0));
+    g.addColorStop(0.35, stA(0.06));
+    g.addColorStop(0.75, stA(0.14));
+    g.addColorStop(1, stA(0.02));
+    ctx.fillStyle = g;
+    ctx.fillRect(x - bw, 0, bw + 10, H);
+
+    if (disclosure) {
+      // Slow-pulsing dashed edge — ~1 Hz sine, WCAG 2.3.1 safe (< 3 flashes/s)
+      const p = 0.12 + 0.22 * Math.sin(frame * Math.PI * 2 / 60);
+      ctx.save();
+      ctx.setLineDash([6, 14]);
+      ctx.lineDashOffset = -frame * 0.4;
+      ctx.strokeStyle = stA(p);
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, H);
+      ctx.stroke();
+      ctx.restore();
+    } else {
+      // Solid subtle edge for wave 1
+      ctx.strokeStyle = stA(0.16);
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, H);
+      ctx.stroke();
+    }
+  }
+
+  // --- Loop ---
+  function tick() {
+    frame++;
+    update();
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  // --- Init ---
+  requestAnimationFrame(() => {
+    initDots();
+
+    if (prefersReduced) {
+      // Meaningful static frame: post-wave-1, particles shifted and tinted
+      frame = P1 + 30;
+      update();
+      draw();
+      return;
+    }
+
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(raf); raf = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(raf);
+      io.disconnect();
+    });
+  });
+
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(raf);
+    ro.disconnect();
+  });
+})();
+</script>
