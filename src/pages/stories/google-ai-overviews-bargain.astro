@@ -1,0 +1,838 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'google-ai-overviews-bargain')!;
+---
+
+<style is:global>
+/* === CANVAS === */
+.phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+.google-ai-overviews-bargain-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+/* === Reenactment 1: SERP Mockup === */
+.gaob-serp-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin: 2rem 0;
+  overflow: hidden;
+  font-size: 0.85rem;
+}
+.gaob-serp-urlbar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1rem;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+.gaob-serp-urlbar-dots {
+  display: flex;
+  gap: 4px;
+}
+.gaob-serp-urlbar-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+}
+.gaob-serp-aio {
+  margin: 1rem;
+  padding: 1rem 1.2rem;
+  background: color-mix(in srgb, var(--story) 6%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--story) 15%, var(--border));
+  border-radius: 8px;
+}
+.gaob-serp-aio-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--story);
+  margin-bottom: 0.7rem;
+}
+.gaob-serp-aio-header svg {
+  width: 14px;
+  height: 14px;
+  fill: var(--story);
+}
+.gaob-serp-aio-text {
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: var(--text);
+  margin-bottom: 0.6rem;
+}
+.gaob-serp-aio-sources {
+  font-size: 0.7rem;
+  color: var(--muted);
+  cursor: default;
+}
+.gaob-serp-links {
+  padding: 0 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.gaob-serp-link-url {
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-bottom: 0.15rem;
+}
+.gaob-serp-link-title {
+  font-size: 0.85rem;
+  color: var(--story);
+  font-weight: 500;
+  margin-bottom: 0.15rem;
+}
+.gaob-serp-link-desc {
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.gaob-serp-footer {
+  padding: 0.7rem 1rem;
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-style: italic;
+  line-height: 1.55;
+}
+
+/* === Reenactment 2: Choice Card === */
+.gaob-choice-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin: 2rem 0;
+  overflow: hidden;
+}
+.gaob-choice-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.gaob-choice-panel {
+  padding: 1.2rem;
+}
+.gaob-choice-panel + .gaob-choice-panel {
+  border-left: 1px solid var(--border);
+}
+.gaob-choice-panel-header {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.8rem;
+  color: var(--text);
+}
+.gaob-choice-panel-active .gaob-choice-panel-header {
+  color: var(--story);
+}
+.gaob-choice-panel-dead .gaob-choice-panel-header {
+  color: var(--muted);
+}
+.gaob-choice-items {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.gaob-choice-items li {
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--muted);
+  padding-left: 1.1rem;
+  position: relative;
+}
+.gaob-choice-items li::before {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.gaob-choice-panel-active .gaob-choice-items li::before {
+  content: "~";
+  color: var(--story);
+  font-weight: 700;
+}
+.gaob-choice-panel-dead .gaob-choice-items li::before {
+  content: "x";
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+.gaob-choice-label {
+  padding: 0.7rem 1rem;
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-style: italic;
+  line-height: 1.55;
+  text-align: center;
+}
+
+/* === Reenactment 3: Opinion Mockup === */
+.gaob-opinion-doc {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin: 2rem 0;
+  overflow: hidden;
+}
+.gaob-opinion-header {
+  padding: 0.7rem 1.2rem;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
+}
+.gaob-opinion-body {
+  padding: 1.4rem 1.4rem;
+}
+.gaob-opinion-passage {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 0.88rem;
+  line-height: 1.85;
+  color: var(--text);
+  margin-bottom: 0;
+}
+.gaob-opinion-passage + .gaob-opinion-divider {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.3em;
+  padding: 1rem 0;
+}
+.gaob-opinion-divider + .gaob-opinion-passage {
+  margin-top: 0;
+}
+.gaob-opinion-hl {
+  background: color-mix(in srgb, var(--story) 15%, transparent);
+  padding: 0.05em 0.2em;
+  border-radius: 2px;
+}
+.gaob-opinion-cite {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-style: italic;
+}
+.gaob-opinion-footer {
+  padding: 0.7rem 1.2rem;
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-style: italic;
+  line-height: 1.55;
+}
+
+/* === Responsive === */
+@media (max-width: 600px) {
+  .gaob-choice-panels { grid-template-columns: 1fr; }
+  .gaob-choice-panel + .gaob-choice-panel { border-left: none; border-top: 1px solid var(--border); }
+}
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="intro">
+      <h2><span class="num">01 — Context</span>The Bargain Everyone Assumed</h2>
+      <p>On September 30, 2026, a federal judge wrote that Google "takes and repurposes" publisher content "without compensation." Then he dismissed every claim against it.</p>
+      <p>For two decades, the commercial internet operated on what publishers called a simple exchange. Search engines crawled their content and built indexes from it. In return, search results sent readers back. The publishers characterized this arrangement as the "fundamental bargain" that undergirds the commercial internet. It was not written in any contract. It was, as the court would later observe, an expectation.</p>
+      <p>Two plaintiffs tested that expectation in court. Chegg, an education technology company, maintained a database of 135 million proprietary question-and-answer solutions and had invested, according to its complaint, "hundreds of millions of dollars" in creating and maintaining them. Penske Media Corporation owned Rolling Stone, Variety, The Hollywood Reporter, Billboard, and Deadline, among other properties, and delivered content to more than 120 million monthly visitors in the United States. Both sued Google LLC in the U.S. District Court for the District of Columbia, alleging multiple violations of the Sherman Act and a common-law claim of unjust enrichment under California law.</p>
+      <p>What changed, the publishers alleged, was Google's introduction of AI Overviews—AI-generated summaries placed at the top of the search engine results page. According to the complaints as recited in the court's opinion, AI Overviews "can paraphrase search results from publishers' websites without linking those sources in the AI Overviews panel." And "even when links are provided, a user satisfied by the AI Overviews response will have little reason to click them." The search engine, in the publishers' telling, was no longer sending readers to the source. It was answering for itself.</p>
+      <div class="gaob-serp-wrap">
+        <div class="gaob-serp-urlbar">
+          <div class="gaob-serp-urlbar-dots"><span></span><span></span><span></span></div>
+          google.com/search?q=best+new+albums+2026
+        </div>
+        <div class="gaob-serp-aio">
+          <div class="gaob-serp-aio-header">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            AI Overview
+          </div>
+          <div class="gaob-serp-aio-text">Critics have highlighted several standout releases across genres this year. In hip-hop, artists have pushed boundaries with experimental production and introspective lyricism, while indie rock has seen a resurgence of guitar-driven arrangements. The year's strongest albums share a commitment to thematic cohesion over singles-driven tracklists, with several artists earning acclaim for deeply personal songwriting and genre-blending ambitions.</div>
+          <div class="gaob-serp-aio-sources">&#9660; Show sources</div>
+        </div>
+        <div class="gaob-serp-links">
+          <div class="gaob-serp-link">
+            <div class="gaob-serp-link-url">rollingstone.com > music > lists</div>
+            <div class="gaob-serp-link-title">The 50 Best Albums of 2026 So Far</div>
+            <div class="gaob-serp-link-desc">Our critics pick the year's essential records...</div>
+          </div>
+          <div class="gaob-serp-link">
+            <div class="gaob-serp-link-url">billboard.com > articles > best-albums</div>
+            <div class="gaob-serp-link-title">Best New Albums This Week: Staff Picks</div>
+            <div class="gaob-serp-link-desc">Billboard's editors highlight the week's top releases...</div>
+          </div>
+          <div class="gaob-serp-link">
+            <div class="gaob-serp-link-url">variety.com > music > reviews</div>
+            <div class="gaob-serp-link-title">Album Reviews: What to Listen to Now</div>
+            <div class="gaob-serp-link-desc">Our reviewers weigh in on the latest records...</div>
+          </div>
+        </div>
+        <div class="gaob-serp-footer">Illustrative mockup—not an actual Google search result. The AI Overview text and links above are invented. Rolling Stone, Billboard, and Variety are Penske Media properties and plaintiffs in this case.</div>
+      </div>
+      <p>The publishers alleged they had no practical way to stop this. Google offered a tool called Google-Extended, which allowed publishers to block Google from using their content to improve its large language models. But switching it on, the court wrote in summarizing the complaints, "does not prevent Google from using publishers' content to train its base models or generate RAG responses to search queries." (RAG, retrieval-augmented generation, is the technique of pulling live web content into an AI-generated answer.) The only way to prevent that was to block Google's crawlers entirely—and disappear from search. The publishers called this a "Hobson's choice": "Virtually no digital publishers can afford to take such drastic action, because withholding data from Google's search index means demotion on the SERP or disappearing from Google's organic search results entirely."</p>
+      <div class="gaob-choice-wrap">
+        <div class="gaob-choice-panels">
+          <div class="gaob-choice-panel gaob-choice-panel-active">
+            <div class="gaob-choice-panel-header">Allow Crawling</div>
+            <ul class="gaob-choice-items">
+              <li>Your content trains Google's AI models</li>
+              <li>Your content populates AI Overviews via RAG</li>
+              <li>Referral traffic declines as users get answers on the SERP</li>
+              <li>You remain in Google Search results</li>
+            </ul>
+          </div>
+          <div class="gaob-choice-panel gaob-choice-panel-dead">
+            <div class="gaob-choice-panel-header">Block Crawlers</div>
+            <ul class="gaob-choice-items">
+              <li>Your content is protected from AI use</li>
+              <li>No AI Overviews paraphrase your work</li>
+              <li>You disappear from Google Search entirely</li>
+              <li>Referral traffic drops to zero</li>
+            </ul>
+          </div>
+        </div>
+        <div class="gaob-choice-label">"The decision to opt out . . . is [thus] a Hobson's choice."—Chegg Am. Compl. &para; 83, as recited in the court's opinion</div>
+      </div>
+      <p>Independent research supported the complaint's central claim about declining traffic. A Pew Research Center study published in July 2025, analyzing 68,879 unique Google searches from 900 U.S. adults, found that when an AI summary appears in search results, users click a traditional result 8% of the time—compared with 15% when no summary is present. Users clicked a source link within the AI summary itself in only 1% of visits.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="google-ai-overviews-bargain-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Expectation</strong> — Content particles drift steadily toward a sky-blue node; return-light radiates back until a translucent wall forms at center; content passes through, return-light scatters and dies; a dashed connection line flickers, never solidifies; the content keeps flowing.</p>
+    <section class="section" id="ruling">
+      <h2><span class="num">02 — The Ruling</span>An Expectation Is Not an Agreement</h2>
+      <p>Chegg filed suit on February 24, 2025. That same day, it reported Q4 2024 revenue of $143.5 million, down 24% year-over-year, and disclosed that non-subscriber traffic had declined 49% in January 2025. CEO Nathan Schultz said Google "has unjustly retained traffic that has historically come to Chegg, impacting our acquisitions, revenue and employees." The company simultaneously announced a strategic review with Goldman Sachs as financial advisor, considering options including being acquired or going private.</p>
+      <p>Penske Media filed its own suit on September 12, 2025. The cases were consolidated before Judge Amit P. Mehta, and a hearing was held on August 25, 2026. Mehta—the same judge who had found Google an unlawful search monopolist in United States v. Google in 2024—issued a 41-page Memorandum Opinion on September 30, 2026, granting Google's motions to dismiss in both cases.</p>
+      <p>The core of the opinion was three sentences on page 20. The publishers had "pleaded only that they have an 'expectation' that Google will send them search traffic if they make their content available for free," the court wrote. "But an expectation is not an agreement. It is simply how a general search engine works."</p>
+      <p>The court found nothing resembling a contract. The publishers alleged no offer, no acceptance, no negotiated terms for quantity or duration or exclusivity, and no communications from which mutual assent could be inferred. "Google's crawlers index publicly available websites through an automated process," the court wrote. "Publishers, for their part, keep their content open to crawling because doing so serves their own independent interest in search traffic, not because they struck any bargain with Google. Merely incanting the phrase 'historical course of dealing' cannot plausibly convert two parties' independently self-interested conduct into a contract."</p>
+      <div class="gaob-opinion-doc">
+        <div class="gaob-opinion-header">Chegg, Inc. v. Google LLC—Memorandum Opinion—Sept. 30, 2026</div>
+        <div class="gaob-opinion-body">
+          <div class="gaob-opinion-passage">Plaintiffs have pleaded only that they have an "expectation" that Google will send them search traffic if they make their content available for free. . . . <span class="gaob-opinion-hl">But an expectation is not an agreement. It is simply how a general search engine works.</span></div>
+          <div class="gaob-opinion-divider">* &nbsp; * &nbsp; *</div>
+          <div class="gaob-opinion-passage">The court does not treat Plaintiffs' alleged harms lightly. Nor is it unsympathetic to the situation publishers now find themselves in, and <span class="gaob-opinion-hl">the knock-on consequences to journalists, educators, and other online creators whose content Google takes and repurposes without compensation.</span> But the "antitrust statutes" are not "in any sense a substitute for [a] legislative body addressing questions of . . . economic dislocation caused by new innovation." . . . <span class="gaob-opinion-hl">"[T]hat is an issue for Congress [or regulators] to consider."</span></div>
+        </div>
+        <div class="gaob-opinion-footer">Verbatim excerpts from the Memorandum Opinion at pages 20 and 25-26. The first passage is the court's central holding. The second, separated by an asterisk break in the original, follows the dismissal of the reciprocal dealing claims. The same judge found Google an unlawful search monopolist in 2024.</div>
+      </div>
+      <p>Accepting the publishers' theory, the court observed, would mean "Google contracts with every website that it indexes for Google Search. Google therefore would have agreements with billions of web content publishers." The court called this "entirely implausible." It had previously rejected similar claims in Helena World Chronicle, LLC v. Google LLC, dismissed on March 20, 2026, and cited a third case, Sensory, Inc. v. Google LLC, dismissed on July 13, 2026. The holding was not new. The publishers offered no persuasive reason to change course.</p>
+    </section>
+    <section class="section" id="mechanism">
+      <h2><span class="num">03 — The Mechanism</span>Why the Law Could Not Reach It</h2>
+      <p>The reciprocal dealing claims were the heart of both complaints. They were not the only theories. Every alternative failed.</p>
+      <p><strong>Tying.</strong> Penske Media argued that Google unlawfully tied AI Overviews to its search monopoly, forcing users to receive AI-generated summaries with no way to opt out. The court found that AI Overviews and Google Search are not separate products. "Demand for Google Search is inclusive of the demand for AI Overviews and any other item on Google's SERPs," the court wrote, quoting its earlier Helena World Chronicle opinion. The publishers' own allegations undermined the theory: if users separately demanded navigational search, they would scroll past AI Overviews to reach organic links. "But Plaintiffs allege just the opposite: that users are not scrolling past AI Overviews to get to the organic links."</p>
+      <p><strong>Antitrust standing.</strong> The publishers claimed standing as both "suppliers" of content to Google and "purchasers" of search traffic. The court found their injuries "too secondary and indirect to be considered antitrust injuries." The harms they described—lost subscriptions, lost advertising revenue, inadequate compensation for content—arose in publishing markets, not in the market for general search services. The logical impossibility was sharper still: "search traffic would be both the good purchased from Google and the consideration furnished to Google for that purchase. It cannot be both." The publishers alternatively argued their injuries were "inextricably intertwined" with harm to Google's AI competitors, invoking Blue Shield v. McCready, a 1982 Supreme Court decision that lets a plaintiff who was not a competitor sue when its injury was the very means of the anticompetitive scheme. The court noted that 80% of all general search queries flowed through Google by 2009, and 89.2% by 2020, and that competitors also crawled publisher content for free. If the playing field was "level in that respect," the publishers had suffered no antitrust injury from Google's acquisition of monopoly power.</p>
+      <p><strong>Market definition.</strong> Both proposed markets collapsed. Penske Media's "Online Publishing" market was "implausibly overbroad." The PMC plaintiffs, the court wrote, "fail to explain why a blog post, a legal brief, a fictional story, or a news article—or, even, Chegg's vast repository of questions and answers—can reasonably be considered substitutes in a single market." Chegg's "Online Educational Publishing" market was "hopelessly vague." The court questioned whether it could distinguish content with a "primary purpose" that is "pedagogical, as opposed to merely informational" and observed that "it is not entirely clear that Google is even a participant" in the market Chegg described.</p>
+      <p><strong>Unjust enrichment.</strong> One theory remained. Both plaintiffs had brought unjust enrichment claims under California law—the theory that could directly address content Google takes and repurposes without compensation. The court did not reach the merits. Having dismissed all federal claims, it declined to exercise supplemental jurisdiction under 28 U.S.C. section 1367(c). The unjust enrichment claims were set aside procedurally, not rejected substantively. Whether those claims are refiled in California state court remains an open question.</p>
+    </section>
+    <section class="section" id="gap">
+      <h2><span class="num">04 — Signal</span>The Gap Between Seeing and Reaching</h2>
+      <p>Between the legal analysis and the dismissal order, the court paused. "The court does not treat Plaintiffs' alleged harms lightly," Judge Mehta wrote. "Nor is it unsympathetic to the situation publishers now find themselves in, and the knock-on consequences to journalists, educators, and other online creators whose content Google takes and repurposes without compensation."</p>
+      <p>Then the redirect. The "antitrust statutes" are not "in any sense a substitute for [a] legislative body addressing questions of . . . economic dislocation caused by new innovation," the court wrote, quoting Areeda and Hovenkamp, the leading treatise on antitrust law. "[T]o the extent that this case highlights any deficiencies" in the reach of those statutes, "that is an issue for Congress [or regulators] to consider." The court added: it "is bound to apply the law only as it is written, not how the [c]ourt or any party believes it ought to be." A judge who had already ruled that Google holds an illegal monopoly looked at the publishers' claims and told them the law, as written, could not help.</p>
+      <p>Digital Content Next CEO Jason Kint responded: "Strip away all of the legal technicalities and antitrust mumbo jumbo and the real-world problem is still crystal clear. Google has an adjudicated illegal monopoly in search and is now swallowing up all of the journalism of humanity to power its AI products." Google, Chegg, and Penske Media issued no public statements on the ruling as of this writing. No party has announced an appeal.</p>
+      <p>The publishers had alleged in their complaints that competitors on the "competitive fringe"—OpenAI, Perplexity—pay for publisher content, and that Chegg had executed licensing deals with two technology companies worth "millions of dollars in revenue." These were allegations, not court findings: at this stage a court must assume a complaint's facts are true and asks only whether, if they were, the law would offer a remedy. In Europe, the European Publishers Council filed a formal antitrust complaint with the European Commission in February 2026, alleging Google abuses its dominant position through AI Overviews under Article 102 of the Treaty on the Functioning of the European Union. According to CNBC, Chegg laid off approximately 45% of its workforce in October 2025. According to the same outlet, Chegg's stock had lost roughly 99% of its value from a February 2021 high.</p>
+      <p>The "fundamental bargain" that publishers believed undergirded the commercial internet was, in law, never a bargain. Only an expectation. The court saw the harm, named it in plain language, and declared the law unable to reach it. The unjust enrichment claims—the ones that could reach content taken and repurposed without compensation—were not decided on the merits. Whether they resurface in state court, whether Congress acts, whether European regulators succeed where American antitrust could not, remains open. The content keeps flowing to the machine. Nobody ever promised anything back.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.google-ai-overviews-bargain-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const cs = getComputedStyle(document.documentElement);
+  const STORY_HEX = cs.getPropertyValue('--story').trim() || '#38bdf8';
+  const BG_HEX = cs.getPropertyValue('--bg').trim() || '#0d0d0d';
+
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const [SR, SG, SB] = hexToRgb(STORY_HEX);
+  const [BR, BG_G, BB] = hexToRgb(BG_HEX);
+
+  // Content particle color: off-white
+  const CR = 232, CG = 232, CB = 232;
+
+  let W = 0, H = 0, rafId = 0, frame = 0;
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // --- Phase thresholds (60fps) ---
+  const P_RETURN = 360;      // return-light flows freely for 6s
+  const P_WALL_START = 360;  // wall begins coalescing
+  const P_WALL_DONE = 540;   // wall at full opacity, no return-light passes
+  const P_LINE_START = 600;  // dashed line attempts to form
+  const P_LINE_FAIL = 780;   // line flickers out
+  const P_HOLD_END = 1080;   // hold in asymmetric state
+  const P_FADE_END = 1140;   // hard fade to black
+  const CYCLE = 1140;        // snap reset
+
+  // --- Content particles (rightward) ---
+  const MAX_CONTENT = 8;
+  interface ContentP {
+    x: number; y: number; speed: number; alpha: number; wobbleOff: number;
+  }
+  const content: ContentP[] = [];
+  for (let i = 0; i < MAX_CONTENT; i++) {
+    content.push({ x: 0, y: 0, speed: 0, alpha: 0, wobbleOff: Math.random() * Math.PI * 2 });
+  }
+
+  // --- Return-light particles (leftward from node) ---
+  const MAX_RETURN = 12;
+  interface ReturnP {
+    x: number; y: number; vx: number; alpha: number; alive: boolean; scattered: boolean;
+    scatterVy: number; scatterAlpha: number;
+  }
+  const returns: ReturnP[] = [];
+  for (let i = 0; i < MAX_RETURN; i++) {
+    returns.push({ x: 0, y: 0, vx: 0, alpha: 0, alive: false, scattered: false, scatterVy: 0, scatterAlpha: 0 });
+  }
+
+  // --- Scatter fragments (from return-light hitting the wall) ---
+  const MAX_SCATTER = 20;
+  interface ScatterP {
+    x: number; y: number; vx: number; vy: number; alpha: number; alive: boolean;
+  }
+  const scatters: ScatterP[] = [];
+  for (let i = 0; i < MAX_SCATTER; i++) {
+    scatters.push({ x: 0, y: 0, vx: 0, vy: 0, alpha: 0, alive: false });
+  }
+
+  // --- Dashed line state ---
+  let lineProgress = 0;  // 0 to 1
+  let lineAlpha = 0;
+  let lineRetreating = false;
+  let lineFlickerCount = 0;
+
+  // --- Node state ---
+  let nodeX = 0, nodeY = 0, nodeBaseR = 0;
+
+  function resetParticles() {
+    for (let i = 0; i < MAX_CONTENT; i++) {
+      const p = content[i];
+      p.x = -20 - Math.random() * W * 0.3;
+      p.y = H * (0.3 + Math.random() * 0.4);
+      p.speed = 0.3 + Math.random() * 0.1;
+      p.alpha = 0.15 + Math.random() * 0.15;
+    }
+    for (let i = 0; i < MAX_RETURN; i++) {
+      returns[i].alive = false;
+      returns[i].scattered = false;
+    }
+    for (let i = 0; i < MAX_SCATTER; i++) {
+      scatters[i].alive = false;
+    }
+    lineProgress = 0;
+    lineAlpha = 0;
+    lineRetreating = false;
+    lineFlickerCount = 0;
+  }
+
+  function initLayout() {
+    nodeX = W * 0.82;
+    nodeY = H * 0.5;
+    nodeBaseR = Math.min(W, H) * 0.06;
+    if (nodeBaseR < 12) nodeBaseR = 12;
+    if (nodeBaseR > 30) nodeBaseR = 30;
+  }
+
+  // --- Resize ---
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth;
+    H = canvas!.offsetHeight;
+    canvas!.width = W * dpr;
+    canvas!.height = H * dpr;
+    ctx!.scale(dpr, dpr);
+    initLayout();
+    if (prefersReduced) drawStatic();
+  });
+  ro.observe(canvas);
+
+  // Initial sizing
+  const dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth;
+  H = canvas.offsetHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+  initLayout();
+  resetParticles();
+
+  // --- Return-light spawner ---
+  let nextReturnSpawn = 0;
+  function spawnReturn() {
+    for (let i = 0; i < MAX_RETURN; i++) {
+      if (!returns[i].alive) {
+        const p = returns[i];
+        p.x = nodeX - nodeBaseR - 4;
+        p.y = nodeY + (Math.random() - 0.5) * nodeBaseR * 1.2;
+        p.vx = -(0.35 + Math.random() * 0.15);
+        p.alpha = 0.25 + Math.random() * 0.15;
+        p.alive = true;
+        p.scattered = false;
+        p.scatterVy = 0;
+        p.scatterAlpha = 0;
+        return;
+      }
+    }
+  }
+
+  // --- Scatter spawner ---
+  function spawnScatter(x: number, y: number) {
+    for (let i = 0; i < MAX_SCATTER; i++) {
+      if (!scatters[i].alive) {
+        const s = scatters[i];
+        s.x = x;
+        s.y = y;
+        s.vx = (Math.random() - 0.5) * 0.6;
+        s.vy = 0.3 + Math.random() * 0.4;
+        s.alpha = 0.3;
+        s.alive = true;
+        return;
+      }
+    }
+  }
+
+  // --- Wall properties ---
+  function getWallAlpha(f: number): number {
+    if (f < P_WALL_START) return 0;
+    if (f < P_WALL_DONE) return ((f - P_WALL_START) / (P_WALL_DONE - P_WALL_START)) * 0.15;
+    if (f < P_HOLD_END) return 0.15;
+    if (f < P_FADE_END) return 0.15 * (1 - (f - P_HOLD_END) / (P_FADE_END - P_HOLD_END));
+    return 0;
+  }
+
+  function getWallThickness(f: number): number {
+    if (f < P_WALL_START) return 0;
+    const t = Math.min(1, (f - P_WALL_START) / (P_WALL_DONE - P_WALL_START));
+    return 6 + t * 24;  // 6px to 30px
+  }
+
+  // --- Global fade ---
+  function getGlobalAlpha(f: number): number {
+    if (f < P_HOLD_END) return 1;
+    if (f < P_FADE_END) return 1 - (f - P_HOLD_END) / (P_FADE_END - P_HOLD_END);
+    return 0;
+  }
+
+  // --- Draw ---
+  function draw() {
+    const c = ctx!;
+    c.clearRect(0, 0, W, H);
+
+    const cycle = frame % CYCLE;
+    const gAlpha = getGlobalAlpha(cycle);
+    c.globalAlpha = gAlpha;
+
+    const wallX = W * 0.5;
+    const wallAlpha = getWallAlpha(cycle);
+    const wallThick = getWallThickness(cycle);
+
+    // --- Draw the node (search engine) ---
+    const breathe = Math.sin(frame * 0.026) * 2;
+    const nR = nodeBaseR + breathe;
+    const nodeGlow = c.createRadialGradient(nodeX, nodeY, 0, nodeX, nodeY, nR * 2.5);
+    nodeGlow.addColorStop(0, `rgba(${SR},${SG},${SB},0.12)`);
+    nodeGlow.addColorStop(0.6, `rgba(${SR},${SG},${SB},0.04)`);
+    nodeGlow.addColorStop(1, `rgba(${SR},${SG},${SB},0)`);
+    c.beginPath();
+    c.arc(nodeX, nodeY, nR * 2.5, 0, Math.PI * 2);
+    c.fillStyle = nodeGlow;
+    c.fill();
+
+    c.beginPath();
+    c.arc(nodeX, nodeY, nR, 0, Math.PI * 2);
+    c.fillStyle = `rgba(${SR},${SG},${SB},0.7)`;
+    c.fill();
+
+    c.beginPath();
+    c.arc(nodeX, nodeY, nR * 0.5, 0, Math.PI * 2);
+    c.fillStyle = `rgba(${SR},${SG},${SB},0.9)`;
+    c.fill();
+
+    // --- Draw the wall ---
+    if (wallAlpha > 0) {
+      const wGrad = c.createLinearGradient(wallX - wallThick, 0, wallX + wallThick, 0);
+      wGrad.addColorStop(0, `rgba(${SR},${SG},${SB},0)`);
+      wGrad.addColorStop(0.3, `rgba(${SR},${SG},${SB},${wallAlpha * 0.5})`);
+      wGrad.addColorStop(0.5, `rgba(${SR},${SG},${SB},${wallAlpha})`);
+      wGrad.addColorStop(0.7, `rgba(${SR},${SG},${SB},${wallAlpha * 0.5})`);
+      wGrad.addColorStop(1, `rgba(${SR},${SG},${SB},0)`);
+      c.fillStyle = wGrad;
+      c.fillRect(wallX - wallThick, 0, wallThick * 2, H);
+    }
+
+    // --- Update and draw content particles ---
+    for (let i = 0; i < MAX_CONTENT; i++) {
+      const p = content[i];
+      p.x += p.speed;
+      p.y += Math.sin(frame * 0.02 + p.wobbleOff) * 0.15;
+
+      // Content passes through the wall, gets absorbed by node, respawns
+      if (p.x > nodeX) {
+        p.x = -10 - Math.random() * W * 0.08;
+        p.y = H * (0.3 + Math.random() * 0.4);
+        p.speed = 0.3 + Math.random() * 0.1;
+      }
+
+      // Slight brightening as it approaches node
+      const distToNode = Math.abs(p.x - nodeX);
+      const proximity = distToNode < W * 0.15 ? 1 - distToNode / (W * 0.15) : 0;
+      const drawAlpha = p.alpha + proximity * 0.1;
+
+      c.beginPath();
+      c.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+      c.fillStyle = `rgba(${CR},${CG},${CB},${drawAlpha})`;
+      c.fill();
+
+      // Faint trail
+      if (p.x > 0) {
+        c.beginPath();
+        c.moveTo(p.x, p.y);
+        c.lineTo(p.x - 8, p.y);
+        c.strokeStyle = `rgba(${CR},${CG},${CB},${drawAlpha * 0.3})`;
+        c.lineWidth = 1;
+        c.stroke();
+      }
+    }
+
+    // --- Return-light logic ---
+    const returnActive = cycle < P_WALL_DONE;
+
+    // Spawn returns
+    if (returnActive && cycle - nextReturnSpawn >= 0) {
+      spawnReturn();
+      nextReturnSpawn = cycle + 18 + Math.floor(Math.random() * 12);
+    }
+
+    for (let i = 0; i < MAX_RETURN; i++) {
+      const p = returns[i];
+      if (!p.alive) continue;
+
+      if (!p.scattered) {
+        p.x += p.vx;
+
+        // Check wall collision
+        if (wallAlpha > 0.02 && p.x <= wallX + wallThick * 0.5 && p.x >= wallX - wallThick * 0.5) {
+          // Wall blocks: higher wall alpha = higher chance of scatter
+          const blockChance = wallAlpha / 0.15;
+          if (Math.random() < blockChance) {
+            // Scatter on the wall
+            spawnScatter(p.x, p.y);
+            spawnScatter(p.x, p.y);
+            p.alive = false;
+            continue;
+          }
+        }
+
+        // Fade as it travels left
+        const traveled = (nodeX - p.x) / (nodeX - W * 0.05);
+        p.alpha = Math.max(0, (0.25 + Math.random() * 0.01) * (1 - traveled * 0.7));
+
+        if (p.x < W * 0.02 || p.alpha < 0.01) {
+          p.alive = false;
+          continue;
+        }
+
+        // Draw return-light particle
+        c.beginPath();
+        c.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        c.fillStyle = `rgba(${SR},${SG},${SB},${p.alpha})`;
+        c.fill();
+
+        // Faint glow trail
+        c.beginPath();
+        c.moveTo(p.x, p.y);
+        c.lineTo(p.x + 6, p.y);
+        c.strokeStyle = `rgba(${SR},${SG},${SB},${p.alpha * 0.4})`;
+        c.lineWidth = 1;
+        c.stroke();
+      }
+    }
+
+    // --- Scatter fragments ---
+    for (let i = 0; i < MAX_SCATTER; i++) {
+      const s = scatters[i];
+      if (!s.alive) continue;
+      s.x += s.vx;
+      s.y += s.vy;
+      s.alpha -= 0.006;
+      if (s.alpha <= 0) { s.alive = false; continue; }
+      c.beginPath();
+      c.arc(s.x, s.y, 1.5, 0, Math.PI * 2);
+      c.fillStyle = `rgba(${SR},${SG},${SB},${s.alpha})`;
+      c.fill();
+    }
+
+    // --- Dashed connection line ---
+    if (cycle >= P_LINE_START && cycle < P_LINE_FAIL) {
+      const linePhase = cycle - P_LINE_START;
+      const totalLineFrames = P_LINE_FAIL - P_LINE_START; // 180 frames
+
+      // Stuttering advance with retreats
+      const segment = linePhase % 40;
+      if (segment < 20) {
+        // Advance in stuttering jumps
+        lineProgress = Math.min(lineProgress + 0.008 + Math.random() * 0.004, 0.85);
+        lineAlpha = 0.35 + Math.sin(linePhase * 0.3) * 0.15;
+      } else if (segment < 30) {
+        // Retreat
+        lineProgress = Math.max(lineProgress - 0.006, 0.1);
+        lineAlpha *= 0.95;
+      } else {
+        // Stutter / hold
+        lineAlpha = 0.2 + Math.random() * 0.15;
+      }
+
+      // Final flicker-out in last 40 frames
+      if (linePhase > totalLineFrames - 40) {
+        const fadeT = (linePhase - (totalLineFrames - 40)) / 40;
+        lineAlpha *= (1 - fadeT);
+        if (Math.random() < 0.3) lineAlpha = 0; // flicker
+      }
+
+      if (lineAlpha > 0.01) {
+        const lineStartX = W * 0.08;
+        const lineEndX = lineStartX + (nodeX - lineStartX) * lineProgress;
+        const lineY = H * 0.5;
+        c.beginPath();
+        c.setLineDash([6, 4]);
+        c.moveTo(lineStartX, lineY);
+        c.lineTo(lineEndX, lineY);
+        c.strokeStyle = `rgba(${SR},${SG},${SB},${lineAlpha})`;
+        c.lineWidth = 1;
+        c.stroke();
+        c.setLineDash([]);
+      }
+    }
+
+    c.globalAlpha = 1;
+  }
+
+  // --- Static frame for reduced motion ---
+  function drawStatic() {
+    const c = ctx!;
+    c.clearRect(0, 0, W, H);
+    initLayout();
+
+    const wallX = W * 0.5;
+    const wallThick = 30;
+
+    // Node
+    const nR = nodeBaseR;
+    const nodeGlow = c.createRadialGradient(nodeX, nodeY, 0, nodeX, nodeY, nR * 2.5);
+    nodeGlow.addColorStop(0, `rgba(${SR},${SG},${SB},0.12)`);
+    nodeGlow.addColorStop(0.6, `rgba(${SR},${SG},${SB},0.04)`);
+    nodeGlow.addColorStop(1, `rgba(${SR},${SG},${SB},0)`);
+    c.beginPath();
+    c.arc(nodeX, nodeY, nR * 2.5, 0, Math.PI * 2);
+    c.fillStyle = nodeGlow;
+    c.fill();
+
+    c.beginPath();
+    c.arc(nodeX, nodeY, nR, 0, Math.PI * 2);
+    c.fillStyle = `rgba(${SR},${SG},${SB},0.7)`;
+    c.fill();
+
+    c.beginPath();
+    c.arc(nodeX, nodeY, nR * 0.5, 0, Math.PI * 2);
+    c.fillStyle = `rgba(${SR},${SG},${SB},0.9)`;
+    c.fill();
+
+    // Wall at full opacity
+    const wGrad = c.createLinearGradient(wallX - wallThick, 0, wallX + wallThick, 0);
+    wGrad.addColorStop(0, `rgba(${SR},${SG},${SB},0)`);
+    wGrad.addColorStop(0.3, `rgba(${SR},${SG},${SB},0.075)`);
+    wGrad.addColorStop(0.5, `rgba(${SR},${SG},${SB},0.15)`);
+    wGrad.addColorStop(0.7, `rgba(${SR},${SG},${SB},0.075)`);
+    wGrad.addColorStop(1, `rgba(${SR},${SG},${SB},0)`);
+    c.fillStyle = wGrad;
+    c.fillRect(wallX - wallThick, 0, wallThick * 2, H);
+
+    // Three content particles mid-drift (left of wall)
+    const cPositions = [
+      { x: W * 0.12, y: H * 0.38 },
+      { x: W * 0.25, y: H * 0.55 },
+      { x: W * 0.38, y: H * 0.45 },
+    ];
+    for (const pos of cPositions) {
+      c.beginPath();
+      c.arc(pos.x, pos.y, 2.5, 0, Math.PI * 2);
+      c.fillStyle = `rgba(${CR},${CG},${CB},0.22)`;
+      c.fill();
+      c.beginPath();
+      c.moveTo(pos.x, pos.y);
+      c.lineTo(pos.x - 8, pos.y);
+      c.strokeStyle = `rgba(${CR},${CG},${CB},0.08)`;
+      c.lineWidth = 1;
+      c.stroke();
+    }
+
+    // No return-light on the left side of the wall (the whole point)
+
+    // Dashed line frozen mid-flicker at 40% opacity, half-drawn
+    const lineStartX = W * 0.08;
+    const lineEndX = lineStartX + (nodeX - lineStartX) * 0.45;
+    c.beginPath();
+    c.setLineDash([6, 4]);
+    c.moveTo(lineStartX, H * 0.5);
+    c.lineTo(lineEndX, H * 0.5);
+    c.strokeStyle = `rgba(${SR},${SG},${SB},0.4)`;
+    c.lineWidth = 1;
+    c.stroke();
+    c.setLineDash([]);
+  }
+
+  // --- Animation loop ---
+  function tick() {
+    frame++;
+    if (frame % CYCLE === 0) {
+      resetParticles();
+      nextReturnSpawn = 0;
+    }
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  // --- IntersectionObserver ---
+  const io = new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) {
+      if (!rafId) rafId = requestAnimationFrame(tick);
+    } else {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+  }, { threshold: 0.01 });
+
+  if (prefersReduced) {
+    drawStatic();
+  } else {
+    io.observe(canvas);
+  }
+
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(rafId);
+    ro.disconnect();
+    io.disconnect();
+  });
+})();
+</script>
