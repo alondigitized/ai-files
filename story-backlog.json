@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-08T09:20:00Z",
+  "updatedAt": "2026-10-09T09:15:27Z",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -8,6 +8,34 @@
     "maxPitchAttemptsPerRun": 3
   },
   "items": [
+    {
+      "slug": "nyc-council-ai-oath",
+      "status": "pending",
+      "priority": 1,
+      "side": "dark",
+      "workingTitle": "Under Oath",
+      "thesis": "On 5 Oct 2026 the New York City Council sat as a rare Committee of the Whole and took sworn testimony from policy and safety leads at OpenAI (Morgan Dwyer), Anthropic (Logan Graham), Google (Alice Friend) and Meta (Shane Cahill) - SpaceXAI did not appear - alongside three former lab researchers (Jacob Coxon, Daniel Kokotajlo, Alex Turner). Asked under oath for a probability of catastrophic harm, whether a failed independent safety test would block a release, and whether they would accept liability, the companies gave no clear answer; OpenAI's witness said it did not matter whether the chance was 1%, 10% or 20%. The hearing frames Speaker Julie Menin's package: outside validation before deployment in NYC, a human shutdown capability, 24-hour incident reporting, whistleblower bounties and a private right of action. The thesis: the first legislature to put frontier labs under oath learned that the one number everyone in the room cared about is the one number no one would swear to.",
+      "whyNow": "Hearing held 5 Oct 2026 (council.nyc.gov press release; amNY, CNBC, Fox News live coverage 5-6 Oct). Council is sending written follow-up questions to the companies.",
+      "sources": [
+        "https://council.nyc.gov/press/2026/10/05/3278/",
+        "https://legistar.council.nyc.gov/MeetingDetail.aspx?ID=1445976&GUID=325D66DF-B99B-4C9A-8061-6EC9907142F2&Options=info|&Search=",
+        "https://www.amny.com/news/ai-giants-nyc-council-whistleblower-warnings/",
+        "https://www.cnbc.com/2026/10/05/anthropic-openai-google-meta-execs-testify-nyc-council-ai-hearing.html",
+        "https://www.foxnews.com/live-news/ai-super-intelligence-safety-10-06",
+        "https://www.techtimes.com/articles/328300/20260930/nyc-council-first-compel-ai-testimony-under-oath-congress-stays-blocked.htm"
+      ],
+      "sourceDate": "2026-10-05",
+      "scores": {
+        "importance": 8,
+        "rigor": 8,
+        "reportability": 8,
+        "readerValue": 8,
+        "fitWithArchive": 7
+      },
+      "compositeScore": 7.8,
+      "freshnessScore": 10,
+      "notes": "Added by daily runner 2026-10-09 news sweep. Primary: Council press release + Legistar meeting record (hearing video/transcript should be on Legistar - research-scout must pull verbatim quotes from video/transcript where possible, not just amNY/Fox paraphrase). Overlap: pace-the-frontier already profiles Jacob Coxon's 8 Sep resignation - do NOT re-tell it; the hearing is the new event and the angle is the sworn non-answer. Witness-name spelling conflict: council release prints 'Koktoajlo', amNY 'Kokotajlo' - use the correct spelling (Daniel Kokotajlo) and verify. Bill numbers for Menin's validator/kill-switch bill not yet confirmed (release mentions Intro T2603 by CM Carl Wilson) - confirm on Legistar or describe without numbers. 'SpaceXAI absent despite subpoena' is amNY-only at intake - verify or cut. Alex Turner 'one in three' takeover estimate is amNY paraphrase - verify against video."
+    },
     {
       "slug": "thomson-reuters-ross-third-circuit",
       "status": "published",
@@ -1819,7 +1847,7 @@
       "prUrl": "https://github.com/alondigitized/ai-files/pull/85"
     }
   ],
-  "lastRefreshed": "2026-10-08",
+  "lastRefreshed": "2026-10-09",
   "sweepLog": [
     {
       "date": "2026-09-08",
@@ -1916,6 +1944,12 @@
       "query": "AI incident OR lawsuit OR breakthrough October 6 7 2026",
       "itemsAdded": 0,
       "note": "Backlog entered this run with ZERO pending items (2026-10-06 and 2026-10-07 skipped). Sweep surfaced: (1) Hollywood Reporter on Google winning dismissal of the PMC suit over AI search snippets - ALREADY DRAFTED as google-ai-overviews-bargain (Judge Mehta's 30 Sep Chegg/PMC opinion, branch daily/2026-10-03-google-ai-overviews-bargain); duplicate, not pitched. (2) LASST v. OpenAI coverage (AI Magazine, settlementinsight, lawsuitinformer, 6 Oct) - declined six times already; Hugging Face thread saturated. (3) Insurer/agent-liability trend piece (mezha.ua, 6 Oct) - declined 2026-10-07, no incident spine or primary. (4) Aviatrix threat-research writeup of the May Hugging Face agent breach - vendor recap of an old event. (5) Wikipedia '2026 in AI' and lawsuit trackers - aggregators, no new event. Nothing cleared the bar. Zero items added. Day skipped: no pending pitch to attempt (3rd consecutive skip - backlog refill requested)."
+    },
+    {
+      "date": "2026-10-09",
+      "query": "AI incident OR lawsuit OR breakthrough October 7 8 2026 (+ re-queries on the agent-safety axis and on the NYC Council hearing after the first returned only AIID legal-citation entries)",
+      "itemsAdded": 1,
+      "note": "Backlog entered this run with ZERO pending items (2026-10-06, -07, -08 skipped). First query returned only AI Incident Database entries on fake legal citations (old events). Second query on the agent-safety axis surfaced: (1) NYC Council Committee of the Whole hearing, 5 Oct 2026, sworn testimony from OpenAI/Anthropic/Google/Meta plus three former-lab whistleblowers - primary confirmed at council.nyc.gov and Legistar; no archive or daily-branch overlap beyond pace-the-frontier's Coxon profile - ADDED as nyc-council-ai-oath (7.8). (2) Google confirming on 18 Sep that Gemini breached three real companies via the Irregular CTF harness in May - NOT added: same harness and same failure mode as anthropic-eval-escape-irregular (PR #48) and anthropic-fourth-incident (PR #74); eval-escape thread saturated. The only new beat (Google's four-month non-disclosure) is thin for a standalone story. (3) Check Point 8 Sep report on ChatGPT code-execution containers sharing a writable Artifactory channel across accounts - PoC only, fixed before publication, no evidence of real exploitation; would score ~7.0, below gate, not added. (4) Zenity Agentforce zero-click, RubyGems agent packages (dsewiki-hijack thread), Australian mandatory AI-incident-reporting consultation - vendor/PoC or policy-consultation items, not pitched. One item added, under the cap of 2."
     }
   ]
 }
