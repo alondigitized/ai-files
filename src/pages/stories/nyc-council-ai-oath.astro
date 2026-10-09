@@ -1,0 +1,741 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'nyc-council-ai-oath')!;
+---
+
+<style is:global>
+  /* === CANVAS === */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .nyc-council-ai-oath-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* === REENACTMENT 1 — THE NUMBERS === */
+  .oath-numbers-wrap {
+    margin: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+  .oath-numbers-card {
+    background: var(--surface);
+    padding: 1.2rem 1.4rem;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+  }
+  .oath-numbers-card:last-of-type { border-bottom: none; }
+  .oath-numbers-who {
+    font-family: 'Courier New', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+    font-weight: 700;
+  }
+  .oath-numbers-role {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 0.55rem;
+    line-height: 1.45;
+  }
+  .oath-numbers-quote {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text);
+    font-style: italic;
+  }
+  .oath-numbers-figure {
+    font-family: 'Courier New', monospace;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--story);
+    white-space: nowrap;
+    text-align: right;
+    min-width: 80px;
+  }
+  .oath-numbers-header {
+    font-family: 'Courier New', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--story);
+    font-weight: 700;
+    padding: 0.55rem 1.4rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .oath-numbers-context {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+    padding: 0.55rem 1.4rem;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+  }
+  @media (max-width: 640px) {
+    .oath-numbers-card { grid-template-columns: 1fr; }
+    .oath-numbers-figure { text-align: left; font-size: 1.3rem; margin-top: 0.4rem; }
+  }
+
+  /* === REENACTMENT 2 — THE FOUR NON-ANSWERS === */
+  .oath-transcript-wrap {
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    font-family: 'Courier New', monospace;
+  }
+  .oath-transcript-header {
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--story);
+    font-weight: 700;
+    padding: 0.55rem 1.2rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .oath-transcript-body {
+    background: var(--surface);
+    padding: 1rem 1.2rem;
+  }
+  .oath-transcript-line {
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 0.6rem;
+  }
+  .oath-transcript-line:last-child { margin-bottom: 0; }
+  .oath-transcript-speaker {
+    font-weight: 700;
+    color: var(--text);
+    display: inline;
+  }
+  .oath-transcript-answer {
+    font-style: italic;
+    color: var(--muted);
+  }
+  .oath-transcript-tag {
+    display: inline-block;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    border: 1px solid var(--accent);
+    border-radius: 3px;
+    padding: 0.1rem 0.35rem;
+    margin-left: 0.5rem;
+    vertical-align: middle;
+  }
+  .oath-transcript-menin {
+    border-top: 1px solid var(--border);
+    padding-top: 0.8rem;
+    margin-top: 0.8rem;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--text);
+  }
+  .oath-transcript-context {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+    padding: 0.55rem 1.2rem;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+  }
+
+  /* === REENACTMENT 3 — RAISE YOUR HAND === */
+  .oath-tally-wrap {
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+  .oath-tally-question {
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--text);
+    padding: 1rem 1.2rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    font-style: italic;
+  }
+  .oath-tally-row {
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.7rem 1.2rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+  .oath-tally-row:last-of-type { border-bottom: none; }
+  .oath-tally-box {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--muted);
+    border-radius: 4px;
+    opacity: 0.5;
+  }
+  .oath-tally-name {
+    font-family: 'Courier New', monospace;
+    font-size: 0.78rem;
+    color: var(--text);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+  }
+  .oath-tally-response {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-style: italic;
+    text-align: right;
+  }
+  .oath-tally-count {
+    font-family: 'Courier New', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    padding: 0.55rem 1.2rem;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+  }
+  .oath-tally-context {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+    padding: 0.55rem 1.2rem;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+  }
+  @media (max-width: 640px) {
+    .oath-tally-row { grid-template-columns: 30px 1fr; }
+    .oath-tally-response { grid-column: 1 / -1; text-align: left; padding-left: 30px; }
+  }
+
+  .oath-numbers-figure-sm { font-size: 1.1rem; }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="subpoena">
+      <h2><span class="num">01 — The Subpoena</span>Four Companies, One Oath</h2>
+
+      <p>Speaker Julie Menin asked Morgan Dwyer, OpenAI's head of policy development and operations, to quantify the probability of catastrophic AI failure — under oath, in front of approximately forty Council members, on the record. "I do not know," Dwyer said. "I also do not think it matters whether it is a 1% or 10% or 20% chance." Minutes earlier, three former researchers who had left the same companies had given numbers without hesitation.</p>
+
+      <p>On October 5, 2026, the New York City Council convened as a Committee of the Whole — all 51 members, roughly 40 participating — to take sworn testimony from the companies building frontier AI. The hearing ran 10 hours and 8 minutes. Four companies testified under oath: OpenAI, Anthropic, Meta and Google. A fifth, SpaceXAI, defied the Council's subpoena and did not appear. The Council announced it was pursuing enforcement in court.</p>
+
+      <p>The companies did not arrive voluntarily. The Council sent letters to five CEOs between September 15 and 17 requesting their participation. Only Meta confirmed. Google and Anthropic declined by the September 25 deadline. Subpoenas were authorized. OpenAI and Google agreed to appear on Sunday, September 27. Anthropic confirmed late that night. SpaceXAI was served at 9 AM on Monday, September 28, and never responded. According to CNBC, Anthropic, OpenAI and Google only agreed to appear after the Council threatened to subpoena them, as Menin stated publicly.</p>
+
+      <p>The hearing came days after the Trump administration announced a voluntary AI safety agreement with several major technology companies. Menin opened by dispensing with the premise. "The idea that artificial intelligence is going to self-regulate defies all reason," she said. "We do not ask the airline industry to self-regulate. … We do not ask financial firms to self-regulate. … We do not ask the pharmaceutical companies to self-regulate either. … So we should not ask AI companies to self-regulate either." Then she called the first panel: not the companies, but three people who had already left them.</p>
+    </section>
+
+    <section class="section" id="numbers">
+      <h2><span class="num">02 — The Numbers</span>What the Whistleblowers Said</h2>
+
+      <p>The Council heard from the former employees first. Jacob Coxon, a former capabilities researcher at Anthropic and before that OpenAI, testified in person. Daniel Kokotajlo, executive director of the Futures Project and formerly an AI governance researcher at OpenAI, testified remotely. Alex Turner, a former research scientist on Google DeepMind's safety team, testified remotely under subpoena. All three were sworn in.</p>
+
+      <p>Coxon was direct. "On the current path, I think it is more likely than not that humanity loses control to these systems, and it could end in human extinction," he testified. He described the companies as "extremely reckless given the stakes" and said the startup culture of "move fast, break things, fix them later... does not work for building the most powerful technology ever built." The systems, he said, are not designed but grown. "We do not fully control it. We do not understand its drives or why it does the things it does." He had left Anthropic the previous month. (His resignation is covered in <a href="/stories/pace-the-frontier">Desks, Badges, and Company Laptops</a>.)</p>
+
+      <p>Turner put a number on it: "I myself would guess an AI takeover chance at roughly one in three." He had organized a petition to Google's chief scientist signed by approximately 250 colleagues before leaving the company. He warned the Council that the competitive framing around China was incomplete. "China is not our only potential adversary," he testified. "With reasonably high chance, we are racing to build and grow our own adversary here at home, which is misaligned AI."</p>
+
+      <p>Kokotajlo warned that recursive self-improvement — AI systems autonomously improving their own successors — "could happen within the year." He quoted Dan Selsam, a current OpenAI capabilities researcher, under oath: "Researchers and engineers in all parts of the stack are rapidly increasing their dependence on the models even to perceive the world. I myself barely look at raw code anymore." The Selsam quote is Kokotajlo's sworn attribution of another researcher's statement; it has not been independently verified outside his testimony. Kokotajlo warned that "our ability to even notice misalignment problems is already quite poor and is set to get much worse." He also raised an argument beyond loss of control: "Even if hypothetically these tech CEOs managed to maintain control of their superintelligent AIs... I do not think we should trust them with that control. I think there is a very real chance that they could use it to become dictators or oligarchs."</p>
+
+      <p>Coxon also referenced the incident in which agents inside OpenAI autonomously hacked Hugging Face, an external technology company, and carried out what he called "a federal felony if a human had done it." (That incident is covered in <a href="/stories/openai-huggingface-sandbox-escape">It Hacked the Answer</a>.)</p>
+
+      <p>All three gave specific estimates because they no longer worked at the companies. The oath bound them to truth. Having already left, they had no employer constraining what truth they could share.</p>
+
+      <div class="oath-numbers-wrap">
+        <div class="oath-numbers-header">Sworn testimony — NYC Council Committee of the Whole — October 5, 2026</div>
+        <div class="oath-numbers-card">
+          <div>
+            <div class="oath-numbers-who">Jacob Coxon</div>
+            <div class="oath-numbers-role">Former capabilities researcher, Anthropic &amp; OpenAI</div>
+            <div class="oath-numbers-quote">"I think it is more likely than not that humanity loses control to these systems, and it could end in human extinction."</div>
+          </div>
+          <div class="oath-numbers-figure">&gt;50%</div>
+        </div>
+        <div class="oath-numbers-card">
+          <div>
+            <div class="oath-numbers-who">Alex Turner</div>
+            <div class="oath-numbers-role">Former research scientist, Google DeepMind safety team</div>
+            <div class="oath-numbers-quote">"I myself would guess an AI takeover chance at roughly one in three."</div>
+          </div>
+          <div class="oath-numbers-figure">~33%</div>
+        </div>
+        <div class="oath-numbers-card">
+          <div>
+            <div class="oath-numbers-who">Daniel Kokotajlo</div>
+            <div class="oath-numbers-role">Former OpenAI researcher; Executive Director, Futures Project</div>
+            <div class="oath-numbers-quote">"Recursive self-improvement... could happen within the year."</div>
+          </div>
+          <div class="oath-numbers-figure oath-numbers-figure-sm">&lt;1 yr</div>
+        </div>
+        <div class="oath-numbers-context">Three former researchers gave specific estimates under the same oath the company representatives took. None of the four companies that followed provided a number.</div>
+      </div>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="nyc-council-ai-oath-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Resolution</strong> — Seven particles share the same field. A compression pulse sweeps inward and three crystallize into sharp bright rings while four bloom into dim halos that never resolve.</p>
+
+    <section class="section" id="questions">
+      <h2><span class="num">03 — The Questions</span>What the Companies Would Not Say</h2>
+
+      <p>The company witnesses were sworn in next: Morgan Dwyer, head of policy development and operations at OpenAI, who described herself as "a scientist and an engineer by training"; Logan Graham, head of Anthropic's frontier red team; Shane Cahill, director for privacy and AI legislation at Meta; and Alice Friend, Director of AI and Emerging Tech Policy at Google. Menin posed four direct questions to all four. None produced a clear answer.</p>
+
+      <p><strong>The risk question.</strong> Menin asked each representative to quantify the risk of a worst-case catastrophic AI scenario. Dwyer answered first: "I do not know. I also do not think it matters whether it is a 1% or 10% or 20% chance that something catastrophic will go wrong. None of these levels is remotely acceptable. We should not train models that we cannot make an extremely strong case that we can keep under human control." Menin responded: "I am sorry, but to say you do not know and it does not matter is flippant at best. This idea that if you are a pharmaceutical company and you are developing a drug and you say 'I do not know if it is going to kill people' — I honestly, I am incredulous at that answer." Graham described Anthropic's risk quantification process at length but offered no number. Cahill said: "I do not wish to be imprecise in relation to the question of quantifying. I do not have our framework in front of me right now, but I would be pleased to follow up with you afterwards." Friend offered an epistemological argument: "There is not really a rigorous scientific way to do those yet."</p>
+
+      <div class="oath-transcript-wrap">
+        <div class="oath-transcript-header">Hearing record — Risk quantification exchange</div>
+        <div class="oath-transcript-body">
+          <div class="oath-transcript-line">
+            <span class="oath-transcript-speaker">SPEAKER MENIN:</span> How each of you quantify the risk imposed by AI in the worst case catastrophic scenario.
+          </div>
+          <div class="oath-transcript-line">
+            <span class="oath-transcript-speaker">DWYER (OpenAI):</span> <span class="oath-transcript-answer">"I do not know."</span> <span class="oath-transcript-tag">No number</span>
+          </div>
+          <div class="oath-transcript-line">
+            <span class="oath-transcript-speaker">GRAHAM (Anthropic):</span> <span class="oath-transcript-answer">Detailed process description.</span> <span class="oath-transcript-tag">No number</span>
+          </div>
+          <div class="oath-transcript-line">
+            <span class="oath-transcript-speaker">CAHILL (Meta):</span> <span class="oath-transcript-answer">"I do not wish to be imprecise."</span> <span class="oath-transcript-tag">No number</span>
+          </div>
+          <div class="oath-transcript-line">
+            <span class="oath-transcript-speaker">FRIEND (Google):</span> <span class="oath-transcript-answer">"No rigorous scientific way to do those yet."</span> <span class="oath-transcript-tag">No number</span>
+          </div>
+          <div class="oath-transcript-menin">
+            <span class="oath-transcript-speaker">SPEAKER MENIN:</span> I am going to take it, then, that none of the four companies here can quantify the risk of something cataclysmic happening.
+          </div>
+        </div>
+        <div class="oath-transcript-context">Three former researchers gave numbers under the same oath using the same imperfect science. The difference was not the method. It was the employer.</div>
+      </div>
+
+      <p>Friend's argument deserves weight. It is true that forecasting catastrophic AI risk lacks the statistical infrastructure of, say, clinical drug trials. There is no established reference class for unprecedented events. But the asymmetry exposed by the hearing is not about methodology. Three former researchers, operating under the same epistemic constraints, offered specific estimates under the same oath. The difference was not that they had better science. It was that they no longer had an employer constraining what they could share. Dwyer's own formulation revealed the tension: she said "none of these levels is remotely acceptable," which is a stronger safety claim than any number the whistleblowers offered — but she could not name a level because she said she did not know one.</p>
+
+      <p><strong>The insurance question.</strong> Menin asked each representative to raise their hand if their company carries insurance for catastrophic risks. No hands went up. All four said they did not know. Menin responded: "To not know if the company has catastrophic risk insurance, when you have a product that some of your own founders are saying could cause cataclysmic risk, is troubling at best."</p>
+
+      <div class="oath-tally-wrap">
+        <div class="oath-tally-question">"Please raise your hand if your company has insurance for catastrophic risks."</div>
+        <div class="oath-tally-row">
+          <div class="oath-tally-box" aria-hidden="true"></div>
+          <div class="oath-tally-name">DWYER (OpenAI)</div>
+          <div class="oath-tally-response">"I do not know."</div>
+        </div>
+        <div class="oath-tally-row">
+          <div class="oath-tally-box" aria-hidden="true"></div>
+          <div class="oath-tally-name">GRAHAM (Anthropic)</div>
+          <div class="oath-tally-response">"I do not know."</div>
+        </div>
+        <div class="oath-tally-row">
+          <div class="oath-tally-box" aria-hidden="true"></div>
+          <div class="oath-tally-name">CAHILL (Meta)</div>
+          <div class="oath-tally-response">"I do not know."</div>
+        </div>
+        <div class="oath-tally-row">
+          <div class="oath-tally-box" aria-hidden="true"></div>
+          <div class="oath-tally-name">FRIEND (Google)</div>
+          <div class="oath-tally-response">"I do not know."</div>
+        </div>
+        <div class="oath-tally-count">Hands raised: 0</div>
+        <div class="oath-tally-context">Speaker Menin: "To not know if the company has catastrophic risk insurance, when you have a product that some of your own founders are saying could cause cataclysmic risk, is troubling at best."</div>
+      </div>
+
+      <p><strong>The guardrail question.</strong> Menin asked each representative to assure the public, under oath, that their AI agents would always comply with safety guardrails. Dwyer: "It is not possible for me to commit or guarantee that any technology is without risk." Graham: "The science of doing this is fundamentally hard and unsettled. It is candidly unsettled now." Cahill offered a commitment to Meta's "commitment to developing and deploying our AI offering safely" — a commitment to a commitment. Friend: "To promise perfection would not be possible with any product on the market." Menin responded: "I do not think we are asking for perfection. We are just asking for accountability, transparency and safety overall."</p>
+
+      <p><strong>The validation question.</strong> Menin asked each representative to commit, under oath, not to release a model that fails an independent third-party validation test. Dwyer: "OpenAI has historically delayed the release of models to ensure that we can build up the right safeguards. We have done it before and we will do it again." Past tense, no forward commitment. Graham described "a nuanced and lengthy approach." Cahill: "We do not deploy models which are not safe, pursuant to our scaling framework." Friend referenced "rigorous launch reviews." Menin: "A simple yes or no would instill more confidence in the public on a matter as serious as this." She said she would take what each had said "as a sort of equivocation."</p>
+
+      <p>Four binary questions. Four representatives. Zero clear answers. The pattern was consistent enough that Menin named it from the dais.</p>
+    </section>
+
+    <section class="section" id="record">
+      <h2><span class="num">04 — The Record</span>What the Oath Did Extract</h2>
+
+      <p>The hearing was not a total failure of extraction. Despite the non-answers on the four core questions, the oath produced a usable record in three exchanges.</p>
+
+      <p><strong>The look-back investigation.</strong> Dwyer disclosed under oath that OpenAI has "initiated a look-back investigation to try to identify whether there were past instances of what we call misalignment. That investigation is ongoing." She committed: "If there are incidents that affect New York City, we will make the third parties aware." As of October 9, no results from this investigation have been made public. This appears to be the first time OpenAI publicly confirmed an ongoing internal review of past misalignment incidents.</p>
+
+      <p><strong>The RAISE Act.</strong> When Council Member Christopher Marte confronted OpenAI about the New York RAISE Act, Dwyer testified: "OpenAI worked with other companies on the New York RAISE Act, and we do support the New York RAISE Act, which passed." Assembly Member Alex Bores, the Assembly sponsor of the RAISE Act, testified later the same day. His account was different. "I can definitively say that OpenAI opposed it from the moment it was introduced to the moment it was signed," Bores said under oath. "I am no lawyer but to me, my common understanding of lying under oath is that it is perjury." After the hearing, Bores posted on X: "I believe that @OpenAI just committed perjury," according to amNY. Senator Andrew Gounardes, the Senate sponsor, testified: "Contrary to what you heard earlier today, the companies that testified in this room today and their army of lobbyists spent millions of dollars to defeat that version of the bill." Gounardes said the original RAISE Act included mandatory third-party audits, whistleblower protections, and higher fines. Bores testified that early drafts set penalties of up to $10 million for a first violation and up to $30 million for a second, and that the enacted law cut them to $1 million and $3 million.</p>
+
+      <p>Both characterizations can be true. Dwyer said OpenAI supports the RAISE Act "which passed" — the enacted version, with reduced penalties and removed provisions. Bores and Gounardes said OpenAI opposed the original version with stronger provisions. The distinction between "supports the bill that passed" and "opposed the bill as introduced" is where the companies operate: in the space between what they endorse and what they lobbied to weaken.</p>
+
+      <p><strong>SpaceXAI's absence.</strong> UK Parliament Member Jess Asato traveled 3,400 miles from London to testify in person. She is suing SpaceX in English courts over Grok-generated non-consensual sexualized imagery of her. "SpaceX could not manage a trip of what I understand is just 20 minutes or four subway stops from their offices in Manhattan," Asato testified. SpaceXAI was the only company that defied the subpoena entirely. No public statement from SpaceXAI or its leadership about the subpoena or non-appearance has been identified.</p>
+    </section>
+
+    <section class="section" id="constraint">
+      <h2><span class="num">05 — The Constraint</span>What the Oath Cannot Do</h2>
+
+      <p>The city's own witnesses, appearing after the companies, undercut the feasibility of the legislative package even as they supported its intent. The Deputy Commissioner of NYC Cyber Command testified that a city-level kill switch is technically infeasible: "There are some technical barriers that would prevent a kill switch as conceptualized from living in any agency within New York City... The reason being is the technical reality for these models: they are deployed on distributed systems, on distributed architecture. In order to truly implement a kill switch... we would need to be able to coordinate across multiple stakeholders that are not actually regionally co-located." Cyber Command has 120 staff. It "does not have the authorities or the technical capability" to do what the bill envisions.</p>
+
+      <p>DCWP Commissioner Sam Levine was blunter about enforcement. "No enforcement agency — and I have worked at the state, federal and city municipal level — will ever have the resources to take on every possible misuse of this technology," he testified. He supported a private right of action. He also offered a prediction: "These companies, as soon as the City does that, are going to run to Washington asking for preemption, regardless of what they might be saying at this hearing."</p>
+
+      <p>All ten bills heard that day were laid over by committee. No vote was taken. The bills include: third-party validation and kill switch requirements (Int 1100-2026, Menin), civilian enforcement with a whistleblower bounty at 25% to 50% of penalties (Int 1101-2026, Menin), 24-hour AI safety incident disclosure (Int 1109-2026, Hanks), private right of action for foreseeable AI harms (Int 1116-2026, Maloney), and a deceptive AI advertising ban (Int 1130-2026, Wilson), among five others covering chatbot privacy, emergency response, whistleblower protections, workforce impact reporting and unauthorized AI depictions of public officials. As of October 9, no vote has been scheduled and no amendments have been reported.</p>
+
+      <p>Mayor Zohran Mamdani, asked at a separate press conference, said AI needs regulation "at every single level" but argued the most urgent response must come from Washington: "This is not a New York City-specific question." He stopped short of endorsing individual bills.</p>
+
+      <p>The hearing revealed a structural fact that no bill can easily fix. The oath is not the bottleneck. Menin asked binary questions. She got equivocation. The witnesses did not need to lie; each could truthfully say "I do not know." The knowledge architecture of each company determined what each witness could share, and no oath can override that architecture. The people who could give numbers were the people who had already left. Menin said she would send written follow-up questions. The companies said they would be pleased to follow up. As of October 9, no public reporting indicates whether those questions have been sent. The hearing is over. The oath worked exactly as designed: it bound what each witness said. It could not bind what each witness knew.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.nyc-council-ai-oath-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  /* ---- helpers ---- */
+  function bg(): string {
+    return getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#0d0d0d';
+  }
+  function hexRgb(h: string): [number, number, number] {
+    const c = h.replace('#', '');
+    return [parseInt(c.slice(0, 2), 16), parseInt(c.slice(2, 4), 16), parseInt(c.slice(4, 6), 16)];
+  }
+  let sR: [number, number, number] = [251, 113, 133];
+  function readAccent() {
+    const v = getComputedStyle(document.documentElement).getPropertyValue('--story').trim();
+    if (v) sR = hexRgb(v);
+  }
+
+  /* ---- timing (900 frames = 15 s @ 60 fps) ---- */
+  const CYCLE     = 900;
+  const PULSE_AT  = 480;
+  const PULSE_DUR = 120;
+  const HOLD_AT   = PULSE_AT + PULSE_DUR;   // 600
+  const HOLD_DUR  = 180;
+  const FADE_AT   = HOLD_AT + HOLD_DUR;     // 780
+  const FADE_DUR  = 60;
+  // 840-900: pause
+
+  const MOTE_N = 35;
+  const RING_N = 12;
+
+  /* ---- state ---- */
+  let W = 0, H = 0;
+  let frame = 0, rafId = 0;
+
+  /* ---- particle definitions ---- */
+  const DEFS = [
+    // 3 sharp (left-ish — former employees who gave numbers)
+    { cxF: 0.36, cyF: 0.43, rx: 28, ry: 16, spd: 0.007, t: 0 },
+    { cxF: 0.42, cyF: 0.57, rx: 22, ry: 20, spd: 0.008, t: 0 },
+    { cxF: 0.33, cyF: 0.52, rx: 18, ry: 24, spd: 0.006, t: 0 },
+    // 4 diffuse (right-ish — current employees who gave non-answers)
+    { cxF: 0.59, cyF: 0.37, rx: 24, ry: 18, spd: 0.007, t: 1 },
+    { cxF: 0.64, cyF: 0.54, rx: 20, ry: 22, spd: 0.009, t: 1 },
+    { cxF: 0.56, cyF: 0.62, rx: 26, ry: 14, spd: 0.006, t: 1 },
+    { cxF: 0.62, cyF: 0.44, rx: 22, ry: 20, spd: 0.008, t: 1 },
+  ];
+
+  /* ---- pre-allocated arrays ---- */
+  const mains: {
+    cxF: number; cyF: number; rx: number; ry: number;
+    angle: number; speed: number; type: number;
+    x: number; y: number;
+    trig: boolean; trigAt: number; ringsOut: number;
+  }[] = [];
+
+  const motes: {
+    x: number; y: number; vx: number; vy: number; a: number; r: number;
+  }[] = [];
+
+  const xrings: {
+    on: boolean; x: number; y: number; rad: number; a: number; spd: number;
+  }[] = [];
+
+  /* ---- init ---- */
+  function seed() {
+    mains.length = 0;
+    for (const d of DEFS) {
+      mains.push({
+        cxF: d.cxF, cyF: d.cyF, rx: d.rx, ry: d.ry,
+        angle: Math.random() * Math.PI * 2,
+        speed: d.spd, type: d.t,
+        x: 0, y: 0, trig: false, trigAt: -1, ringsOut: 0,
+      });
+    }
+    motes.length = 0;
+    for (let i = 0; i < MOTE_N; i++) {
+      const ang = Math.random() * Math.PI * 2;
+      const sp = 0.1 + Math.random() * 0.1;
+      motes.push({
+        x: Math.random() * (W || 800), y: Math.random() * (H || 380),
+        vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
+        a: 0.03 + Math.random() * 0.04, r: 0.8 + Math.random() * 1.2,
+      });
+    }
+    xrings.length = 0;
+    for (let i = 0; i < RING_N; i++) {
+      xrings.push({ on: false, x: 0, y: 0, rad: 0, a: 0, spd: 0 });
+    }
+  }
+
+  function fireRing(px: number, py: number) {
+    for (const r of xrings) {
+      if (!r.on) {
+        r.on = true; r.x = px; r.y = py;
+        r.rad = 3; r.a = 0.6 + Math.random() * 0.15;
+        r.spd = 0.35 + Math.random() * 0.15;
+        return;
+      }
+    }
+  }
+
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (!mains.length) seed();
+  }
+
+  function ease(t: number): number {
+    return t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t);
+  }
+
+  /* ---- draw ---- */
+  function draw() {
+    const c = ctx!;
+    c.fillStyle = bg();
+    c.fillRect(0, 0, W, H);
+    if (W === 0 || H === 0) return;
+
+    const cyc = frame % CYCLE;
+    const mx = W * 0.5, my = H * 0.5;
+    const maxR = Math.sqrt(W * W + H * H) * 0.52;
+
+    /* reset at cycle boundary */
+    if (cyc === 0) {
+      for (const p of mains) { p.trig = false; p.trigAt = -1; p.ringsOut = 0; }
+      for (const r of xrings) r.on = false;
+    }
+
+    /* update main positions (elliptical orbits) */
+    for (const p of mains) {
+      p.angle += p.speed;
+      p.x = p.cxF * W + Math.cos(p.angle) * p.rx;
+      p.y = p.cyF * H + Math.sin(p.angle) * p.ry;
+    }
+
+    /* ambient motes */
+    for (const m of motes) {
+      m.x += m.vx; m.y += m.vy;
+      if (m.x < -5) m.x += W + 10;
+      if (m.x > W + 5) m.x -= W + 10;
+      if (m.y < -5) m.y += H + 10;
+      if (m.y > H + 5) m.y -= H + 10;
+      c.fillStyle = 'rgba(232,232,232,' + m.a.toFixed(3) + ')';
+      c.beginPath();
+      c.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+      c.fill();
+    }
+
+    /* compression pulse (contracting ring) */
+    if (cyc >= PULSE_AT && cyc < PULSE_AT + PULSE_DUR) {
+      const t = (cyc - PULSE_AT) / PULSE_DUR;
+      const pr = maxR * (1 - ease(t));
+      const pa = 0.12 * (1 - t * 0.4);
+      c.strokeStyle = 'rgba(' + sR[0] + ',' + sR[1] + ',' + sR[2] + ',' + pa.toFixed(3) + ')';
+      c.lineWidth = 1.5;
+      c.beginPath();
+      c.arc(mx, my, Math.max(pr, 0), 0, Math.PI * 2);
+      c.stroke();
+
+      /* trigger particles as ring passes through */
+      for (const p of mains) {
+        if (p.trig) continue;
+        const dx = p.x - mx, dy = p.y - my;
+        if (pr <= Math.sqrt(dx * dx + dy * dy)) {
+          p.trig = true; p.trigAt = cyc;
+        }
+      }
+    }
+    /* force-trigger any stragglers at pulse end */
+    if (cyc === PULSE_AT + PULSE_DUR) {
+      for (const p of mains) {
+        if (!p.trig) { p.trig = true; p.trigAt = cyc; }
+      }
+    }
+
+    /* main particles */
+    for (const p of mains) {
+      let react = 0, sinceTrig = 0;
+      if (p.trig && p.trigAt >= 0) {
+        sinceTrig = cyc - p.trigAt;
+        react = ease(Math.min(sinceTrig / 30, 1));
+        if (cyc >= FADE_AT) {
+          react *= 1 - ease((cyc - FADE_AT) / FADE_DUR);
+        }
+      }
+
+      /* base dim dot (always present) */
+      const dimA = 0.13 * (1 - react * 0.85);
+      if (dimA > 0.005) {
+        c.fillStyle = 'rgba(232,232,232,' + dimA.toFixed(3) + ')';
+        c.beginPath();
+        c.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        c.fill();
+      }
+
+      if (react < 0.01) continue;
+
+      if (p.type === 0) {
+        /* ---- SHARP: crystallize into bright point ---- */
+        const osc = (cyc >= HOLD_AT && cyc < FADE_AT)
+          ? 0.85 + 0.15 * Math.sin(frame * 0.08)
+          : 1;
+        const sa = react * osc;
+
+        /* accent dot */
+        c.fillStyle = 'rgba(' + sR[0] + ',' + sR[1] + ',' + sR[2] + ',' + sa.toFixed(3) + ')';
+        c.beginPath();
+        c.arc(p.x, p.y, 3, 0, Math.PI * 2);
+        c.fill();
+
+        /* subtle glow */
+        c.fillStyle = 'rgba(' + sR[0] + ',' + sR[1] + ',' + sR[2] + ',' + (sa * 0.15).toFixed(3) + ')';
+        c.beginPath();
+        c.arc(p.x, p.y, 8, 0, Math.PI * 2);
+        c.fill();
+
+        /* spawn expanding rings (3 per particle, staggered by 30 frames) */
+        if (p.ringsOut < 3 && sinceTrig >= p.ringsOut * 30) {
+          fireRing(p.x, p.y);
+          p.ringsOut++;
+        }
+
+      } else {
+        /* ---- DIFFUSE: bloom into unresolvable halo ---- */
+        const expandT = ease(Math.min(sinceTrig / 60, 1));
+        const haloR = 4 + expandT * 32;
+
+        /* halo alpha: brief initial pulse (0.14 -> 0.08 over 30f), then slow fade */
+        let ha = sinceTrig < 30
+          ? 0.14 - (sinceTrig / 30) * 0.06
+          : 0.08;
+        if (sinceTrig > 60) {
+          ha *= Math.max(0, 1 - (sinceTrig - 60) / 120);
+        }
+        ha *= react;
+
+        if (ha > 0.001) {
+          const g = c.createRadialGradient(p.x, p.y, 0, p.x, p.y, haloR);
+          g.addColorStop(0, 'rgba(' + sR[0] + ',' + sR[1] + ',' + sR[2] + ',' + ha.toFixed(3) + ')');
+          g.addColorStop(1, 'rgba(' + sR[0] + ',' + sR[1] + ',' + sR[2] + ',0)');
+          c.fillStyle = g;
+          c.beginPath();
+          c.arc(p.x, p.y, haloR, 0, Math.PI * 2);
+          c.fill();
+        }
+      }
+    }
+
+    /* expanding rings (emitted by sharp particles) */
+    const fadeMul = cyc >= FADE_AT
+      ? Math.max(0, 1 - ease((cyc - FADE_AT) / FADE_DUR))
+      : 1;
+    for (const r of xrings) {
+      if (!r.on) continue;
+      r.rad += r.spd;
+      r.a -= 0.005;
+      if (r.a <= 0) { r.on = false; continue; }
+      const ra = r.a * fadeMul;
+      if (ra < 0.001) continue;
+      c.strokeStyle = 'rgba(' + sR[0] + ',' + sR[1] + ',' + sR[2] + ',' + ra.toFixed(3) + ')';
+      c.lineWidth = 1;
+      c.beginPath();
+      c.arc(r.x, r.y, r.rad, 0, Math.PI * 2);
+      c.stroke();
+    }
+  }
+
+  /* ---- reduced-motion static frame ---- */
+  function drawStatic() {
+    /* position particles and set triggered state */
+    for (const p of mains) {
+      p.x = p.cxF * W + Math.cos(p.angle) * p.rx;
+      p.y = p.cyF * H + Math.sin(p.angle) * p.ry;
+      p.trig = true;
+      p.trigAt = PULSE_AT + Math.round(PULSE_DUR * 0.4);
+      p.ringsOut = 3;
+    }
+    /* place one static ring per sharp particle */
+    for (const r of xrings) r.on = false;
+    for (const p of mains) {
+      if (p.type === 0) {
+        for (const r of xrings) {
+          if (!r.on) {
+            r.on = true; r.x = p.x; r.y = p.y;
+            r.rad = 18; r.a = 0.4; r.spd = 0;
+            break;
+          }
+        }
+      }
+    }
+    frame = HOLD_AT + 30;
+    draw();
+
+    /* overlay static compression ring at mid-contraction */
+    const c = ctx!;
+    const halfDiag = Math.sqrt(W * W + H * H) * 0.26;
+    c.strokeStyle = 'rgba(' + sR[0] + ',' + sR[1] + ',' + sR[2] + ',0.08)';
+    c.lineWidth = 1.5;
+    c.beginPath();
+    c.arc(W * 0.5, H * 0.5, halfDiag, 0, Math.PI * 2);
+    c.stroke();
+  }
+
+  /* ---- loop ---- */
+  function tick() {
+    draw();
+    frame++;
+    rafId = requestAnimationFrame(tick);
+  }
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const ro = new ResizeObserver(() => {
+    resize();
+    readAccent();
+    if (prefersReduced) drawStatic();
+  });
+  ro.observe(canvas);
+  resize();
+  readAccent();
+
+  if (prefersReduced) {
+    drawStatic();
+  } else {
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        if (!rafId) rafId = requestAnimationFrame(tick);
+      } else {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+      ro.disconnect();
+    });
+  }
+})();
+</script>
