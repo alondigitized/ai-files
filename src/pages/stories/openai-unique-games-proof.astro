@@ -1,0 +1,961 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'openai-unique-games-proof')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .openai-unique-games-proof-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* Story-scoped inks: AA contrast (≥4.5:1) on --surface and --surface2 in the light theme */
+  .ugp-lean-wrap, .ugp-errata-wrap, .ugp-timeline-wrap {
+    --ugp-ink: #5b21b6;
+    --ugp-alert: #9b2c2c;
+    --ugp-muted: #5f5949;
+  }
+
+  /* === REENACTMENT 1 — THE STATEMENT (Lean code mockup) === */
+  .ugp-lean-wrap {
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .ugp-lean-header {
+    font-family: 'Courier New', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ugp-ink);
+    font-weight: 700;
+    padding: 0.55rem 1.4rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .ugp-lean-body {
+    padding: 1.2rem 1.4rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--text);
+    overflow-x: auto;
+    white-space: pre;
+  }
+  .ugp-lean-comment {
+    color: var(--ugp-muted);
+    font-style: italic;
+  }
+  .ugp-lean-keyword {
+    color: var(--ugp-ink);
+    font-weight: 700;
+  }
+  .ugp-lean-sorry {
+    color: var(--ugp-alert);
+    font-weight: 700;
+  }
+  .ugp-lean-annotations {
+    padding: 0.8rem 1.4rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .ugp-lean-ann {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.6rem;
+    align-items: baseline;
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+  .ugp-lean-ann-code {
+    font-family: 'Courier New', monospace;
+    color: var(--ugp-ink);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .ugp-lean-ann-text {
+    color: var(--ugp-muted);
+  }
+  .ugp-lean-context {
+    font-size: 0.72rem;
+    color: var(--ugp-muted);
+    font-style: italic;
+    padding: 0.55rem 1.4rem;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    line-height: 1.5;
+  }
+
+  /* === REENACTMENT 2 — THE WITHDRAWAL (errata notice) === */
+  .ugp-errata-wrap {
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .ugp-errata-header {
+    font-family: 'Courier New', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ugp-alert);
+    font-weight: 700;
+    padding: 0.55rem 1.4rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .ugp-errata-body {
+    padding: 1.2rem 1.4rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    color: var(--text);
+  }
+  .ugp-errata-label {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ugp-alert);
+    margin-bottom: 0.6rem;
+  }
+  .ugp-errata-desc {
+    color: var(--ugp-muted);
+    margin-bottom: 0.8rem;
+  }
+  .ugp-errata-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .ugp-errata-list li {
+    padding: 0.25rem 0 0.25rem 1.2rem;
+    position: relative;
+    color: var(--text);
+  }
+  .ugp-errata-list li::before {
+    content: '×' / '';
+    position: absolute;
+    left: 0;
+    color: var(--ugp-alert);
+    font-weight: 700;
+  }
+  .ugp-errata-annotation {
+    font-size: 0.78rem;
+    color: var(--ugp-ink);
+    font-weight: 700;
+    padding: 0.7rem 1.4rem;
+    border-top: 1px solid var(--border);
+    background: var(--surface2);
+    line-height: 1.5;
+  }
+  .ugp-errata-context {
+    font-size: 0.72rem;
+    color: var(--ugp-muted);
+    font-style: italic;
+    padding: 0.55rem 1.4rem;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    line-height: 1.5;
+  }
+
+  /* === REENACTMENT 3 — 26 DAYS (timeline) === */
+  .ugp-timeline-wrap {
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .ugp-timeline-header {
+    font-family: 'Courier New', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ugp-ink);
+    font-weight: 700;
+    padding: 0.55rem 1.4rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .ugp-timeline-body {
+    padding: 1rem 1.4rem;
+    position: relative;
+  }
+  .ugp-timeline-body::before {
+    content: '';
+    position: absolute;
+    left: 4.6rem;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--border);
+  }
+  .ugp-tl-item {
+    display: grid;
+    grid-template-columns: 4rem 1fr;
+    gap: 1.2rem;
+    padding: 0.7rem 0;
+    position: relative;
+  }
+  .ugp-tl-date {
+    font-family: 'Courier New', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--ugp-ink);
+    text-align: right;
+    padding-top: 0.1rem;
+    white-space: nowrap;
+  }
+  .ugp-tl-date.ugp-tl-alert {
+    color: var(--ugp-alert);
+  }
+  .ugp-tl-content {
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--text);
+    padding-left: 0.8rem;
+  }
+  .ugp-tl-content strong {
+    color: var(--text);
+  }
+  .ugp-tl-content em {
+    color: var(--ugp-muted);
+    font-style: italic;
+  }
+  .ugp-timeline-span {
+    font-family: 'Courier New', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ugp-muted);
+    text-align: center;
+    padding: 0.6rem 1.4rem;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    font-weight: 700;
+  }
+  @media (max-width: 640px) {
+    .ugp-tl-item { grid-template-columns: 3.2rem 1fr; gap: 0.8rem; }
+    .ugp-tl-date { font-size: 0.64rem; }
+    .ugp-timeline-body::before { left: 3.8rem; }
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="conjecture">
+      <h2><span class="num">01 — The Conjecture</span>Twenty-Four Years</h2>
+<p>In the summer of 2001, Subhash Khot visited India and conceived a conjecture about the limits of computation. He presented it the following year at the Symposium on the Theory of Computing (STOC) in 2002. The Unique Games Conjecture says, roughly, that for a certain class of optimization problems — systems of constraints where each constraint has exactly one satisfying assignment per label at the other endpoint — no polynomial-time algorithm can reliably distinguish nearly satisfiable instances from nearly unsatisfiable ones. The gap between "almost all constraints can be satisfied" and "almost none can" is, the conjecture claims, computationally impenetrable.</p>
+
+<p>If true, the consequences cascade. Prasad Raghavendra proved in 2008 that if UGC holds, a simple semidefinite program gives the best possible polynomial-time approximation ratio for every constraint-satisfaction problem. The Goemans-Williamson ratio for Max-Cut — approximately 0.878 — becomes the ceiling, not a benchmark. The factor-2 threshold for Vertex Cover becomes a wall, not a waypoint. UGC became a load-bearing assumption across theoretical computer science. A large body of hardness results was stated conditionally on it. No one could prove it. In 2014, Khot received the Nevanlinna Prize for the conjecture and its consequences.</p>
+
+<p>The closest approach came in 2018. Khot, Dor Minzer, and Muli Safra completed the Grassmann expansion theorem, establishing hardness for almost-satisfiable 2-to-1 and 2-to-2 games with imperfect completeness — a major step, but not the full conjecture. The gap between that result and UGC itself held for eight years. Then, in twenty-six days, everything happened at once.</p>
+    </section>
+    <section class="section" id="proof">
+      <h2><span class="num">02 — The Proof</span>Family 102</h2>
+<p>On October 6, 2026, at 21:58 UTC, OpenAI pushed the initial commit of a GitHub repository called <code>openai/math</code>. It contained 719 manuscripts organized into 372 result families, produced by an unreleased internal model. According to OpenAI's README, the model was posed approximately 4,000 problems, and each result used, on average, three hours of ChatGPT Pro thinking compute.</p>
+
+<p>Family 102 is titled "The Unique Games Conjecture and optimal approximation thresholds." The principal paper, "The Unique Games Theorem," is dated September 23, 2026, and authored by "OpenAI." It claims to prove: for every fixed epsilon and delta between 0 and 1/2, there exists a deterministic polynomial-time reduction from 3SAT to Unique Games over a fixed finite alphabet, with completeness at least 1 minus epsilon and soundness at most delta. If correct, this resolves the conjecture Khot posed twenty-four years earlier. Family 102 also includes independent direct proofs of NP-hardness for approximating Max-Cut beyond the Goemans-Williamson ratio, Vertex Cover below factor 2, Min-UnCut within any constant factor, and directed feedback vertex set — all on unweighted graphs.</p>
+
+<p>A separate result, family 105, claims the full 2-to-1 Games Conjecture with perfect completeness — a stronger statement than the 4-to-1 result proved by human researchers days earlier. The UGC paper explicitly footnotes that family 105 "is not an input to this proof."</p>
+
+<p>The repository includes Lean 4 formalizations for a subset of the results. For family 102, the formalization covers the UGC gap reduction plus four sub-results: optimal Max-Cut hardness, Vertex Cover factor-two hardness, Min-UnCut constant-factor hardness, and directed feedback vertex set hardness. Each has a Comparator statement file — a tool designed for independent checking. The Comparator defines the theorem as a challenge, using Lean's <code>sorry</code> keyword to mark the statement that the proof library must discharge. The <code>sorry</code> does not mean the proof is missing. It means this file is the interface. The actual proof that discharges it lives in the main library, at <code>OAI/Computability/UniqueGames/Theorem.lean</code>. According to OpenAI, roughly 42% of top-line results across the repository now have formal proofs, a figure reached with the October 7 update.</p>
+
+<p>As of October 10, 2026, no independent human has publicly confirmed or refuted the proof. No public report exists of anyone outside OpenAI compiling the proof library and running the Comparator check. These are not minor caveats. The claimed proof has a machine-checked formalization; it does not yet have independent human review.</p>
+
+<!-- Reenactment 1: The Statement -->
+<div class="ugp-lean-wrap">
+  <div class="ugp-lean-header">lean/ComparatorChallenges/UniqueGamesTheorem.lean</div>
+  <div class="ugp-lean-body" tabindex="0" role="region" aria-label="Lean statement of theorem11 (scrollable)"><span class="ugp-lean-comment">-- For every fixed pair of errors in (0, 1/2), binary 3SAT reduces in</span>
+<span class="ugp-lean-comment">-- polynomial time to translation Unique Games with completeness at least</span>
+<span class="ugp-lean-comment">-- 1 - ε and soundness at most δ.</span>
+<span class="ugp-lean-keyword">theorem</span> theorem11 (ε δ : ℝ)
+    (hε : 0 &lt; ε) (hεhalf : ε &lt; 1 / 2)
+    (hδ : 0 &lt; δ) (hδhalf : δ &lt; 1 / 2) :
+    Nonempty (Explicit.MachineOutputContract.BinaryGapReduction ε δ) := by
+  <span class="ugp-lean-sorry">sorry</span></div>
+  <div class="ugp-lean-annotations">
+    <div class="ugp-lean-ann">
+      <span class="ugp-lean-ann-code">ε, δ</span>
+      <span class="ugp-lean-ann-text">For any pair of error tolerances between 0 and 1/2...</span>
+    </div>
+    <div class="ugp-lean-ann">
+      <span class="ugp-lean-ann-code">BinaryGapReduction</span>
+      <span class="ugp-lean-ann-text">...there exists a polynomial-time reduction from 3SAT to Unique Games...</span>
+    </div>
+    <div class="ugp-lean-ann">
+      <span class="ugp-lean-ann-code">sorry</span>
+      <span class="ugp-lean-ann-text">The Comparator's challenge marker. The actual proof is in the library. This keyword does NOT mean the proof is missing.</span>
+    </div>
+  </div>
+  <div class="ugp-lean-context">Source: github.com/openai/math — Comparator statement file. The proof that discharges this <code>sorry</code> is in <code>OAI/Computability/UniqueGames/Theorem.lean</code>.</div>
+</div>
+    </section>
+    <div class="phantom-wrap">
+      <canvas class="openai-unique-games-proof-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Theorem</strong> — A proof graph assembles node by node on cream. Each new edge fires a violet verification pulse. The finished lattice is dense, alien, and illegible. Three unverified peripheral clusters flare red and dissolve. The structure holds, incomprehensible, then fades to a ghost and restarts.</p>
+    <section class="section" id="line">
+      <h2><span class="num">03 — The Line</span>What Held and What Broke</h2>
+<p>One day after publication, OpenAI withdrew three manuscripts. In "Algebraicity of Weil classes on split abelian eightfolds," a sign error invalidated a stabilization-trace cancellation argument and the construction used by two dependent papers. The three withdrawn papers were:</p>
+
+<ul>
+<li>Algebraicity of Weil classes on split abelian eightfolds</li>
+<li>Algebraicity of Kuga-Satake Correspondences for K3 Surfaces</li>
+<li>The rational Hodge conjecture for products of K3 surfaces</li>
+</ul>
+
+<p>Fourteen other manuscripts were revised. Total formalizations reached 300 of 719, approximately 42%.</p>
+
+<!-- Reenactment 2: The Withdrawal -->
+<div class="ugp-errata-wrap">
+  <div class="ugp-errata-header">history.md — October 7, 2026</div>
+  <div class="ugp-errata-body">
+    <div class="ugp-errata-label">Withdrawals</div>
+    <div class="ugp-errata-desc">In "Algebraicity of Weil classes on split abelian eightfolds" a sign error invalidates a stabilization-trace cancellation argument and the construction used by two dependent papers. As a result, we have withdrawn the following three manuscripts:</div>
+    <ul class="ugp-errata-list" role="list">
+      <li>Algebraicity of Weil classes on split abelian eightfolds</li>
+      <li>Algebraicity of Kuga–Satake Correspondences for K3 Surfaces</li>
+      <li>The rational Hodge conjecture for products of K3 surfaces</li>
+    </ul>
+  </div>
+  <div class="ugp-errata-annotation">None of the three withdrawn papers appear in formalization.yaml. They were never machine-checked.</div>
+  <div class="ugp-errata-context">Source: formalization.yaml, verified by search of the full 1,784-line file. The UGC proof (family 102) does appear in formalization.yaml and has a Lean Comparator configuration.</div>
+</div>
+
+<p>The pattern is suggestive. The three papers that failed were the ones the machine had never checked. The claimed UGC proof, which has a Lean formalization, has not been withdrawn or revised. But this contrast must be held carefully. Approximately 58% of the repository's top-line results are also unformalized, and only three papers were withdrawn. The formalized UGC proof itself has not been independently reviewed by humans. This is a data point, not a controlled result. It suggests that formalization catches errors the manuscripts alone do not. It does not prove that formalization is sufficient.</p>
+
+<p>While OpenAI's model was producing its manuscripts, human mathematicians were racing the same problem. On September 11, 2026, Dor Minzer at MIT received a text message from a friend asking whether he was close to settling one of the most famous open questions in theoretical computer science. Rumors of an OpenAI proof were circulating. Three days later, on September 14, Yumou Fei, Minzer, and Shuo Wang posted a 95-page paper on the Electronic Colloquium on Computational Complexity (report 2026/179) proving the 4-to-1 Games Conjecture with perfect completeness. This is a weaker result than the full 2-to-1 conjecture — four preimages per constraint rather than two. OpenAI's family 105 claims the full 2-to-1 result. The two are distinct.</p>
+
+<p>Ryan O'Donnell of Carnegie Mellon described the Minzer/Fei/Wang paper: "They solved the problem in the old-fashioned way, with their minds, and wrote it with their own fingers." Minzer acknowledged that his own team's paper still needed fleshing out: "From section 6 onward, there are literally no connecting words," he said of it. "We felt the need to apologize for that." He also said: "There is a lot of value in failing and knowing why you failed. Using AI takes all of this out." Mark Braverman of Princeton, speaking in September before the release, said: "Math by press release is not that healthy for math. There is a lot of uncertainty and unpleasantness that we already are experiencing."</p>
+
+<!-- Reenactment 3: 26 Days -->
+<div class="ugp-timeline-wrap">
+  <div class="ugp-timeline-header">26 Days</div>
+  <div class="ugp-timeline-body">
+    <div class="ugp-tl-item">
+      <div class="ugp-tl-date">SEPT 11</div>
+      <div class="ugp-tl-content">Open letter: 27 Fields Medalists warn of "severe misalignment." 1,600+ endorsements. <em>Same day: Minzer gets a text — rumors of an OpenAI proof.</em></div>
+    </div>
+    <div class="ugp-tl-item">
+      <div class="ugp-tl-date">SEPT 14</div>
+      <div class="ugp-tl-content">Fei, Minzer, Wang post 95-page 4-to-1 proof on ECCC (report 2026/179).</div>
+    </div>
+    <div class="ugp-tl-item">
+      <div class="ugp-tl-date">SEPT 21</div>
+      <div class="ugp-tl-content">OpenAI announces Advisory Group on Mathematics and AI, hosted at the Institute for Advanced Study.</div>
+    </div>
+    <div class="ugp-tl-item">
+      <div class="ugp-tl-date">SEPT 23</div>
+      <div class="ugp-tl-content">OpenAI's UGC paper dated.</div>
+    </div>
+    <div class="ugp-tl-item">
+      <div class="ugp-tl-date">OCT 6</div>
+      <div class="ugp-tl-content"><strong>Repository published:</strong> 719 manuscripts, 372 families, ~42% formalized.</div>
+    </div>
+    <div class="ugp-tl-item">
+      <div class="ugp-tl-date ugp-tl-alert">OCT 7</div>
+      <div class="ugp-tl-content">Three papers withdrawn (sign error). 14 revised. AHM statement released.</div>
+    </div>
+  </div>
+  <div class="ugp-timeline-span">Sept 11 — Oct 7 &middot; 26 days &middot; 24 years of waiting</div>
+</div>
+    </section>
+    <section class="section" id="signal">
+      <h2><span class="num">04 — Signal</span>What the Proof Does Not Carry</h2>
+<p>The Lean proof assistant checks that the proof derives the formal statement. Lean is trusted infrastructure — its small kernel is designed to be verifiable. But "the proof derives the formal statement" is not the same as "the proof resolves the conjecture as mathematicians understand it." Whether the formal statement in <code>theorem11</code> faithfully captures the Unique Games Conjecture as the mathematical community has debated it for twenty-four years is a separate question — what might be called statement fidelity. The formalization scope document matches the paper abstract, but no independent mathematician has publicly confirmed this mapping. Kallel and El Louadi, writing about an earlier OpenAI math release in August 2026 (arXiv 2608.28997), described machine verification as creating "verification abundance while leaving adjudication scarce." Their framework was developed before the October release, but the dynamic they named applies here: the machine can check derivations at scale; it cannot adjudicate whether the derivations answer the right question.</p>
+
+<p>Complexity theorist Dana Moshkovitz has spent her career working on the Unique Games Conjecture. As relayed by her husband, Scott Aaronson, on his blog, she described the proof manuscript as "so horribly written that it's impossible to read it without AI help." The proof, she said, "invents a completely new bizarre code with a noise test" — she called it "some alien craziness." It felt, she said, "like something written by someone who's on psychedelics." Aaronson, a computer science professor at UT Austin with deep expertise in computational complexity, called the day of the release "surely one of the biggest days in mathematical history" — his personal assessment. He also wrote: "it also appears that no human has understood just about any of these proofs yet." This is his observation, not a surveyed finding, but no one has publicly contradicted it. No mathematician has claimed to understand the UGC proof.</p>
+
+<p>The conjecture's originator, Subhash Khot, now at NYU, has not commented publicly as of October 10, 2026.</p>
+
+<p>The response was immediate. The Association for Human Mathematics released a statement on October 7, calling the release "a demonstration of power" rather than scholarship and urging mathematicians to "discontinue their work with OpenAI." Terence Tao reposted the statement on his blog but did not add explicit endorsement. The AHM's organizational standing is opaque: it has no standalone website, the statement was signed by an anonymous "Communications Working Group," and its founding date and membership are unclear. The statement is real; the organization behind it is not well-documented. The AHM also claimed that the Advisory Group on Mathematics and AI had recommended OpenAI stop testing its models on advanced mathematics problems. OpenAI's own framing of the Advisory Group's role was different: according to secondary coverage of OpenAI's announcement, the company stated that the group "will not be responsible for advising us on how to pace our internal progress on mathematics." No primary source for the Advisory Group's specific recommendation has been located. Both claims are on the record. Neither can be independently confirmed from available sources.</p>
+
+<p>What the claimed proof accomplished, if correct, is clear: it would resolve a conjecture that shaped a quarter-century of theoretical computer science. What it left undone is also clear. The Lean formalization answered "does this follow?" — and, by OpenAI's own check, the answer is yes. It did not answer "why?" The three withdrawn papers showed what happens without even that first check. But the checked proof, the one that held, remains a structure a machine can verify and no human can yet read. Subhash Khot spent twenty-four years on a conjecture. If the claimed proof is correct, the conjecture is now a theorem — resolved not by the community that sustained it, but by a model that was never named, in a manuscript that reads, by one expert's account as relayed by Aaronson, like something written by someone on psychedelics. The question it settled is closed. The question it opened — whether a proof that cannot be understood still counts as knowledge — is not.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.openai-unique-games-proof-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  /* ── colours from computed styles ── */
+  const cs = getComputedStyle(document.documentElement);
+  const BG_COLOR = cs.getPropertyValue('--bg').trim() || '#f5f0e8';
+  const STORY_HEX = cs.getPropertyValue('--story').trim() || '#7c3aed';
+  const ACCENT_HEX = cs.getPropertyValue('--accent').trim() || '#c8963e';
+
+  function hexRgb(h: string): [number, number, number] {
+    const c = h.replace('#', '');
+    return [parseInt(c.slice(0, 2), 16), parseInt(c.slice(2, 4), 16), parseInt(c.slice(4, 6), 16)];
+  }
+
+  const [vR, vG, vB] = hexRgb(STORY_HEX.startsWith('#') ? STORY_HEX : '#7c3aed');
+  const [aR, aG, aB] = hexRgb(ACCENT_HEX.startsWith('#') ? ACCENT_HEX : '#c8963e');
+  // Red for the unverified flare
+  const fR = 255, fG = 77, fB = 77;
+  // Dark ink for nodes/edges on cream
+  const iR = 26, iG = 26, iB = 23;
+
+  /* ── state ── */
+  let W = 0, H = 0, raf = 0, frame = 0;
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  });
+  ro.observe(canvas);
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── cycle: 1560 frames = 26s at 60fps ── */
+  const CYCLE = 1560;
+  const P_ASSEMBLY_END = 900;      // 0-15s: nodes appear one by one
+  const P_UNVERIFIED_END = 1080;   // 15-18s: peripheral clusters appear, flare, dissolve
+  const P_HOLD_END = 1380;         // 18-23s: completed structure wobbles gently
+  // 23-26s: fade to ghost, reset
+
+  /* ── proof graph data ── */
+  const MAX_MAIN = 50;
+  const MAX_UNVERIFIED = 9; // 3 clusters x 3 nodes
+  const MAX_EDGES = 120;
+  const MAX_PULSES = 20;
+
+  type ProofNode = {
+    x: number; y: number; tx: number; ty: number;
+    r: number; alpha: number; born: number;
+    cluster: number; // 0=main, 1-3=unverified clusters
+    alive: boolean; shrink: number;
+  };
+
+  type ProofEdge = {
+    a: number; b: number; alpha: number;
+    verified: boolean; flare: number; born: number;
+  };
+
+  type Pulse = {
+    edge: number; progress: number; alpha: number; speed: number;
+  };
+
+  const nodes: ProofNode[] = [];
+  const edges: ProofEdge[] = [];
+  const pulses: Pulse[] = [];
+
+  let nextNodeFrame = 0;
+  let nodesAdded = 0;
+  let unverifiedPhaseStart = 0;
+  let globalFade = 1;
+
+  /* ── geometry helpers ── */
+  const cx = () => W / 2;
+  const cy = () => H / 2;
+
+  function dist(ax: number, ay: number, bx: number, by: number): number {
+    const dx = ax - bx, dy = ay - by;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  function edgeLen(e: ProofEdge): number {
+    const na = nodes[e.a], nb = nodes[e.b];
+    return dist(na.x, na.y, nb.x, nb.y);
+  }
+
+  /* ── deterministic seeded random for reproducible layout ── */
+  let seed = 1;
+  function srand(): number {
+    seed = (seed * 16807 + 0) % 2147483647;
+    return (seed - 1) / 2147483646;
+  }
+
+  /* ── init / reset ── */
+  function resetGraph() {
+    nodes.length = 0;
+    edges.length = 0;
+    pulses.length = 0;
+    nodesAdded = 0;
+    nextNodeFrame = 12;
+    unverifiedPhaseStart = 0;
+    globalFade = 1;
+    seed = 1 + (frame | 0); // slightly different layout each cycle
+  }
+
+  /* ── add a main-graph node with force-directed offset ── */
+  function addMainNode(cf: number) {
+    if (nodesAdded >= MAX_MAIN) return;
+
+    let nx: number, ny: number;
+    const spread = Math.min(W * 0.38, H * 0.38, 160);
+
+    if (nodesAdded === 0) {
+      // First node near center
+      nx = cx() + (srand() - 0.5) * 20;
+      ny = cy() + (srand() - 0.5) * 20;
+    } else {
+      // Pick a random existing node to branch from
+      const parent = nodes[(srand() * nodesAdded) | 0];
+      const angle = srand() * Math.PI * 2;
+      // Early nodes: short distances (orderly). Later: longer distances (tangled)
+      const progression = nodesAdded / MAX_MAIN;
+      const minD = 18 + progression * 30;
+      const maxD = 30 + progression * 60;
+      const d = minD + srand() * (maxD - minD);
+      nx = parent.x + Math.cos(angle) * d;
+      ny = parent.y + Math.sin(angle) * d;
+
+      // Clamp to canvas bounds with padding
+      const pad = 30;
+      nx = Math.max(pad, Math.min(W - pad, nx));
+      ny = Math.max(pad, Math.min(H - pad, ny));
+
+      // Keep within spread radius of center
+      const dc = dist(nx, ny, cx(), cy());
+      if (dc > spread) {
+        const a2 = Math.atan2(ny - cy(), nx - cx());
+        nx = cx() + Math.cos(a2) * (spread - 5);
+        ny = cy() + Math.sin(a2) * (spread - 5);
+      }
+
+      // Push away from existing nodes that are too close
+      for (let i = 0; i < nodesAdded; i++) {
+        const dd = dist(nx, ny, nodes[i].x, nodes[i].y);
+        if (dd < 14 && dd > 0) {
+          const pushAngle = Math.atan2(ny - nodes[i].y, nx - nodes[i].x);
+          nx += Math.cos(pushAngle) * (14 - dd);
+          ny += Math.sin(pushAngle) * (14 - dd);
+        }
+      }
+    }
+
+    const idx = nodes.length;
+    nodes.push({
+      x: nx, y: ny, tx: nx, ty: ny,
+      r: 3 + srand() * 1.2,
+      alpha: 0, born: cf,
+      cluster: 0, alive: true, shrink: 1
+    });
+    nodesAdded++;
+
+    // Connect to 1-3 nearest existing main nodes
+    if (idx > 0) {
+      const candidates: { i: number; d: number }[] = [];
+      for (let i = 0; i < idx; i++) {
+        if (nodes[i].cluster !== 0) continue;
+        candidates.push({ i, d: dist(nx, ny, nodes[i].x, nodes[i].y) });
+      }
+      candidates.sort((a, b) => a.d - b.d);
+
+      const numEdges = Math.min(candidates.length, 1 + ((srand() * 3) | 0));
+      for (let e = 0; e < numEdges; e++) {
+        if (edges.length >= MAX_EDGES) break;
+        const edgeIdx = edges.length;
+        edges.push({
+          a: idx, b: candidates[e].i,
+          alpha: 0, verified: true, flare: 0, born: cf
+        });
+        // Fire a verification pulse
+        if (pulses.length < MAX_PULSES) {
+          pulses.push({
+            edge: edgeIdx,
+            progress: 0,
+            alpha: 1,
+            speed: 2.5 + srand() * 1.5
+          });
+        }
+      }
+
+      // Later nodes: add 0-1 long-range cross-connections
+      const progression = nodesAdded / MAX_MAIN;
+      if (progression > 0.35 && srand() < progression * 0.5 && candidates.length > 4) {
+        const farIdx = 3 + ((srand() * (candidates.length - 3)) | 0);
+        if (farIdx < candidates.length && edges.length < MAX_EDGES) {
+          const edgeIdx = edges.length;
+          edges.push({
+            a: idx, b: candidates[farIdx].i,
+            alpha: 0, verified: true, flare: 0, born: cf
+          });
+          if (pulses.length < MAX_PULSES) {
+            pulses.push({
+              edge: edgeIdx,
+              progress: 0,
+              alpha: 1,
+              speed: 2 + srand() * 1
+            });
+          }
+        }
+      }
+    }
+  }
+
+  /* ── add unverified peripheral clusters ── */
+  function addUnverifiedClusters(cf: number) {
+    if (unverifiedPhaseStart > 0) return; // already added
+    unverifiedPhaseStart = cf;
+
+    const spread = Math.min(W * 0.38, H * 0.38, 160);
+    // Place 3 clusters at the periphery
+    const clusterAngles = [
+      Math.PI * 0.15 + srand() * 0.3,
+      Math.PI * 0.85 + srand() * 0.3,
+      Math.PI * 1.55 + srand() * 0.3
+    ];
+
+    for (let c = 0; c < 3; c++) {
+      const cAngle = clusterAngles[c];
+      const cDist = spread + 20 + srand() * 15;
+      const basex = cx() + Math.cos(cAngle) * cDist;
+      const basey = cy() + Math.sin(cAngle) * cDist;
+      const clusterSize = 2 + ((srand() * 2) | 0); // 2 or 3 nodes
+      const clusterStartIdx = nodes.length;
+
+      for (let n = 0; n < clusterSize; n++) {
+        const nAngle = (n / clusterSize) * Math.PI * 2 + srand() * 0.5;
+        const nDist = 8 + srand() * 10;
+        const nx = Math.max(20, Math.min(W - 20, basex + Math.cos(nAngle) * nDist));
+        const ny = Math.max(20, Math.min(H - 20, basey + Math.sin(nAngle) * nDist));
+        nodes.push({
+          x: nx, y: ny, tx: nx, ty: ny,
+          r: 3 + srand() * 1,
+          alpha: 0, born: cf,
+          cluster: c + 1, alive: true, shrink: 1
+        });
+      }
+
+      // Connect nodes within cluster (no pulses!)
+      for (let i = clusterStartIdx; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          if (nodes[j].cluster !== c + 1) continue;
+          if (edges.length >= MAX_EDGES) break;
+          edges.push({
+            a: i, b: j,
+            alpha: 0, verified: false, flare: 0, born: cf
+          });
+        }
+      }
+    }
+  }
+
+  /* ── update ── */
+  function update() {
+    const cf = frame % CYCLE;
+
+    if (cf === 0) {
+      resetGraph();
+    }
+
+    /* Phase 1: Assembly */
+    if (cf < P_ASSEMBLY_END) {
+      globalFade = 1;
+      // Add nodes at regular intervals (~every 18 frames = ~0.3s)
+      if (cf >= nextNodeFrame && nodesAdded < MAX_MAIN) {
+        addMainNode(cf);
+        nextNodeFrame = cf + 14 + ((srand() * 8) | 0);
+      }
+
+      // Fade in new nodes
+      for (const n of nodes) {
+        const age = cf - n.born;
+        if (age < 30) {
+          n.alpha = Math.min(0.18, (age / 30) * 0.18);
+        } else {
+          n.alpha = 0.18;
+        }
+      }
+
+      // Fade in new edges
+      for (const e of edges) {
+        const age = cf - e.born;
+        if (age < 40) {
+          e.alpha = (age / 40) * 0.1;
+        } else {
+          e.alpha = 0.1;
+        }
+      }
+    }
+    /* Phase 2: Unverified clusters appear, flare, dissolve */
+    else if (cf < P_UNVERIFIED_END) {
+      if (unverifiedPhaseStart === 0) {
+        addUnverifiedClusters(cf);
+      }
+
+      const elapsed = cf - unverifiedPhaseStart;
+      const flareStart = 90; // 1.5s in
+
+      // Fade in unverified nodes and edges
+      for (const n of nodes) {
+        if (n.cluster > 0) {
+          const age = cf - n.born;
+          if (elapsed < flareStart) {
+            n.alpha = Math.min(0.15, (age / 20) * 0.15);
+          }
+        }
+      }
+      for (const e of edges) {
+        if (!e.verified) {
+          const age = cf - e.born;
+          if (elapsed < flareStart) {
+            e.alpha = Math.min(0.08, (age / 20) * 0.08);
+          }
+        }
+      }
+
+      // Flare and dissolve
+      if (elapsed >= flareStart) {
+        const flareProgress = (elapsed - flareStart) / (P_UNVERIFIED_END - unverifiedPhaseStart - flareStart);
+
+        for (const e of edges) {
+          if (!e.verified) {
+            if (flareProgress < 0.3) {
+              e.flare = flareProgress / 0.3;
+              e.alpha = 0.08 + e.flare * 0.35;
+            } else {
+              e.flare = Math.max(0, 1 - (flareProgress - 0.3) / 0.7);
+              e.alpha = e.flare * 0.3;
+            }
+          }
+        }
+        for (const n of nodes) {
+          if (n.cluster > 0) {
+            if (flareProgress < 0.3) {
+              n.alpha = 0.15 + (flareProgress / 0.3) * 0.3;
+            } else {
+              const shrinkT = (flareProgress - 0.3) / 0.7;
+              n.shrink = Math.max(0, 1 - shrinkT);
+              n.alpha = Math.max(0, 0.45 * (1 - shrinkT));
+              if (n.shrink <= 0) n.alive = false;
+            }
+          }
+        }
+      }
+
+      // Main structure stays steady
+      for (const n of nodes) {
+        if (n.cluster === 0) n.alpha = 0.18;
+      }
+      for (const e of edges) {
+        if (e.verified) e.alpha = 0.1;
+      }
+    }
+    /* Phase 3: Hold — gentle wobble */
+    else if (cf < P_HOLD_END) {
+      for (const n of nodes) {
+        if (n.cluster === 0 && n.alive) {
+          n.x = n.tx + Math.sin(cf * 0.015 + n.tx * 0.02) * 0.8;
+          n.y = n.ty + Math.cos(cf * 0.018 + n.ty * 0.02) * 0.8;
+          n.alpha = 0.18;
+        }
+      }
+      for (const e of edges) {
+        if (e.verified) e.alpha = 0.1;
+      }
+    }
+    /* Phase 4: Fade out */
+    else {
+      const fadeT = (cf - P_HOLD_END) / (CYCLE - P_HOLD_END);
+      globalFade = Math.max(0, 1 - fadeT);
+
+      // Wobble continues during fade
+      for (const n of nodes) {
+        if (n.cluster === 0 && n.alive) {
+          n.x = n.tx + Math.sin(cf * 0.015 + n.tx * 0.02) * 0.8;
+          n.y = n.ty + Math.cos(cf * 0.018 + n.ty * 0.02) * 0.8;
+        }
+      }
+    }
+
+    // Update pulses
+    for (let i = pulses.length - 1; i >= 0; i--) {
+      const p = pulses[i];
+      const e = edges[p.edge];
+      if (!e) { pulses.splice(i, 1); continue; }
+      const len = edgeLen(e);
+      p.progress += p.speed / (len || 1);
+      if (p.progress >= 1) {
+        p.alpha -= 0.05;
+      }
+      if (p.alpha <= 0 || p.progress > 1.3) {
+        pulses.splice(i, 1);
+      }
+    }
+  }
+
+  /* ── draw ── */
+  function draw() {
+    ctx.fillStyle = BG_COLOR;
+    ctx.fillRect(0, 0, W, H);
+
+    if (W === 0 || H === 0) return;
+
+    ctx.save();
+
+    // Draw edges
+    ctx.lineWidth = 1;
+    for (const e of edges) {
+      if (e.alpha <= 0) continue;
+      const na = nodes[e.a], nb = nodes[e.b];
+      if (!na || !nb) continue;
+      if (!na.alive && na.cluster > 0) continue;
+      if (!nb.alive && nb.cluster > 0) continue;
+
+      const a = e.alpha * globalFade;
+      if (a <= 0) continue;
+
+      if (e.flare > 0 && !e.verified) {
+        // Red flare for unverified edges
+        const blend = e.flare;
+        const r2 = Math.round(iR + (fR - iR) * blend);
+        const g2 = Math.round(iG + (fG - iG) * blend);
+        const b2 = Math.round(iB + (fB - iB) * blend);
+        ctx.strokeStyle = `rgba(${r2},${g2},${b2},${a.toFixed(3)})`;
+        ctx.lineWidth = 1 + blend * 1.5;
+      } else {
+        ctx.strokeStyle = `rgba(${iR},${iG},${iB},${a.toFixed(3)})`;
+        ctx.lineWidth = 1;
+      }
+
+      ctx.beginPath();
+      ctx.moveTo(na.x, na.y);
+      ctx.lineTo(nb.x, nb.y);
+      ctx.stroke();
+    }
+
+    // Draw verification pulses
+    for (const p of pulses) {
+      const e = edges[p.edge];
+      if (!e) continue;
+      const na = nodes[e.a], nb = nodes[e.b];
+      if (!na || !nb) continue;
+
+      const t = Math.min(1, Math.max(0, p.progress));
+      const px = na.x + (nb.x - na.x) * t;
+      const py = na.y + (nb.y - na.y) * t;
+      const pa = p.alpha * globalFade;
+      if (pa <= 0) continue;
+
+      // Glow
+      ctx.globalAlpha = pa * 0.3;
+      ctx.fillStyle = `rgb(${vR},${vG},${vB})`;
+      ctx.beginPath();
+      ctx.arc(px, py, 6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Core
+      ctx.globalAlpha = pa * 0.8;
+      ctx.fillStyle = `rgb(${vR},${vG},${vB})`;
+      ctx.beginPath();
+      ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.globalAlpha = 1;
+    }
+
+    // Draw nodes
+    for (const n of nodes) {
+      if (!n.alive && n.cluster > 0) continue;
+      const a = n.alpha * globalFade;
+      if (a <= 0) continue;
+      const r = n.r * n.shrink;
+      if (r <= 0) continue;
+
+      if (n.cluster > 0 && n.alpha > 0.2) {
+        // Flaring unverified node — blend toward red
+        const blend = Math.min(1, (n.alpha - 0.15) / 0.3);
+        const nr = Math.round(iR + (fR - iR) * blend);
+        const ng = Math.round(iG + (fG - iG) * blend);
+        const nb2 = Math.round(iB + (fB - iB) * blend);
+
+        // Glow
+        ctx.globalAlpha = a * 0.25;
+        ctx.fillStyle = `rgb(${nr},${ng},${nb2})`;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, r * 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Core
+        ctx.globalAlpha = a;
+        ctx.fillStyle = `rgb(${nr},${ng},${nb2})`;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        // Normal dark ink node
+        // Soft glow
+        ctx.globalAlpha = a * 0.2;
+        ctx.fillStyle = `rgb(${iR},${iG},${iB})`;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, r * 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Core
+        ctx.globalAlpha = a;
+        ctx.fillStyle = `rgb(${iR},${iG},${iB})`;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
+  /* ── static frame for reduced motion ── */
+  function drawStatic() {
+    // Build the full graph deterministically
+    seed = 42;
+    nodes.length = 0;
+    edges.length = 0;
+    pulses.length = 0;
+    nodesAdded = 0;
+
+    for (let i = 0; i < MAX_MAIN; i++) {
+      addMainNode(i * 18);
+    }
+
+    // Set all nodes/edges to final state
+    for (const n of nodes) {
+      n.alpha = 0.18;
+    }
+    for (const e of edges) {
+      e.alpha = 0.1;
+    }
+    globalFade = 1;
+    draw();
+  }
+
+  /* ── tick ── */
+  function tick() {
+    frame++;
+    update();
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  /* ── init ── */
+  requestAnimationFrame(() => {
+    resetGraph();
+    if (prefersReduced) {
+      drawStatic();
+    } else {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) { if (!raf) raf = requestAnimationFrame(tick); }
+        else { cancelAnimationFrame(raf); raf = 0; }
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+
+      window.addEventListener('pagehide', () => { cancelAnimationFrame(raf); io.disconnect(); ro.disconnect(); });
+    }
+  });
+})();
+</script>
