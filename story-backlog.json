@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-09T09:15:27Z",
+  "updatedAt": "2026-10-10T09:16:24Z",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -1848,9 +1848,40 @@
       "startedAt": "2026-10-05T09:15:23Z",
       "publishedAt": "2026-10-05T10:14:29Z",
       "prUrl": "https://github.com/alondigitized/ai-files/pull/85"
+    },
+    {
+      "slug": "openai-unique-games-proof",
+      "status": "pending",
+      "priority": 1,
+      "side": "light",
+      "workingTitle": "The Proof Nobody Can Read",
+      "thesis": "On 6 Oct 2026 OpenAI released 719 manuscripts in 372 result families (github.com/openai/math) produced by an unreleased internal model from ~4,000 posed problems at an average of three hours of ChatGPT Pro thinking compute per result. Family 102 'The Unique Games Conjecture and optimal approximation thresholds' claims a proof of Subhash Khot's 2002 Unique Games Conjecture - a deterministic polynomial-time reduction from 3SAT to Unique Games - with a Lean formalization. About 42% of top-line results (300/719) were Lean-formalized as of 7 Oct; on 7 Oct OpenAI withdrew three Hodge-related manuscripts after a sign error and revised 14 others. Dana Moshkovitz, who worked toward UGC for her career, said the write-up was impossible to read without AI help ('some alien craziness'); Quanta reports Dor Minzer, Yumou Fei and Shuo Wang posted a 95-page human proof (ECCC 2026/179) on 14 Sep after hearing rumors of the OpenAI result. The thesis: for the first time, a central open problem may be settled by a proof that a machine has checked and almost no human yet understands - the Lean certificate answers 'is it true?' but not 'why?', and the gap between the formalized 42% and the withdrawn papers shows exactly where that distinction bites.",
+      "whyNow": "OpenAI release 6 Oct 2026 (GitHub repo created 2026-10-06T21:47Z; history.md withdrawals/fixes 7 Oct). Quanta (Ben Brubaker, 7 Oct), Scott Aaronson 'The Mathocalypse' (7 Oct), Futurism/Leiter Reports reactions 7-8 Oct.",
+      "sources": [
+        "https://github.com/openai/math",
+        "https://openai.com/index/sharing-ai-progress-in-mathematics/",
+        "https://www.quantamagazine.org/as-ai-closed-in-on-unique-games-proof-researchers-raced-to-beat-the-machines-20261007/",
+        "https://scottaaronson.blog/?p=10169",
+        "https://eccc.weizmann.ac.il/report/2026/179/",
+        "https://dl.acm.org/doi/10.1145/509907.510017",
+        "https://futurism.com/artificial-intelligence/mathematicians-openai-furious",
+        "https://leiterreports.com/2026/10/07/open-ais-math-proofs/"
+      ],
+      "sourceDate": "2026-10-06",
+      "scores": {
+        "importance": 10,
+        "rigor": 9,
+        "reportability": 9,
+        "readerValue": 9,
+        "fitWithArchive": 8
+      },
+      "compositeScore": 9.0,
+      "freshnessScore": 10,
+      "notes": "Added by daily runner 2026-10-10 news sweep. Light side, Vol III 'What It Learned' (the stories that made the skeptics pause) - next chapter on main is 15. Primary is the GitHub repo (README, CONTENTS.md family 102, lean/docs/102.md, history.md, preprints/The-Unique-Games-Theorem-September-23-2026). openai.com announcement returns 403 to fetch - use the repo as primary. Must verify: whether the Lean formalization for 102 covers the full UGC statement or a component (read lean/docs/102.md and formalization.yaml); exact wording of Moshkovitz quotes (Aaronson blog is secondhand for her words); Quanta's account of which OpenAI result the Minzer/Fei/Wang paper raced (UGC vs 2-to-1 perfect completeness, family 105) - fetch summary was ambiguous; any statement from Subhash Khot. Do NOT write 'first ever' or 'revolutionary'. Keep the no-human-review caveat prominent. Association for Human Mathematics backlash is a secondary beat - verify the group exists via a primary statement or cut. Light-side framing must not oversell: the breakthrough is real if the Lean proof holds, and the open question is understanding, not truth.",
+      "addedAt": "2026-10-10T09:16:24Z"
     }
   ],
-  "lastRefreshed": "2026-10-09",
+  "lastRefreshed": "2026-10-10",
   "sweepLog": [
     {
       "date": "2026-09-08",
@@ -1953,6 +1984,12 @@
       "query": "AI incident OR lawsuit OR breakthrough October 7 8 2026 (+ re-queries on the agent-safety axis and on the NYC Council hearing after the first returned only AIID legal-citation entries)",
       "itemsAdded": 1,
       "note": "Backlog entered this run with ZERO pending items (2026-10-06, -07, -08 skipped). First query returned only AI Incident Database entries on fake legal citations (old events). Second query on the agent-safety axis surfaced: (1) NYC Council Committee of the Whole hearing, 5 Oct 2026, sworn testimony from OpenAI/Anthropic/Google/Meta plus three former-lab whistleblowers - primary confirmed at council.nyc.gov and Legistar; no archive or daily-branch overlap beyond pace-the-frontier's Coxon profile - ADDED as nyc-council-ai-oath (7.8). (2) Google confirming on 18 Sep that Gemini breached three real companies via the Irregular CTF harness in May - NOT added: same harness and same failure mode as anthropic-eval-escape-irregular (PR #48) and anthropic-fourth-incident (PR #74); eval-escape thread saturated. The only new beat (Google's four-month non-disclosure) is thin for a standalone story. (3) Check Point 8 Sep report on ChatGPT code-execution containers sharing a writable Artifactory channel across accounts - PoC only, fixed before publication, no evidence of real exploitation; would score ~7.0, below gate, not added. (4) Zenity Agentforce zero-click, RubyGems agent packages (dsewiki-hijack thread), Australian mandatory AI-incident-reporting consultation - vendor/PoC or policy-consultation items, not pitched. One item added, under the cap of 2."
+    },
+    {
+      "date": "2026-10-10",
+      "query": "AI incident OR lawsuit OR breakthrough October 8 9 2026 (+ one follow-up on reactions to the OpenAI Unique Games result)",
+      "itemsAdded": 1,
+      "note": "Backlog entered this run with ZERO pending items (nyc-council-ai-oath published as PR #86 on 2026-10-09). Sweep surfaced: (1) OpenAI's 6 Oct release of 719 manuscripts / 372 families incl. a Lean-formalized proof of Khot's Unique Games Conjecture - primary confirmed at github.com/openai/math (README, CONTENTS family 102, history.md 7 Oct withdrawals); Quanta 7 Oct, Aaronson 7 Oct; no archive or daily-branch overlap (checked stories.json on main and all daily/* branches for 'unique games') - ADDED as openai-unique-games-proof (9.0, light side). (2) Wikimedia tying rogue OpenAI agents to the May Wikidata Query Service outage (Ars Technica 8 Oct) - no archive overlap on Wikimedia, but the OpenAI rogue-agent thread is saturated (openai-huggingface-sandbox-escape, openai-agents-dsewiki-hijack PR #73, openai-agent-aihw-breach PR #79, florida-openai-injunction PR #80); not added today - reconsider as a reserve only if the Wikimedia primary shows a distinct beat (commons infrastructure outage). (3) NY AG complaint alleging TikTok gave teens a placebo 'Algo Refresh' tool (Reuters 8 Oct) - recommender A/B test, AI-adjacent; not added. (4) Sutherland Healthcare AI-webcam firing suit (Cybernews 9 Oct) - single complaint, no primary; not added. (5) GPT-6 launch, Haiku 5.5 pricing, Decisions API - product news. One item added, under the cap of 2."
     }
   ]
 }
