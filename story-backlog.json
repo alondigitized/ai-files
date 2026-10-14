@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-13T09:16:18Z",
+  "updatedAt": "2026-10-14T09:14:15Z",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -1942,7 +1942,7 @@
       },
       "compositeScore": 8.2,
       "freshnessScore": 9,
-      "notes": "Added by daily runner 2026-10-13 news sweep. Not in archive, backlog or any daily branch (searched divd/zammad/dutch). Adjacent but distinct from gtig-ai-zero-day (PR #39; AI-built 2FA-bypass exploit disrupted before deployment), taiwan-autonomous-agent-attack (PR #58; state-target campaign per a vendor report), anthropic-mythos-glasswing (PR #26; lab-held zero-day capability). New axis: the victim is the disclosure system itself, and the attack was actually executed against a named defender who published its own forensic case file. fitWithArchive 7 for thread adjacency. CAVEATS for research: (1) AI-agent involvement is DIVD's INFERENCE from artifacts - do not state as proven; DIVD-2026-00014 reads 'after gaining root access, they deployed AI agents', so whether the zero-days themselves were found by AI is NOT established - press headlines ('AI agent used zero-days') overstate; verify. (2) No attribution to any lab, model or actor. (3) Press dates conflict (Help Net Security says DIVD revealed breach 24 Sep; some outlets frame 1 Oct as disclosure) - use DIVD timeline. (4) Data exposed: DIVD's separate overview page - fetch it; do not guess. (5) Verify '19 minutes / 19 hours / 9 hours' and the 'loud and very very messy' / 'at the speed of light' quotes against DIVD's LinkedIn or blog primaries. (6) Zammad advisory: zammad.com/en/advisories/... - confirm patched versions (7.2 / 7.2.2).",
+      "notes": "Added by daily runner 2026-10-13 news sweep. Not in archive, backlog or any daily branch (searched divd/zammad/dutch). Adjacent but distinct from gtig-ai-zero-day (PR #39; AI-built 2FA-bypass exploit disrupted before deployment), taiwan-autonomous-agent-attack (PR #58; state-target campaign per a vendor report), anthropic-mythos-glasswing (PR #26; lab-held zero-day capability). New axis: the victim is the disclosure system itself, and the attack was actually executed against a named defender who published its own forensic case file. fitWithArchive 7 for thread adjacency. CAVEATS for research: (1) AI-agent involvement is DIVD's INFERENCE from artifacts - do not state as proven; DIVD-2026-00014 reads 'after gaining root access, they deployed AI agents', so whether the zero-days themselves were found by AI is NOT established - press headlines ('AI agent used zero-days') overstate; verify. (2) No attribution to any lab, model or actor. (3) Press dates conflict (Help Net Security says DIVD revealed breach 24 Sep; some outlets frame 1 Oct as disclosure) - use DIVD timeline. (4) Data exposed: DIVD's separate overview page - fetch it; do not guess. (5) Verify '19 minutes / 19 hours / 9 hours' and the 'loud and very very messy' / 'at the speed of light' quotes against DIVD's LinkedIn or blog primaries. (6) Zammad advisory: zammad.com/en/advisories/... - confirm patched versions (7.2 / 7.2.2). | 2026-10-14: 2026-10-13 run stalled after all five gates passed (source go-with-caveats, copy PASS, fact PASS, security PASS, a11y PASS) before card render/PR; resumed by the 2026-10-14 run on a fresh branch from main.",
       "addedAt": "2026-10-13T09:16:08Z",
       "startedAt": "2026-10-13T09:16:18Z"
     },
@@ -1973,7 +1973,7 @@
       "addedAt": "2026-10-13T09:16:08Z"
     }
   ],
-  "lastRefreshed": "2026-10-13",
+  "lastRefreshed": "2026-10-14",
   "sweepLog": [
     {
       "date": "2026-09-08",
@@ -2100,6 +2100,12 @@
       "query": "AI incident OR lawsuit OR breakthrough October 11 12 2026 (+ re-queries on the agent-incident and AI-science axes, and primary checks on DIVD case pages)",
       "itemsAdded": 2,
       "note": "Backlog entered this run with ZERO pending items (claude-philly-homicide-tip published as PR #88). No freshness decay needed. Sweep surfaced: (1) Kentucky AG unredacted Character.AI complaint (11 Oct) - update to a suit already drafted as character-ai-kentucky (2026-04-14 branch); not added. (2) Nadella 'emergency brake', White House mandatory incident reporting, GPT-Rosalind-discovery pricing page - policy/product, already noted 10-12. (3) DIVD breach via two Zammad zero-days with AI agents per DIVD's own case files (DIVD-2026-00014/00015, 21 Sep attack, disclosed 24 Sep-1 Oct) - not in archive/backlog/branches - ADDED as divd-zammad-agent-breach (8.2). (4) Anthropic ART enzyme system found by ~950 Claude agents (24 Sep, preprint) - ADDED as reserve anthropic-art-enzyme (7.8, light). (5) OpenAI Astra shelving - covered (openai-astra-pause). Two items added, at the cap."
+    },
+    {
+      "date": "2026-10-14",
+      "query": "AI incident OR lawsuit OR breakthrough October 2026",
+      "itemsAdded": 0,
+      "note": "Freshness: anthropic-art-enzyme (source 2026-09-24, 20 days) stays 9; no other pending items. Sweep surfaced only incidentdatabase/OECD entries; newest was Reuters 2 Oct - judge warns firms after Harvey-assisted drafting errors (Shapiro Arato Bach, no sanctions) - hallucinated-citation pattern already covered by ai-lawyer; not added. In-progress divd-zammad-agent-breach (stalled 10-13 run, all gates passed) resumed as today's story."
     }
   ]
 }
