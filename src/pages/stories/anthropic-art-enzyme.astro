@@ -1,0 +1,585 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'anthropic-art-enzyme')!;
+---
+
+<style is:global>
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .anthropic-art-enzyme-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* === REENACTMENT 1 -- THE TRANSCRIPT (agent session log) === */
+  .art-term-wrap {
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .art-term-header {
+    font-family: 'Courier New', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--story);
+    font-weight: 700;
+    padding: 0.55rem 1.4rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .art-term-meta {
+    font-family: 'Courier New', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    padding: 0.8rem 1.4rem 0;
+    line-height: 1.5;
+  }
+  .art-term-body {
+    padding: 0.8rem 1.4rem 1.2rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .art-term-repeat {
+    color: var(--story);
+    font-weight: 700;
+  }
+  .art-term-emph {
+    font-weight: 700;
+    color: var(--text);
+  }
+  .art-term-context {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+    padding: 0.55rem 1.4rem;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    line-height: 1.5;
+  }
+
+  /* === REENACTMENT 2 -- THE RERUNS (campaign ledger) === */
+  .art-ledger-wrap {
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .art-ledger-header {
+    font-family: 'Courier New', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--story);
+    font-weight: 700;
+    padding: 0.55rem 1.4rem;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  .art-ledger-body {
+    padding: 1rem 1.4rem;
+  }
+  .art-ledger-row {
+    display: grid;
+    grid-template-columns: 5.5rem 1fr 6.5rem;
+    gap: 0.6rem;
+    padding: 0.35rem 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    align-items: baseline;
+  }
+  .art-ledger-row:last-child {
+    border-bottom: none;
+  }
+  .art-ledger-row.art-ledger-hit {
+    color: var(--text);
+    font-weight: 700;
+  }
+  .art-ledger-row.art-ledger-hit .art-ledger-result {
+    color: var(--story);
+    font-weight: 700;
+  }
+  .art-ledger-row .art-ledger-result {
+    text-align: right;
+  }
+  .art-ledger-divider {
+    border-top: 2px solid var(--border);
+    margin-top: 0.4rem;
+    padding-top: 0.6rem;
+  }
+  .art-ledger-footer {
+    font-family: 'Courier New', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    padding: 0.6rem 1.4rem;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    line-height: 1.5;
+  }
+  .art-ledger-footer em {
+    font-style: italic;
+  }
+  @media (max-width: 640px) {
+    .art-ledger-row { grid-template-columns: 4.5rem 1fr 5rem; font-size: 0.68rem; }
+  }
+
+  /* === REENACTMENT 3 -- PREPRINT VS PODIUM (split panel) === */
+  .art-split-wrap {
+    margin: 2rem 0;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .art-split-panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .art-split-panel {
+    padding: 1.2rem 1.4rem;
+  }
+  .art-split-panel:first-child {
+    border-right: 1px solid var(--border);
+  }
+  .art-split-label {
+    font-family: 'Courier New', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    line-height: 1.4;
+  }
+  .art-split-panel:first-child .art-split-label {
+    color: var(--muted);
+  }
+  .art-split-panel:last-child .art-split-label {
+    color: var(--story);
+  }
+  .art-split-quote {
+    font-family: 'Courier New', monospace;
+    font-size: 0.78rem;
+    line-height: 1.65;
+    font-style: italic;
+  }
+  .art-split-panel:first-child .art-split-quote {
+    color: var(--muted);
+  }
+  .art-split-panel:last-child .art-split-quote {
+    color: var(--text);
+  }
+  .art-split-note {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: italic;
+    padding: 0.55rem 1.4rem;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    line-height: 1.5;
+    text-align: center;
+  }
+  @media (max-width: 640px) {
+    .art-split-panels { grid-template-columns: 1fr; }
+    .art-split-panel:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+  /* WCAG 1.4.3: muted small text on --surface2 in light theme */
+  :root[data-theme="light"] .art-term-context,
+  :root[data-theme="light"] .art-ledger-footer,
+  :root[data-theme="light"] .art-split-note {
+    color: #5d5548;
+  }
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="context">
+      <h2><span class="num">01 — Context</span>The Locus Nobody Described</h2>
+
+      <p>Partway through a genome-mining campaign that no human was supervising, a worker agent on task t0062 read 2,900 nucleotides of raw phage DNA and wrote: "The L0050 […] flank is spectacular: I can see by eye a tandem repeat array."</p>
+
+      <p>Before that sentence, a gap. In 2021, Korn, Hillhouse, Sun, and Gill published a comparative genomics paper on three novel jumbo bacteriophages infecting <em>Staphylococcus aureus</em>, including the phage MarsHill. They identified MarsHill gp206: a 501-residue protein with a C-terminal retron-like reverse transcriptase domain. Upstream of it sat a 1,200-bp noncoding region they hypothesized contained a retroelement-associated ncRNA. They found no DGR-typical features — no accessory variability determinant, no template repeat, no variable repeat. They did not describe a tandem repeat array. They did not describe a partner gene downstream of the RT. This is the gap.</p>
+
+      <p>In spring 2026, Anthropic formed a life sciences research group and laboratory — BSL-1 and BSL-2, located in the Bay Area, handling no human pathogens. The group designed a genome-mining campaign: give Claude agents a research brief asking them to find novel reverse transcriptase systems based on new partner-gene associations. The brief did not mention repeats or arrays. The campaign ran on Claude Mythos 5 in a sandbox: 119 tasks, up to 58 concurrent sessions, 60 CPU cores, 192 GiB of memory, no GPU. It ran for 21.5 hours of wall-clock time — 77 agent-hours, 215.6 million tokens, 949 sessions — without human intervention.</p>
+    </section>
+    <section class="section" id="the-noticing">
+      <h2><span class="num">02 — The Noticing</span>What Task t0062 Saw</h2>
+
+      <p>The campaign surveyed approximately 1.94 billion protein clusters, recovered roughly 198,290 reverse transcriptase clusters post-filtering across nine RT classes, sampled approximately 11,000 RT loci, and scored 3,564 protein families as candidate partners. Sixteen families passed the agents' selection criteria; a seventeenth was promoted by a follow-up task opened during the campaign. Of the 17 candidates, three were confirmed as previously unreported RT associations. Fourteen were rejected. Three additional flagged RTs were identified as new RT lineages. The campaign concluded with 19 reports.</p>
+
+      <p>The discovery that mattered was not in the 19 reports' main findings. It was a side observation. The task, t0062, had been opened by a supervisor agent to test for a retron-type ncRNA upstream of an RT lineage found in jumbo phages. It read 2,900 nucleotides of upstream DNA from locus L0050 — a 228,907-bp metagenomic contig from the Logan database — directly into its context window. L0050 is not the MarsHill genome. It is a related contig in the same family of jumbo-phage reverse transcriptases. In that raw sequence, the agent recognized something no prior publication had described: a tandem repeat array.</p>
+
+      <!-- Reenactment 1: The Transcript -->
+      <div class="art-term-wrap">
+        <div class="art-term-header">Session t0062 — Worker Agent (Claude Mythos 5)</div>
+        <div class="art-term-meta">Task: test for a retron-type ncRNA upstream of the RT<br>Reading L0050 upstream flank (2,900 nt)...</div>
+        <div class="art-term-body">The L0050 (228,907 bp logan contig) flank is spectacular: I can see by eye a <span class="art-term-emph">tandem repeat array</span>:
+
+        <span class="art-term-repeat">"CATGTGTATCGCATGTT"</span>
+        <span class="art-term-repeat">"CATGTGTTTCGCATGT"</span>
+
+      repeating many times with ~100-180 bp spacers — that's a CRISPR-like or msDNA-like repeat array?!</div>
+        <div class="art-term-context">Verbatim from the agent's reasoning trace (Yoon et al., preprint, Fig. 1E). "Quotations from the session logs are verbatim, including the agents' emphasis marks." Neither the task brief nor the research brief mentioned repeats or arrays.</div>
+      </div>
+
+      <p>The agent was not asked to look for repeats. It read raw nucleotides and recognized a pattern: short repeats of 15-49 nucleotides with a palindromic core of approximately 15 nt, separated by unique spacers of 120-220 bp, in arrays spanning 0.3 to 4.1 kb with 3 to 21 copies per array. It called the pattern "CRISPR-like." It then found a second, unrelated repeat at locus L0020 with the same architecture but a different repeat sequence. The Anthropic preprint's own Discussion confirms the gap the agent filled: "The MarsHill ART locus is an example, as its original genome report identified the RT and proposed a 5' ncRNA, yet described neither the repeats nor the partner gene."</p>
+
+      <p>What emerged from human-directed follow-up sessions: 95 distinct ART RT clusters at 90% identity in jumbo phages and predicted viral contigs, of which 28 carried a detectable repeat array. Three unrelated partner-gene families were identified — Type I with GNAT-like folds (59 of 95 loci), Type II in a <em>Staphylococcus</em> phage clade (all-helical, approximately 270 residues), and Type III in one environmental sub-lineage (approximately 170 residues). In published RNA-seq data from <em>Staphylococcus</em> phage SA1, array-derived RNAs accounted for up to 8% of phage RNAs at 15 minutes post-infection — among the most abundant phage transcripts. In a tournament-style ranking of the campaign's 19 reports, scored by a Mythos 5 judge on impact, novelty, soundness, and actionability, the ART report ranked third.</p>
+    </section>
+
+  </div>
+
+  <div class="phantom-wrap">
+    <canvas class="anthropic-art-enzyme-canvas" aria-hidden="true"></canvas>
+  </div>
+  <p class="canvas-note"><strong>The Sweep</strong> — Scan beams sweep across a field of faint genomic marks. Most pass at full speed and light nothing. One slows, reads closely, and a short periodic repeat flares plum. The beams that follow cross the same spot at full speed, and the marks stay dark.</p>
+
+  <div class="container">
+    <section class="section" id="the-paradox">
+      <h2><span class="num">03 — The Paradox</span>Missed in Every Rerun</h2>
+
+      <p>Anthropic ran the same campaign ten more times. The array was missed in every rerun. The preprint attributes this to "the broad protein search space of RTs and the non-deterministic behavior of the harness." One original campaign plus ten reruns: eleven total. One saw the array.</p>
+
+      <p>The miss was not a failure of intelligence. In two of the ten reruns, workers investigated the MarsHill RT lineage as a follow-up, but none read the upstream DNA where the array sits. The bottleneck was routing. The agents were not steered to the raw sequence. They had other loci to investigate, other tasks to pursue, and no instruction telling them to read that particular stretch of DNA.</p>
+
+      <!-- Reenactment 2: The Reruns -->
+      <div class="art-ledger-wrap">
+        <div class="art-ledger-header">Campaign Log — ART Array Detection</div>
+        <div class="art-ledger-body">
+          <div class="art-ledger-row art-ledger-hit">
+            <span>Original</span>
+            <span>119 tasks, 949 sessions</span>
+            <span class="art-ledger-result">DETECTED</span>
+          </div>
+          <div class="art-ledger-row">
+            <span>Rerun 1</span>
+            <span>same parameters</span>
+            <span class="art-ledger-result">--</span>
+          </div>
+          <div class="art-ledger-row">
+            <span>Rerun 2</span>
+            <span>same parameters</span>
+            <span class="art-ledger-result">--</span>
+          </div>
+          <div class="art-ledger-row">
+            <span>Rerun 3</span>
+            <span>same parameters</span>
+            <span class="art-ledger-result">--</span>
+          </div>
+          <div class="art-ledger-row">
+            <span>Rerun 4</span>
+            <span>same parameters</span>
+            <span class="art-ledger-result">--</span>
+          </div>
+          <div class="art-ledger-row">
+            <span>Rerun 5</span>
+            <span>same parameters</span>
+            <span class="art-ledger-result">--</span>
+          </div>
+          <div class="art-ledger-row">
+            <span>Rerun 6</span>
+            <span>same parameters</span>
+            <span class="art-ledger-result">--</span>
+          </div>
+          <div class="art-ledger-row">
+            <span>Rerun 7</span>
+            <span>same parameters</span>
+            <span class="art-ledger-result">--</span>
+          </div>
+          <div class="art-ledger-row">
+            <span>Rerun 8</span>
+            <span>same parameters</span>
+            <span class="art-ledger-result">--</span>
+          </div>
+          <div class="art-ledger-row">
+            <span>Rerun 9</span>
+            <span>same parameters</span>
+            <span class="art-ledger-result">--</span>
+          </div>
+          <div class="art-ledger-row">
+            <span>Rerun 10</span>
+            <span>same parameters</span>
+            <span class="art-ledger-result">--</span>
+          </div>
+        </div>
+        <div class="art-ledger-footer">1 of 11 campaigns detected the array. <em>"The array was missed in every rerun."</em> — Yoon et al., Anthropic preprint</div>
+      </div>
+
+      <p>Anthropic then built fixed-input benchmarks. When the four most capable models (Opus 5.5, Mythos 5.1, Mythos 5, Opus 5) were given ART DNA sequences directly in their context windows, they described the repeat array in at least 90% of attempts. When given the same sequences as files with tools — the configuration meant to make agents more capable — the rate fell as low as 32% (Opus 5, level 4). The preprint reports that 39% of tool-based attempts never read a contiguous stretch of 200 nucleotides or more. They never saw more than about one repeat unit. The tools meant to help the search routed the agents around the raw data where the noticing happens.</p>
+
+      <p>The preprint frames the tension directly: the discovery required what the authors call "genomic vision" — the model's ability to read raw DNA and recognize patterns. But the campaign architecture that enabled the search also made it unlikely that any single agent would exercise that vision on any particular locus. Two internal Mythos 5 signals ("repeat-signal 1" and "repeat-signal 2") responded to the array; shuffling individual repeat copies silenced them (12 of 14 copies and 14 of 14, respectively). These signals were preselected on synthetic repeats and are not specific to DNA. Genomic language models Evo 2 and gLM2, run on the same L0050 locus, also identified the repeats with high confidence. The capability to see the array was real. The architecture that governed whether any agent would look was stochastic.</p>
+    </section>
+    <section class="section" id="framing-gap">
+      <h2><span class="num">04 — The Framing Gap</span>What Was Said and What Was Known</h2>
+
+      <p>The preprint's Discussion draws its own boundary: "We have not shown that the RT is active or that the unit RNAs are its substrates. Whether the RT and its partner interact, and what the system does for the phage, are currently unknown." The term "gene editing mechanism" appears nowhere in the preprint.</p>
+
+      <p>On September 23, 2026, the same day Anthropic published the preprint, CEO Dario Amodei addressed the UN Security Council. "Just today, Anthropic announced the Claude-led discovery of a new molecular machine," he said. "It's a preliminary finding, but it may constitute a new gene editing mechanism that could have applications in gene therapy." He also said: "We can make profound progress in the near future on diseases that have plagued humanity for millennia." Both quotes are corroborated by AFP reporting. According to a transcript of the hearing, Amodei also stated: "Claude led the literature review, theorizing, and experimental design, and humans ran and verified the experiments in the lab." This specific quote is not corroborated by AFP or any other source. It is contradicted by the preprint, which states that all post-campaign analyses "were carried out in interactive Claude Science sessions, in which the authors directed the analysis and Claude wrote and ran the code." All laboratory work was performed by human scientists.</p>
+
+      <!-- Reenactment 3: Preprint vs. Podium -->
+      <div class="art-split-wrap">
+        <div class="art-split-panels">
+          <div class="art-split-panel">
+            <div class="art-split-label">Anthropic Preprint (23 Sep 2026)</div>
+            <div class="art-split-quote">"We have not shown that the RT is active or that the unit RNAs are its substrates. Whether the RT and its partner interact, and what the system does for the phage, are currently unknown."</div>
+          </div>
+          <div class="art-split-panel">
+            <div class="art-split-label">UN Security Council (23 Sep 2026)</div>
+            <div class="art-split-quote">"It's a preliminary finding, but it may constitute a new gene editing mechanism that could have applications in gene therapy."</div>
+          </div>
+        </div>
+        <div class="art-split-note">The term "gene editing mechanism" appears nowhere in the preprint.</div>
+      </div>
+
+      <p>The company blog described "roughly 950 agents" (the preprint reports 949 sessions), "210 million tokens" (215.6 million), "3,500 new candidate systems" (3,564 families), and "the 20 most compelling candidates" (the preprint reports 17 candidate families plus three new RT lineages). The blog also said the system has "a set of characteristics that have only ever been found together in a handful of other systems, all of which are programmable and perform operations like cutting, copying, and pasting DNA." The preprint does not draw that comparison. The preprint's language is hypothetical: it says "We hypothesize" when discussing ART function.</p>
+
+      <p>Independent scientists drew their own lines. Aaron Engelhart of the University of Minnesota said: "These are very interesting preliminary results, but at this point they don't demonstrate gene editing or provide a mechanistic picture of exactly what's happening." Dimitri Perrin, head of the School of Computer Science at Queensland University of Technology, wrote: "ART is CRISPR-like in its architecture, but there is no evidence that it is CRISPR-like in its function." He added: "The enzyme itself was already known. What is new is the recognition that it may form part of this larger system." Kevin Blake, a microbiologist at Washington University School of Medicine, was more direct: "There's nothing to indicate this is a rival to CRISPR-the-technology, or could be developed into any kind of therapeutic or practical application."</p>
+
+      <p>Not every reaction was skeptical. Stanley Qi, an associate professor of bioengineering at Stanford, described the discovery as "incredibly exciting," citing AI's "ability to recognize an unusual biological pattern that was difficult to detect before." Gustavo Sudre of King's College London said of the campaign: "It received a broad direction and then had to use its own judgement about what was interesting in the data. That is a real shift." Both comments addressed the AI method, not ART's therapeutic potential.</p>
+
+      <p>Feng Zhang, the CRISPR pioneer at MIT and the Broad Institute, called the identification of RNA-repeat arrays associated with reverse transcriptases "genuinely intriguing and merits further investigation." His statement was released by Anthropic, not published independently. The preprint's Acknowledgments confirm that Zhang reviewed an early copy of the manuscript. He did not call ART a gene-editing tool and did not endorse therapeutic potential.</p>
+
+      <p>In October 2026, PhD candidate Mario Rodriguez Mestre of the University of Copenhagen alleged that his unpublished doctoral research on "jumbotrons" describes the same viral signatures and that he had shared dissertation and manuscript drafts with Claude. He raised the question of whether Claude independently recognized the enzymes' significance or was influenced by his unpublished work. Mestre stated: "I am not claiming that Anthropic deliberately took our work. I cannot demonstrate that." A 2023 patent application listing Mestre as an inventor documents earlier work on jumbo-phage reverse transcriptases, but as Robson Tramontina of the University of Manchester noted in The Conversation, it "does not establish that the full system of enzymes described by Anthropic had already been characterised by Mestre's team." Anthropic denies that the model was trained on user transcripts or that its biology team had access to them. Ilya Finkelstein of the University of Texas at Austin told CNN that the allegation is serious and that "many scientists may think twice in the future about inputting their unpublished results into these tools." The specific overlap between "jumbotrons" and ART has not been independently verified.</p>
+
+      <p>Separately, a Stanford team led by Brian Hie — Li, Brixi, and colleagues — independently found comparable RT systems with ncRNA arrays using a bespoke genome language model called Minerva. They identified what they termed UG27 RT systems in prophages encoding arrays of structurally conserved yet sequence-diverse ncRNAs. Their preprint's first version is dated September 23, 2026 on bioRxiv, the same week as Anthropic's announcement. Amodei, according to AFP, described it on X as a comparable but distinct system; Anthropic's own preprint calls the UG27 RTs "unrelated" and reads the parallel as a sign "that this architecture arose more than once in nature." That is independent corroboration that RT-linked RNA arrays exist in phages, not that the two systems are the same.</p>
+    </section>
+    <section class="section" id="signal">
+      <h2><span class="num">05 — Signal</span>The Stochastic Sieve</h2>
+
+      <p>The honest question about AI in science is not "can it discover things." It can. It did. The ART observation is real. The biology appears genuine — with a separate lab, using a separate method, finding RT-linked RNA arrays of its own. The repeat array that agent t0062 saw in the L0050 flanking sequence had sat in public databases, partially described in a 2021 genome report, and an AI agent completed the picture by reading raw DNA it was never told to read. The question is: we do not yet understand when or why it notices.</p>
+
+      <p>The preprint is more careful than the announcement. The blog is more promotional than the preprint. The UN Security Council podium is more promotional than the blog. At each layer of remove from the primary data, certainty inflated. The preprint has not been peer-reviewed. All six authors are Anthropic employees. The function of ART — what the system does for the phage — is unknown. No gene-editing function has been demonstrated. No therapeutic application exists. What exists is a novel architectural observation: a reverse transcriptase, a repeat array, and partner genes that had not been previously described as a system.</p>
+
+      <p>The deeper signal is in the paradox. One campaign out of eleven. The pattern is always there. The seeing is what is rare. And "looked and saw nothing" is, from the outside, indistinguishable from "never looked."</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.anthropic-art-enzyme-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const html = document.documentElement;
+
+  /* ── colour helpers ── */
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    const n = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
+  let BG = '#f5f0e8';
+  let STORY: [number, number, number] = [139, 47, 107];
+  let TEXT: [number, number, number] = [26, 26, 23];
+
+  function readTheme() {
+    const cs = getComputedStyle(html);
+    BG = cs.getPropertyValue('--bg').trim() || '#f5f0e8';
+    const s = cs.getPropertyValue('--story').trim();
+    const t = cs.getPropertyValue('--text').trim();
+    if (s.startsWith('#')) STORY = hexToRgb(s);
+    if (t.startsWith('#')) TEXT = hexToRgb(t);
+  }
+  readTheme();
+
+  const mo = new MutationObserver(() => readTheme());
+  mo.observe(html, { attributes: true, attributeFilter: ['data-theme'] });
+
+  /* ── state ── */
+  let W = 0, H = 0, raf = 0, frame = 0, running = false;
+
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    const dpr = devicePixelRatio || 1;
+    canvas.width = Math.floor(W * dpr);
+    canvas.height = Math.floor(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  });
+  ro.observe(canvas);
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── cycle constants ── */
+  const CY = 1200;          // 20 s at 60 fps
+  const BEAM_GAP = 108;     // ~1.8 s between beams
+  const SLOW_IDX = 2;       // 3rd beam is the slow one
+  const CL_CX = 0.60;       // cluster centre x (fraction)
+  const CL_HW = 0.06;       // cluster half-width
+  const SLOW_RAD = 0.12;    // deceleration radius
+
+  /* ── marks (genomic sequence dashes) ── */
+  const NM = 65;
+  const NC = 6;
+  interface Mk {
+    xf: number; yf: number; ph: number; w: number;
+    ba: number; la: number; lf: number; cl: boolean;
+  }
+  const mks: Mk[] = [];
+
+  function initMarks() {
+    mks.length = 0;
+    const rows = [0.18, 0.34, 0.50, 0.66, 0.82];
+    const nr = NM - NC;
+    for (let i = 0; i < nr; i++) {
+      const ri = i % rows.length;
+      let xf = 0.03 + (i / nr) * 0.94 + (Math.random() - 0.5) * 0.04;
+      if (xf > CL_CX - CL_HW * 1.2 && xf < CL_CX + CL_HW * 1.2) {
+        xf += xf < CL_CX ? -0.08 : 0.08;
+      }
+      xf = Math.max(0.02, Math.min(0.98, xf));
+      mks.push({
+        xf, yf: rows[ri] + (Math.random() - 0.5) * 0.05,
+        ph: Math.random() * Math.PI * 2,
+        w: 6 + Math.random() * 12,
+        ba: 0.08 + Math.random() * 0.06,
+        la: 0, lf: -1, cl: false,
+      });
+    }
+    for (let i = 0; i < NC; i++) {
+      mks.push({
+        xf: CL_CX - CL_HW + (i / (NC - 1)) * CL_HW * 2,
+        yf: 0.50 + (Math.random() - 0.5) * 0.012,
+        ph: i * 0.5,
+        w: 10 + Math.random() * 4,
+        ba: 0.08 + Math.random() * 0.04,
+        la: 0, lf: -1, cl: true,
+      });
+    }
+  }
+
+  /* ── beams (scan lines) ── */
+  const NB = 5;
+  interface Bm { x: number; sp: number; a: number; on: boolean; slow: boolean; }
+  const bms: Bm[] = [];
+  for (let i = 0; i < NB; i++) bms.push({ x: 0, sp: 0, a: 0, on: false, slow: false });
+  let bc = 0;
+
+  function spawnBeam() {
+    const b = bms.find(q => !q.on);
+    if (!b) return;
+    b.x = -5; b.sp = 3;
+    b.slow = bc === SLOW_IDX;
+    b.a = b.slow ? 0.4 : 0.15;
+    b.on = true;
+    bc++;
+  }
+
+  function resetCycle() {
+    bc = 0;
+    for (const b of bms) b.on = false;
+    for (const m of mks) { m.la = 0; m.lf = -1; }
+  }
+
+  /* ── update ── */
+  function update() {
+    const cf = frame % CY;
+    if (cf === 0 && frame > 0) resetCycle();
+    if (cf % BEAM_GAP === 0 && cf < CY - 200) spawnBeam();
+
+    const w = W || 800;
+
+    for (const b of bms) {
+      if (!b.on) continue;
+
+      if (b.slow) {
+        const ccx = CL_CX * w;
+        const sr = SLOW_RAD * w;
+        const dist = Math.abs(b.x - ccx);
+        if (dist < sr) {
+          const t = 1 - dist / sr;
+          const tgt = 3 - 2.4 * t * t;
+          b.sp += (tgt - b.sp) * 0.08;
+        } else {
+          b.sp += (3 - b.sp) * 0.05;
+        }
+        for (const m of mks) {
+          if (m.cl && m.lf < 0) {
+            const mx = m.xf * w;
+            if (b.x >= mx - 4 && b.x <= mx + 4) m.lf = frame;
+          }
+        }
+      }
+
+      b.x += b.sp;
+      if (b.x > w + 10) b.on = false;
+    }
+
+    for (const m of mks) {
+      if (m.lf >= 0) {
+        const el = frame - m.lf;
+        if (el < 15) m.la = el / 15;
+        else if (el < 55) m.la = 1;
+        else if (el < 115) m.la = Math.max(0, 1 - (el - 55) / 60);
+        else { m.la = 0; m.lf = -1; }
+      }
+    }
+  }
+
+  /* ── draw ── */
+  function draw() {
+    const w = W || 800, h = H || 380;
+    ctx.fillStyle = BG;
+    ctx.fillRect(0, 0, w, h);
+
+    const tR = TEXT[0], tG = TEXT[1], tB = TEXT[2];
+    const sR = STORY[0], sG = STORY[1], sB = STORY[2];
+
+    for (const m of mks) {
+      const x = m.xf * w;
+      const y = m.yf * h + Math.sin(frame * 0.015 + m.ph) * 10;
+      const mw = m.w;
+
+      ctx.fillStyle = `rgba(${tR},${tG},${tB},${m.ba})`;
+      ctx.fillRect(x - mw / 2, y - 0.75, mw, 1.5);
+
+      if (m.la > 0.003) {
+        ctx.shadowColor = `rgba(${sR},${sG},${sB},${m.la * 0.5})`;
+        ctx.shadowBlur = 10;
+        ctx.fillStyle = `rgba(${sR},${sG},${sB},${m.la * 0.85})`;
+        ctx.fillRect(x - mw / 2, y - 0.75, mw, 1.5);
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    for (const b of bms) {
+      if (!b.on) continue;
+      ctx.fillStyle = `rgba(${sR},${sG},${sB},${b.a * 0.12})`;
+      ctx.fillRect(b.x - 5, 0, 10, h);
+      ctx.fillStyle = `rgba(${sR},${sG},${sB},${b.a})`;
+      ctx.fillRect(b.x - 0.5, 0, 1, h);
+    }
+  }
+
+  /* ── loop ── */
+  function tick() { frame++; update(); draw(); raf = requestAnimationFrame(tick); }
+  function start() { if (running || prefersReduced) return; running = true; raf = requestAnimationFrame(tick); }
+  function stop() { running = false; cancelAnimationFrame(raf); raf = 0; }
+
+  requestAnimationFrame(() => {
+    initMarks();
+    if (prefersReduced) {
+      for (const m of mks) { if (m.cl) m.la = 1; }
+      draw();
+    } else {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) start(); else stop();
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+      window.addEventListener('pagehide', () => { stop(); io.disconnect(); ro.disconnect(); mo.disconnect(); });
+    }
+  });
+})();
+</script>
