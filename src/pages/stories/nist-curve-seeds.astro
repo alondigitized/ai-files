@@ -1,0 +1,689 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'nist-curve-seeds')!;
+---
+
+<style is:global>
+.phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+.nist-curve-seeds-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+/* === Reenactment 1: The Rumor vs. The Recipe === */
+.ncs-rumor-wrap {
+  display: flex;
+  gap: 1.5rem;
+  margin: 2.5rem 0 0.75rem;
+}
+.ncs-rumor-panel {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+  border-radius: 6px;
+  padding: 1.25rem 1.25rem 1rem;
+  background: var(--surface);
+}
+.ncs-rumor-left {
+  border-left: 3px solid var(--muted);
+}
+.ncs-rumor-right {
+  border-left: 3px solid var(--story);
+}
+.ncs-rumor-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+.ncs-rumor-right .ncs-rumor-title {
+  color: #0c6e72;
+}
+.ncs-rumor-item {
+  font-size: 0.88rem;
+  color: var(--text);
+  line-height: 1.55;
+  margin-bottom: 0.65rem;
+}
+.ncs-rumor-key {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 0.15rem;
+}
+.ncs-rumor-item code {
+  font-family: 'SF Mono', 'Fira Code', 'Fira Mono', monospace;
+  font-size: 0.82rem;
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+}
+.ncs-rumor-quote {
+  font-style: italic;
+  color: var(--muted);
+  border-top: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+  padding-top: 0.6rem;
+  margin-top: 0.25rem;
+}
+.ncs-rumor-coda {
+  font-weight: 700;
+  color: var(--story);
+  border-top: 1px solid color-mix(in srgb, var(--text) 8%, transparent);
+  padding-top: 0.6rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0;
+}
+.ncs-rumor-footer {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 0.5rem;
+  margin-bottom: 2.5rem;
+  line-height: 1.5;
+}
+@media (max-width: 640px) {
+  .ncs-rumor-wrap { flex-direction: column; }
+}
+
+/* === Reenactment 2: The Fingerprint === */
+/* Deliberate dark terminal inset on the light page; fixed colors chosen for AA contrast on #1a1a17 */
+.ncs-bits-wrap {
+  background: #1a1a17;
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin: 2.5rem 0 0.75rem;
+  overflow-x: auto;
+}
+.ncs-bits-header {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.68rem;
+  color: #9a9a92;
+  margin-bottom: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.ncs-bits-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.45rem;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #aaa;
+}
+.ncs-bits-label {
+  width: 3.5rem;
+  flex-shrink: 0;
+  color: #9a9a92;
+  font-size: 0.72rem;
+}
+.ncs-bits-words {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: nowrap;
+}
+.ncs-bits-hi {
+  color: #5fd4d9;
+  font-weight: 700;
+}
+.ncs-bits-sep {
+  height: 1px;
+  background: #333;
+  margin: 0.6rem 0;
+}
+.ncs-bits-control .ncs-bits-label {
+  color: #9a9a92;
+}
+.ncs-bits-control {
+  color: #9a9a92;
+}
+.ncs-bits-fail {
+  color: #ff6b6b;
+  font-weight: 700;
+}
+.ncs-bits-footer {
+  margin-top: 1.1rem;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.7rem;
+  color: #9a9a92;
+  line-height: 1.6;
+}
+.ncs-bits-footer strong {
+  color: #5fd4d9;
+  font-weight: 700;
+}
+.ncs-bits-note {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 0.5rem;
+  margin-bottom: 2.5rem;
+  line-height: 1.5;
+}
+
+/* === Reenactment 3: The Freedom Budget === */
+.ncs-freedom-wrap {
+  margin: 2.5rem 0 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--text) 12%, transparent);
+  border-radius: 6px;
+  padding: 1.5rem;
+  background: var(--surface);
+}
+.ncs-freedom-row {
+  margin-bottom: 1rem;
+}
+.ncs-freedom-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+}
+.ncs-freedom-detail {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+.ncs-freedom-bar {
+  height: 2.25rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding: 0 0.85rem;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.ncs-freedom-bar-required {
+  width: 100%;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.ncs-freedom-bar-actual {
+  width: 43%;
+  background: color-mix(in srgb, var(--story) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--story) 50%, transparent);
+}
+.ncs-freedom-gap {
+  text-align: center;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  padding: 0.65rem 0;
+  margin: 0.25rem 0 1rem;
+  border-top: 1px dashed var(--muted);
+  border-bottom: 1px dashed var(--muted);
+}
+.ncs-freedom-footer {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-style: italic;
+  line-height: 1.55;
+}
+.ncs-freedom-note {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 0.5rem;
+  margin-bottom: 2.5rem;
+  line-height: 1.5;
+}
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="context">
+      <h2><span class="num">01 — Context</span>The Numbers No One Could Explain</h2>
+      <p>Jerry Solinas, a mathematician at the National Security Agency, handed a set of numbers to Alfred Menezes in the fall of 1997. Menezes was the primary author of the ANSI X9.62 standard for ECDSA (Elliptic Curve Digital Signature Algorithm). Solinas, Menezes later told researcher Steve Weis, was attending the standards meetings as an NSA representative. The numbers were "seeds" — arbitrary inputs that, when hashed with SHA-1, would define the parameters of elliptic curves. Nobody documented how the seeds themselves were chosen.</p>
+      <p>The seeds first appeared in the ANSI X9.62 standard in 1999, then in NIST's FIPS 186-2 Digital Signature Standard in 2000. The standard described the curves as generated "verifiably at random" — meaning anyone could verify that the SHA-1 hash of the published seed produced the published curve parameter. But "verifiably at random" applied to the derivation from seed to curve. The seed itself was arbitrary. NIST published the numbers. The NSA supplied them. No one explained the recipe.</p>
+      <p>As Filippo Valsorda, the cryptographer who later organized a bounty for the answer, described the stakes: "A lot of cryptography uses NIST curves, and especially P-256 and P-384. They are in the Commercial National Security Algorithm Suite (the successor of Suite B), and are the curves used by the ECDSA X.509 certificates that secure much of the web."</p>
+      <p>By June 2026, P-256 had become the single most common TLS certificate key type among the top one million websites: 332,437 instances, according to security researcher Scott Helme's analysis — more than any RSA key size. ECDSA certificates overall (340,498) had overtaken RSA (306,042). The numbers Solinas handed over in 1997 now help secure a substantial share of encrypted web traffic.</p>
+      <p>Their provenance was questioned almost from the start. Weis documented that the seeds were "questioned almost immediately on Usenet after publication in 1999." In 2018, he submitted Freedom of Information Act requests to both NIST and the NSA for any documentation about how the elliptic curve parameters were chosen. "NIST claimed they had no documentation and the NSA ceased responding," Weis reported. The gap was structural: the standard required a seed but did not require an explanation of the seed. In 2015, cryptographers Neal Koblitz and Alfred Menezes titled their survey of the controversy "A Riddle Wrapped in an Enigma." For 25 years, the riddle held.</p>
+    </section>
+    <section class="section" id="wrong-memory">
+      <h2><span class="num">02 — The Wrong Memory</span>"Give Bob and Jerry a Raise"</h2>
+      <p>Jerry Solinas was the only named person who could explain where the seeds came from. He had provided them to Menezes during the ANSI standards process. A colleague, Bob Reiter, had written the code. But by the time anyone thought to ask Solinas for the details, the details were already gone.</p>
+      <p>Around 2013, an anonymous contemporary of Solinas described the generation process to Weis. As Weis reported: "[Jerry] told me that he used a seed that was something like: SEED = SHA1('Jerry deserves a raise.') After he did the work, his machine was replaced or upgraded, and the actual phrase that he used was lost. When the controversy first came up, Jerry tried every phrase that he could think of that was similar to this, but none matched."</p>
+      <p>In 2015, Solinas emailed Daniel Bernstein directly with a more detailed version. He wrote: "I believe there was a counter rather than multiple hashing, but I don't know details. The message was along the lines of 'Give Bob and Jerry a raise' or 'Bob and Jerry rule' or something like that. It was Bob Reiter who actually wrote the code, and he doesn't remember the details either. Nor were we able to find archives from so long ago. If they exist, they are no doubt sitting on a hard drive near the Ark of the Covenant."</p>
+      <p>The story was consistent across tellings. It was also wrong. The seeds are not the output of any hash algorithm. They were never derived from a phrase. Solinas's memory, reconstructed across roughly 18 years, had drifted into a coherent but incorrect account. He died in early 2023 with that account as the only first-person explanation that ever existed. "Several Anthropic employees had unsuccessfully chased the seeds following the tip about it being a hash of a humorous phrase," Anthropic later wrote. The tip was a dead end that had shaped a decade of investigation. Anthropic acknowledged Solinas posthumously: "We would like to posthumously recognize Jerry Solinas who took being labeled an 'evil Internet meme' and the 'Yo La Tengo of NSA bogeymen' with good humor."</p>
+      <div class="ncs-rumor-wrap">
+        <div class="ncs-rumor-panel ncs-rumor-left">
+          <div class="ncs-rumor-title">What the Lore Said (2013–2015)</div>
+          <div class="ncs-rumor-item">
+            <span class="ncs-rumor-key">Method</span>
+            SHA-1 hash of English phrase + counter
+          </div>
+          <div class="ncs-rumor-item">
+            <span class="ncs-rumor-key">Phrase</span>
+            "Give Bob and Jerry a raise" or similar
+          </div>
+          <div class="ncs-rumor-item">
+            <span class="ncs-rumor-key">Code</span>
+            Written by Bob Reiter
+          </div>
+          <div class="ncs-rumor-item">
+            <span class="ncs-rumor-key">Status</span>
+            Machine replaced; phrase lost
+          </div>
+          <div class="ncs-rumor-item ncs-rumor-quote">
+            "If they exist, they are no doubt sitting on a hard drive near the Ark of the Covenant."
+          </div>
+        </div>
+        <div class="ncs-rumor-panel ncs-rumor-right">
+          <div class="ncs-rumor-title">What the Numbers Actually Were (2026)</div>
+          <div class="ncs-rumor-item">
+            <span class="ncs-rumor-key">Generator</span>
+            C library <code>lrand48()</code>
+          </div>
+          <div class="ncs-rumor-item">
+            <span class="ncs-rumor-key">Initialization</span>
+            <code>srand48(</code>Unix timestamp<code>)</code>
+          </div>
+          <div class="ncs-rumor-item">
+            <span class="ncs-rumor-key">P-256 example</span>
+            <code>srand48(871696354)</code><br>
+            1997-08-16 01:52:34 UTC<br>
+            Candidate #1842
+          </div>
+          <div class="ncs-rumor-item ncs-rumor-coda">
+            No phrase. No hash. Just a clock.
+          </div>
+        </div>
+      </div>
+      <p class="ncs-rumor-footer">The verbal account that guided a decade of investigation was wrong. The answer was a function call and a clock.</p>
+    </section>
+  </div>
+
+  <div class="phantom-wrap">
+    <canvas class="nist-curve-seeds-canvas" aria-hidden="true"></canvas>
+  </div>
+  <p class="canvas-note"><strong>The Derivation</strong> — Twenty dim points hang in a vertical band, data that was always public. Organic curves drift past and dissolve without connecting. A radial sweep completes one revolution, triggers a cascading pulse of teal light through all twenty in turn, and holds. The answer was always in the numbers.</p>
+
+  <div class="container">
+    <section class="section" id="mechanism">
+      <h2><span class="num">03 — The Mechanism</span>The Fingerprint in the Bits</h2>
+      <p>In October 2026, according to Anthropic, a curious employee asked an internal Claude research model if it could figure out how the seeds were generated — "without pointing at the clue," meaning without mentioning the passphrase story. According to Anthropic, Claude wrote a scanner that tested 34 combinations of pseudorandom number generators and output slices against the published seeds, looking for matches. What emerged was a statistical fingerprint.</p>
+      <p>The clue was in the binary curve seeds. Each seed is 20 bytes — 160 bits. Written as five 32-bit words, four of the ten NIST seeds have 0 in the top bit of every word. Twenty words, twenty zero top bits. The probability of this occurring by chance in four out of ten seeds, according to Anthropic, is roughly 1 in 5,810. But it is exactly what you would expect from <code>lrand48</code>, the POSIX-standard linear congruential generator, which returns only the top 31 bits of its 48-bit internal state. The leading bit of every 32-bit word is always zero. As Anthropic put it: "The pattern is visible by eye once you know to look for it."</p>
+      <div class="ncs-bits-wrap" tabindex="0" role="region" aria-label="Binary curve seed bit analysis">
+        <div class="ncs-bits-header">NIST Binary Curve Seeds — Written as Five 32-bit Words</div>
+        <div class="ncs-bits-row">
+          <span class="ncs-bits-label">B-233</span>
+          <span class="ncs-bits-words"><span><span class="ncs-bits-hi">7</span>4D59FF0</span> <span><span class="ncs-bits-hi">7</span>F6B413D</span> <span><span class="ncs-bits-hi">0</span>EA14B34</span> <span><span class="ncs-bits-hi">4</span>B20A2DB</span> <span><span class="ncs-bits-hi">0</span>49B50C3</span></span>
+        </div>
+        <div class="ncs-bits-row">
+          <span class="ncs-bits-label">B-283</span>
+          <span class="ncs-bits-words"><span><span class="ncs-bits-hi">7</span>7E2B073</span> <span><span class="ncs-bits-hi">7</span>0EB0F83</span> <span><span class="ncs-bits-hi">2</span>A6DD5B6</span> <span><span class="ncs-bits-hi">2</span>DFC88CD</span> <span><span class="ncs-bits-hi">0</span>6BB84BE</span></span>
+        </div>
+        <div class="ncs-bits-row">
+          <span class="ncs-bits-label">B-409</span>
+          <span class="ncs-bits-words"><span><span class="ncs-bits-hi">4</span>099B5A4</span> <span><span class="ncs-bits-hi">5</span>7F9D69F</span> <span><span class="ncs-bits-hi">7</span>9213D09</span> <span><span class="ncs-bits-hi">4</span>C4BCD4D</span> <span><span class="ncs-bits-hi">4</span>262210B</span></span>
+        </div>
+        <div class="ncs-bits-row">
+          <span class="ncs-bits-label">B-571</span>
+          <span class="ncs-bits-words"><span><span class="ncs-bits-hi">2</span>AA058F7</span> <span><span class="ncs-bits-hi">3</span>A0E33AB</span> <span><span class="ncs-bits-hi">4</span>86B0F61</span> <span><span class="ncs-bits-hi">0</span>410C53A</span> <span><span class="ncs-bits-hi">7</span>F132310</span></span>
+        </div>
+        <div class="ncs-bits-sep"></div>
+        <div class="ncs-bits-row ncs-bits-control">
+          <span class="ncs-bits-label">P-256</span>
+          <span class="ncs-bits-words"><span><span class="ncs-bits-fail">C</span>49D3608</span> <span><span class="ncs-bits-fail">8</span>6E70493</span> <span><span class="ncs-bits-hi">6</span>A6678E1</span> <span><span class="ncs-bits-hi">1</span>39D26B7</span> <span><span class="ncs-bits-fail">8</span>19F7E90</span></span>
+        </div>
+        <div class="ncs-bits-footer">
+          Every highlighted digit is 0-7. Top bit = 0. Twenty words, twenty zeros.<br>
+          <strong>Probability by chance: ~1 in 5,810. Probability if lrand48: 1.</strong><br>
+          P-256 (bottom, a prime-curve seed using a different extraction) does not show the pattern.
+        </div>
+      </div>
+      <p class="ncs-bits-note">The leading bit of every 32-bit word is always 0 — the signature of lrand48, which returns only the top 31 of its 48-bit state.</p>
+      <p>For the binary seeds, recovering the full generator state was straightforward: take the first 32-bit word, try all 2^17 values of the 17 hidden low-order bits, and check whether the next four words follow from the linear congruential formula. According to Anthropic, this worked for all four seeds.</p>
+      <p>The prime-curve seeds were harder. They kept fewer bits per output — the extraction formula is equivalent to taking the top 8 bits of the 48-bit linear congruential generator (LCG) state at each step. (Both Anthropic's Python and Valsorda's Go code compute the same extraction: the top 8 bits of the 48-bit state, using different function conventions.) With only 8 bits per step visible, Anthropic describes Claude using LLL lattice basis reduction — a standard technique for recovering the state of a truncated linear congruential generator — to reconstruct the full 48-bit internal state from the partial outputs.</p>
+      <p>Then came the critical step. The <code>srand48</code> function, used to initialize the generator, sets the high 32 bits of the state from its argument and fixes the low 16 bits to the constant <code>0x330E</code>. Because the LCG runs backwards as easily as forwards, each recovered state could be stepped back until reaching a state with <code>0x330E</code> in its low 16 bits — the <code>srand48</code> initialization form. For the ten prime-curve seeds, every recovered initialization value was a Unix timestamp between May 1997 and April 1998. The four binary-curve initializations read as February 1984 dates — but as Anthropic noted, "With the timestamps doubled, they map to April 17, 1998, two weeks after the P-224 run. So, the program may have halved the clock."</p>
+      <p>According to Anthropic, Claude performed these steps "in under half an hour" after being asked without being shown the passphrase lead. The technical result — the timestamps and the bit-for-bit seed matches — is independently verified by Valsorda's Go reimplementation and by comparison with the seed values published in NIST SP 800-186. The step-by-step process narrative is Anthropic's own account; no independent observer was present, the exact prompt has not been published, and the model version is described only as "an internal research model."</p>
+    </section>
+    <section class="section" id="verification">
+      <h2><span class="num">04 — Verification</span>Anyone Can Check</h2>
+      <p>The result is deterministic. Given a timestamp and a candidate index, the <code>lrand48</code> output is a fixed bitstring. It either matches the NIST-published seed or it does not. There is no statistical argument to evaluate, no confidence interval to weigh. Valsorda independently reimplemented the full algorithm in Go, including the ANSI X9.62 curve generation procedure and the Schoof-Elkies-Atkin point-counting algorithm, and confirmed every recovered seed. Anthropic's Python reproduction code is 30 lines. Both are publicly available — Anthropic's under a CC0 public domain dedication, Valsorda's on GitHub.</p>
+      <p>The Anthropic team claimed the bounty on October 15, 2026, at 01:07:51 UTC, as recorded by the mail host's Received header — the criterion Valsorda had specified three years earlier as "unappealable." Anthropic and Valsorda published simultaneously on October 16. The $36,864 prize — tripled from the original $12,288 because the Anthropic team chose to donate to charity — went to ISRG, the nonprofit that operates Let's Encrypt.</p>
+      <p>Two dual-role connections are worth noting for transparency. Steve Weis, whose September 2023 research article compiled the Solinas accounts and inspired the bounty, is listed as a co-author on the Anthropic paper. Amir Omidi, listed among the original bounty contributors, is also an Anthropic co-author. Valsorda acknowledged Weis's research in the bounty announcement: "Thank you to ... Steve Weis for the research that inspired this." Neither connection constitutes an impropriety — Weis's historical research predates his Anthropic affiliation, and all roles are publicly disclosed — but both are relevant to the sourcing chain.</p>
+    </section>
+    <section class="section" id="consequence">
+      <h2><span class="num">05 — Consequence</span>Thirty Bits of Freedom</h2>
+      <p>The security question was never abstract. It was arithmetic: how many degrees of freedom did the NSA have when choosing the seeds, and is that enough to embed a weakness?</p>
+      <p>In 2017, Daniel Bernstein and Tanja Lange described to Koblitz and Menezes a technique that could have exploited 70 bits of freedom in the selection of a seed to target a hypothetical class of 2^61 weak prime-order curves. The technique was reported in a later revision of the Koblitz-Menezes paper. Valsorda noted a relevant disclosure: Bernstein is "the author of a competing elliptic curve design, Curve25519."</p>
+      <div class="ncs-freedom-wrap">
+        <div class="ncs-freedom-row">
+          <div class="ncs-freedom-label">Bernstein-Lange Technique</div>
+          <div class="ncs-freedom-detail">Requires: 70 bits of freedom to target a hypothetical class of 2<sup>61</sup> weak prime-order curves</div>
+          <div class="ncs-freedom-bar ncs-freedom-bar-required">70 bits</div>
+        </div>
+        <div class="ncs-freedom-gap">40-bit shortfall — technique ruled out</div>
+        <div class="ncs-freedom-row">
+          <div class="ncs-freedom-label">Actual Freedom (Recovered)</div>
+          <div class="ncs-freedom-detail">Available: ~30 bits. Source: choice of timestamp (any second in 1997-98) + candidate index (first ~16 valid seeds)</div>
+          <div class="ncs-freedom-bar ncs-freedom-bar-actual">~30 bits</div>
+        </div>
+        <div class="ncs-freedom-footer">"Even if the NSA had been free to pick any timestamp in 1997–98 and any of the first 16 prime-order candidates (which generously accounts for the unexplained rejections), they would have had barely 30 bits of freedom. Not enough to intentionally target a hypothetical small class of weak curves, not enough to embed any kind of NOBUS backdoor." — Filippo Valsorda, October 2026. (NOBUS, "nobody but us," is a backdoor only its maker can use.)</div>
+      </div>
+      <p class="ncs-freedom-note">The gap between 70 and 30 is not a judgment call. It is arithmetic.</p>
+      <p>Valsorda concluded that the findings "completely rule out the technique described by Bernstein and Lange." Koblitz and Menezes had already argued in their 2015 paper that it was implausible the NSA could have exploited a weakness that escaped more than 15 years of cryptanalysis. The recovered generation method now provides a quantitative basis for that argument: the NSA did not have enough room.</p>
+      <p>Anthropic stated: "This is not a cryptographic break, new attack, or weakness in the ECDSA curves. In fact, this makes us more confident the curves were chosen without any backdoors or intentional weaknesses." But they were careful to note the honest residual: "It is still conceivable that these curves were selected to have a specific property in principle by searching over timestamps to the random number generator. However, you would only need to do that if you were going to disclose the timestamp as some evidence that the seed was innocuously generated. Nothing in the numbers shows how many runs there were."</p>
+      <p>Open questions remain. For P-256, the published seed is candidate #1,842 from its timestamp, but candidate #876 from the same run also produces a valid prime-order curve. Across all timestamps, roughly twice as many valid candidates exist as were published. No explanation for the skipped candidates has been found. Anthropic noted: "Because the number of skipped candidates is small, we do not believe it is plausible that weakened curves were selected." Valsorda speculated, without evidence, that the same RNG may have been used for seed validation (consuming output and causing skips), or that a bug in the 1997-era point-counting code rejected valid candidates half the time. These remain unverified.</p>
+      <p>The seed for NIST B-163 has not been recovered. Anthropic stated: "The fifth binary seed, B-163, fits nothing Claude has tried and remains unexplained." The base points for P-224, P-256, P-384, and P-521 also remain unexplained.</p>
+      <p>Valsorda's verdict was blunt. The result, he wrote, "nicely completes the 'rehabilitation arc' of NIST elliptic curve cryptography, which I would now personally recommend over Curve25519/Ed25519/X25519." He added: "Just in time for them to be retired in favor of post-quantum signatures." No post-discovery statements from Bernstein, Lange, or other independent cryptographers have been located. Neither NIST nor the NSA has issued a response.</p>
+    </section>
+    <section class="section" id="signal">
+      <h2><span class="num">06 — Signal</span>The Forensic Mode</h2>
+      <p>This is not a new theorem. It is not a new molecule. It is the forensic recovery of a lost human process from its outputs — a 1997 C program, run by an NSA employee, whose results were published but whose method was forgotten within a decade. The answer was in the numbers the entire time. The published seeds contained the statistical fingerprint of <code>lrand48</code>. Any programmer who had thought to test a standard pseudorandom number generator seeded with a Unix timestamp could have found it. The machine succeeded by systematically testing generator-and-output-slice combinations against the published values, without being anchored to the verbal account that misdirected everyone who followed Solinas's lead.</p>
+      <p>Anthropic published a fragment of Claude's reasoning during the discovery. The model, according to Anthropic, paused to question its own result: "This is astonishing: it solves the 25-year-old mystery. Hmm wait. Let me be skeptical: am I in some sort of simulated/test environment? ... The seeds match my memory of actual values ... Hmm, is it plausible in reality? As of my knowledge ... the bounty was unsolved. ... All top bits clear — 20 bits, chance 1e-6. So indeed real-world. Wow, it's a real discovery." This is Anthropic's published account of the model's internal chain of thought; it is not independently verifiable.</p>
+      <p>The answer to the 25-year question was not hidden in a classified archive or on a hard drive near the Ark of the Covenant. It was in the numbers themselves — in a pattern that was, as Anthropic put it, "visible by eye once you know to look for it." The machine did not decode a secret. It tested a hypothesis that humans, anchored to a story about a joke phrase, never formed.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.nist-curve-seeds-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+
+  /* ── Palette ── */
+  const cs = getComputedStyle(document.documentElement);
+  function rv(n: string, fb: string) { return cs.getPropertyValue(n).trim() || fb; }
+  function h2rgb(h: string): [number, number, number] {
+    h = h.replace('#', '');
+    if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+  }
+  const [tR, tG, tB] = h2rgb(rv('--text', '#1a1a17'));
+  const [sR, sG, sB] = h2rgb(rv('--story', '#0d7377'));
+
+  /* ── State ── */
+  let W = 0, H = 0, raf = 0, frame = 0, vis = true;
+
+  /* ── Resize ── */
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth; H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    seedPts();
+  });
+  ro.observe(canvas);
+
+  /* ── Visibility ── */
+  const io = new IntersectionObserver(([e]) => {
+    const was = vis; vis = e.isIntersecting;
+    if (vis && !was && !prefersReduced) raf = requestAnimationFrame(tick);
+  }, { threshold: 0.05 });
+  io.observe(canvas);
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── Phase timing (total ~18 s at 60 fps) ── */
+  const CYCLE    = 1080;
+  const CASC     = 600;   // cascade start
+  const CASC_END = 760;   // 600 + 20×8
+  const HOLD_END = 910;   // 760 + 150
+  const FADE_END = 1000;  // 910 + 90
+  // 1000–1080: rest
+
+  /* ── 20 data points ── */
+  const N = 20;
+  interface Pt { bx: number; by: number; ph: number; litAt: number; offX: number; }
+  const pts: Pt[] = [];
+  // Store random offsets so resize preserves layout character
+  const ptSeeds: number[] = [];
+  for (let i = 0; i < N; i++) ptSeeds.push((Math.random() - 0.5) * 2);
+
+  function seedPts() {
+    pts.length = 0;
+    if (!W || !H) return;
+    const cx = W / 2;
+    const y0 = H * 0.1, y1 = H * 0.9, sp = (y1 - y0) / (N - 1);
+    for (let i = 0; i < N; i++) {
+      pts.push({
+        bx: cx + ptSeeds[i] * 18,
+        by: y0 + i * sp,
+        ph: (i / N) * Math.PI * 2,
+        litAt: CASC + i * 8,
+        offX: ptSeeds[i] * 18,
+      });
+    }
+  }
+
+  /* ── Wisps ── */
+  interface Wisp {
+    headX: number; yB: number; spd: number; amp: number;
+    per: number; baseA: number; born: number; life: number; len: number;
+  }
+  const wisps: Wisp[] = [];
+  let lastSpawn = -200;
+
+  function spawnWisp() {
+    if (wisps.length >= 3) return;
+    wisps.push({
+      headX: 30 + Math.random() * 40,
+      yB: H * 0.15 + Math.random() * H * 0.7,
+      spd: 0.35 + Math.random() * 0.15,
+      amp: 18 + Math.random() * 24,
+      per: 140 + Math.random() * 100,
+      baseA: 0.045 + Math.random() * 0.035,
+      born: frame,
+      life: 300 + Math.floor(Math.random() * 80),
+      len: 180 + Math.random() * 70,
+    });
+    lastSpawn = frame;
+  }
+
+  /* ── Sweep ── */
+  const SWEEP_LEN = 120;
+  const SWEEP_SPD = 0.6; // deg/frame → 360° in 600 frames
+
+  /* ── Helpers ── */
+  function rgba(r: number, g: number, b: number, a: number) {
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + Math.max(0, Math.min(1, a)) + ')';
+  }
+
+  /* ── Draw ── */
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    if (!W || !H || !pts.length) return;
+
+    const c = frame % CYCLE;
+    const preCasc = c < CASC;
+    const inCasc  = c >= CASC && c < CASC_END;
+    const inHold  = c >= CASC_END && c < HOLD_END;
+    const inFade  = c >= HOLD_END && c < FADE_END;
+    const inRest  = c >= FADE_END;
+
+    /* ── Wisp opacity multiplier ── */
+    let wM = 1;
+    if (inCasc)      wM = Math.max(0, 1 - (c - CASC) / 50);
+    else if (inHold || inFade) wM = 0;
+    else if (inRest) wM = Math.min(1, (c - FADE_END) / 50);
+
+    /* ── Draw wisps (behind everything) ── */
+    for (let i = wisps.length - 1; i >= 0; i--) {
+      const w = wisps[i];
+      const age = frame - w.born;
+      if (age > w.life) { wisps.splice(i, 1); continue; }
+      w.headX += w.spd;
+
+      let a = w.baseA;
+      if (age < 50)            a *= age / 50;
+      if (age > w.life - 80)   a *= (w.life - age) / 80;
+      a *= wM;
+      if (a < 0.002) continue;
+
+      const tailX = Math.max(0, w.headX - w.len);
+      const hdX   = Math.min(W, w.headX);
+      if (hdX - tailX < 8) continue;
+
+      ctx.beginPath();
+      let first = true;
+      for (let px = tailX; px <= hdX; px += 4) {
+        const py = w.yB + Math.sin((px / w.per) * Math.PI * 2) * w.amp;
+        if (first) { ctx.moveTo(px, py); first = false; } else ctx.lineTo(px, py);
+      }
+      const g = ctx.createLinearGradient(tailX, 0, hdX, 0);
+      g.addColorStop(0,   rgba(tR, tG, tB, 0));
+      g.addColorStop(0.25, rgba(tR, tG, tB, a * 0.6));
+      g.addColorStop(0.75, rgba(tR, tG, tB, a));
+      g.addColorStop(1,   rgba(tR, tG, tB, a * 0.2));
+      ctx.strokeStyle = g;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    }
+
+    /* ── Sweep line ── */
+    if (preCasc || inRest) {
+      const pivX = W / 2, pivY = H * 0.08;
+      const deg = preCasc ? c * SWEEP_SPD : (c - FADE_END) * SWEEP_SPD * 0.8;
+      const rad = (deg * Math.PI) / 180;
+      // sin/cos arranged so angle 0 → straight down (toward constellation)
+      const ex = pivX + Math.sin(rad) * SWEEP_LEN;
+      const ey = pivY + Math.cos(rad) * SWEEP_LEN;
+      const sg = ctx.createLinearGradient(pivX, pivY, ex, ey);
+      sg.addColorStop(0, rgba(sR, sG, sB, 0.14));
+      sg.addColorStop(1, rgba(sR, sG, sB, 0));
+      ctx.beginPath();
+      ctx.moveTo(pivX, pivY);
+      ctx.lineTo(ex, ey);
+      ctx.strokeStyle = sg;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Faint pivot dot
+      ctx.beginPath();
+      ctx.arc(pivX, pivY, 1.5, 0, Math.PI * 2);
+      ctx.fillStyle = rgba(sR, sG, sB, 0.12);
+      ctx.fill();
+    }
+
+    /* ── Cascade connection line ── */
+    if (inCasc || inHold || inFade) {
+      const litN = inHold || inFade ? N : Math.min(N, Math.floor((c - CASC) / 8) + 1);
+      if (litN > 1) {
+        let la = 0.18;
+        if (inFade) la *= Math.max(0, 1 - (c - HOLD_END) / 90);
+        ctx.beginPath();
+        ctx.moveTo(pts[0].bx, pts[0].by);
+        for (let j = 1; j < litN; j++) ctx.lineTo(pts[j].bx, pts[j].by);
+        ctx.strokeStyle = rgba(sR, sG, sB, la);
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+
+    /* ── Points ── */
+    for (let i = 0; i < N; i++) {
+      const p = pts[i];
+
+      // Breathing oscillation
+      const breath = 1 + Math.sin(frame * 0.002 + p.ph) * 0.03;
+
+      // Lit interpolant
+      let lit = 0;
+      if      (c >= p.litAt && c < CASC_END) lit = Math.min(1, (c - p.litAt) / 12);
+      else if (inHold)                        lit = 1;
+      else if (inFade)                        lit = Math.max(0, 1 - (c - HOLD_END) / 90);
+
+      // Scale pop on cascade hit
+      let pop = 1;
+      if (c >= p.litAt && c < p.litAt + 24) {
+        pop = 1 + 0.3 * Math.sin(((c - p.litAt) / 24) * Math.PI);
+      }
+
+      const r = 3 * breath * pop;
+
+      // Color: dim text-ink → full accent
+      const cr = Math.round(tR + (sR - tR) * lit);
+      const cg = Math.round(tG + (sG - tG) * lit);
+      const cb = Math.round(tB + (sB - tB) * lit);
+      const ca = 0.07 + 0.93 * lit;
+
+      ctx.beginPath();
+      ctx.arc(p.bx, p.by, r, 0, Math.PI * 2);
+      ctx.fillStyle = rgba(cr, cg, cb, ca);
+      ctx.fill();
+
+      // Glow halo when lit
+      if (lit > 0.05) {
+        const gr = ctx.createRadialGradient(p.bx, p.by, r, p.bx, p.by, r + 8);
+        gr.addColorStop(0, rgba(sR, sG, sB, 0.28 * lit));
+        gr.addColorStop(1, rgba(sR, sG, sB, 0));
+        ctx.beginPath();
+        ctx.arc(p.bx, p.by, r + 8, 0, Math.PI * 2);
+        ctx.fillStyle = gr;
+        ctx.fill();
+      }
+    }
+  }
+
+  /* ── Reduced-motion: static resolved state ── */
+  function drawStatic() {
+    ctx.clearRect(0, 0, W, H);
+    if (!W || !H || !pts.length) return;
+
+    // Sweep pointing straight down (trigger angle)
+    const pivX = W / 2, pivY = H * 0.08;
+    const sg = ctx.createLinearGradient(pivX, pivY, pivX, pivY + SWEEP_LEN);
+    sg.addColorStop(0, rgba(sR, sG, sB, 0.18));
+    sg.addColorStop(1, rgba(sR, sG, sB, 0));
+    ctx.beginPath(); ctx.moveTo(pivX, pivY); ctx.lineTo(pivX, pivY + SWEEP_LEN);
+    ctx.strokeStyle = sg; ctx.lineWidth = 1; ctx.stroke();
+
+    // Connection line
+    ctx.beginPath();
+    ctx.moveTo(pts[0].bx, pts[0].by);
+    for (let i = 1; i < N; i++) ctx.lineTo(pts[i].bx, pts[i].by);
+    ctx.strokeStyle = rgba(sR, sG, sB, 0.22);
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // All points fully lit
+    for (const p of pts) {
+      ctx.beginPath();
+      ctx.arc(p.bx, p.by, 3, 0, Math.PI * 2);
+      ctx.fillStyle = rgba(sR, sG, sB, 1);
+      ctx.fill();
+      const gr = ctx.createRadialGradient(p.bx, p.by, 3, p.bx, p.by, 11);
+      gr.addColorStop(0, rgba(sR, sG, sB, 0.3));
+      gr.addColorStop(1, rgba(sR, sG, sB, 0));
+      ctx.beginPath();
+      ctx.arc(p.bx, p.by, 11, 0, Math.PI * 2);
+      ctx.fillStyle = gr;
+      ctx.fill();
+    }
+  }
+
+  /* ── Loop ── */
+  function tick() {
+    if (!vis) return;
+    frame++;
+    const c = frame % CYCLE;
+    if ((c < CASC || c >= FADE_END) && frame - lastSpawn > 130) spawnWisp();
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  if (prefersReduced) {
+    requestAnimationFrame(() => { seedPts(); drawStatic(); });
+  } else {
+    raf = requestAnimationFrame(tick);
+  }
+
+  /* ── Cleanup ── */
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(raf);
+    ro.disconnect();
+    io.disconnect();
+  });
+})();
+</script>
