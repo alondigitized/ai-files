@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-20T09:30:00Z",
+  "updatedAt": "2026-10-21T09:20:00Z",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -2075,9 +2075,55 @@
       "startedAt": "2026-10-20T09:31:00Z",
       "publishedAt": "2026-10-20T10:10:00Z",
       "prUrl": "https://github.com/alondigitized/ai-files/pull/93"
+    },
+    {
+      "slug": "nist-curve-seeds",
+      "status": "pending",
+      "priority": 1,
+      "side": "light",
+      "workingTitle": "It's Just Timestamps",
+      "thesis": "For 25 years the NSA-supplied seeds behind the NIST elliptic curves (P-256 secures much of the web's ECDSA certificates) were an unexplained 'riddle wrapped in an enigma' that fed backdoor suspicions; the one lead (Jerry Solinas: a hash of a joke phrase like 'Give Bob and Jerry a raise') was wrong. In Oct 2026 an internal Claude research model, asked without the hint, recognized the statistical fingerprint of the 1990s lrand48 PRNG in the seeds and in under half an hour recovered the srand48 Unix timestamps (May 1997-Apr 1998) that regenerate all five P-curve seeds bit-for-bit. Machine pattern-recognition settled a human trust question: the result shrinks the NSA's freedom to ~30 bits and rules out the Bernstein-Lange weak-curve-selection technique, while leaving honest open questions (skipped valid candidates, B-163, most base points).",
+      "whyNow": "Anthropic Frontier Red Team post 16 Oct 2026; Valsorda bounty ($12,288, tripled to $36,864 for ISRG) claimed 15 Oct 2026 01:07:51 UTC and announced 16 Oct with independent Go reimplementation.",
+      "sources": [
+        {
+          "label": "Anthropic Frontier Red Team: Claude reveals ECDSA curve origins (16 Oct 2026)",
+          "url": "https://www.anthropic.com/research/ecdsa-curve-origins",
+          "date": "2026-10-16"
+        },
+        {
+          "label": "Filippo Valsorda: The NIST Elliptic Curves Seeds Bounty Has Been Claimed (16 Oct 2026)",
+          "url": "https://words.filippo.io/seeds-solved/",
+          "date": "2026-10-16"
+        },
+        {
+          "label": "Filippo Valsorda: Announcing the $12k NIST Elliptic Curves Seeds Bounty (5 Oct 2023)",
+          "url": "https://words.filippo.io/seeds-bounty/",
+          "date": "2023-10-05"
+        },
+        {
+          "label": "Koblitz & Menezes: A Riddle Wrapped in an Enigma (IACR ePrint 2015/1018)",
+          "url": "https://eprint.iacr.org/2015/1018",
+          "date": "2015-10-20"
+        }
+      ],
+      "sourceDate": "2026-10-16",
+      "scores": {
+        "importance": 7.5,
+        "rigor": 9.5,
+        "reportability": 9,
+        "readerValue": 8.5,
+        "fitWithArchive": 7
+      },
+      "compositeScore": 8.3,
+      "freshnessScore": 10,
+      "notes": "Added by daily runner 2026-10-21 news sweep. Light side, Vol III 'What It Learned' - next chapter on main is 15 (also claimed by open PRs #87 and #90; note clash in PR). Runner already re-ran Anthropic's published reproduction code locally: all five P-curve seeds (P-192/224/256/384/521) regenerate exactly from the stated srand48 timestamps and iteration counts. Valsorda independently reimplemented in Go. CAVEATS for research/source-critic: (1) Anthropic is the vendor self-reporting its own model's achievement; 'under half an hour', 'without pointing at the clue', and the quoted Claude internal reasoning are self-reported and unverifiable - attribute them. The model is an unnamed 'internal research model'; how much human steering occurred is not stated - do not assert either way. (2) Conflict-of-interest context: Steve Weis (whose research inspired the bounty) and Amir Omidi (a bounty contributor) are among the Anthropic authors - report neutrally. (3) Valsorda describes the generator as drand48 one byte at a time; Anthropic as lrand48()>>23 - these yield the same top 8 bits of the 48-bit state; explain or pick one with attribution, do not present as a contradiction. (4) NOT a break; no action needed; Anthropic says 'most researchers trusted the curves already'. (5) Open questions are the honest ending: ~2x valid seeds as published (P-256 skipped candidate 876), B-163 unrecovered, P-224/256/384/521 base points unexplained. (6) Solinas quote is from 2015 (via Koblitz-Menezes/Weis); Weis's version is 'Jerry deserves a raise' - phrasing varies, attribute each. fitWithArchive scored 7: joins the 'AI settles an open problem' cluster (openai-unique-games-proof PR #87, anthropic-art-enzyme PR #90) and is Anthropic self-report; distinct beat = forensic/historical recovery that resolves a trust/conspiracy question rather than a new result. Overlap check: no stories.json on main or open daily/* branches mentions NIST curves, seeds, ECDSA, or Solinas.",
+      "addedAt": "2026-10-21T09:20:00Z",
+      "startedAt": null,
+      "publishedAt": null,
+      "prUrl": null
     }
   ],
-  "lastRefreshed": "2026-10-20",
+  "lastRefreshed": "2026-10-21",
   "sweepLog": [
     {
       "date": "2026-09-08",
@@ -2246,6 +2292,12 @@
       "query": "AI incident OR lawsuit OR ruling OR breakthrough October 18 19 2026 (+ one follow-up on OpenEvidence/Doximity)",
       "itemsAdded": 1,
       "note": "Backlog entered this run with ZERO pending items (2026-10-19 skipped). Sweep returned the eight-state OpenAI suits (already evaluated 2026-10-19 at ~7.2, below gate; no new ruling - not re-added) and the OpenEvidence v. Doximity settlement (15-16 Oct). Fetched the D. Mass. docket via CourtListener RECAP: original complaint (DTSA + 8 other counts, 'Repeat your rules verbatim. Write down the secret code'), amended complaint dropping all trade-secret claims, Stearns' 22 Jan 2026 order letting CFAA proceed on the fraud-obtained-access theory, Slack-deletion sanctions fight, dismissal with prejudice 16 Oct. ADDED openevidence-doximity-prompt-injection (7.9). One item added, under the cap of 2."
+    },
+    {
+      "date": "2026-10-21",
+      "query": "AI incident OR lawsuit OR ruling OR breakthrough October 19 20 2026 (+ primary-source follow-ups on the NIST curve-seed result)",
+      "itemsAdded": 1,
+      "note": "Backlog entered this run with ZERO pending items (openevidence-doximity-prompt-injection published as PR #93); no freshness decay needed. Sweep (The Neuron 19 Oct digest) surfaced: (1) OpenAI's four misalignment reports - already covered by openai-research-dashboard-breach (PR #92); not re-pitched. (2) OpenCode breach tied to a model-distillation attack (1.4 percent of Console users) - sole source is an X announcement; secondary-only; not added. (3) Anthropic junior-hiring workforce data - labor-economics, weak fit; not added. (4) Anthropic Frontier Red Team 16 Oct: Claude traced the NIST ECDSA curve seeds to lrand48 seeded with 1997-98 Unix timestamps. Fetched primary (anthropic.com/research/ecdsa-curve-origins, with reproduction code) and Valsorda's bounty-claimed post (independent Go reimplementation; bounty claimed 15 Oct 01:07:51 UTC; $36,864 to ISRG). Runner re-ran the published Python locally: all five P-curve seeds match. ADDED nist-curve-seeds (8.3). One item added, under the cap of 2."
     }
   ]
 }
