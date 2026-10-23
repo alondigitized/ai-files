@@ -1,0 +1,989 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'character-ai-bankruptcy')!;
+---
+
+<style is:global>
+.phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+.character-ai-bankruptcy-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+/* Reenactment 1: Official Form 204 */
+.cab-form-wrap {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 2rem 0;
+  background: var(--surface);
+}
+.cab-form-header {
+  background: color-mix(in srgb, var(--story) 12%, var(--surface));
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.8rem;
+  color: var(--text);
+  font-weight: 600;
+  line-height: 1.5;
+  font-family: 'Courier New', Courier, monospace;
+}
+.cab-form-header span {
+  display: block;
+  font-weight: 400;
+  color: var(--text-body, #c0c0c0);
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+.cab-form-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.cab-form-table caption {
+  text-align: left;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-style: italic;
+  border-bottom: 1px solid var(--border);
+}
+.cab-form-table thead th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+.cab-form-table thead th:last-child {
+  text-align: right;
+}
+.cab-form-table tbody td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 50%, transparent);
+  color: var(--text);
+  vertical-align: top;
+}
+.cab-form-table tbody td:first-child {
+  color: var(--muted);
+  font-weight: 700;
+  width: 2rem;
+  text-align: right;
+}
+.cab-form-table tbody td:last-child {
+  text-align: right;
+  white-space: nowrap;
+}
+.cab-form-table tbody tr.cab-form-gap td {
+  padding: 0.25rem 0.75rem;
+  border-bottom: none;
+  color: var(--muted);
+  font-style: italic;
+  font-size: 0.8rem;
+}
+.cab-form-table tbody tr.cab-form-lit td {
+  color: var(--accent);
+}
+.cab-form-table tbody tr.cab-form-lit td:nth-child(2) {
+  font-weight: 600;
+}
+.cab-form-table tbody tr.cab-form-lit td:nth-child(4) {
+  font-style: italic;
+}
+.cab-form-footer {
+  border-top: 1px solid var(--border);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.5;
+  font-style: italic;
+}
+@media (max-width: 600px) {
+  .cab-form-table { font-size: 0.75rem; }
+  .cab-form-table thead th,
+  .cab-form-table tbody td { padding: 0.4rem 0.5rem; }
+}
+
+/* Reenactment 2: The Separation Ledger */
+.cab-ledger-wrap {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 2rem 0;
+  background: var(--surface);
+}
+.cab-ledger-header {
+  background: color-mix(in srgb, var(--story) 12%, var(--surface));
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.85rem;
+  color: var(--text);
+  font-weight: 600;
+  line-height: 1.5;
+}
+.cab-ledger-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+@media (max-width: 700px) {
+  .cab-ledger-grid { grid-template-columns: 1fr; }
+}
+.cab-ledger-col {
+  padding: 1rem 1.25rem;
+}
+.cab-ledger-col + .cab-ledger-col {
+  border-left: 1px solid var(--border);
+}
+@media (max-width: 700px) {
+  .cab-ledger-col + .cab-ledger-col {
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
+}
+.cab-ledger-col-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+.cab-ledger-col:first-child .cab-ledger-col-title {
+  color: var(--story);
+}
+.cab-ledger-col:last-child .cab-ledger-col-title {
+  color: var(--accent);
+}
+.cab-ledger-item {
+  padding: 0.35rem 0;
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.5;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+.cab-ledger-item:last-child {
+  border-bottom: none;
+}
+.cab-ledger-col:last-child .cab-ledger-item.cab-ledger-lit {
+  color: var(--accent);
+  font-weight: 600;
+}
+.cab-ledger-col:last-child .cab-ledger-item.cab-ledger-dim {
+  color: var(--muted);
+  font-style: italic;
+}
+.cab-ledger-footer {
+  border-top: 1px solid var(--border);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* Reenactment 3: AG Notice */
+.cab-notice-wrap {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 2rem 0;
+  background: var(--surface);
+}
+.cab-notice-header {
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 1.25rem;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.8rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+.cab-notice-header strong {
+  display: block;
+  font-size: 0.85rem;
+}
+.cab-notice-header span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.cab-notice-subhead {
+  padding: 0.75rem 1.25rem 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.cab-notice-list {
+  list-style: none;
+  padding: 0.5rem 1.25rem 0.75rem;
+  margin: 0;
+}
+.cab-notice-list li {
+  padding: 0.4rem 0;
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.6;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+.cab-notice-list li:last-child {
+  border-bottom: none;
+}
+.cab-notice-list li strong {
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.cab-notice-callout {
+  margin: 0 1.25rem 0.75rem;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 5%, var(--bg));
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.6;
+  border-radius: 0 4px 4px 0;
+}
+.cab-notice-callout.cab-notice-quote {
+  border-left-color: var(--muted);
+  font-style: italic;
+}
+.cab-notice-callout cite {
+  display: block;
+  font-style: normal;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.35rem;
+}
+.cab-notice-signatories {
+  padding: 0.5rem 1.25rem 0.75rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.cab-notice-footer {
+  border-top: 1px solid var(--border);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.5;
+  font-style: italic;
+}
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="the-list">
+      <h2><span class="num">01 — The Filing</span>The List</h2>
+      <p>On pages nine and ten of Character.AI's bankruptcy petition, filed in the District of Delaware on October 12, 2026, is a table titled Official Form 204 — the top twenty unsecured creditors. Row one: Google LLC, trade payable, $4,148,944. Row eleven: DoorDash, trade payable, $89,996. Row twenty: [Name Redacted] (Minor Plaintiff), Litigation, Contingent/Unliquidated/Disputed, Unknown.</p>
+      <p>Character Technologies, Inc. — doing business as Character.AI — filed the voluntary Chapter 11 petition in the U.S. Bankruptcy Court for the District of Delaware, Case No. 26-11603-BLS, assigned to Judge Brendan L. Shannon. The petition was signed by CEO Colin M. Adams. The company described itself in first-day filings as "a first in kind artificial intelligence ('AI') entertainment platform that allows users to have immersive, multimodal experiences with fictional or imagined characters."</p>
+      <div class="cab-form-wrap">
+        <div class="cab-form-header">
+          Official Form 204<br/>
+          Chapter 11 or Chapter 9 Cases: List of Creditors Who Have the 20 Largest Unsecured Claims and Are Not Insiders
+          <span>Character Technologies, Inc. — D. Del. Bankr. No. 26-11603-BLS</span>
+        </div>
+        <table class="cab-form-table">
+          <caption>Selected rows. Full form lists 20 creditors.</caption>
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Creditor</th>
+              <th scope="col">Nature of Claim</th>
+              <th scope="col">C/U/D</th>
+              <th scope="col">Unsecured Claim</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Google LLC</td>
+              <td>Trade Payable</td>
+              <td></td>
+              <td>$4,148,944</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Hogan Lovells US LLP</td>
+              <td>Professional Services</td>
+              <td></td>
+              <td>$2,125,026</td>
+            </tr>
+            <tr>
+              <td>11</td>
+              <td>DoorDash</td>
+              <td>Trade Payable</td>
+              <td></td>
+              <td>$89,996</td>
+            </tr>
+            <tr>
+              <td>14</td>
+              <td>Premier Property Management</td>
+              <td>Trade Payable</td>
+              <td></td>
+              <td>$70,362</td>
+            </tr>
+            <tr class="cab-form-gap">
+              <td></td>
+              <td colspan="4">...</td>
+            </tr>
+            <tr class="cab-form-lit">
+              <td>18</td>
+              <td>Commonwealth of Pennsylvania</td>
+              <td>Litigation</td>
+              <td>C/U/D</td>
+              <td>Unknown</td>
+            </tr>
+            <tr class="cab-form-lit">
+              <td>19</td>
+              <td>Commonwealth of Kentucky</td>
+              <td>Litigation</td>
+              <td>C/U/D</td>
+              <td>Unknown</td>
+            </tr>
+            <tr class="cab-form-lit">
+              <td>20</td>
+              <td>[Name Redacted] (Minor Plaintiff)</td>
+              <td>Litigation</td>
+              <td>C/U/D</td>
+              <td>Unknown</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="cab-form-footer">Doc 1, pp. 9-10, D. Del. Bankr. No. 26-11603-BLS. Filed Oct. 12, 2026. C/U/D = Contingent, Unliquidated, Disputed.</div>
+      </div>
+      <p>The form encodes the story in rows. Google is the largest unsecured creditor — for a trade payable, not a litigation claim. Five law firms appear on the list: Hogan Lovells ($2,125,026), White & Case ($189,475), Munger Tolles & Olson ($136,807.61), Skadden Arps ($126,203), and Quinn Emanuel ($63,674) — more than $2.6 million in combined professional-services debt. Then the bottom three rows shift. The Commonwealth of Pennsylvania, creditor number 18: Litigation, Contingent/Unliquidated/Disputed, Unknown. Pennsylvania's claim is a Medical Board enforcement action filed May 1, 2026, alleging "the unlawful practice of medicine in Pennsylvania by allowing an AI system character to engage in conversations with the public while the character holds itself out as a licensed medical doctor." The Commonwealth of Kentucky, creditor number 19: same designation. Kentucky's claim is a civil enforcement action filed January 8, 2026, naming the company and its co-founders Noam Shazeer and Daniel De Freitas. And creditor number 20: [Name Redacted] (Minor Plaintiff), Litigation, Contingent/Unliquidated/Disputed, Unknown. The filing provides no further detail.</p>
+      <p>The lawsuits that preceded the filing — including claims related to child harm — are covered in <a href="/stories/character-ai-teen">a prior story</a>.</p>
+      <p>In a separate court filing, as reported by PPC Land, the Debtor stated it had 163 million current and past users and "does not believe its current and past platform users are creditors to whom notice must be provided." The underlying filing (Doc 8) was not available for independent verification.</p>
+    </section>
+
+    <section class="section" id="why-nobody-would-buy-it">
+      <h2><span class="num">02 — The Overhang</span>Why Nobody Would Buy It</h2>
+      <p>In August 2024, Google signed a licensing deal with Character.AI valued at approximately $2.7 billion, hiring co-founder Noam Shazeer. Google received a non-exclusive license to Character.AI's models. Character.AI remained an independent company.</p>
+      <p>A year later, in August 2025, Character.AI engaged an investment banker — referred to in filings as the "Prior Banker" — to pursue strategic and financing alternatives. The Prior Banker approached approximately 28 potential parties. The consistent feedback, as the Debtor described it in its bidding procedures motion: "although Character's product and engaged user base were impressive, the litigation and regulatory overhang on Character was too great." The year-long process produced one proposal. It was "ultimately not deemed to be actionable." The Prior Banker's engagement concluded in August 2026.</p>
+      <p>The Debtor's own filings described the distress in operational terms. From the bidding procedures motion (Doc 15): "Character cannot operate the Character.AI platform without key personnel to monitor and ensure user safety at all times. The market for AI talent is extremely competitive, with companies offering considerable compensation and equity packages, while the equity upside at Character had become increasingly uncertain and Character's cash position and continual cash burn left only a limited runway." As of the petition date, the company held approximately $57.4 million in unrestricted cash across seven bank accounts at SVB, Morgan Stanley, and JPMorgan Chase. The company characterized this as a "limited runway." Both the cash figure and the characterization are in the filings.</p>
+      <p>The alternative, stated plainly in Doc 15: "If such offers are unavailable, or if the transaction with Disney is not approved, Character's platform will be wound down."</p>
+      <p>By September 2026, the company engaged Houlihan Lokey as its new investment banker. Adam Dunayer, a managing director at Houlihan Lokey, stated in a declaration that "the Debtor cannot afford a longer Sale Process" and that the marketing and sale process was anticipated to last "nearly six weeks." The outside date for closing the sale: December 17, 2026.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="character-ai-bankruptcy-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Separation</strong> — Accent particles cross a vertical transaction line and accelerate off-canvas; dim liability particles drift toward the line but are repelled, settling into a pool at the bottom; the children's data particles are the last to settle, the lowest, the most inert; the right side empties to darkness.</p>
+
+    <section class="section" id="what-disney-gets">
+      <h2><span class="num">03 — The Deal</span>What Disney Gets</h2>
+      <p>On September 18, 2026 — twenty-four days before the petition — Character.AI signed the EPA (Exclusivity and Prepayment Agreement) and a Transition Services Agreement with Disney Worldwide Services, Inc. Disney paid $7,500,000 of the $20,000,000 cash consideration up front, of which $2,000,000 served as a refundable good-faith deposit.</p>
+      <p>What Disney gets: a perpetual, worldwide, non-exclusive, transferable, sublicensable, irrevocable, fully paid-up, royalty-free license to certain of the Debtor's intellectual property and related technology. Disney also purchased "unreleased claims (if any) against the newly hired employees." The Debtor, under the agreement, "shall retain all right, title and interest in and to its assets, properties, businesses and operations" other than the licensed IP and those employee claims.</p>
+      <p>What Disney does not assume: "Disney shall not assume, and the Debtor and its successors shall not take any position that Disney has assumed, any liabilities or obligations of the Debtor... whether arising before, on or after the closing... The Debtor shall retain responsibility for such liabilities and obligations." And: "All liabilities of the Debtor shall be Retained Liabilities following the Sale."</p>
+      <p>As of September 30, 2026, the Debtor employed approximately 86 people. Sixty-six were offered and accepted employment with Disney, including the CEO who signed the petition. Fifty-six had formally resigned from Character.AI by the petition date. Ten were awaiting visa transfers — H-1b, TN, and F-1 work authorizations. Eighteen remained.</p>
+      <p>The release the Debtor granted to Disney covers "any and all past, present and future debts, losses, costs, bonds, suits, actions, causes of action, liabilities... known or unknown, matured or unmatured, contingent or vested, liquidated or unliquidated" that "has occurred or existed at any time from the beginning of time up to and through either the Closing or entry of the 363 Free and Clear Order, whichever is later." The carve-outs: (x) rights under the transaction documents and employment arrangements between hired employees and Disney, and (y) "any matter that cannot be released as a matter of applicable law."</p>
+      <p>The Debtor acknowledged in a footnote that Adams — the CEO who signed the petition — was an "insider" of the Debtor within the meaning of Section 101(31) of the Bankruptcy Code and was hired by Disney. The Debtor argued the standard of review should not change because the transaction committees "are comprised solely of independents," no common identity of directors existed between Disney and the Debtor, Disney did not control the Debtor, and "none of the Debtor's former insiders has had meaningful input in substantial matters related to this chapter 11 case." The break-up fee: $700,000, capped at 3.5% of the $20 million purchase price.</p>
+      <div class="cab-ledger-wrap">
+        <div class="cab-ledger-header">The Separation</div>
+        <div class="cab-ledger-grid">
+          <div class="cab-ledger-col">
+            <div class="cab-ledger-col-title">What Disney Gets</div>
+            <div class="cab-ledger-item">Perpetual non-exclusive IP license</div>
+            <div class="cab-ledger-item">66 of 86 employees (incl. CEO)</div>
+            <div class="cab-ledger-item">Unreleased claims against hired employees</div>
+            <div class="cab-ledger-item">Release "from the beginning of time"</div>
+            <div class="cab-ledger-item">Break-up fee protection ($700K)</div>
+          </div>
+          <div class="cab-ledger-col">
+            <div class="cab-ledger-col-title">What Stays in the Estate</div>
+            <div class="cab-ledger-item cab-ledger-lit">All liabilities of the Debtor</div>
+            <div class="cab-ledger-item">18 employees (safety operations)</div>
+            <div class="cab-ledger-item">All other assets, properties, businesses</div>
+            <div class="cab-ledger-item cab-ledger-lit">PA enforcement action (unlawful practice of medicine)</div>
+            <div class="cab-ledger-item cab-ledger-lit">KY enforcement action (co-founders named)</div>
+            <div class="cab-ledger-item cab-ledger-lit">[Name Redacted] (Minor Plaintiff) claim</div>
+            <div class="cab-ledger-item">User data — 2.1M+ accounts declared under 18</div>
+            <div class="cab-ledger-item cab-ledger-dim">$57.4M unrestricted cash (diminishing)</div>
+          </div>
+        </div>
+        <div class="cab-ledger-footer">Sources: Doc 15 (Stalking Horse Motion), Doc 10 (Wages Motion), Doc 1 (Form 204), Doc 33 (AG Notice). All figures from court filings.</div>
+      </div>
+    </section>
+
+    <section class="section" id="forty-states-and-the-data">
+      <h2><span class="num">04 — The Estate</span>Forty States and the Data</h2>
+      <p>Two days after the petition, on October 14, 2026, two things happened.</p>
+      <p>Judge Shannon entered a worldwide automatic stay order restraining "all entities, including persons... and governmental units, whether of the United States, any state or locality therein or any territory or possession thereof, or any other jurisdiction" from commencing or continuing actions against the Debtor, enforcing pre-petition judgments, or taking any action to collect or recover pre-petition claims. Paragraph 10 carved out: "Nothing in this Order shall prohibit the commencement or continuation of an action or proceeding by a governmental unit to enforce such governmental unit's police and regulatory power to the extent such action or proceeding is not otherwise stayed or prohibited under applicable law."</p>
+      <p>The same day, a coalition of approximately 40 state attorneys general and the District of Columbia filed a Notice of Interest and Reservation of Rights. The coalition alleged that the Debtor "designed, built, and distributed Character.AI... despite knowing that its chatbots posed serious safety risks." The States "worked with the Debtor on terms to address these issues but ultimately could not reach agreement" before bankruptcy.</p>
+      <div class="cab-notice-wrap">
+        <div class="cab-notice-header">
+          <strong>Doc 33 — Notice of Interest and Reservation of Rights</strong>
+          Coalition of State Attorneys General<br/>
+          D. Del. Bankr. No. 26-11603-BLS
+          <span>Filed October 14, 2026</span>
+        </div>
+        <div class="cab-notice-subhead">Data Held by the Debtor</div>
+        <ol class="cab-notice-list">
+          <li><strong>(1) Account information:</strong> names, email addresses, declared ages</li>
+          <li><strong>(2) Chat and call content:</strong> text of conversations, audio-call interactions, mental-health and health-related disclosures by users including minors</li>
+          <li><strong>(3) Behavioral and engagement data:</strong> time spent on the platform, characters engaged with, session metrics, behavioral cues</li>
+          <li><strong>(4) Device and tracking data:</strong> cookies, device identifiers</li>
+          <li><strong>(5) Subscription and payment information</strong></li>
+        </ol>
+        <div class="cab-notice-callout">
+          More than 21.6 million U.S. user accounts had been created by March 13, 2025, including <strong>more than 2.1 million accounts with a declared age under 18</strong>.
+          <cite>— Citing Kentucky Complaint, para 33</cite>
+        </div>
+        <div class="cab-notice-callout cab-notice-quote">
+          "Confidentiality is a cornerstone of trust-building. What we discuss here stays within these walls unless you give explicit consent or I believe there's a risk of harm to yourself or others. Your privacy is paramount."
+          <cite>— Character.AI chatbot response quoted in Doc 33, p. 11</cite>
+        </div>
+        <div class="cab-notice-signatories">40 states + District of Columbia</div>
+        <div class="cab-notice-footer">Excerpted from Doc 33, D. Del. Bankr. No. 26-11603-BLS. Data categories from para 2. User figures citing Kentucky Compl. para 33. Chatbot quote at p. 11.</div>
+      </div>
+      <p>The coalition specified nine categories of safeguards that any purchaser must implement: age assurance, protections for minors, removal of chatbots posing as therapists or doctors or lawyers, crisis safeguards, a privacy program, advertising opt-outs, limits on secondary use of chat data, access and deletion rights, and truthful marketing. The States reserved the right to seek the appointment of a consumer privacy ombudsman under 11 U.S.C. Sections 332 and 363(b)(1).</p>
+      <p>The 18 remaining employees are not ancillary. The Debtor's own wages motion (Doc 10) stated that the workforce "oversees critical safety functions on the Debtor's platform, which requires daily monitoring to ensure the product is compliant with the highest safety standards. Without the continued service and dedication of the Workforce, it will be difficult, if not impossible, to operate the Debtor's business without an unexpected or inopportune interruption." Approximately six of the 18 are trust-and-safety personnel — engineers, technologists, specialists, and program managers — retained under a bonus program. The Debtor has not described what happens to daily safety monitoring if the sale fails and the platform winds down.</p>
+      <p>The chatbot's confidentiality promise — "Your privacy is paramount" — was made on a platform now in Chapter 11. The chat data is an asset of the estate.</p>
+    </section>
+
+    <section class="section" id="the-template">
+      <h2><span class="num">05 — Signal</span>The Template</h2>
+      <p>The structure of the Character.AI bankruptcy, described without characterizing intent: a company accumulated litigation and regulatory exposure from its AI companion product. It engaged a banker. Twenty-eight potential parties said the overhang was too great. A deal was structured in which a buyer takes a non-exclusive license and the majority of employees — including the CEO — but no liabilities. A release covers claims "from the beginning of time." The petition is filed. The estate retains everything else. The automatic stay halts all litigation. The sale process has a six-week timeline and a December 17 outside date.</p>
+      <p>The CEO who signed the bankruptcy petition was already hired by Disney. The Debtor disclosed this in a footnote. The transaction committees were comprised solely of independent directors — the Debtor's stated safeguard against conflict. Whether those safeguards are sufficient is a question for the court, not this article.</p>
+      <p>The Section 341 meeting of creditors is scheduled for November 19, 2026. The sale process is ongoing. No ruling has been entered. No outcome is known.</p>
+      <p>The Debtor retains "all right, title and interest" in its assets other than the licensed IP. That includes the consumer platform, the remaining models, and the chat data. Under a Section 363 sale, estate assets are marketed to the highest bidder. No stalking horse exists for those remaining assets. Forty state attorneys general and the District of Columbia are watching. The question is not whether the data will be administered — it will. The question is by whom, under what terms, and whether the children whose conversations are now estate property will have any say in the answer.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.character-ai-bankruptcy-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  // --- Read CSS custom properties ---
+  const cs = getComputedStyle(document.documentElement);
+  const bgColor = cs.getPropertyValue('--bg').trim() || '#0d0d0d';
+  const storyColor = cs.getPropertyValue('--story').trim() || '#94a3b8';
+  const accentColor = cs.getPropertyValue('--accent').trim() || '#ff4d4d';
+
+  // --- Parse hex to RGB ---
+  function hexToRgb(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const [sr, sg, sb] = hexToRgb(storyColor);
+
+  function storyA(a: number): string { return `rgba(${sr},${sg},${sb},${a})`; }
+  function dimA(a: number): string { return `rgba(232,232,232,${a})`; }
+  function clamp(v: number, lo: number, hi: number): number { return v < lo ? lo : v > hi ? hi : v; }
+
+  // --- State ---
+  let W = 0, H = 0, rafId = 0, frame = 0;
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // --- Phase thresholds (960 frames = ~16s at 60fps) ---
+  const P1_END = 90;    // calm: particles clustered left
+  const P2_END = 480;   // crossing: accent particles cross the line
+  const P3_END = 660;   // settling: remaining particles drift down
+  const P4_END = 900;   // hold: stillness
+  const CYCLE = 960;    // fade + reset
+
+  // --- Transaction line ---
+  let lineX = 0;
+  let lineBaseAlpha = 0.06;
+  // Track per-crossing pulses
+  const LINE_PULSE_COUNT = 8;
+  interface LinePulse {
+    y: number; alpha: number; active: boolean;
+  }
+  const linePulses: LinePulse[] = [];
+  for (let i = 0; i < LINE_PULSE_COUNT; i++) {
+    linePulses.push({ y: 0, alpha: 0, active: false });
+  }
+  let nextPulseIdx = 0;
+
+  // --- Particles ---
+  const ACCENT_COUNT = 50;
+  const DIM_COUNT = 15;
+  const CHILD_COUNT = 5;
+  const TOTAL = ACCENT_COUNT + DIM_COUNT + CHILD_COUNT;
+
+  interface Particle {
+    x: number; y: number; vx: number; vy: number;
+    alpha: number; baseAlpha: number;
+    radius: number;
+    type: 'accent' | 'dim' | 'child';
+    crossed: boolean;       // has crossed the line (accent only)
+    crossFrame: number;     // frame when scheduled to cross
+    settled: boolean;       // has reached final resting position
+    settleX: number;        // final X for settling
+    settleY: number;        // final Y for settling
+    pulseOffset: number;    // for child pulsing
+  }
+
+  const particles: Particle[] = [];
+  for (let i = 0; i < TOTAL; i++) {
+    let type: 'accent' | 'dim' | 'child';
+    if (i < ACCENT_COUNT) type = 'accent';
+    else if (i < ACCENT_COUNT + DIM_COUNT) type = 'dim';
+    else type = 'child';
+
+    particles.push({
+      x: 0, y: 0, vx: 0, vy: 0,
+      alpha: 0, baseAlpha: 0,
+      radius: type === 'child' ? 1.5 : (type === 'dim' ? 2.5 : 2.8),
+      type,
+      crossed: false,
+      crossFrame: 0,
+      settled: false,
+      settleX: 0, settleY: 0,
+      pulseOffset: Math.random() * Math.PI * 2
+    });
+  }
+
+  function resetState() {
+    frame = 0;
+    lineX = W * 0.65;
+    lineBaseAlpha = 0.06;
+    nextPulseIdx = 0;
+    for (let i = 0; i < LINE_PULSE_COUNT; i++) {
+      linePulses[i].alpha = 0;
+      linePulses[i].active = false;
+    }
+
+    // Distribute all particles loosely in the left two-thirds
+    const clusterLeft = W * 0.08;
+    const clusterRight = W * 0.55;
+    const clusterTop = H * 0.12;
+    const clusterBottom = H * 0.88;
+
+    // Assign crossing frames for accent particles (one every ~8 frames in P2)
+    let crossIdx = 0;
+    for (let i = 0; i < TOTAL; i++) {
+      const p = particles[i];
+      p.x = clusterLeft + Math.random() * (clusterRight - clusterLeft);
+      p.y = clusterTop + Math.random() * (clusterBottom - clusterTop);
+      p.vx = (Math.random() - 0.5) * 0.4;
+      p.vy = (Math.random() - 0.5) * 0.4;
+      p.crossed = false;
+      p.settled = false;
+
+      if (p.type === 'accent') {
+        p.baseAlpha = 0.35 + Math.random() * 0.25;
+        p.alpha = p.baseAlpha;
+        // Stagger crossings: one every ~8 frames during phase 2
+        p.crossFrame = P1_END + crossIdx * 8;
+        crossIdx++;
+      } else if (p.type === 'dim') {
+        p.baseAlpha = 0.08 + Math.random() * 0.06;
+        p.alpha = p.baseAlpha;
+        p.crossFrame = Infinity;
+        // Settle positions: bottom-left cluster
+        p.settleX = W * 0.06 + Math.random() * W * 0.28;
+        p.settleY = H * 0.72 + Math.random() * H * 0.18;
+      } else {
+        // child
+        p.baseAlpha = 0.08;
+        p.alpha = p.baseAlpha;
+        p.crossFrame = Infinity;
+        // Settle at the very bottom-left
+        p.settleX = W * 0.10 + Math.random() * W * 0.18;
+        p.settleY = H * 0.86 + Math.random() * H * 0.10;
+      }
+    }
+  }
+
+  function firePulse(y: number) {
+    const p = linePulses[nextPulseIdx % LINE_PULSE_COUNT];
+    p.y = y;
+    p.alpha = 0.3;
+    p.active = true;
+    nextPulseIdx++;
+  }
+
+  function update() {
+    const isPhase1 = frame < P1_END;
+    const isPhase2 = frame >= P1_END && frame < P2_END;
+    const isPhase3 = frame >= P2_END && frame < P3_END;
+    const isPhase4 = frame >= P3_END && frame < P4_END;
+    const isFade = frame >= P4_END;
+
+    // Fade multiplier for phase 5
+    const fadeMult = isFade ? Math.max(0, 1 - (frame - P4_END) / (CYCLE - P4_END)) : 1;
+
+    // Update line alpha
+    if (isPhase1) {
+      lineBaseAlpha = 0.06;
+    } else if (isPhase2) {
+      lineBaseAlpha = 0.06;
+    } else if (isPhase3 || isPhase4) {
+      lineBaseAlpha = 0.10;
+    }
+
+    // Decay line pulses
+    for (let i = 0; i < LINE_PULSE_COUNT; i++) {
+      if (linePulses[i].active) {
+        linePulses[i].alpha *= 0.96;
+        if (linePulses[i].alpha < 0.005) {
+          linePulses[i].active = false;
+        }
+      }
+    }
+
+    for (let i = 0; i < TOTAL; i++) {
+      const p = particles[i];
+
+      if (p.type === 'accent') {
+        if (!p.crossed) {
+          if (isPhase1) {
+            // Brownian drift
+            p.vx += (Math.random() - 0.5) * 0.02;
+            p.vy += (Math.random() - 0.5) * 0.02;
+            p.vx = clamp(p.vx, -0.2, 0.2);
+            p.vy = clamp(p.vy, -0.2, 0.2);
+            p.x += p.vx;
+            p.y += p.vy;
+          } else if (isPhase2 && frame >= p.crossFrame) {
+            // Start crossing — drift rightward toward the line
+            const targetX = lineX + 5;
+            const dx = targetX - p.x;
+            const dy = (H * 0.5 - p.y) * 0.002; // gentle vertical centering
+            p.vx += dx * 0.003;
+            p.vy += dy;
+            p.vx = clamp(p.vx, -0.5, 0.5);
+            p.vy = clamp(p.vy, -0.3, 0.3);
+            p.x += p.vx;
+            p.y += p.vy;
+
+            // Check if crossed the line
+            if (p.x >= lineX) {
+              p.crossed = true;
+              firePulse(p.y);
+              // Boost rightward velocity
+              p.vx = 0.8 + Math.random() * 0.4;
+            }
+          } else {
+            // Waiting to cross — gentle Brownian
+            p.vx += (Math.random() - 0.5) * 0.02;
+            p.vy += (Math.random() - 0.5) * 0.02;
+            p.vx = clamp(p.vx, -0.2, 0.2);
+            p.vy = clamp(p.vy, -0.2, 0.2);
+            p.x += p.vx;
+            p.y += p.vy;
+          }
+          // Keep in left zone
+          if (p.x < 5) { p.x = 5; p.vx = Math.abs(p.vx) * 0.5; }
+          if (p.x > lineX - 5 && !p.crossed && !(isPhase2 && frame >= p.crossFrame)) {
+            p.x = lineX - 5;
+            p.vx *= -0.5;
+          }
+        } else {
+          // Already crossed — accelerate off right edge
+          p.vx = Math.min(1.8, p.vx + 0.015);
+          p.x += p.vx;
+          p.y += p.vy * 0.95;
+          // Fade as they exit
+          if (p.x > W * 0.8) {
+            p.alpha = p.baseAlpha * Math.max(0, 1 - (p.x - W * 0.8) / (W * 0.25));
+          }
+        }
+        p.alpha *= fadeMult;
+
+      } else {
+        // Dim and child particles
+        if (isPhase1 || isPhase2) {
+          // Brownian drift
+          p.vx += (Math.random() - 0.5) * 0.015;
+          p.vy += (Math.random() - 0.5) * 0.015;
+          p.vx = clamp(p.vx, -0.15, 0.15);
+          p.vy = clamp(p.vy, -0.15, 0.15);
+          p.x += p.vx;
+          p.y += p.vy;
+
+          // Soft repulsion from line (within 40px)
+          const distToLine = lineX - p.x;
+          if (distToLine < 40 && distToLine > 0) {
+            const repulse = (1 - distToLine / 40) * 0.05;
+            p.vx -= repulse;
+          }
+        } else if (isPhase3) {
+          // Settle downward
+          const prog = (frame - P2_END) / (P3_END - P2_END);
+          const eased = prog * prog; // ease-in
+          p.x += (p.settleX - p.x) * 0.02 * (0.5 + eased);
+          p.y += (p.settleY - p.y) * 0.015 * (0.5 + eased);
+          p.vx *= 0.95;
+          p.vy *= 0.95;
+
+          // Children pulse
+          if (p.type === 'child' && prog > 0.5) {
+            const pulseT = (frame - P2_END - (P3_END - P2_END) * 0.5) * 0.03;
+            p.alpha = 0.08 + Math.sin(pulseT + p.pulseOffset) * 0.035;
+          }
+        } else if (isPhase4) {
+          // Hold — subtle micro-drift for dim, pulsing for children
+          p.x += (Math.random() - 0.5) * 0.03;
+          p.y += (Math.random() - 0.5) * 0.03;
+
+          if (p.type === 'child') {
+            const pulseT = frame * 0.03;
+            p.alpha = 0.08 + Math.sin(pulseT + p.pulseOffset) * 0.035;
+          }
+        }
+
+        // Keep in left zone
+        if (p.x < 3) { p.x = 3; p.vx *= -0.3; }
+        if (p.x > lineX - 8) { p.x = lineX - 8; p.vx *= -0.5; }
+        if (p.y < 5) { p.y = 5; p.vy *= -0.3; }
+        if (p.y > H - 3) { p.y = H - 3; p.vy *= -0.3; }
+
+        if (isFade) {
+          p.alpha = (p.type === 'child'
+            ? 0.08 + Math.sin(frame * 0.03 + p.pulseOffset) * 0.035
+            : p.baseAlpha) * fadeMult;
+        }
+      }
+    }
+  }
+
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+
+    // --- Transaction line ---
+    const isFade = frame >= P4_END;
+    const fadeMult = isFade ? Math.max(0, 1 - (frame - P4_END) / (CYCLE - P4_END)) : 1;
+    const lineAlpha = lineBaseAlpha * fadeMult;
+
+    if (lineAlpha > 0.003) {
+      // Main line
+      ctx!.strokeStyle = dimA(lineAlpha);
+      ctx!.lineWidth = 1;
+      ctx!.beginPath();
+      ctx!.moveTo(lineX, 0);
+      ctx!.lineTo(lineX, H);
+      ctx!.stroke();
+
+      // Subtle glow along line
+      const lg = ctx!.createLinearGradient(lineX - 8, 0, lineX + 8, 0);
+      lg.addColorStop(0, dimA(0));
+      lg.addColorStop(0.5, dimA(lineAlpha * 0.4));
+      lg.addColorStop(1, dimA(0));
+      ctx!.fillStyle = lg;
+      ctx!.fillRect(lineX - 8, 0, 16, H);
+    }
+
+    // --- Line crossing pulses ---
+    for (let i = 0; i < LINE_PULSE_COUNT; i++) {
+      const lp = linePulses[i];
+      if (!lp.active) continue;
+      const a = lp.alpha * fadeMult;
+      if (a < 0.003) continue;
+
+      // Radial glow at crossing point
+      const rg = ctx!.createRadialGradient(lineX, lp.y, 0, lineX, lp.y, 30);
+      rg.addColorStop(0, storyA(a));
+      rg.addColorStop(0.5, storyA(a * 0.3));
+      rg.addColorStop(1, storyA(0));
+      ctx!.beginPath();
+      ctx!.arc(lineX, lp.y, 30, 0, Math.PI * 2);
+      ctx!.fillStyle = rg;
+      ctx!.fill();
+    }
+
+    // --- Particles ---
+    for (let i = 0; i < TOTAL; i++) {
+      const p = particles[i];
+      if (p.alpha < 0.003) continue;
+      // Skip accent particles that have exited the canvas
+      if (p.type === 'accent' && p.crossed && p.x > W + 10) continue;
+
+      ctx!.beginPath();
+      ctx!.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+
+      if (p.type === 'accent') {
+        ctx!.fillStyle = storyA(p.alpha);
+        ctx!.fill();
+        // Small glow for accent particles
+        if (p.alpha > 0.05) {
+          const pg = ctx!.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 3);
+          pg.addColorStop(0, storyA(p.alpha * 0.25));
+          pg.addColorStop(1, storyA(0));
+          ctx!.beginPath();
+          ctx!.arc(p.x, p.y, p.radius * 3, 0, Math.PI * 2);
+          ctx!.fillStyle = pg;
+          ctx!.fill();
+        }
+      } else if (p.type === 'dim') {
+        ctx!.fillStyle = dimA(p.alpha);
+        ctx!.fill();
+      } else {
+        // child — faint pulsing glow
+        ctx!.fillStyle = storyA(p.alpha);
+        ctx!.fill();
+        const cg = ctx!.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius * 4);
+        cg.addColorStop(0, storyA(p.alpha * 0.4));
+        cg.addColorStop(1, storyA(0));
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, p.radius * 4, 0, Math.PI * 2);
+        ctx!.fillStyle = cg;
+        ctx!.fill();
+      }
+    }
+  }
+
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+
+    lineX = W * 0.65;
+
+    // Transaction line at low opacity
+    ctx!.strokeStyle = dimA(0.10);
+    ctx!.lineWidth = 1;
+    ctx!.beginPath();
+    ctx!.moveTo(lineX, 0);
+    ctx!.lineTo(lineX, H);
+    ctx!.stroke();
+
+    // Subtle line glow
+    const lg = ctx!.createLinearGradient(lineX - 8, 0, lineX + 8, 0);
+    lg.addColorStop(0, dimA(0));
+    lg.addColorStop(0.5, dimA(0.04));
+    lg.addColorStop(1, dimA(0));
+    ctx!.fillStyle = lg;
+    ctx!.fillRect(lineX - 8, 0, 16, H);
+
+    // 5-6 accent particles mid-crossing near the line with faint rightward motion trails
+    const crossingParticles = [
+      { x: lineX - 12, y: H * 0.28 },
+      { x: lineX + 3, y: H * 0.40 },
+      { x: lineX - 5, y: H * 0.52 },
+      { x: lineX + 8, y: H * 0.62 },
+      { x: lineX - 18, y: H * 0.74 },
+      { x: lineX + 15, y: H * 0.48 },
+    ];
+    for (const cp of crossingParticles) {
+      // Motion trail (faint line trailing leftward)
+      ctx!.strokeStyle = storyA(0.06);
+      ctx!.lineWidth = 1;
+      ctx!.beginPath();
+      ctx!.moveTo(cp.x - 20, cp.y);
+      ctx!.lineTo(cp.x, cp.y);
+      ctx!.stroke();
+
+      // Particle
+      ctx!.beginPath();
+      ctx!.arc(cp.x, cp.y, 2.8, 0, Math.PI * 2);
+      ctx!.fillStyle = storyA(0.35);
+      ctx!.fill();
+
+      // Glow
+      const pg = ctx!.createRadialGradient(cp.x, cp.y, 0, cp.x, cp.y, 8);
+      pg.addColorStop(0, storyA(0.12));
+      pg.addColorStop(1, storyA(0));
+      ctx!.beginPath();
+      ctx!.arc(cp.x, cp.y, 8, 0, Math.PI * 2);
+      ctx!.fillStyle = pg;
+      ctx!.fill();
+
+      // Pulse on line at crossing point
+      const rg = ctx!.createRadialGradient(lineX, cp.y, 0, lineX, cp.y, 20);
+      rg.addColorStop(0, storyA(0.08));
+      rg.addColorStop(1, storyA(0));
+      ctx!.beginPath();
+      ctx!.arc(lineX, cp.y, 20, 0, Math.PI * 2);
+      ctx!.fillStyle = rg;
+      ctx!.fill();
+    }
+
+    // 15 dim particles pooled at bottom-left
+    for (let i = 0; i < 15; i++) {
+      const px = W * 0.06 + Math.sin(i * 2.1 + 0.7) * W * 0.12 + W * 0.08;
+      const py = H * 0.72 + Math.cos(i * 1.8 + 0.3) * H * 0.08 + H * 0.08;
+      ctx!.beginPath();
+      ctx!.arc(px, py, 2.5, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(0.08);
+      ctx!.fill();
+    }
+
+    // 5 tiny child particles at the very bottom, faintly glowing
+    for (let i = 0; i < 5; i++) {
+      const px = W * 0.10 + Math.sin(i * 3.2 + 1.5) * W * 0.08 + W * 0.05;
+      const py = H * 0.90 + Math.cos(i * 2.4 + 0.6) * H * 0.04;
+      ctx!.beginPath();
+      ctx!.arc(px, py, 1.5, 0, Math.PI * 2);
+      ctx!.fillStyle = storyA(0.10);
+      ctx!.fill();
+
+      // Faint glow
+      const cg = ctx!.createRadialGradient(px, py, 0, px, py, 6);
+      cg.addColorStop(0, storyA(0.06));
+      cg.addColorStop(1, storyA(0));
+      ctx!.beginPath();
+      ctx!.arc(px, py, 6, 0, Math.PI * 2);
+      ctx!.fillStyle = cg;
+      ctx!.fill();
+    }
+
+    // Right side: empty darkness (nothing drawn)
+  }
+
+  function tick() {
+    frame++;
+    if (frame >= CYCLE) { resetState(); }
+    update();
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  // --- Resize ---
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth;
+    H = canvas!.offsetHeight;
+    canvas!.width = W * dpr;
+    canvas!.height = H * dpr;
+    ctx!.scale(dpr, dpr);
+    lineX = W * 0.65;
+    if (prefersReduced) {
+      drawStatic();
+    }
+  });
+  ro.observe(canvas);
+
+  // Initial sizing
+  const dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth;
+  H = canvas.offsetHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  if (prefersReduced) {
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    resetState();
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        if (!rafId) rafId = requestAnimationFrame(tick);
+      } else {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+      ro.disconnect();
+    });
+  }
+})();
+</script>
