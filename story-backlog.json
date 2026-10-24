@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-23T09:20:00Z",
+  "updatedAt": "2026-10-24T09:25:00Z",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -2238,9 +2238,86 @@
       "startedAt": "2026-10-23T09:15:26Z",
       "publishedAt": "2026-10-23T10:03:22Z",
       "prUrl": "https://github.com/alondigitized/ai-files/pull/96"
+    },
+    {
+      "slug": "state-ags-openai-template",
+      "status": "pending",
+      "priority": 1,
+      "side": "dark",
+      "workingTitle": "Additional Counsel Listed on Signature Page",
+      "thesis": "On 14 Oct 2026 the attorneys general of Arizona, Arkansas, Idaho, Iowa, Kansas, Montana, Nebraska and West Virginia filed separate consumer-protection suits against OpenAI in their own state courts. All eight list the same private firm, Kibler Fowler & Cave LLP (New York / Los Angeles), as counsel, and the complaints share roughly 40-67 percent of their text (12-word shingle overlap measured by the runner). From that common template each state picked different frontier-AI remedies: Arizona, Idaho and Montana use identical language barring OpenAI from 'deploying or continuing to test advanced AI models outside of a secured, independently verified testing environment' and requiring escape incidents to be disclosed to the AG; Iowa and Arkansas bar further testing until third-party monitors verify safeguards; Arkansas alone asks the court to 'Enjoin Defendants from creating models capable of recursive self-improvement until they can ensure that such models will be aligned with human values'; West Virginia targets agentic features. On 23 Oct Texas (different counsel, Keller Postman; 3-4 percent text overlap) asked a Collin County court to bar any new model release unless a court-approved third-party evaluator signs off. Thesis: the closest thing the US has to a frontier-model licensing regime is being drafted as a menu of prayer-for-relief clauses by private counsel and filed in county courts, one state at a time - and its evidentiary base is the labs' own incident disclosures and safety essays.",
+      "whyNow": "Eight complaints filed 14 Oct 2026 (Just Security 'Just the Docs', Matthew Nagle, 15 Oct, hosts all eight PDFs); Texas Original Petition filed 23 Oct 2026 (PDF on texasattorneygeneral.gov, press release dated 23 Oct). Not covered by any prior sweep. Distinct from florida-openai-injunction (PR #80, a single state's 28 Sep TI motion): this story is about the shared template, the shared counsel, and the divergent remedy menu across nine new filings. Primaries saved locally as source-sao-*.txt (Arkansas is a scanned PDF; OCR'd via macOS Vision, relief page image saved as source-sao-arkansas-p72-relief.png).",
+      "sources": [
+        {
+          "url": "https://www.justsecurity.org/160981/eight-states-sue-openai-chatgpt-safety/",
+          "date": "2026-10-15",
+          "type": "secondary-with-primaries"
+        },
+        {
+          "url": "https://www.justsecurity.org/wp-content/uploads/2026/10/Arizona.pdf",
+          "date": "2026-10-14",
+          "type": "primary"
+        },
+        {
+          "url": "https://www.justsecurity.org/wp-content/uploads/2026/10/Arkansas.pdf",
+          "date": "2026-10-14",
+          "type": "primary"
+        },
+        {
+          "url": "https://www.justsecurity.org/wp-content/uploads/2026/10/Idaho.pdf",
+          "date": "2026-10-14",
+          "type": "primary"
+        },
+        {
+          "url": "https://www.justsecurity.org/wp-content/uploads/2026/10/Iowa.pdf",
+          "date": "2026-10-14",
+          "type": "primary"
+        },
+        {
+          "url": "https://www.justsecurity.org/wp-content/uploads/2026/10/Kansas.pdf",
+          "date": "2026-10-14",
+          "type": "primary"
+        },
+        {
+          "url": "https://www.justsecurity.org/wp-content/uploads/2026/10/Montana.pdf",
+          "date": "2026-10-14",
+          "type": "primary"
+        },
+        {
+          "url": "https://www.justsecurity.org/wp-content/uploads/2026/10/Nebraska.pdf",
+          "date": "2026-10-14",
+          "type": "primary"
+        },
+        {
+          "url": "https://www.justsecurity.org/wp-content/uploads/2026/10/West-Virginia.pdf",
+          "date": "2026-10-14",
+          "type": "primary"
+        },
+        {
+          "url": "https://www.texasattorneygeneral.gov/news/releases/attorney-general-ken-paxton-sues-openai-and-ceo-sam-altman-lying-users-and-harming-texans",
+          "date": "2026-10-23",
+          "type": "primary"
+        },
+        {
+          "url": "https://www.texasattorneygeneral.gov/sites/default/files/images/press/OpenAI%20Final.pdf",
+          "date": "2026-10-23",
+          "type": "primary"
+        }
+      ],
+      "sourceDate": "2026-10-23",
+      "scores": {
+        "importance": 8.5,
+        "rigor": 9.0,
+        "reportability": 8.0,
+        "readerValue": 8.5,
+        "fitWithArchive": 7.5
+      },
+      "compositeScore": 8.3,
+      "freshnessScore": 10,
+      "notes": "Overlap risk with florida-openai-injunction handled by angle: template + shared counsel + remedy divergence, not 'disclosures became exhibits' (Florida's thesis). Complaints cite archive incidents (Hugging Face sandbox escape 9-16x per complaint; US government sites) and Amodei's 'We Must Pace the Frontier' (pace-the-frontier). Arizona/Idaho/Kansas say the arms race 'killed dozens of real people'; Iowa's version says 'reportedly killed' - the template was edited per state. These are allegations, not findings; no court has ruled. OpenAI response not yet located (CNBC/Courthouse News 403)."
     }
   ],
-  "lastRefreshed": "2026-10-23",
+  "lastRefreshed": "2026-10-24",
   "sweepLog": [
     {
       "date": "2026-09-08",
@@ -2427,6 +2504,12 @@
       "query": "AI incident OR lawsuit OR ruling OR breakthrough October 21 22 2026 (+ one follow-up locating the Fifth Circuit opinion, fetched via CourtListener API and ca5.uscourts.gov)",
       "itemsAdded": 1,
       "note": "Backlog entered with ZERO pending items (character-ai-bankruptcy published as PR #95); no freshness decay needed. ADDED wingate-fifth-circuit-reassignment (8.0) after reading the full primary opinion. Not added: Canadian publishers v. Anthropic (21 Oct; crowded copyright cluster, complaint just filed), Concord v. Anthropic SJ hearing (no ruling), OpenAI-Google Cloud partnership (not a story), Wiz PHP2Shell (unevaluated). One item added, under the cap of 2."
+    },
+    {
+      "date": "2026-10-24",
+      "query": "AI incident OR lawsuit OR ruling OR breakthrough October 22 23 2026 (+ one follow-up locating the state-AG complaints after Courthouse News returned 403)",
+      "itemsAdded": 1,
+      "note": "Backlog entered with ZERO pending items (wingate-fifth-circuit-reassignment published as PR #96); no freshness decay needed. Archived 2026-10-23 working files to .working-archive/2026-10-23-wingate-fifth-circuit-reassignment. Sweep surfaced: (1) Eight-state coordinated OpenAI suits (14 Oct) + Texas petition (23 Oct) - primaries fetched (Just Security hosts the eight PDFs; Texas PDF on texasattorneygeneral.gov); runner measured 40-67 percent shared text across the eight, found Kibler Fowler & Cave LLP on all eight signature blocks (Arkansas via OCR), and the divergent frontier-testing remedies. ADDED state-ags-openai-template (8.3). Not added: 5th Cir. AI-hallucination reassignment (already wingate-fifth-circuit-reassignment), NYT v. OpenAI SJ opposition briefing (no ruling), OpenAI children's-data class action (complaint only, crowded), Google CCAI wiretap ruling of 23 Oct (not yet evaluated; primary not located), Meta $18B settlement (not AI). One item added, under the cap of 2."
     }
   ]
 }
