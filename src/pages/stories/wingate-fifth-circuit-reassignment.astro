@@ -1,0 +1,945 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'wingate-fifth-circuit-reassignment')!;
+---
+
+<style is:global>
+  /* === CANVAS === */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+.wingate-fifth-circuit-reassignment-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+/* === Reenactment 1: The Phantom Record === */
+.wfr-phantom {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  margin: 2rem 0;
+}
+.wfr-phantom-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--border);
+}
+.wfr-phantom-header span {
+  padding: 0.75rem 1rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.wfr-phantom-header span:first-child {
+  border-right: 1px solid var(--border);
+  color: var(--accent);
+}
+.wfr-phantom-header span:last-child {
+  color: var(--story);
+}
+.wfr-phantom-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--border);
+}
+.wfr-phantom-row:last-child {
+  border-bottom: none;
+}
+.wfr-phantom-cell {
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.wfr-phantom-cell:first-child {
+  border-right: 1px solid var(--border);
+  color: var(--accent);
+}
+.wfr-phantom-cell:last-child {
+  color: var(--story);
+}
+.wfr-phantom-cell .wfr-ecf {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 0.2rem;
+  font-family: 'Courier New', monospace;
+}
+.wfr-phantom-footer {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.wfr-phantom-footer cite {
+  display: block;
+  font-style: normal;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 0.3rem;
+}
+
+/* === Reenactment 2: The Overwrite === */
+.wfr-docket {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+.wfr-docket-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: var(--text);
+}
+.wfr-docket-panel.wfr-after {
+  border-color: var(--accent);
+  border-width: 1px;
+  border-left-width: 3px;
+}
+.wfr-docket-label {
+  font-family: inherit;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.wfr-docket-panel.wfr-after .wfr-docket-label {
+  color: var(--accent);
+}
+.wfr-docket-entry {
+  color: var(--text);
+}
+.wfr-docket-replaced {
+  color: var(--accent);
+  font-style: italic;
+}
+.wfr-docket-note {
+  margin-top: 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* === Reenactment 3: The Ghost Citation === */
+.wfr-cite {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+  border-radius: 0 0 0.75rem 0.75rem;
+  margin: 2rem 0;
+  overflow: hidden;
+}
+.wfr-cite-top {
+  padding: 1rem 1.25rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.88rem;
+  color: var(--accent);
+  line-height: 1.5;
+  border-bottom: 1px solid var(--border);
+  font-style: italic;
+}
+.wfr-cite-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1.2fr;
+  border-bottom: 1px solid var(--border);
+}
+.wfr-cite-grid:last-of-type {
+  border-bottom: none;
+}
+.wfr-cite-cell {
+  padding: 0.65rem 1rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  border-right: 1px solid var(--border);
+}
+.wfr-cite-cell:last-child {
+  border-right: none;
+}
+.wfr-cite-hdr {
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: rgba(255,255,255,0.02);
+}
+.wfr-cite-claim {
+  color: var(--accent);
+}
+.wfr-cite-real {
+  color: var(--story);
+}
+.wfr-cite-footer {
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.wfr-cite-footer cite {
+  display: block;
+  font-style: normal;
+  font-size: 0.72rem;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 640px) {
+  .wfr-phantom-header,
+  .wfr-phantom-row {
+    grid-template-columns: 1fr;
+  }
+  .wfr-phantom-cell:first-child,
+  .wfr-phantom-header span:first-child {
+    border-right: none;
+    border-bottom: 1px dashed var(--border);
+  }
+  .wfr-cite-grid {
+    grid-template-columns: 1fr;
+  }
+  .wfr-cite-cell {
+    border-right: none;
+    border-bottom: 1px dashed var(--border);
+  }
+  .wfr-cite-cell:last-child {
+    border-bottom: none;
+  }
+}
+
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="s01">
+      <h2><span class="num">01 — The Sunday Order</span>The TRO</h2>
+      <p>At approximately 4:30 p.m. on Sunday, July 20, 2025, Judge Henry T. Wingate of the Southern District of Mississippi docketed a seventeen-page temporary restraining order in <em>Jackson Federation of Teachers v. Fitch</em>. The order enjoined enforcement of portions of House Bill 1193, a Mississippi law enacted that April restricting diversity, equity, and inclusion initiatives in public education. Plaintiffs had filed a pre-enforcement facial challenge in June 2025, arguing the law violated the First and Fourteenth Amendments.</p>
+      <p>The TRO that appeared on the docket that Sunday was not a normal order with a stray typo. Its footnote 1 listed twelve "plaintiffs." Only one — the Mississippi Association of Educators — had ever been a named plaintiff in the case. The other eleven individuals and organizations, including Dr. Daphne Chamberlain, Dr. Robert Luckett, Mississippi Votes, and the Black Student Union at Jackson State University, had never been party to the proceeding. Two officials — the Commissioner of Higher Education and the State Superintendent of Education — were named as defendants despite never having been sued in those capacities.</p>
+      <p>The order quoted H.B. 1193 as applying to "race or sex stereotyping," "race or sex scapegoating," "critical race theory," and "institutional bias." None of these terms appear in the statute's text. It claimed that three institutions — Jackson State University, Alcorn State University, and Hinds Community College — had already terminated DEI initiatives. According to the defendants' filing, no such allegations appeared in the amended complaint.</p>
+      <p>Then there were the declarations. The TRO cited the testimony of four individuals — Brandy Williams, Leslie-Burl McLemore, Dr. Rhea Bishop, and Natalie Collier — pointing to ECF 11-1 through 11-4 as the source. Those docket entries actually contain the declarations of entirely different people.</p>
+      <div class="wfr-phantom" role="figure" aria-label="Comparison of TRO citations versus actual docket record">
+        <div class="wfr-phantom-header">
+          <span>TRO Order (ECF 51) Cites</span>
+          <span>Actual Record at That Location</span>
+        </div>
+        <div class="wfr-phantom-row">
+          <div class="wfr-phantom-cell">Declaration of Brandy Williams<span class="wfr-ecf">ECF 11-1</span></div>
+          <div class="wfr-phantom-cell">Declaration of Carmen Dunn<span class="wfr-ecf">ECF 11-1</span></div>
+        </div>
+        <div class="wfr-phantom-row">
+          <div class="wfr-phantom-cell">Declaration of Leslie-Burl McLemore<span class="wfr-ecf">ECF 11-2</span></div>
+          <div class="wfr-phantom-cell">Declaration of Barbara Phillips<span class="wfr-ecf">ECF 11-2</span></div>
+        </div>
+        <div class="wfr-phantom-row">
+          <div class="wfr-phantom-cell">Declaration of Dr. Rhea Bishop<span class="wfr-ecf">ECF 11-3</span></div>
+          <div class="wfr-phantom-cell">Declaration of D'Andra Orey<span class="wfr-ecf">ECF 11-3</span></div>
+        </div>
+        <div class="wfr-phantom-row">
+          <div class="wfr-phantom-cell">Declaration of Natalie Collier<span class="wfr-ecf">ECF 11-4</span></div>
+          <div class="wfr-phantom-cell">Declaration of Cliff Johnson<span class="wfr-ecf">ECF 11-4</span></div>
+        </div>
+        <div class="wfr-phantom-footer">
+          "The four aforementioned declarations referenced in the TRO Order do not appear in this record at all."
+          <cite>— ECF 54, Defendants' Unopposed Motion to Clarify or Correct (July 22, 2025)</cite>
+        </div>
+      </div>
+      <p>The Fifth Circuit would later add: the four individuals "do not appear in the record at all and may not even exist." Whether Williams, McLemore, Bishop, and Collier are real people who never filed declarations or entirely AI-fabricated identities remains unresolved.</p>
+    </section>
+    <section class="section" id="s02">
+      <h2><span class="num">02 — The Substitution</span>The Overwrite</h2>
+      <p>On July 22, 2025, the Mississippi Attorney General's office filed an unopposed motion itemizing the errors. The motion did not seek to dissolve the TRO. It asked the court to correct the record.</p>
+      <p>What followed was a sequence documented in precise detail by the defendants' subsequent filing, ECF 58. At 3:32 p.m. on July 22, Wingate's law clerk emailed all counsel: "Judge Wingate has requested that the parties submit and [sic] Agreed (or Unopposed) Order granting the most recent Motion [54], seeking clarification." At 9:06 p.m. that evening, a second email arrived: "The Amended/Corrected Order is now available on ECF. Please disregard the Court's previous instructions."</p>
+      <p>No ECF notice accompanied this corrected version. Counsel discovered it had been added as an exhibit — ECF 51-1 — file-stamped July 20 but dated as signed July 22.</p>
+      <p>By approximately 9:20 a.m. on the morning of Wednesday, July 23, defendants' counsel noticed the original TRO had been completely removed from the docket. The corrected version now occupied ECF 51 — its number changed from 51-1 to 51. The filing date still read July 20, 2025. At 11:05 a.m., a Text Order granted ECF 54. One minute later, at 11:06 a.m., a separate notification stated: "Main Document 51 replaced on 7/23/2025."</p>
+      <p>The Fifth Circuit's opinion compresses this sequence, stating the corrected version "was docketed on July 22" and "backdated to July 20." ECF 58, ECF 74, and Wingate's own letter all place the replacement on July 23.</p>
+      <p>By this point, multiple news outlets — Fox News, The Guardian, the Associated Press, ABC News, and others — had already published stories citing the erroneous portions of the original TRO. The defendants noted that without access to the original, any public observer would "find it virtually impossible, by reference to this Court's docket, to ascertain what has occurred procedurally."</p>
+      <div class="wfr-docket" role="figure" aria-label="Docket entry mockup showing before and after replacement">
+        <div class="wfr-docket-panel">
+          <span class="wfr-docket-label">Before (July 20, 2025)</span>
+          <div class="wfr-docket-entry">
+            ECF 51&ensp;Filed 07/20/25&ensp;ORDER GRANTING TEMPORARY RESTRAINING ORDER<br>
+            &emsp;&emsp;&emsp;Signed by District Judge Henry T. Wingate on 7/20/2025<br>
+            &emsp;&emsp;&emsp;17 pages
+          </div>
+        </div>
+        <div class="wfr-docket-panel wfr-after">
+          <span class="wfr-docket-label">After (July 23, 2025)</span>
+          <div class="wfr-docket-entry">
+            ECF 51&ensp;Filed 07/20/25&ensp;ORDER GRANTING TEMPORARY RESTRAINING ORDER<br>
+            &emsp;&emsp;&emsp;Signed by District Judge Henry T. Wingate on 7/20/2025<br>
+            &emsp;&emsp;&emsp;<span class="wfr-docket-replaced">(Main Document 51 replaced on 7/23/2025)</span><br>
+            &emsp;&emsp;&emsp;17 pages
+          </div>
+        </div>
+        <div class="wfr-docket-note">
+          Same ECF number. Same filing date. Different document. No ECF notice was issued to the parties in connection with this modification of the docket.
+        </div>
+      </div>
+    </section>
+    <div class="phantom-wrap">
+      <canvas class="wingate-fifth-circuit-reassignment-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Palimpsest</strong> — A column of stable line segments is overwritten in place by a descending wave; ghost traces of the originals drift to the canvas margin and lodge there; one replacement line pulses faintly wrong; after a long stillness, the wrong line flares and the ghost at the margin glows in recognition.</p>
+    <section class="section" id="s03">
+      <h2><span class="num">03 — The Response</span>"Merely Clerical"</h2>
+      <p>Wingate responded twice. The first time, he said almost nothing. The second time, his own words undercut the framing.</p>
+      <p>On August 1, 2025, Wingate denied the defendants' motion to restore the original to the docket, preserve the record, and explain the errors. His two-page order, ECF 65, characterized the inaccuracies as "clerical errors referencing improper parties and factual allegations," invoked Rule 60(a), and concluded: "No further explanation is warranted." The order cited four Fifth Circuit cases — all real, all verified.</p>
+      <p>The explanation eventually came by a different route. On October 6, 2025, Senator Charles Grassley, as Chairman of the Senate Judiciary Committee, wrote to Wingate regarding the TRO. Grassley also wrote to Judge Julien Xavier Neals in the District of New Jersey regarding a separate AI incident.</p>
+      <p>Fifteen days later, on October 21, Wingate responded in a letter to the Director of the Administrative Office of the U.S. Courts. It is the only document in which the judge speaks directly about AI use. His account: "a law clerk utilized a generative artificial intelligence ('GenAI') tool known as Perplexity strictly as a foundational drafting assistant to synthesize publicly available information on the docket." The docketed version, Wingate wrote, "was an early draft that had not gone through the standard review process. It was a draft that should have never been docketed."</p>
+      <p>On the removal: "I thought that it would be confusing to leave a flawed opinion on the record because of the errors and inaccuracies that existed in the Order." He would not restore it: "I removed the inaccurate Order from public view and will not re-docket it."</p>
+      <p>On "clerical": the term "was intended to signify that the mistakes were due to a failure to confirm the accuracy of certain information rather than errors in core legal reasoning or the ultimate judgment on the merits."</p>
+      <p>The Fifth Circuit framed it differently. The opinion states: "Judge Wingate admitted to having used AI to prepare the TRO and blamed the errors on his law clerk's employment of AI in drafting it." This sentence elides the judge/clerk distinction that Wingate's letter draws. The opinion does not resolve the tension. Footnote 10 adds: "It is not clear to this court how so many mistaken facts could not at least marginally 'affect' 'core legal reasoning' or support for the judgment on the merits."</p>
+      <p>Wingate described corrective measures: mandatory second-clerk review of all draft opinions and orders, with all cited cases printed from Westlaw and attached to the final draft. The opinion's footnote 9 dates the Wingate letter "Oct. 2, 2025"; the letter itself is dated October 21, consistent with a fifteen-day response to Grassley's October 6 inquiry.</p>
+    </section>
+    <section class="section" id="s04">
+      <h2><span class="num">04 — The Discovery</span>What Survived</h2>
+      <p>Oral argument before Judges Smith, Haynes, and Engelhardt took place on August 31, 2026 — more than thirteen months after the original TRO was docketed and removed.</p>
+      <p>At that hearing, something was discovered that the correction had failed to catch. The opinion, using its own passive construction, states: "At oral argument in this court, it was discovered that even the 'corrected' TRO" still "contained hallucinated information (namely, a citation to a purported Fourth Circuit case, 'Cousins v. School Bd. of City of Norfolk,' that does not exist)." The full citation in the order reads <em>Cousins v. School Bd. of City of Norfolk</em>, 503 F.2d 422, 426–27 (4th Cir. 1974).</p>
+      <p>That case does not exist.</p>
+      <div class="wfr-cite" role="figure" aria-label="Dissection of the hallucinated Cousins citation">
+        <div class="wfr-cite-top">
+          Cousins v. School Bd. of City of Norfolk, 503 F.2d 422, 426-27 (4th Cir. 1974)
+        </div>
+        <div class="wfr-cite-grid wfr-cite-hdr">
+          <div class="wfr-cite-cell wfr-cite-hdr">Element</div>
+          <div class="wfr-cite-cell wfr-cite-hdr">What It Claims</div>
+          <div class="wfr-cite-cell wfr-cite-hdr">What Actually Exists There</div>
+        </div>
+        <div class="wfr-cite-grid">
+          <div class="wfr-cite-cell">503 F.2d 422</div>
+          <div class="wfr-cite-cell wfr-cite-claim">Start of the <em>Cousins</em> opinion</div>
+          <div class="wfr-cite-cell wfr-cite-real">Falls within <em>United States v. Anderson</em>, 503 F.2d 420 (6th Cir. 1974)</div>
+        </div>
+        <div class="wfr-cite-grid">
+          <div class="wfr-cite-cell">426-27 (pincite)</div>
+          <div class="wfr-cite-cell wfr-cite-claim">Pages of the <em>Cousins</em> analysis</div>
+          <div class="wfr-cite-cell wfr-cite-real"><em>Avis Rent A Car Sys., Inc. v. United States</em>, 503 F.2d 423 (2d Cir. 1974)</div>
+        </div>
+        <div class="wfr-cite-grid">
+          <div class="wfr-cite-cell">(4th Cir. 1974)</div>
+          <div class="wfr-cite-cell wfr-cite-claim">A Fourth Circuit case</div>
+          <div class="wfr-cite-cell wfr-cite-real">Neither case is from the Fourth Circuit</div>
+        </div>
+        <div class="wfr-cite-footer">
+          "That case does not even exist; it is an apparent AI hallucination."
+          <cite>— Fifth Circuit, No. 25-60496, fn 13</cite>
+        </div>
+      </div>
+      <p>The citation is structurally perfect — correct reporter format, plausible court, plausible year. It slots into the cracks between two unrelated real cases published in the same volume. The original TRO cited it at pages 2-3 to describe "the interplay between TRO and preliminary injunction." Neither <em>Anderson</em> nor <em>Avis Rent A Car</em> discusses that topic. And the hallucination survived the correction process intact.</p>
+      <p>The consequences extended further. Wingate's August 18 preliminary injunction order stated: "This Court generally incorporates by reference its discussion and analysis in its TRO." As the Fifth Circuit noted in footnote 14, this meant the hallucinated citation was "arguably part of the shoddy reasoning of the preliminary injunction, too."</p>
+      <p>The original TRO — the one Wingate removed from public view and said he would not re-docket — survives in two places outside the judge's control. The defendants attached it as an exhibit to their July 28 motion, ECF 58-1. It also survives in the free RECAP public archive. The Fifth Circuit acknowledged this in footnote 7: "We are grateful — and, indeed, lucky — that the defendants provided a copy of the original TRO as an exhibit in their July 28 motion, ECF 58-1, given that Judge Wingate kept it from public view."</p>
+    </section>
+    <section class="section" id="s05">
+      <h2><span class="num">05 — The Consequence</span>Reassignment</h2>
+      <p>Judge Jerry E. Smith, writing for himself and Judge Engelhardt, called the proceedings "a botch job, to say the least." The majority opinion went further: "The district court — or perhaps, being charitable, its AI agent — ignored and manipulated governing law, apparently to satisfy a policy agenda." This is the language of the majority. Judge Haynes did not join it.</p>
+      <p>On the merits, the Fifth Circuit vacated the preliminary injunction, finding that Wingate had misapplied the Supreme Court's framework in <em>Moody v. NetChoice</em> and instructing the new judge to apply the <em>Garcetti/Kennedy</em> framework on remand. The substantive holding is extensive; the AI errors are not its only basis.</p>
+      <p>But it is the reassignment that is extraordinary. The court called the power "extraordinary" and "rarely invoked." Applying both the <em>DaimlerChrysler</em> and <em>Willey</em> tests, the majority found all factors met. On whether the judge could set aside erroneous views: "the fact that the district court merely excised the AI-hallucinated 'facts' from its original TRO — without explaining why the order should still stand even without the false evidence to support it — may already evince a 'substantial difficulty.'" On public confidence: "the public esteem for the judiciary would be diminished by sending this case back to the same judge." On waste: "the waste of the tainted proceedings is 'already on the balance sheet.'"</p>
+      <p>The disposition: "The preliminary injunction is VACATED, and this matter is REMANDED. The Chief Judge of the Southern District of Mississippi is DIRECTED to assign this case to a different district judge for all further proceedings."</p>
+      <p>Judge Haynes concurred only in that final paragraph. Her full concurrence: "I concur in the last paragraph of the majority opinion. I think it is important on the remand to take a more full look at the House Bill 1193 in play. I also think it is very important to make sure that teachers at school are in no way limited or forbidden from teaching the students not to discriminate as set out in Title VII, including race, color, religion, sex, gender, etc."</p>
+      <p>The case goes to a new judge. The corrected version of the TRO, the one the court put in place of the original, still cites <em>Cousins v. School Bd. of City of Norfolk</em>. No one has explained how it got there.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.wingate-fifth-circuit-reassignment-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const rootStyle = getComputedStyle(document.documentElement);
+  const bgColor = rootStyle.getPropertyValue('--bg').trim() || '#0d0d0d';
+  const storyColor = rootStyle.getPropertyValue('--story').trim() || '#6d9dc5';
+  const accentColor = rootStyle.getPropertyValue('--accent').trim() || '#ff4d4d';
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // --- Parse story color into RGB components ---
+  function parseHex(hex: string): [number, number, number] {
+    const h = hex.replace('#', '');
+    return [
+      parseInt(h.substring(0, 2), 16),
+      parseInt(h.substring(2, 4), 16),
+      parseInt(h.substring(4, 6), 16)
+    ];
+  }
+
+  const [sR, sG, sB] = parseHex(storyColor);
+  const [aR, aG, aB] = parseHex(accentColor);
+
+  // Warm variant: blend 20% toward accent (#ff4d4d)
+  const wR = Math.round(sR + (aR - sR) * 0.2);
+  const wG = Math.round(sG + (aG - sG) * 0.2);
+  const wB = Math.round(sB + (aB - sB) * 0.2);
+
+  function storyA(a: number): string {
+    return `rgba(${sR},${sG},${sB},${Math.max(0, Math.min(1, a))})`;
+  }
+  function warmA(a: number): string {
+    return `rgba(${wR},${wG},${wB},${Math.max(0, Math.min(1, a))})`;
+  }
+  function accentA(a: number): string {
+    return `rgba(${aR},${aG},${aB},${Math.max(0, Math.min(1, a))})`;
+  }
+  function dimA(a: number): string {
+    return `rgba(232,232,232,${Math.max(0, Math.min(1, a))})`;
+  }
+
+  // --- Constants ---
+  const NUM_LINES = 22;
+  const HALLUC_INDEX = 6; // 7th line (0-indexed)
+  const LINE_LENGTH_RATIO = 0.45; // fraction of canvas width
+
+  // Phase boundaries (1200 frames = 20s at 60fps)
+  const P1_END   = 150;  // Phase 1 ends: stable column complete
+  const P2_END   = 450;  // Phase 2 ends: replacement wave complete
+  const P3_END   = 900;  // Phase 3 ends: stillness / ghost drift
+  const P4_END   = 1050; // Phase 4 ends: discovery flare
+  const CYCLE    = 1200; // Phase 5 fade + snap reset
+
+  // --- Interfaces ---
+  interface LineSegment {
+    y: number;         // vertical position (computed from layout)
+    alpha: number;     // current opacity
+    targetAlpha: number;
+    replaced: boolean; // has the replacement wave passed this line?
+    breatheOffset: number;
+  }
+
+  interface GhostFragment {
+    originY: number;   // y position at birth
+    x: number;         // current x (drifts right)
+    y: number;         // current y (slight drift)
+    alpha: number;
+    targetAlpha: number;
+    vx: number;        // rightward velocity
+    vy: number;        // slight vertical wobble
+    isHalluc: boolean; // is this the ghost of the hallucinated line?
+    lodged: boolean;   // stuck at the margin
+    fadeRate: number;   // how fast it fades (non-halluc fade faster)
+  }
+
+  interface AmbientParticle {
+    x: number; y: number; vx: number; vy: number; alpha: number;
+  }
+
+  // --- State ---
+  let W = 0, H = 0, frame = 0, rafId = 0;
+  let lines: LineSegment[] = [];
+  let ghosts: GhostFragment[] = [];
+  let ambients: AmbientParticle[] = [];
+  let scanLineY = 0;
+  let globalFade = 1;
+  let discoveryFlash = 0;
+  let lineStartX = 0, lineEndX = 0, columnCenterX = 0;
+  let lineSpacing = 0, lineTop = 0;
+  let marginX = 0; // right margin where ghosts lodge
+
+  // --- Layout ---
+  function computeLayout() {
+    const halfLen = (W * LINE_LENGTH_RATIO) / 2;
+    columnCenterX = W * 0.4; // column slightly left of center to leave room for margin
+    lineStartX = columnCenterX - halfLen;
+    lineEndX = columnCenterX + halfLen;
+    marginX = W * 0.88; // right margin for ghosts
+    const padY = H * 0.08;
+    lineSpacing = (H - padY * 2) / (NUM_LINES - 1);
+    lineTop = padY;
+  }
+
+  function getLineY(index: number): number {
+    return lineTop + index * lineSpacing;
+  }
+
+  // --- Initialization ---
+  function buildLines() {
+    lines = [];
+    for (let i = 0; i < NUM_LINES; i++) {
+      lines.push({
+        y: getLineY(i),
+        alpha: 0,
+        targetAlpha: 0,
+        replaced: false,
+        breatheOffset: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  function buildAmbients() {
+    ambients = [];
+    for (let i = 0; i < 15; i++) {
+      ambients.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15,
+        alpha: 0.03 + Math.random() * 0.04
+      });
+    }
+  }
+
+  function resetState() {
+    frame = 0;
+    globalFade = 1;
+    discoveryFlash = 0;
+    scanLineY = 0;
+    computeLayout();
+    buildLines();
+    buildAmbients();
+    ghosts = [];
+  }
+
+  // --- Phase logic ---
+  function getPhase(f: number): string {
+    if (f < P1_END) return 'stable';
+    if (f < P2_END) return 'replace';
+    if (f < P3_END) return 'still';
+    if (f < P4_END) return 'discovery';
+    return 'fade';
+  }
+
+  // --- Spawn a ghost fragment from a replaced line ---
+  function spawnGhost(lineIdx: number) {
+    const isH = lineIdx === HALLUC_INDEX;
+    const y = getLineY(lineIdx);
+    ghosts.push({
+      originY: y,
+      x: lineEndX + 5,
+      y: y,
+      alpha: 0.12,
+      targetAlpha: 0.12,
+      vx: 0.2 + Math.random() * 0.15,
+      vy: (Math.random() - 0.5) * 0.08,
+      isHalluc: isH,
+      lodged: false,
+      fadeRate: isH ? 0.00005 : (0.0004 + Math.random() * 0.0004)
+    });
+  }
+
+  // --- Update ---
+  function update() {
+    const phase = getPhase(frame);
+
+    // Ambient particles always drift
+    for (let i = 0; i < ambients.length; i++) {
+      const p = ambients[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > W) p.vx *= -1;
+      if (p.y < 0 || p.y > H) p.vy *= -1;
+    }
+
+    if (phase === 'stable') {
+      // Lines fade in staggered top to bottom
+      for (let i = 0; i < NUM_LINES; i++) {
+        const staggerFrame = (i / NUM_LINES) * P1_END * 0.8;
+        if (frame > staggerFrame) {
+          lines[i].targetAlpha = 0.55 + 0.1 * Math.sin(frame * 0.015 + lines[i].breatheOffset);
+        }
+        lines[i].alpha += (lines[i].targetAlpha - lines[i].alpha) * 0.04;
+      }
+
+    } else if (phase === 'replace') {
+      // Scan line descends
+      const replaceProgress = (frame - P1_END) / (P2_END - P1_END);
+      const firstLineY = getLineY(0);
+      const lastLineY = getLineY(NUM_LINES - 1);
+      scanLineY = firstLineY - 10 + replaceProgress * (lastLineY - firstLineY + 20);
+
+      for (let i = 0; i < NUM_LINES; i++) {
+        const ly = getLineY(i);
+        if (!lines[i].replaced && scanLineY >= ly) {
+          // This line is being replaced
+          lines[i].replaced = true;
+          lines[i].alpha = 0; // dissolve
+          lines[i].targetAlpha = 0;
+          spawnGhost(i);
+        }
+
+        if (lines[i].replaced) {
+          // Fade replacement back in
+          const timeSinceReplace = frame - P1_END - ((ly - firstLineY + 10) / (lastLineY - firstLineY + 20)) * (P2_END - P1_END);
+          if (timeSinceReplace > 0) {
+            const fadeIn = Math.min(1, timeSinceReplace / 40);
+            if (i === HALLUC_INDEX) {
+              // Hallucinated line: pulse with wrong rhythm
+              const pulse = 0.5 + 0.5 * Math.sin(frame * (Math.PI * 2 / 90));
+              lines[i].targetAlpha = 0.3 + 0.3 * fadeIn * pulse;
+            } else {
+              lines[i].targetAlpha = 0.55 * fadeIn;
+            }
+          }
+          lines[i].alpha += (lines[i].targetAlpha - lines[i].alpha) * 0.06;
+        } else {
+          // Still-original lines breathe
+          lines[i].targetAlpha = 0.55 + 0.1 * Math.sin(frame * 0.015 + lines[i].breatheOffset);
+          lines[i].alpha += (lines[i].targetAlpha - lines[i].alpha) * 0.04;
+        }
+      }
+
+      // Update ghosts
+      updateGhosts();
+
+    } else if (phase === 'still') {
+      // All lines stable, halluc line pulses
+      for (let i = 0; i < NUM_LINES; i++) {
+        if (i === HALLUC_INDEX) {
+          const pulse = 0.5 + 0.5 * Math.sin(frame * (Math.PI * 2 / 90));
+          lines[i].targetAlpha = 0.35 + 0.25 * pulse;
+        } else {
+          lines[i].targetAlpha = 0.5 + 0.08 * Math.sin(frame * 0.012 + lines[i].breatheOffset);
+        }
+        lines[i].alpha += (lines[i].targetAlpha - lines[i].alpha) * 0.04;
+      }
+
+      updateGhosts();
+
+    } else if (phase === 'discovery') {
+      // Flare the hallucinated line and the margin ghost
+      const discoveryProgress = (frame - P3_END) / (P4_END - P3_END);
+
+      // Flash envelope: sharp rise, slower decay
+      if (discoveryProgress < 0.15) {
+        discoveryFlash = discoveryProgress / 0.15;
+      } else if (discoveryProgress < 0.5) {
+        discoveryFlash = 1 - (discoveryProgress - 0.15) / 0.35 * 0.5;
+      } else {
+        discoveryFlash = 0.5 * (1 - (discoveryProgress - 0.5) / 0.5);
+      }
+      discoveryFlash = Math.max(0, discoveryFlash);
+
+      for (let i = 0; i < NUM_LINES; i++) {
+        if (i === HALLUC_INDEX) {
+          lines[i].targetAlpha = 0.4 + discoveryFlash * 0.6;
+        } else {
+          lines[i].targetAlpha = 0.5 + 0.08 * Math.sin(frame * 0.012 + lines[i].breatheOffset);
+        }
+        lines[i].alpha += (lines[i].targetAlpha - lines[i].alpha) * 0.08;
+      }
+
+      // Brighten the lodged halluc ghost
+      for (let i = 0; i < ghosts.length; i++) {
+        const g = ghosts[i];
+        if (g.isHalluc && g.lodged) {
+          g.targetAlpha = 0.08 + discoveryFlash * 0.35;
+          g.alpha += (g.targetAlpha - g.alpha) * 0.08;
+        }
+      }
+
+      updateGhosts();
+
+    } else {
+      // Fade phase
+      const fadeProgress = (frame - P4_END) / (CYCLE - P4_END);
+      globalFade = 1 - fadeProgress;
+      if (globalFade < 0) globalFade = 0;
+
+      // Continue gentle pulsing while fading
+      for (let i = 0; i < NUM_LINES; i++) {
+        lines[i].alpha *= 0.97;
+      }
+      for (let i = 0; i < ghosts.length; i++) {
+        ghosts[i].alpha *= 0.95;
+      }
+    }
+  }
+
+  function updateGhosts() {
+    for (let i = 0; i < ghosts.length; i++) {
+      const g = ghosts[i];
+      if (g.lodged) continue;
+
+      g.x += g.vx;
+      g.y += g.vy;
+
+      // Check if reached margin
+      if (g.isHalluc && g.x >= marginX - 10) {
+        g.lodged = true;
+        g.x = marginX;
+        g.targetAlpha = 0.08;
+        g.alpha = Math.max(g.alpha, 0.08);
+      } else if (!g.isHalluc) {
+        // Non-halluc ghosts fade out before reaching the edge
+        g.targetAlpha = Math.max(0, g.targetAlpha - g.fadeRate);
+        g.alpha += (g.targetAlpha - g.alpha) * 0.03;
+      }
+    }
+  }
+
+  // --- Draw ---
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, W, H);
+
+    const phase = getPhase(frame);
+    const gf = globalFade;
+
+    // Draw ambient particles
+    for (let i = 0; i < ambients.length; i++) {
+      const p = ambients[i];
+      const a = p.alpha * gf;
+      if (a < 0.005) continue;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+      ctx.fillStyle = dimA(a);
+      ctx.fill();
+    }
+
+    // Draw line segments
+    for (let i = 0; i < NUM_LINES; i++) {
+      const line = lines[i];
+      const da = line.alpha * gf;
+      if (da < 0.005) continue;
+
+      const ly = getLineY(i);
+      // Slight length variation per line for organic feel
+      const lenVar = 0.92 + 0.08 * Math.sin(i * 2.7);
+      const halfLen = ((lineEndX - lineStartX) / 2) * lenVar;
+      const cx = columnCenterX;
+
+      ctx.beginPath();
+      ctx.moveTo(cx - halfLen, ly);
+      ctx.lineTo(cx + halfLen, ly);
+
+      if (i === HALLUC_INDEX && line.replaced) {
+        // Hallucinated line: blend between warm variant and accent during discovery
+        if (phase === 'discovery' && discoveryFlash > 0.3) {
+          // Flash toward accent red
+          const flashBlend = (discoveryFlash - 0.3) / 0.7;
+          const fR = Math.round(wR + (aR - wR) * flashBlend);
+          const fG = Math.round(wG + (aG - wG) * flashBlend);
+          const fB = Math.round(wB + (aB - wB) * flashBlend);
+          ctx.strokeStyle = `rgba(${fR},${fG},${fB},${Math.max(0, Math.min(1, da))})`;
+        } else {
+          ctx.strokeStyle = warmA(da);
+        }
+        ctx.lineWidth = 1.8;
+      } else {
+        ctx.strokeStyle = storyA(da);
+        ctx.lineWidth = 1.2;
+      }
+      ctx.stroke();
+
+      // Subtle glow on halluc line when pulsing
+      if (i === HALLUC_INDEX && line.replaced && da > 0.3) {
+        ctx.beginPath();
+        ctx.moveTo(cx - halfLen, ly);
+        ctx.lineTo(cx + halfLen, ly);
+        ctx.strokeStyle = warmA(da * 0.15);
+        ctx.lineWidth = 6;
+        ctx.stroke();
+      }
+    }
+
+    // Draw scan line during replacement phase
+    if (phase === 'replace') {
+      const scanAlpha = 0.12 * gf;
+      ctx.beginPath();
+      ctx.moveTo(lineStartX - 20, scanLineY);
+      ctx.lineTo(lineEndX + 20, scanLineY);
+      ctx.strokeStyle = dimA(scanAlpha);
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+
+    // Draw ghost fragments
+    for (let i = 0; i < ghosts.length; i++) {
+      const g = ghosts[i];
+      const ga = g.alpha * gf;
+      if (ga < 0.003) continue;
+
+      // Ghost is a short line segment at the margin area
+      const ghostLen = (lineEndX - lineStartX) * 0.08;
+      ctx.beginPath();
+      ctx.moveTo(g.x - ghostLen / 2, g.y);
+      ctx.lineTo(g.x + ghostLen / 2, g.y);
+
+      if (g.isHalluc && g.lodged && phase === 'discovery' && discoveryFlash > 0.2) {
+        // Recognition glow
+        ctx.strokeStyle = storyA(ga);
+        ctx.lineWidth = 1.5;
+      } else {
+        ctx.strokeStyle = dimA(ga);
+        ctx.lineWidth = 0.8;
+      }
+      ctx.stroke();
+
+      // Glow around lodged halluc ghost
+      if (g.isHalluc && g.lodged && ga > 0.05) {
+        const glowR = 8 + (phase === 'discovery' ? discoveryFlash * 16 : 0);
+        const grad = ctx.createRadialGradient(g.x, g.y, 0, g.x, g.y, glowR);
+        grad.addColorStop(0, storyA(ga * 0.4));
+        grad.addColorStop(1, storyA(0));
+        ctx.fillStyle = grad;
+        ctx.fillRect(g.x - glowR, g.y - glowR, glowR * 2, glowR * 2);
+      }
+    }
+
+    // Discovery ripple effects
+    if (phase === 'discovery' && discoveryFlash > 0.1) {
+      const rippleAlpha = discoveryFlash * 0.08 * gf;
+      const rippleRadius = (1 - discoveryFlash) * 60 + 10;
+
+      // Ripple from halluc line
+      const hallucY = getLineY(HALLUC_INDEX);
+      ctx.beginPath();
+      ctx.arc(columnCenterX, hallucY, rippleRadius, 0, Math.PI * 2);
+      ctx.strokeStyle = warmA(rippleAlpha);
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+
+      // Ripple from margin ghost
+      const lodgedGhost = ghosts.find(g => g.isHalluc && g.lodged);
+      if (lodgedGhost) {
+        ctx.beginPath();
+        ctx.arc(lodgedGhost.x, lodgedGhost.y, rippleRadius * 0.7, 0, Math.PI * 2);
+        ctx.strokeStyle = storyA(rippleAlpha);
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+
+        // Faint connecting line between the two during peak flash
+        if (discoveryFlash > 0.5) {
+          const connAlpha = (discoveryFlash - 0.5) * 0.12 * gf;
+          ctx.beginPath();
+          ctx.moveTo(columnCenterX + (lineEndX - lineStartX) / 2, hallucY);
+          ctx.lineTo(lodgedGhost.x - 5, lodgedGhost.y);
+          ctx.strokeStyle = storyA(connAlpha);
+          ctx.lineWidth = 0.3;
+          ctx.setLineDash([3, 6]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      }
+    }
+  }
+
+  // --- Static frame for reduced motion ---
+  function drawStatic() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, W, H);
+
+    computeLayout();
+
+    // Draw all 22 line segments
+    for (let i = 0; i < NUM_LINES; i++) {
+      const ly = getLineY(i);
+      const lenVar = 0.92 + 0.08 * Math.sin(i * 2.7);
+      const halfLen = ((lineEndX - lineStartX) / 2) * lenVar;
+
+      ctx.beginPath();
+      ctx.moveTo(columnCenterX - halfLen, ly);
+      ctx.lineTo(columnCenterX + halfLen, ly);
+
+      if (i === HALLUC_INDEX) {
+        // Warmer tint for the hallucinated line
+        ctx.strokeStyle = warmA(0.55);
+        ctx.lineWidth = 1.8;
+      } else {
+        ctx.strokeStyle = storyA(0.45);
+        ctx.lineWidth = 1.2;
+      }
+      ctx.stroke();
+    }
+
+    // Faint ghost fragment at the right margin, aligned with the 7th line
+    const ghostY = getLineY(HALLUC_INDEX);
+    const ghostLen = (lineEndX - lineStartX) * 0.08;
+    ctx.beginPath();
+    ctx.moveTo(marginX - ghostLen / 2, ghostY);
+    ctx.lineTo(marginX + ghostLen / 2, ghostY);
+    ctx.strokeStyle = dimA(0.08);
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+
+    // Subtle ambient particles
+    for (let i = 0; i < 8; i++) {
+      const px = W * (0.1 + 0.8 * Math.sin(i * 1.7 + 0.3));
+      const py = H * (0.1 + 0.8 * Math.cos(i * 2.3 + 0.7));
+      ctx.beginPath();
+      ctx.arc(px, py, 1.5, 0, Math.PI * 2);
+      ctx.fillStyle = dimA(0.04);
+      ctx.fill();
+    }
+  }
+
+  // --- Tick ---
+  function tick() {
+    frame++;
+    if (frame >= CYCLE) resetState();
+    update();
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  // --- ResizeObserver ---
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.scale(dpr, dpr);
+    if (prefersReduced) {
+      drawStatic();
+    } else {
+      computeLayout();
+      // Re-position lines
+      for (let i = 0; i < lines.length; i++) {
+        lines[i].y = getLineY(i);
+      }
+      // Re-position lodged ghosts
+      for (let i = 0; i < ghosts.length; i++) {
+        if (ghosts[i].lodged) {
+          ghosts[i].x = marginX;
+          ghosts[i].y = getLineY(HALLUC_INDEX);
+        }
+      }
+    }
+  });
+  ro.observe(canvas);
+
+  // Initial sizing
+  const dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth;
+  H = canvas.offsetHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  if (prefersReduced) {
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    resetState();
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) {
+        if (!rafId) rafId = requestAnimationFrame(tick);
+      } else {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+
+    window.addEventListener('pagehide', () => {
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+      ro.disconnect();
+    });
+  }
+})();
+</script>
