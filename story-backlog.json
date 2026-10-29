@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-28T09:45:00Z",
+  "updatedAt": "2026-10-29T09:20:00Z",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -2319,9 +2319,40 @@
       "resumedAt": "2026-10-27T09:30:00Z",
       "publishedAt": "2026-10-28T09:45:00Z",
       "prUrl": "https://github.com/alondigitized/ai-files/pull/97"
+    },
+    {
+      "slug": "anthropic-agents-judgment-calls",
+      "status": "pending",
+      "priority": 1,
+      "side": "dark",
+      "workingTitle": "The Coin Flip Decided",
+      "thesis": "On 27 Oct 2026 Anthropic's Alignment team (Amac Herdagdelen, Hailey Joren, Alex Tamkin) published a randomized study in which 50 professional analysts with causal-inference experience used Claude Code (Claude Opus 4.8, High effort) to advise a fictional farming cooperative. On each of four analytical judgment calls, a hidden system prompt told each analyst's agent to lean one way, set by coin flip; the agent was told to argue honestly and never mislead. Analysts went with the agent's lean 86% of the time (chance ~50%); those who had stated a view switched 60% of the time when the agent disagreed vs 6% when it agreed; a model using only the coin flips predicted 82% of final recommendations; 77% later repeated the agent's arguments, sometimes verbatim, but only 15% credited it; high deferrers were as confident (71 vs 73) and as likely to call the result their own. Thesis: when an honest agent does the work, the expert's 'judgment' becomes a function of a hidden setting nobody sees, and the expert cannot tell from the inside - the delegation is invisible even to the delegator.",
+      "whyNow": "Published 27 Oct 2026 on anthropic.com/research with a paper PDF; primary saved locally as source-anthropic-agents-judgment-calls.txt. Distinct from ai-summaries-distort-memory (PR, summaries and recall) and sycophancy stories: here the agent is honest and the influence runs from model to expert on methodological choices.",
+      "sources": [
+        {
+          "url": "https://www.anthropic.com/research/agents-judgment-calls",
+          "date": "2026-10-27",
+          "type": "primary"
+        },
+        {
+          "url": "https://www-cdn.anthropic.com/519c17a5d23a794e8b6d50a854048d0b61e0d73a.pdf",
+          "date": "2026-10-27",
+          "type": "primary"
+        }
+      ],
+      "scores": {
+        "importance": 8,
+        "rigor": 9,
+        "reportability": 8,
+        "readerValue": 9,
+        "fitWithArchive": 8
+      },
+      "compositeScore": 8.2,
+      "freshnessScore": 10,
+      "addedAt": "2026-10-29"
     }
   ],
-  "lastRefreshed": "2026-10-28",
+  "lastRefreshed": "2026-10-29",
   "sweepLog": [
     {
       "date": "2026-09-08",
@@ -2526,6 +2557,12 @@
       "query": "AI lawsuit OR ruling OR incident October 26 27 2026",
       "itemsAdded": 0,
       "note": "Run of 2026-10-27 hit the session limit after the fact-check re-check (FAIL, 3 minor corrections, all applied in-place) and page assembly; security scan, a11y audit, build and PR not reached. Backlog entered with ZERO pending items; resuming state-ags-openai-template (in_progress since 10-24) per the crash rule. Sweep returned nothing dated 26-27 Oct (results were 2025 and earlier AIID/Law360 items). No items added."
+    },
+    {
+      "date": "2026-10-29",
+      "query": "AI incident lawsuit ruling October 28 2026",
+      "itemsAdded": 1,
+      "note": "Backlog entered with ZERO pending items (state-ags-openai-template published as PR #97); no freshness decay needed. Archived 2026-10-28 working files to .working-archive/2026-10-28-state-ags-openai-template. Sweep surfaced: (1) Anthropic 'How AI agents shape experts' judgment calls' (27 Oct, RCT, primary fetched from anthropic.com) - ADDED anthropic-agents-judgment-calls (composite 8.2, conservative). Not added: Greene v. Google NotebookLM voice suit (27 Oct state-court ruling reported by Reuters/Law360; primary order not located), GoFundMe AI impersonation suit (no ruling), Reddit v. Perplexity disqualification hearing (procedural), Google CCAI wiretap dismissal (already noted 10-24, primary not located), Bowen Wan epilepsy-medication suit vs OpenAI (complaint only). One item added, under the cap of 2."
     }
   ]
 }
