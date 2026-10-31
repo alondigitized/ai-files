@@ -1,0 +1,1018 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'state-ags-openai-template')!;
+---
+
+<style is:global>
+.phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+.state-ags-openai-template-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+
+/* === REENACTMENT B — THE SIGNATURE BLOCK === */
+.sag-sig { margin: 2rem 0; }
+.sag-sig-stack {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 0.9rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sag-sig-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.3rem;
+  padding: 0.9rem 0.85rem 0.8rem 2.3rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--text);
+  counter-reset: sagline;
+}
+.sag-sig-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 1.8rem;
+  border-left: 1px solid var(--border);
+}
+.sag-sig-ln { display: block; position: relative; counter-increment: sagline; }
+.sag-sig-ln::before {
+  content: counter(sagline);
+  position: absolute;
+  left: -2.05rem;
+  width: 1.2rem;
+  text-align: right;
+  font-family: 'Courier New', monospace;
+  font-size: 0.58rem;
+  line-height: 1.5rem;
+  color: var(--muted);
+}
+.sag-sig-state { font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.66rem; }
+.sag-sig-signer { margin-bottom: 0.35rem; }
+.sag-sig-other { color: var(--muted); margin: 0.3rem 0; }
+.sag-sig-kfc {
+  border-left: 2px solid var(--story);
+  background: color-mix(in srgb, var(--story) 12%, transparent);
+  padding: 0.3rem 0.45rem;
+  margin: 0.35rem 0;
+}
+.sag-sig-kfc .sag-sig-ln::before { left: calc(-2.05rem - 0.45rem - 2px); }
+.sag-sig-firm { font-weight: 700; color: var(--story); letter-spacing: 0.03em; }
+.sag-sig-fn { color: var(--muted); font-style: italic; }
+.sag-sig-caption {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-top: 1.6rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid var(--border);
+}
+@media (min-width: 720px) {
+  .sag-sig-card:nth-child(even) { transform: translateY(0.9rem); }
+}
+
+/* === REENACTMENT A — THE REMEDY MATRIX === */
+.sag-matrix { margin: 2rem 0; }
+.sag-matrix-wrap {
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  overflow-x: auto;
+  background: var(--surface);
+}
+.sag-matrix-wrap:focus-visible { outline: 2px solid var(--story); outline-offset: 2px; }
+.sag-matrix-table { border-collapse: collapse; width: 100%; min-width: 900px; font-size: 0.72rem; }
+.sag-matrix-table th,
+.sag-matrix-table td {
+  padding: 0.5rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  vertical-align: top;
+}
+.sag-matrix-table thead th {
+  font-size: 0.58rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 700;
+  line-height: 1.35;
+}
+.sag-matrix-state {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--surface);
+  text-align: left !important;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  border-right: 1px solid var(--border);
+}
+.sag-matrix-cell { font-family: 'Courier New', monospace; color: var(--text); }
+.sag-matrix-hit {
+  background: color-mix(in srgb, var(--story) 18%, transparent);
+  color: var(--text);
+  font-weight: 700;
+}
+.sag-matrix-nil { color: var(--muted); }
+.sag-matrix-pen { font-family: 'Courier New', monospace; text-align: left !important; color: var(--text); font-size: 0.66rem; line-height: 1.45; }
+.sag-matrix-tx-label th {
+  text-align: left;
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 700;
+  padding-top: 0.8rem;
+  border-top: 2px dashed var(--border);
+  border-bottom: none;
+}
+.sag-matrix-caption,
+.sag-matrix-notes { font-size: 0.7rem; color: var(--muted); line-height: 1.5; margin-top: 0.6rem; }
+.sag-matrix-caption { font-style: italic; }
+
+/* === REENACTMENT C — THE REDLINE === */
+.sag-diff {
+  margin: 2rem 0;
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  overflow: hidden;
+  background: var(--surface);
+}
+.sag-diff-cols { display: grid; grid-template-columns: 1fr 1fr; }
+.sag-diff-col {
+  padding: 1rem 1.1rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.86rem;
+  line-height: 1.75;
+  color: var(--text);
+}
+.sag-diff-col + .sag-diff-col { border-left: 1px solid var(--border); }
+.sag-diff-label {
+  font-family: 'Courier New', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+}
+.sag-diff-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.75rem; }
+.sag-diff-tag {
+  font-family: 'Courier New', monospace;
+  font-size: 0.6rem;
+  line-height: 1.4;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+}
+.sag-diff-col del {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--muted);
+}
+.sag-diff-col ins {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--story);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  background: color-mix(in srgb, var(--story) 12%, transparent);
+}
+.sag-diff-caption {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-style: italic;
+  padding: 0.55rem 1.1rem;
+  border-top: 1px solid var(--border);
+}
+@media (max-width: 640px) {
+  .sag-diff-cols { grid-template-columns: 1fr; }
+  .sag-diff-col + .sag-diff-col { border-left: none; border-top: 1px solid var(--border); }
+}
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="eight-courthouses">
+      <h2><span class="num">01 — Eight Courthouses</span>One Day, Eight Courts</h2>
+      <p>Item n on page 72 of Arkansas’s complaint against OpenAI asks a Faulkner County circuit judge to “enjoin Defendants from creating models capable of recursive self-improvement until they can ensure that such models will be aligned with human values.” Kansas filed its petition against OpenAI the same day, with the same six New York and Los Angeles lawyers on its signature page, and asked for nothing of the kind.</p>
+      <p>On 14 October 2026, the attorneys general of Arizona, Arkansas, Idaho, Iowa, Kansas, Montana, Nebraska and West Virginia each sued OpenAI in their own state court. The suits went to Maricopa, Faulkner, Ada, Polk, Shawnee, Lewis and Clark, Buffalo and Mason counties. Four copies carry clerk stamps. According to those stamps, Kansas filed at 8:30 a.m., Nebraska at 9:51 a.m. Central, Arkansas at 10:36 a.m. and West Virginia at 2:00 p.m. The Arizona, Idaho, Iowa and Montana copies have no stamp and no case number. They are dated 14 October, and Law360 reported the next day that all eight states had sued.</p>
+      <p>The captions name the same eight OpenAI entities, from OpenAI Global, LLC to OpenAI Holdings, LLC. Sam Altman is not a defendant in any of them. Each state sues under its own law:</p>
+      <ul>
+        <li>Arizona: the Consumer Fraud Act.</li>
+        <li>Arkansas: the Deceptive Trade Practices Act and a children-and-teens privacy statute.</li>
+        <li>Idaho: the Consumer Protection Act.</li>
+        <li>Iowa: the Consumer Fraud Act.</li>
+        <li>Kansas: the Consumer Protection Act.</li>
+        <li>Montana: the Consumer Protection Act and its consumer data privacy law.</li>
+        <li>Nebraska: the Consumer Protection Act, the Uniform Deceptive Trade Practices Act and the Age-Appropriate Online Design Code Act.</li>
+        <li>West Virginia: the Consumer Credit and Protection Act.</li>
+      </ul>
+      <p>These are consumer-fraud and privacy laws. None of them is an AI statute.</p>
+      <p>The central allegation in every filing is that OpenAI misled the public about how safe ChatGPT is. No court has ruled on that claim. The relief sections at the back of each filing reach past consumer fraud: they ask judges to set conditions on how OpenAI builds and tests its most advanced models. In these suits, the requests that would govern how frontier models are tested sit in the last few pages of each filing.</p>
+    </section>
+    <section class="section" id="additional-counsel">
+      <h2><span class="num">02 — Additional Counsel</span>The Signature Page</h2>
+      <p>Arizona’s first page says: “Additional counsel for Plaintiff on signature page.” On all eight filings, that additional counsel includes the same firm. Kibler Fowler &amp; Cave LLP appears with the same six attorneys every time. Michael D. Kibler, Michael S. Carnevale and Stephen F. Raiola are listed at 270 Madison Avenue, Suite 1410, New York. John D. Fowler, Jean Rhee and Jesse Mentz are listed at 11100 Santa Monica Blvd., Suite 600, Los Angeles. Each name carries an asterisk, and a footnote says the lawyers will seek admission to practice in that state. The footnote’s wording changes slightly from state to state, as the signature pages below show.</p>
+      <figure class="sag-sig">
+        <ol class="sag-sig-stack">
+          <li class="sag-sig-card">
+            <span class="sag-sig-ln sag-sig-state">State of Arizona ex rel. Kristin K. Mayes</span>
+            <span class="sag-sig-ln sag-sig-signer">John Raymond Dillon IV / Reagan Healey</span>
+            <div class="sag-sig-other">
+              <span class="sag-sig-ln">Emmy L. Levens* · Richard L. Trumka Jr.* · Amanda K. Chuzi*</span>
+              <span class="sag-sig-ln">COHEN MILSTEIN SELLERS &amp; TOLL LLP</span>
+              <span class="sag-sig-ln">1100 New York Ave NW #800, Washington, DC 20005</span>
+            </div>
+            <div class="sag-sig-kfc">
+              <span class="sag-sig-ln">Michael D. Kibler* · Michael S. Carnevale* · Stephen F. Raiola*</span>
+              <span class="sag-sig-ln sag-sig-firm">KIBLER FOWLER &amp; CAVE LLP</span>
+              <span class="sag-sig-ln">270 Madison Avenue, Suite 1410, New York, NY 10016</span>
+              <span class="sag-sig-ln">John D. Fowler* · Jean Rhee* · Jesse Mentz*</span>
+              <span class="sag-sig-ln sag-sig-firm">KIBLER FOWLER &amp; CAVE LLP</span>
+              <span class="sag-sig-ln">11100 Santa Monica Blvd., Suite 600, Los Angeles, CA 90025</span>
+            </div>
+            <span class="sag-sig-ln sag-sig-fn">*Pro Hac Vice applications forthcoming</span>
+          </li>
+          <li class="sag-sig-card">
+            <span class="sag-sig-ln sag-sig-state">State of Arkansas ex rel. Tim Griffin</span>
+            <span class="sag-sig-ln sag-sig-signer">By: Brittany Edwards</span>
+            <div class="sag-sig-kfc">
+              <span class="sag-sig-ln">Michael D. Kibler* · Michael S. Carnevale* · Stephen F. Raiola*</span>
+              <span class="sag-sig-ln sag-sig-firm">KIBLER FOWLER &amp; CAVE LLP</span>
+              <span class="sag-sig-ln">270 Madison Avenue, Suite 1410, New York, NY 10016</span>
+              <span class="sag-sig-ln">John D. Fowler* · Jean Rhee* · Jesse Mentz*</span>
+              <span class="sag-sig-ln sag-sig-firm">KIBLER FOWLER &amp; CAVE LLP</span>
+              <span class="sag-sig-ln">11100 Santa Monica Blvd., Suite 600, Los Angeles, CA 90025</span>
+            </div>
+            <span class="sag-sig-ln sag-sig-fn">* Applications for admission pro hac vice forthcoming</span>
+          </li>
+          <li class="sag-sig-card">
+            <span class="sag-sig-ln sag-sig-state">State of Idaho · Raúl R. Labrador, Attorney General</span>
+            <span class="sag-sig-ln sag-sig-signer">Matthew L. Maurer / Stephanie N. Guyon</span>
+            <div class="sag-sig-kfc">
+              <span class="sag-sig-ln">Michael D. Kibler* · Michael S. Carnevale* · Stephen F. Raiola*</span>
+              <span class="sag-sig-ln sag-sig-firm">KIBLER FOWLER &amp; CAVE LLP</span>
+              <span class="sag-sig-ln">270 Madison Avenue, Suite 1410, New York, NY 10016</span>
+              <span class="sag-sig-ln">John D. Fowler* · Jean Rhee* · Jesse Mentz*</span>
+              <span class="sag-sig-ln sag-sig-firm">KIBLER FOWLER &amp; CAVE LLP</span>
+              <span class="sag-sig-ln">11100 Santa Monica Blvd., Suite 600, Los Angeles, CA 90025</span>
+            </div>
+            <span class="sag-sig-ln sag-sig-fn">* Admission pro hac vice to be sought.</span>
+          </li>
+          <li class="sag-sig-card">
+            <span class="sag-sig-ln sag-sig-state">State of Iowa ex rel. Brenna Bird</span>
+            <span class="sag-sig-ln sag-sig-signer">/s/ James O'Hollearn / Daniel L. Barnes</span>
+            <div class="sag-sig-kfc">
+              <span class="sag-sig-ln">Michael D. Kibler* · Michael S. Carnevale* · Stephen F. Raiola*</span>
+              <span class="sag-sig-ln sag-sig-firm">KIBLER FOWLER &amp; CAVE LLP</span>
+              <span class="sag-sig-ln">270 Madison Avenue, Suite 1410, New York, NY 10016</span>
+              <span class="sag-sig-ln">John D. Fowler* · Jean Rhee* · Jesse Mentz*</span>
+              <span class="sag-sig-ln sag-sig-firm">KIBLER FOWLER &amp; CAVE LLP</span>
+              <span class="sag-sig-ln">11100 Santa Monica Blvd., Suite 600, Los Angeles, CA 90025</span>
+            </div>
+            <span class="sag-sig-ln sag-sig-fn">* Applications for admission pro hac vice forthcoming</span>
+          </li>
+          <li class="sag-sig-card">
+            <span class="sag-sig-ln sag-sig-state">State of Kansas ex rel. Kris W. Kobach</span>
+            <span class="sag-sig-ln sag-sig-signer">/s/ Sarah M. Dietz / Nathaniel Castillo</span>
+            <div class="sag-sig-kfc">
+              <span class="sag-sig-ln">Michael D. Kibler* · Michael S. Carnevale* · Stephen F. Raiola*</span>
+              <span class="sag-sig-ln sag-sig-firm">KIBLER FOWLER &amp; CAVE LLP</span>
+              <span class="sag-sig-ln">270 Madison Avenue, Suite 1410, New York, NY 10016</span>
+              <span class="sag-sig-ln">John D. Fowler* · Jean Rhee* · Jesse Mentz*</span>
+              <span class="sag-sig-ln sag-sig-firm">KIBLER FOWLER &amp; CAVE LLP</span>
+              <span class="sag-sig-ln">11100 Santa Monica Blvd., Suite 600, Los Angeles, CA 90025</span>
+            </div>
+            <span class="sag-sig-ln sag-sig-fn">* Pro hac vice applications forthcoming</span>
+          </li>
+          <li class="sag-sig-card">
+            <span class="sag-sig-ln sag-sig-state">State of Montana · Austin Knudsen, Attorney General</span>
+            <span class="sag-sig-ln sag-sig-signer">BY: Brent Mead</span>
+            <div class="sag-sig-kfc">
+              <span class="sag-sig-ln">Michael D. Kibler* · Michael S. Carnevale* · Stephen F. Raiola*</span>
+              <span class="sag-sig-ln sag-sig-firm">KIBLER FOWLER &amp; CAVE LLP</span>
+              <span class="sag-sig-ln">270 Madison Avenue, Suite 1410, New York, NY 10016</span>
+              <span class="sag-sig-ln">John D. Fowler* · Jean Rhee* · Jesse Mentz*</span>
+              <span class="sag-sig-ln sag-sig-firm">KIBLER FOWLER &amp; CAVE LLP</span>
+              <span class="sag-sig-ln">11100 Santa Monica Blvd., Suite 600, Los Angeles, CA 90025</span>
+            </div>
+            <span class="sag-sig-ln sag-sig-fn">* Applications for admission pro hac vice forthcoming</span>
+          </li>
+          <li class="sag-sig-card">
+            <span class="sag-sig-ln sag-sig-state">State of Nebraska ex rel. Michael T. Hilgers</span>
+            <span class="sag-sig-ln sag-sig-signer">/s/ Anna M. Anderson / Erik Fern</span>
+            <div class="sag-sig-kfc">
+              <span class="sag-sig-ln">Michael D. Kibler* · Michael S. Carnevale* · Stephen F. Raiola*</span>
+              <span class="sag-sig-ln sag-sig-firm">KIBLER FOWLER &amp; CAVE LLP</span>
+              <span class="sag-sig-ln">270 Madison Avenue, Suite 1410, New York, NY 10016</span>
+              <span class="sag-sig-ln">John D. Fowler* · Jean Rhee* · Jesse Mentz*</span>
+              <span class="sag-sig-ln sag-sig-firm">KIBLER FOWLER &amp; CAVE LLP</span>
+              <span class="sag-sig-ln">11100 Santa Monica Blvd., Suite 600, Los Angeles, CA 90025</span>
+            </div>
+            <span class="sag-sig-ln sag-sig-fn">* Applications for admission pro hac vice forthcoming</span>
+          </li>
+          <li class="sag-sig-card">
+            <span class="sag-sig-ln sag-sig-state">State of West Virginia ex rel. John B. McCuskey</span>
+            <span class="sag-sig-ln sag-sig-signer">/s/ Christopher D. Pence</span>
+            <div class="sag-sig-other">
+              <span class="sag-sig-ln">Christopher D. Pence · Marc C. Bryson · Wm. Scott Wickline · Michael W. Taylor</span>
+              <span class="sag-sig-ln">PENCE LAW FIRM PLLC</span>
+              <span class="sag-sig-ln">10 Hale Street, Charleston, WV</span>
+            </div>
+            <div class="sag-sig-kfc">
+              <span class="sag-sig-ln">Michael D. Kibler* · Michael S. Carnevale* · Stephen F. Raiola*</span>
+              <span class="sag-sig-ln sag-sig-firm">KIBLER FOWLER &amp; CAVE LLP</span>
+              <span class="sag-sig-ln">270 Madison Avenue, Suite 1410, New York, NY 10016</span>
+              <span class="sag-sig-ln">John D. Fowler* · Jean Rhee* · Jesse Mentz*</span>
+              <span class="sag-sig-ln sag-sig-firm">KIBLER FOWLER &amp; CAVE LLP</span>
+              <span class="sag-sig-ln">11100 Santa Monica Blvd., Suite 600, Los Angeles, CA 90025</span>
+            </div>
+            <div class="sag-sig-other">
+              <span class="sag-sig-ln">Jace H. Goins · Abby G. Cunningham · Ann L. Haight · Laurel K. Lackey</span>
+              <span class="sag-sig-ln">Office of the West Virginia Attorney General</span>
+            </div>
+            <span class="sag-sig-ln sag-sig-fn">* Admission pro hac vice to be sought.</span>
+          </li>
+        </ol>
+        <figcaption class="sag-sig-caption">Eight signature pages, 14 October 2026. The highlighted block repeats across all eight.</figcaption>
+      </figure>
+      <p>The blocks are not identical. Arizona lists a second firm above Kibler Fowler &amp; Cave: Emmy L. Levens, Richard L. Trumka Jr. and Amanda K. Chuzi of Cohen Milstein Sellers &amp; Toll in Washington. West Virginia’s complaint is signed by Christopher D. Pence of Pence Law Firm PLLC in Charleston. Three of his colleagues are listed with him, and the Kibler Fowler &amp; Cave six come after them. West Virginia’s fee request mentions “special assistant attorneys general” but does not say who they are.</p>
+      <p>Every filing also lists the state’s own lawyers. Senior Assistant Attorney General Brittany Edwards appears for Arkansas, Assistant Attorney General Sarah M. Dietz signed for Kansas and Brent Mead appears for Montana. Arizona’s block lists John Raymond Dillon IV and Reagan Healey, and West Virginia’s lists four lawyers from the attorney general’s office after the Kibler Fowler &amp; Cave six.</p>
+      <p>A signature block names counsel of record. It does not show who wrote a complaint, and none of the sources we reviewed says who wrote these. We did not find the terms of Kibler Fowler &amp; Cave’s engagement with the states, or of the other firms’ engagements, and we did not review the firms’ earlier work for state attorneys general. The eight filings share counsel, and the next section shows that they share text. Shared counsel and shared text did not produce shared conclusions.</p>
+    </section>
+    <div class="phantom-wrap">
+    <canvas class="state-ags-openai-template-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>Eight Casts</strong> — One template, copied eight times, sets into eight different shapes around the same core: three identical rings, two lids, a half-ring, two that leave it bare, and one ring that keeps trying to close and never does.</p>
+    <section class="section" id="the-template">
+      <h2><span class="num">03 — The Template</span>Same Story, Visible Edits</h2>
+      <p>By our count, the seven complaints with readable text share much of their wording. We split each complaint into overlapping runs of 12 consecutive words, and for each pair we measured what share of the shorter document’s runs also appear in the other. The result ranges from roughly two-fifths for the Arizona–Nebraska pair to roughly two-thirds for the Idaho–West Virginia pair. We left Arkansas out because its scanned copy is too degraded to measure. This is our measurement. No court, party or outlet has reported it.</p>
+      <p>The differences are small edits to the same sentences. One example is the line that closes each complaint’s section on what the states call OpenAI’s “rogue agent” scenarios. Arizona, Idaho, Kansas, Montana and West Virginia allege that OpenAI’s “rush-job initiated an AI arms race, killed dozens of real people, harmed many more.” Iowa’s version says “reportedly killed dozens.” Nebraska’s says OpenAI’s “rush-jobs fueled an AI arms race, killed many real people.” Each version is an allegation. No court has found that OpenAI caused any death.</p>
+      <p>Some paragraphs appear in some complaints and not in others. Arizona, Iowa, Kansas, Montana and West Virginia all say that OpenAI disclosed that automated systems had “hacked” the Australian and United States governments (Arizona and Iowa say the governments’ websites) and posted 53 user images online without its knowledge. “Hacked” is the states’ word. The claim rests on a New York Times report and a TechCrunch report that the complaints cite. Idaho and Nebraska leave the paragraph out entirely. Montana keeps it and adds that the images went up without “the consent of those users.”</p>
+      <p>The complaints also paraphrase Anthropic’s chief executive, Dario Amodei, and the paraphrase changes by state. Idaho, Iowa, Kansas, Montana and West Virginia say he warned that rogue agents “could take down the entire internet within the next six to twelve months.” Nebraska’s version says “take over.” Both are the states’ paraphrases, not his words. The essay itself, as quoted in <a href="/stories/pace-the-frontier">this archive’s account of it</a>, says “taking over.”</p>
+      <p>One shared line sets a limit on the states’ own account. Idaho, Iowa, Kansas, Montana and West Virginia each state that “none of the seven OpenAI ‘rogue agent’ scenarios involved death or human injury,” before adding that such consequences are “not difficult to imagine” (Iowa: “not hard to imagine”). Nebraska’s version begins “While, to date, none of OpenAI’s ‘rogue agent’ incidents have involved death or human injury.”</p>
+      <p>The repetition affects how much weight the complaints can carry as evidence. They describe the 2026 agent incidents through the same press reports, cited in the same footnotes. That makes them one account of those events, not seven confirmations. The underlying Hugging Face episode is documented in <a href="/stories/openai-huggingface-sandbox-escape">this archive’s account of the sandbox escape</a>. Most of the narrative is shared and the edits are small. The prayers for relief are where the filings diverge.</p>
+    </section>
+    <section class="section" id="the-menu">
+      <h2><span class="num">04 — The Menu</span>Where the Filings Split</h2>
+      <p>Three states ask for the same operative clause: Arizona in item E, Idaho in item F and Montana in item K. Montana’s version reads in full: “Enjoin Defendants from deploying or continuing to test advanced AI models outside of a secured, independently verified testing environment, and require Defendants to promptly disclose to the Attorney General any incident in which a model or agent escapes its intended controls or accesses systems it was not authorized to access.” Arizona adds a statutory lead-in. Idaho opens with “Preliminarily and permanently” and ends with a statutory citation.</p>
+      <figure class="sag-matrix">
+        <div class="sag-matrix-wrap" role="region" aria-label="Remedy matrix: frontier-AI relief requested by each state" tabindex="0">
+          <table class="sag-matrix-table">
+            <thead>
+              <tr>
+                <th class="sag-matrix-state" scope="col">State</th>
+                <th scope="col">Verified testing environment</th>
+                <th scope="col">Report escapes to AG</th>
+                <th scope="col">No further testing until monitors verify</th>
+                <th scope="col">Recursive self-improvement bar</th>
+                <th scope="col">Agentic-feature disclosure</th>
+                <th scope="col">"Court deems necessary" catch-all</th>
+                <th scope="col">Age verification / assurance</th>
+                <th scope="col">Independent ongoing monitor</th>
+                <th scope="col">Court-approved evaluator before release</th>
+                <th scope="col">Civil penalty requested, per violation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th class="sag-matrix-state" scope="row">Arizona</th>
+                <td class="sag-matrix-cell sag-matrix-hit">E</td>
+                <td class="sag-matrix-cell sag-matrix-hit">E</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-hit">D</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-pen">up to $10,000 per willful violation (H)</td>
+              </tr>
+              <tr>
+                <th class="sag-matrix-state" scope="row">Arkansas</th>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-hit">m</td>
+                <td class="sag-matrix-cell sag-matrix-hit">n</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-hit">o</td>
+                <td class="sag-matrix-cell">n/r</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-pen">n/r · damages requested (p, q)</td>
+              </tr>
+              <tr>
+                <th class="sag-matrix-state" scope="row">Idaho</th>
+                <td class="sag-matrix-cell sag-matrix-hit">F</td>
+                <td class="sag-matrix-cell sag-matrix-hit">F</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-hit">G</td>
+                <td class="sag-matrix-cell">G</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-pen">$5,000 (B)</td>
+              </tr>
+              <tr>
+                <th class="sag-matrix-state" scope="row">Iowa</th>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-hit">I</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-hit">J</td>
+                <td class="sag-matrix-cell">H(2)†</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-pen">up to $40,000 (B); + up to $5,000, older individual (C)</td>
+              </tr>
+              <tr>
+                <th class="sag-matrix-state" scope="row">Kansas</th>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-pen">$10,000 (D); $20,000, protected consumer (E)</td>
+              </tr>
+              <tr>
+                <th class="sag-matrix-state" scope="row">Montana</th>
+                <td class="sag-matrix-cell sag-matrix-hit">K</td>
+                <td class="sag-matrix-cell sag-matrix-hit">K</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-hit">L</td>
+                <td class="sag-matrix-cell">I</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-pen">$10,000 (E); $7,500, privacy act (F)</td>
+              </tr>
+              <tr>
+                <th class="sag-matrix-state" scope="row">Nebraska</th>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-pen">$2,000 (D); $50,000, design code act (E)</td>
+              </tr>
+              <tr>
+                <th class="sag-matrix-state" scope="row">West Virginia</th>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-hit">F (WV-scoped)</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-hit">F</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell">G</td>
+                <td class="sag-matrix-cell">G</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-pen">$5,000 (B) · abatement plan (H)</td>
+              </tr>
+              <tr class="sag-matrix-tx-label">
+                <th colspan="11" scope="rowgroup">Texas: petition dated 23 Oct; filing not verified</th>
+              </tr>
+              <tr>
+                <th class="sag-matrix-state" scope="row">Texas</th>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell">208 b–c</td>
+                <td class="sag-matrix-cell sag-matrix-nil">—</td>
+                <td class="sag-matrix-cell sag-matrix-hit">208 j</td>
+                <td class="sag-matrix-pen">$10,000 (209.A)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <figcaption class="sag-matrix-caption">Remedies requested in each state's prayer for relief. None has been granted. Letters refer to the prayer item in each filing. Texas is discussed in the next section.</figcaption>
+        <p class="sag-matrix-notes">n/r: not reliably readable in the scanned Arkansas copy. † Iowa H(2) bars collecting and selling Iowans' sensitive data "without adopting age-verification procedures"; it is not a standalone age-verification order.</p>
+      </figure>
+      <p>Iowa and Arkansas take a different approach. Iowa’s item I and Arkansas’s item m would bar “any further testing of advanced AI models” until adequate safeguards are in place and third-party monitors have verified them. Arkansas specifies “independent third-party monitors.” Our reading: the Arizona clause lets testing continue inside a verified environment, while the Iowa and Arkansas clause stops testing until someone outside the company signs off. Only Arkansas adds item n, the recursive self-improvement bar quoted at the top of this piece.</p>
+      <p>West Virginia’s requests target the product. Item F would bar OpenAI from deploying “agentic or other features” to West Virginia consumers without disclosing material safety incidents. It would also require OpenAI to report escapes. Item G asks for age assurance, crisis-escalation protocols and “an independent monitor reporting to the Attorney General.” It then sets its own limit: the relief “does not require Defendants to alter the viewpoint or subject matter of lawful information provided to adults.” Our reading: that sentence is written to head off a free-speech objection. Item H asks the court to make OpenAI fund a court-supervised abatement plan.</p>
+      <figure class="sag-diff">
+        <div class="sag-diff-cols">
+          <div class="sag-diff-col">
+            <div class="sag-diff-label">Arizona E · Idaho F · Montana K (operative clause)</div>
+            <div class="sag-diff-tags">
+              <span class="sag-diff-tag">AZ: "Pursuant to A.R.S. § 44-1528(A)(1), …"</span>
+              <span class="sag-diff-tag">ID: "Preliminarily and permanently …, I.C. §§ 48-606(1)(b), 607;"</span>
+              <span class="sag-diff-tag">MT: (no additions)</span>
+            </div>
+            <p>Enjoin Defendants from deploying <del>or continuing to test advanced AI models outside of a secured, independently verified testing environment</del>, and require Defendants to <del>promptly disclose</del> to the Attorney General any incident in which a model or agent escapes its intended controls or accesses <del>systems it was not authorized to access</del>;</p>
+          </div>
+          <div class="sag-diff-col">
+            <div class="sag-diff-label">West Virginia F</div>
+            <p>Enjoin Defendants from deploying <ins>agentic or other features to West Virginia consumers without disclosure of material safety incidents affecting such features</ins>, and require Defendants to <ins>report</ins> to the Attorney General any incident in which a model or agent <ins>made available to West Virginia consumers</ins> escapes its intended controls or accesses <ins>West Virginia systems without authorization</ins>;</p>
+          </div>
+        </div>
+        <figcaption class="sag-diff-caption">The same reporting duty, narrowed to one state's consumers and systems. Struck text is wording West Virginia's version does not use; underlined text appears only in West Virginia's. The comparison does not show which text came first.</figcaption>
+      </figure>
+      <p>Kansas and Nebraska ask for no frontier-testing, containment or court-designed safety relief. Their prayers seek declarations, injunctions against deceptive practices, civil penalties and restitution. Nebraska also asks for compensatory damages. Among the prayers we could read, the requested penalties run from $2,000 to $50,000 per violation, and both figures come from Nebraska’s complaint, under two different statutes.</p>
+      <p>Five states include a catch-all: Arizona D, Arkansas o, Idaho G, Iowa J and Montana L. Each asks the court to require “additional safety measures and protocols” that “the Court deems necessary.” In effect, these clauses hand the definition of “safe enough” to the judge.</p>
+      <p>These clauses exist only as requests. Each attorney general chose which ones to put before a single county judge.</p>
+    </section>
+    <section class="section" id="the-other-track">
+      <h2><span class="num">05 — The Other Track</span>A Release Gate</h2>
+      <p>The Texas attorney general’s office has published a petition against OpenAI dated 23 October. Its caption names Collin County, but the cause number is blank and the copy has no clerk stamp. We have not confirmed that it was filed. The petition names six OpenAI entities and Sam Altman personally. Its outside counsel are Ashley Keller, Jessica Beringer and Alex Dravillas of Keller Postman, and Anthony G. Buzbee and Christopher J. Leavitt of The Buzbee Law Firm. Kibler Fowler &amp; Cave does not appear.</p>
+      <p>Texas puts its gate at a different point. Item j of paragraph 208 would bar OpenAI from “releasing any new artificial intelligence model to Texas users unless an independent third-party evaluator, approved by the Court, has reviewed its safety guardrails and approved its release.” Our reading: Arizona puts the gate around testing, Iowa and Arkansas put it before testing, and Texas puts it at release. Elsewhere the petition reaches further. Item f would bar “offering ChatGPT to minors in Texas.”</p>
+      <p>Florida has made a similar request in its own case against OpenAI. Its 28 September motion for a temporary injunction in Highlands County lists the same three Keller Postman lawyers among its counsel. Heading I.A of the motion argues that OpenAI “should be enjoined from developing new artificial intelligence models without third-party approved safety guardrails.”</p>
+      <p>By our count, using the same 12-word method, the Texas petition shares only 3 to 4 percent of its passages with each of the seven measurable complaints. Florida’s motion and the Texas petition share about 15 percent, and Florida’s motion shares under 1 percent with the seven. Our reading is that there are two sets of outside counsel, two bodies of text and two different theories of where the gate belongs.</p>
+    </section>
+    <section class="section" id="signal">
+      <h2><span class="num">06 — Signal</span>What a Judge Would Have to Decide</h2>
+      <p>As far as we could find, nothing has happened in court since the filings. We found no reported removal, consolidation or hearing. West Virginia’s cover sheet marks all eight defendants “Hold for Later Service” and says the case “will be ready for trial by” 14 April 2028. That date is the filer’s estimate on a form, not a scheduled trial.</p>
+      <p>We could not locate a direct statement from OpenAI. A 16 October client alert from the law firm Troutman Pepper Locke relays a statement attributed to an OpenAI spokesperson. According to the alert, the statement points to parental controls and other safeguards. The alert does not say where the statement first appeared. We found no OpenAI response to Texas.</p>
+      <p>The requests do not all fit together. Under the Arizona, Idaho and Montana clause, a lab keeps testing inside a verified environment. Under the Iowa and Arkansas clause, it stops testing until monitors sign off. Under Texas’s request, a court-approved evaluator stands between the lab and every new release to Texas users. West Virginia’s reporting duty stops at the state line, and Kansas and Nebraska ask for none of this. If any of these clauses is granted, one county judge will have picked one definition, and the order will bind a company whose models do not stop at state borders.</p>
+      <p>No judge has granted any of these clauses, and none of these suits has yet placed a testing obligation on OpenAI. What is still open is which gate, if any, a county judge will reach first.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.state-ags-openai-template-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  /* ── Colours ── */
+  const cs = getComputedStyle(document.documentElement);
+  const STORY_HEX = cs.getPropertyValue('--story').trim() || '#5b6cff';
+  function hx(h: string): [number, number, number] {
+    const v = h.replace('#', '');
+    return [parseInt(v.slice(0, 2), 16), parseInt(v.slice(2, 4), 16), parseInt(v.slice(4, 6), 16)];
+  }
+  const [sR, sG, sB] = hx(STORY_HEX);
+  function storyA(a: number) { return `rgba(${sR},${sG},${sB},${Math.max(0, Math.min(1, a))})`; }
+  function dimA(a: number) { return `rgba(232,232,232,${Math.max(0, Math.min(1, a))})`; }
+
+  /* ── State ── */
+  let W = 0, H = 0, raf = 0, frame = 0, visible = true;
+
+  /* ── Resize ── */
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  });
+  ro.observe(canvas);
+
+  /* ── Visibility ── */
+  const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; }, { threshold: 0 });
+  io.observe(canvas);
+
+  /* ── Reduced motion ── */
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── Constants ── */
+  const CYC = 1560;
+  const NC = 8;
+  const NP = 7;
+
+  /* Column types in alphabetical state order: AZ AR ID IA KS MT NE WV */
+  const TY: string[] = ['ring', 'lid', 'ring', 'lid', 'bare', 'ring', 'bare', 'halfarc'];
+  /* Thread vertical displacement per column */
+  const DY = [0, 10, 0, 10, -10, 0, -10, 4];
+
+  /* ── Easing ── */
+  function eo3(t: number) { return 1 - (1 - t) * (1 - t) * (1 - t); }
+  function eio3(t: number) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+
+  /* ── Precomputed template offsets (shared by all 8 copies) ── */
+  const TPL: { a: number; d: number; ba: number; bs: number }[] = [];
+  for (let i = 0; i < NP; i++) {
+    TPL.push({
+      a: (Math.PI * 2 / NP) * i + (Math.random() - 0.5) * 0.6,
+      d: 8 + Math.random() * 14,
+      ba: Math.random() * Math.PI * 2,
+      bs: 0.008 + Math.random() * 0.008
+    });
+  }
+
+  /* ── Scatter positions for form-phase start (relative to center) ── */
+  const SC: { x: number; y: number }[] = [];
+  for (let i = 0; i < NP; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const d = 40 + Math.random() * 60;
+    SC.push({ x: Math.cos(a) * d, y: Math.sin(a) * d });
+  }
+
+  /* ── Bare-drift targets (2 bare columns), relative to column centre ── */
+  const BD: { x: number; y: number }[][] = [[], []];
+  for (let b = 0; b < 2; b++) {
+    for (let i = 0; i < NP; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const d = (0.2 + Math.random() * 0.1) * 200;
+      BD[b].push({ x: Math.cos(a) * d, y: Math.sin(a) * d });
+    }
+  }
+
+  /* ── Ambient dust motes (12) ── */
+  const motes: { x: number; y: number; vx: number; vy: number; a: number; p: number }[] = [];
+  for (let i = 0; i < 12; i++) {
+    motes.push({
+      x: Math.random() * 960, y: Math.random() * 380,
+      vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5,
+      a: 0.04 + Math.random() * 0.03,
+      p: Math.random() * Math.PI * 2
+    });
+  }
+
+  /* ── Pre-allocated thread point array ── */
+  const TPT: { x: number; y: number }[] = [];
+  for (let i = 0; i < NC; i++) TPT.push({ x: 0, y: 0 });
+
+  /* ── Shared return value for position helpers (no alloc in loop) ── */
+  let _px = 0, _py = 0;
+
+  function colCX(c: number) { return (c + 0.5) * W / NC; }
+  function getR() { return Math.min(26, (W / NC) * 0.36); }
+
+  /** Template-cluster position for particle i around (cx, cy). */
+  function tplXY(i: number, cx: number, cy: number, f: number, br: number) {
+    const t = TPL[i];
+    _px = cx + Math.cos(t.a + f * 0.002) * (t.d + br) + Math.cos(f * t.bs + t.ba) * 1.5;
+    _py = cy + Math.sin(t.a + f * 0.002) * (t.d + br) + Math.sin(f * t.bs * 1.3 + t.ba) * 1.5;
+  }
+
+  /** Enclosure target for particle i of the given type. bi = bare index (0 or 1). */
+  function encXY(ty: string, i: number, cx: number, cy: number, r: number, bi: number) {
+    if (ty === 'ring') {
+      const a = (Math.PI * 2 / 7) * i - Math.PI / 2;
+      _px = cx + Math.cos(a) * r;
+      _py = cy + Math.sin(a) * r;
+    } else if (ty === 'lid') {
+      const sp = r * 0.3;
+      const tw = sp * 6;
+      _px = cx - tw / 2 + sp * i;
+      _py = cy - r * 0.55;
+    } else if (ty === 'halfarc') {
+      const a = (170 + (200 / 6) * i) * Math.PI / 180;
+      _px = cx + Math.cos(a) * r;
+      _py = cy + Math.sin(a) * r;
+    } else {
+      _px = cx + BD[bi][i].x;
+      _py = cy + BD[bi][i].y;
+    }
+  }
+
+  /* ── Drawing micro-helpers ── */
+  function dot(x: number, y: number, al: number, tint: boolean) {
+    ctx.beginPath();
+    ctx.arc(x, y, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = dimA(al);
+    ctx.fill();
+    if (tint) {
+      ctx.beginPath();
+      ctx.arc(x, y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = storyA(0.08);
+      ctx.fill();
+    }
+  }
+
+  function drawCore(cx: number, cy: number, al: number, r: number) {
+    if (al < 0.01) return;
+    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 0.6);
+    g.addColorStop(0, storyA(0.15 * Math.min(1, al / 0.6)));
+    g.addColorStop(1, storyA(0));
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * 0.6, 0, Math.PI * 2);
+    ctx.fillStyle = g;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+    ctx.fillStyle = storyA(al);
+    ctx.fill();
+  }
+
+  /* ── Main draw ── */
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    if (!W || !H) return;
+
+    const mx = W / 2;
+    const my = H / 2;
+    const r = getR();
+    const c = frame % CYC;
+    const br = Math.sin(frame * 0.035) * 2; /* ~3 s breath */
+
+    /* ── Ambient motes ── */
+    for (let m = 0; m < motes.length; m++) {
+      ctx.beginPath();
+      ctx.arc(motes[m].x, motes[m].y, 1.5, 0, Math.PI * 2);
+      ctx.fillStyle = dimA(motes[m].a);
+      ctx.fill();
+    }
+
+    /* ================================================================
+       PHASE 1  FORM  (0 – 180)
+       ================================================================ */
+    if (c < 180) {
+      const t = eo3(c / 180);
+      const fadeIn = Math.min(1, c / 30);
+      for (let i = 0; i < NP; i++) {
+        tplXY(i, mx, my, frame, 0);
+        const tx = _px, ty = _py;
+        const px = (mx + SC[i].x) + (tx - (mx + SC[i].x)) * t;
+        const py = (my + SC[i].y) + (ty - (my + SC[i].y)) * t;
+        dot(px, py, (0.12 + 0.13 * t) * fadeIn, true);
+      }
+    }
+
+    /* ================================================================
+       PHASE 2  HOLD  (180 – 300)
+       ================================================================ */
+    else if (c < 300) {
+      for (let i = 0; i < NP; i++) {
+        tplXY(i, mx, my, frame, br);
+        dot(_px, _py, 0.25, true);
+      }
+    }
+
+    /* ================================================================
+       PHASE 3  COPY  (300 – 600)
+       ================================================================ */
+    else if (c < 600) {
+      const t = eio3((c - 300) / 300);
+      for (let col = 0; col < NC; col++) {
+        const cx = mx + (colCX(col) - mx) * t;
+        for (let i = 0; i < NP; i++) {
+          tplXY(i, cx, my, frame, br * (1 - t * 0.5));
+          dot(_px, _py, 0.25, true);
+        }
+      }
+    }
+
+    /* ================================================================
+       PHASE 4  SAMENESS  (600 – 720)
+       ================================================================ */
+    else if (c < 720) {
+      const t = (c - 600) / 120;
+      for (let col = 0; col < NC; col++) {
+        const cx = colCX(col);
+        for (let i = 0; i < NP; i++) {
+          tplXY(i, cx, my, frame, br * 0.5);
+          dot(_px, _py, 0.25, true);
+        }
+        drawCore(cx, my, t * 0.6, r);
+      }
+    }
+
+    /* ================================================================
+       PHASES 5 – 8  (720 – 1560)
+       ================================================================ */
+    else {
+      for (let col = 0; col < NC; col++) {
+        const cx = colCX(col);
+        const ty = TY[col];
+        const bi = col === 4 ? 0 : 1;
+
+        /* Core vertical displacement (thread phases) */
+        let dy = 0;
+        if (c >= 1080 && c < 1320) {
+          const dt = c < 1140 ? 0 : Math.min(1, (c - 1140) / 120);
+          dy = DY[col] * eio3(dt);
+        } else if (c >= 1320) {
+          dy = DY[col] * Math.max(0, 1 - (c - 1320) / 60);
+        }
+        const cy = my + dy;
+
+        /* ── Phase 5: DIVERGE (720 – 960) ── */
+        if (c < 960) {
+          const t = eio3((c - 720) / 240);
+          for (let i = 0; i < NP; i++) {
+            tplXY(i, cx, my, frame, br * 0.5 * (1 - t));
+            const fx = _px, fy = _py;
+            encXY(ty, i, cx, my, r, bi);
+            const ex = _px, ey = _py;
+            const px = fx + (ex - fx) * t;
+            const py = fy + (ey - fy) * t;
+            if (ty === 'bare') {
+              const al = 0.25 - 0.19 * Math.min(1, t * 240 / 180);
+              dot(px, py, al, al > 0.10);
+            } else {
+              dot(px, py, 0.25, true);
+            }
+          }
+        }
+        /* ── Phases 6-7: SETTLE + THREAD (960 – 1320) ── */
+        else if (c < 1320) {
+          for (let i = 0; i < NP; i++) {
+            encXY(ty, i, cx, cy, r, bi);
+            dot(_px, _py, ty === 'bare' ? 0.06 : 0.25, ty !== 'bare');
+          }
+        }
+        /* ── Phase 8: DISSOLVE (1320 – 1560) ── */
+        else {
+          const t = eio3((c - 1320) / 240);
+          for (let i = 0; i < NP; i++) {
+            encXY(ty, i, cx, cy, r, bi);
+            const fx = _px, fy = _py;
+            const toX = mx + SC[i].x;
+            const toY = my + SC[i].y;
+            const px = fx + (toX - fx) * t;
+            const py = fy + (toY - fy) * t;
+            const fa = ty === 'bare' ? 0.06 : 0.25;
+            let al = fa + (0.20 - fa) * t;
+            /* Extra fade in last 30 frames for seamless loop reset */
+            if (c > 1530) al *= (1560 - c) / 30;
+            dot(px, py, al, true);
+          }
+        }
+
+        /* ── Core rendering ── */
+        let ca = 0;
+        if (c < 960) {
+          /* Diverge */
+          const t = eio3((c - 720) / 240);
+          if (ty === 'lid') ca = 0.6 - 0.35 * t;
+          else if (ty === 'ring') ca = 0.6 + 0.1 * t;
+          else ca = 0.6;
+        } else if (c < 1320) {
+          /* Settle + Thread */
+          if (ty === 'ring') ca = 0.7 + 0.2 * Math.sin(frame * 0.052);
+          else if (ty === 'lid') ca = 0.25;
+          else ca = 0.6;
+        } else {
+          /* Dissolve */
+          const t = (c - 1320) / 240;
+          const base = ty === 'ring' ? 0.7 : (ty === 'lid' ? 0.25 : 0.6);
+          ca = base * (1 - t);
+        }
+        drawCore(cx, cy, ca, r);
+
+        /* ── Heptagon ring stroke (ring columns, settle+thread+dissolve-fade) ── */
+        if (ty === 'ring' && c >= 960) {
+          let sa = 1;
+          if (c >= 1320) sa = Math.max(0, 1 - (c - 1320) / 60);
+          if (sa > 0.01) {
+            ctx.beginPath();
+            for (let i = 0; i <= NP; i++) {
+              const a = (Math.PI * 2 / 7) * (i % 7) - Math.PI / 2;
+              const rx = cx + Math.cos(a) * r;
+              const ry = cy + Math.sin(a) * r;
+              if (i === 0) ctx.moveTo(rx, ry);
+              else ctx.lineTo(rx, ry);
+            }
+            ctx.closePath();
+            ctx.strokeStyle = storyA(0.15 * sa);
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+
+        /* ── Half-arc stroke (WV column, settle+thread+dissolve-fade) ── */
+        if (ty === 'halfarc' && c >= 960) {
+          let sa = 1;
+          if (c >= 1320) sa = Math.max(0, 1 - (c - 1320) / 60);
+          if (sa > 0.01) {
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 170 * Math.PI / 180, 370 * Math.PI / 180);
+            ctx.strokeStyle = storyA(0.15 * sa);
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+
+        /* ── Arkansas inner arc (col 1 only, settle+thread) ── */
+        if (col === 1 && c >= 960 && c < 1320) {
+          const af = c - 960;
+          const acyc = 80; /* 50 sweep + 30 retract */
+          const al = af % acyc;
+          const ai = Math.floor(af / acyc);
+          const aso = (ai * 17) % 360;
+          let sd = 0;
+          if (al < 50) sd = (al / 50) * 330;
+          else sd = 330 * (1 - (al - 50) / 30);
+          if (sd > 1) {
+            const sa = aso * Math.PI / 180;
+            ctx.beginPath();
+            ctx.arc(cx, cy, r * 0.55, sa, sa + sd * Math.PI / 180);
+            ctx.strokeStyle = storyA(0.5);
+            ctx.lineWidth = 1;
+            ctx.stroke();
+          }
+        }
+      } /* end column loop */
+
+      /* ── Thread polyline (phase 7 + dissolve fade) ── */
+      if (c >= 1080 && c < 1380) {
+        let ta = 0;
+        let de = 0;
+        if (c < 1320) {
+          /* Thread phase: fade in over 60 frames, then displace */
+          ta = 0.18 * Math.min(1, (c - 1080) / 60);
+          const dt = c < 1140 ? 0 : Math.min(1, (c - 1140) / 120);
+          de = eio3(dt);
+        } else {
+          /* Dissolve: fade out over 60 frames */
+          ta = 0.18 * Math.max(0, 1 - (c - 1320) / 60);
+          de = Math.max(0, 1 - (c - 1320) / 60);
+        }
+
+        if (ta > 0.005) {
+          /* Tremor when taut (disable for reduced-motion static) */
+          const tremor = (!reduced && de > 0.9) ? Math.sin(frame * 7.3) * 0.5 : 0;
+
+          for (let col = 0; col < NC; col++) {
+            TPT[col].x = colCX(col);
+            TPT[col].y = my + DY[col] * de + tremor;
+          }
+
+          /* Main thread stroke */
+          ctx.beginPath();
+          for (let i = 0; i < NC; i++) {
+            if (i === 0) ctx.moveTo(TPT[i].x, TPT[i].y);
+            else ctx.lineTo(TPT[i].x, TPT[i].y);
+          }
+          ctx.strokeStyle = storyA(ta);
+          ctx.lineWidth = 1;
+          ctx.stroke();
+
+          /* Red flush on segments touching column 2 (frames 1200-1240) */
+          if (c >= 1200 && c <= 1240) {
+            const ra = 0.5 * Math.sin(((c - 1200) / 40) * Math.PI);
+            if (ra > 0.01) {
+              ctx.beginPath();
+              ctx.moveTo(TPT[0].x, TPT[0].y);
+              ctx.lineTo(TPT[1].x, TPT[1].y);
+              ctx.lineTo(TPT[2].x, TPT[2].y);
+              ctx.strokeStyle = `rgba(255,77,77,${ra.toFixed(3)})`;
+              ctx.lineWidth = 1.5;
+              ctx.stroke();
+            }
+          }
+        }
+      }
+    } /* end phases 5-8 */
+  }
+
+  /* ── Update motes ── */
+  function updateMotes() {
+    for (let m = 0; m < motes.length; m++) {
+      const mo = motes[m];
+      mo.x += mo.vx + Math.sin(frame * 0.01 + mo.p) * 0.08;
+      mo.y += mo.vy + Math.cos(frame * 0.012 + mo.p) * 0.08;
+      if (W > 0) { if (mo.x < 0) mo.x += W; else if (mo.x > W) mo.x -= W; }
+      if (H > 0) { if (mo.y < 0) mo.y += H; else if (mo.y > H) mo.y -= H; }
+    }
+  }
+
+  /* ── Loop ── */
+  function tick() {
+    if (!visible) { raf = requestAnimationFrame(tick); return; }
+    updateMotes();
+    draw();
+    frame++;
+    raf = requestAnimationFrame(tick);
+  }
+
+  /* ── Init ── */
+  if (reduced) {
+    frame = 1245; /* Phase 7 peak: full zigzag, AR arc ~297 deg, no red */
+    const go = () => {
+      if (!W) { requestAnimationFrame(go); return; }
+      for (let m = 0; m < motes.length; m++) {
+        motes[m].x = Math.random() * W;
+        motes[m].y = Math.random() * H;
+      }
+      draw();
+    };
+    requestAnimationFrame(go);
+  } else {
+    raf = requestAnimationFrame(tick);
+  }
+
+  /* ── Cleanup ── */
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(raf);
+    ro.disconnect();
+    io.disconnect();
+  });
+})();
+</script>
