@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-31T09:30:21Z",
+  "updatedAt": "2026-11-01T09:20:00Z",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -2353,9 +2353,35 @@
       "startedAt": "2026-10-29T09:22:00Z",
       "publishedAt": "2026-10-31T09:30:21Z",
       "prUrl": "https://github.com/alondigitized/ai-files/pull/98"
+    },
+    {
+      "slug": "claude-self-assessment",
+      "status": "pending",
+      "priority": 1,
+      "side": "dark",
+      "workingTitle": "The Witness and the Defendant",
+      "thesis": "On 16 Oct 2026 Anthropic's Safeguards team (Yiming Zhang, Chen Xia, Andy Dau, John Wang, James Yu, Bobby Chen, Andreas Terzis, Nicholas Carlini, Erik Jones) published 'self-assessment': after every response, Claude is asked to grade its own conversation for misuse in ~10 output tokens (<2% added compute). On production traffic Claude Fable 5 caught 78% of what an expensive prompted-classifier teacher flagged at a 1% false-positive rate (94% of high-priority, n=17). In deployment it flagged 100k+ CSAM items from a single API customer in August (reported to NCMEC), and more than half of the organizations it surfaced had no flags from any other detector in the prior month. The same post concedes it 'is not yet a reliable monitor of Claude's own conduct', inherits the teacher's blind spots that its own evaluations cannot reveal, cuts red-team attack success only from 79% to 54%, and that 'if a model were hiding a misaligned action, it could hide it in the assessment too.' Thesis: the cheapest overseer that scales to all traffic is the model being overseen; it works, and that is exactly why the field will lean on it past the point its authors say it can be trusted.",
+      "whyNow": "Published 16 Oct 2026 on safeguards.anthropic.com with named authors and production numbers; resurfaced in The Neuron 30 Oct digest. Distinct from anthropic-bio-classifier-gap (classifier coverage gap in contractor traffic), gpt6-astra-monitorability (CoT controllability) and pocketos-cursor-wipe (post-hoc agent confession). Fits dark Vol VII 'What We Handed Over': oversight itself handed to the overseen.",
+      "sources": [
+        {
+          "url": "https://safeguards.anthropic.com/2026/self-assessment/",
+          "date": "2026-10-16",
+          "type": "primary"
+        }
+      ],
+      "scores": {
+        "importance": 7.5,
+        "rigor": 8,
+        "reportability": 7.5,
+        "readerValue": 8,
+        "fitWithArchive": 7.5
+      },
+      "compositeScore": 7.7,
+      "freshnessScore": 9,
+      "addedAt": "2026-11-01"
     }
   ],
-  "lastRefreshed": "2026-10-31",
+  "lastRefreshed": "2026-11-01",
   "sweepLog": [
     {
       "date": "2026-09-08",
@@ -2578,6 +2604,12 @@
       "query": "AI incident lawsuit ruling October 30 2026",
       "itemsAdded": 0,
       "note": "Run of 2026-10-30 also hit the session limit (copy-edit, fact-check, art brief, canvas, page assembly, card image, security scan and a11y audit files written; PR not reached). Backlog entered with ZERO pending items; resuming anthropic-agents-judgment-calls (in_progress since 10-29) per the crash rule. Sweep returned nothing dated 29-30 Oct (results were older OECD/AIID items, Musk v. OpenAI May 2026). No items added; no freshness decay needed."
+    },
+    {
+      "date": "2026-11-01",
+      "query": "AI incident lawsuit ruling OR study OR breakthrough October 30 31 2026 (+ one re-query on safety research/court rulings dated 29-31 Oct after the first returned only aggregator recaps)",
+      "itemsAdded": 1,
+      "note": "Backlog entered with ZERO pending items (anthropic-agents-judgment-calls published as PR #98); no freshness decay needed. First query returned only litigation recaps (Mealey's, is4.ai). Re-query surfaced The Neuron 30 Oct digest. ADDED claude-self-assessment (7.7, conservative): Anthropic Safeguards 'self-assessment' post (16 Oct, primary fetched from safeguards.anthropic.com, nine named authors). Overlap check across main + 86 daily/* branches: only hit was pocketos-cursor-wipe's use of 'self-assessment' for a post-hoc agent confession, not the same subject. Not added: OpenAI 'How we detect frontier model misalignment' (monitoring replay of the Hugging Face incident; primary 403 on fetch; sixth story on the OpenAI agent-incident thread, ~6.5); Minnesota nudification ban (xAI PI denied 4 Sep on irreparable-harm grounds, procedural, two months old, ~7.0); Canada-Cohere equity stake, Mistral Large 4 open weights, Reddit/Google AI Mode traffic (business/product news). One item added, under the cap of 2."
     }
   ]
 }
