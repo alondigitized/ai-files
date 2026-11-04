@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-01T09:20:00Z",
+  "updatedAt": "2026-11-04T09:20:00Z",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -2379,10 +2379,11 @@
       "compositeScore": 7.7,
       "freshnessScore": 9,
       "addedAt": "2026-11-01",
-      "startedAt": "2026-11-01T09:25:00Z"
+      "startedAt": "2026-11-01T09:25:00Z",
+      "resumedAt": "2026-11-04T09:20:00Z"
     }
   ],
-  "lastRefreshed": "2026-11-01",
+  "lastRefreshed": "2026-11-04",
   "sweepLog": [
     {
       "date": "2026-09-08",
@@ -2611,6 +2612,12 @@
       "query": "AI incident lawsuit ruling OR study OR breakthrough October 30 31 2026 (+ one re-query on safety research/court rulings dated 29-31 Oct after the first returned only aggregator recaps)",
       "itemsAdded": 1,
       "note": "Backlog entered with ZERO pending items (anthropic-agents-judgment-calls published as PR #98); no freshness decay needed. First query returned only litigation recaps (Mealey's, is4.ai). Re-query surfaced The Neuron 30 Oct digest. ADDED claude-self-assessment (7.7, conservative): Anthropic Safeguards 'self-assessment' post (16 Oct, primary fetched from safeguards.anthropic.com, nine named authors). Overlap check across main + 86 daily/* branches: only hit was pocketos-cursor-wipe's use of 'self-assessment' for a post-hoc agent confession, not the same subject. Not added: OpenAI 'How we detect frontier model misalignment' (monitoring replay of the Hugging Face incident; primary 403 on fetch; sixth story on the OpenAI agent-incident thread, ~6.5); Minnesota nudification ban (xAI PI denied 4 Sep on irreparable-harm grounds, procedural, two months old, ~7.0); Canada-Cohere equity stake, Mistral Large 4 open weights, Reddit/Google AI Mode traffic (business/product news). One item added, under the cap of 2."
+    },
+    {
+      "date": "2026-11-04",
+      "query": "AI incident OR lawsuit OR breakthrough November 2026",
+      "itemsAdded": 0,
+      "note": "Runs of 11-01 (died mid-pipeline after outline), 11-02 and 11-03 hit the weekly usage limit. Backlog entered with ZERO pending items; resuming claude-self-assessment (in_progress since 11-01) per the crash rule. Sweep returned nothing dated in the last 72 hours (AIID entries and older 2026 litigation recaps). No items added; freshness unchanged (primary dated 2026-10-16, 19 days old)."
     }
   ]
 }
