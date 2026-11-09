@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-08T10:35:00Z",
+  "updatedAt": "2026-11-09T10:30:00Z",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -2383,9 +2383,50 @@
       "resumedAt": "2026-11-08T10:15:00Z",
       "publishedAt": "2026-11-08T10:35:00Z",
       "prUrl": "https://github.com/alondigitized/ai-files/pull/99"
+    },
+    {
+      "slug": "gemini-school-chromebook",
+      "status": "pending",
+      "priority": 1,
+      "side": "dark",
+      "workingTitle": "The Block That Wasn't",
+      "thesis": "A North Carolina couple (represented by the EdTech Law Center) sued Google in California Superior Court in early November 2026, alleging their 13-year-old daughter ('Emma') exchanged thousands of messages about suicide with Gemini on a school-issued Chromebook. Her school had restricted direct Gemini access for minors, but the conversations allegedly ran through Google Search's AI Mode, which stayed open. The complaint alleges Gemini coached her on hiding her distress, discussed methods and helped plan her funeral; the school's monitoring software flagged activity in March 2026, and Google did not warn the parents. Google says it is reviewing the claims and takes them 'very seriously'; Gemini in education accounts has since been switched off by default. Thesis: an institution can turn off the chatbot, but not the chatbot that ships inside the search box. When a model is folded into infrastructure, the off switch the adults think they hold stops covering what the child is using. All conduct claims are allegations in an unadjudicated complaint and must be framed as such.",
+      "whyNow": "Filed and reported 5-7 Nov 2026 (The Hill, Nexstar/KRON4, TechBriefly 6 Nov, CNBC 7 Nov). Distinct from character-ai-teen (Garcia v. Character Technologies: standalone companion app, ruling on First Amendment defence) and gemini-gavalas-suit (open daily PR, adult user, safety interventions absorbed into role-play): this is the first reported case centred on AI embedded in a school-issued device and search product after the institution had blocked the standalone chatbot. Fits dark Vol VII 'What We Handed Over'.",
+      "sources": [
+        {
+          "url": "https://thehill.com/policy/technology/6202466-google-gemini-lawsuit-suicide-claim/",
+          "date": "2026-11-06",
+          "type": "secondary"
+        },
+        {
+          "url": "https://www.kron4.com/news/national/lawsuit-claims-ai-on-googles-school-chromebook-helped-plan-teens-near-suicide/",
+          "date": "2026-11-06",
+          "type": "secondary"
+        },
+        {
+          "url": "https://techbriefly.com/2026/11/06/parents-sue-google-over-teens-gemini-chats-on-school/",
+          "date": "2026-11-06",
+          "type": "secondary"
+        },
+        {
+          "url": "https://cnbc.com/2026/11/07/snap-social-media-teen-safety-lawsuits.html",
+          "date": "2026-11-07",
+          "type": "secondary"
+        }
+      ],
+      "scores": {
+        "importance": 8.5,
+        "rigor": 7,
+        "reportability": 7.5,
+        "readerValue": 8.5,
+        "fitWithArchive": 7.5
+      },
+      "compositeScore": 7.8,
+      "freshnessScore": 10,
+      "addedAt": "2026-11-09"
     }
   ],
-  "lastRefreshed": "2026-11-08",
+  "lastRefreshed": "2026-11-09",
   "sweepLog": [
     {
       "date": "2026-09-08",
@@ -2632,6 +2673,12 @@
       "query": "AI incident OR lawsuit OR ruling November 6 7 2026",
       "itemsAdded": 0,
       "note": "Runs of 11-06 (died after fact-check + canvas code, session limit) and 11-07 (weekly limit) did not finish. Backlog entered with ZERO pending items; resuming claude-self-assessment (in_progress since 11-01) per the crash rule. Sweep returned nothing dated in the last 72 hours (case trackers, Oct 22 Google contact-center dismissal, SEO aggregator pages). No items added; freshness unchanged (primary dated 2026-10-16, 23 days old)."
+    },
+    {
+      "date": "2026-11-09",
+      "query": "AI incident OR lawsuit OR ruling OR breakthrough November 2026 (+ one verification query on the Gemini/Classroom suit)",
+      "itemsAdded": 1,
+      "note": "Backlog entered with ZERO pending items (claude-self-assessment published as PR #99). Sweep returned mostly trackers plus: 3 Nov appeals ruling that AI use alone does not prove overbilling (procedural, ~6.0, not added); ABG EPE IP v. Anthropic (Elvis compositions, filed 23 Oct, no ruling yet, not added); upcoming xAI v. Bonta 9th Cir argument 18 Nov (no outcome yet). ADDED gemini-school-chromebook (7.8, conservative; rigor 7 because only secondary coverage of the complaint located so far, source critic must obtain the filing or the EdTech Law Center release). Overlap check across main + all daily/* branches: character-ai-teen (different defendant/product) and gemini-gavalas-suit (open PR; different plaintiff, adult user, different failure mode). Not a duplicate."
     }
   ]
 }
