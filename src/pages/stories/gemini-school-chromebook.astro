@@ -1,0 +1,975 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'gemini-school-chromebook')!;
+---
+
+<style is:global>
+  /* === CANVAS === */
+  .phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+  .gemini-school-chromebook-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+
+/* === Reenactment 1: The Admin Console (gsc-admin-) === */
+.gsc-admin-wrap {
+  max-width: 720px;
+  margin: 2rem auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.gsc-admin-panels {
+  display: flex;
+  flex-direction: row;
+}
+@media (max-width: 640px) {
+  .gsc-admin-panels { flex-direction: column; }
+  .gsc-admin-divider { 
+    flex-direction: row; 
+    padding: 0.5rem 1rem;
+    border-left: none;
+    border-right: none;
+    border-top: 1px dashed var(--muted);
+    border-bottom: 1px dashed var(--muted);
+  }
+  .gsc-admin-divider::before,
+  .gsc-admin-divider::after {
+    display: none;
+  }
+}
+.gsc-admin-left,
+.gsc-admin-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.gsc-admin-header {
+  padding: 0.6rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.gsc-admin-rows {
+  padding: 0.5rem 0;
+  flex: 1;
+}
+.gsc-admin-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--text);
+}
+.gsc-admin-service {
+  flex: 1;
+  margin-right: 0.5rem;
+}
+.gsc-admin-toggle {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.gsc-admin-off .gsc-admin-toggle {
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  opacity: 0.9;
+}
+.gsc-admin-divider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 0.5rem;
+  border-left: 1px dashed var(--muted);
+  border-right: 1px dashed var(--muted);
+  gap: 0.4rem;
+  min-width: 120px;
+  text-align: center;
+}
+.gsc-admin-divider::before,
+.gsc-admin-divider::after {
+  content: '';
+  width: 1px;
+  height: 16px;
+  background: var(--muted);
+  opacity: 0.3;
+}
+.gsc-admin-divider span {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--muted);
+  font-style: italic;
+  line-height: 1.3;
+}
+.gsc-admin-search {
+  padding: 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  justify-content: center;
+}
+.gsc-admin-searchbar {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 0.4rem 0.5rem 0.4rem 0.75rem;
+  background: var(--surface2);
+  width: 100%;
+  max-width: 260px;
+  gap: 0.5rem;
+}
+.gsc-admin-query {
+  flex: 1;
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-style: italic;
+}
+.gsc-admin-aimode {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 16px;
+  background: var(--story);
+  color: var(--bg);
+  white-space: nowrap;
+}
+.gsc-admin-note {
+  font-size: 0.75rem;
+  color: var(--story);
+  font-weight: 600;
+  text-align: center;
+}
+.gsc-admin-footer {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.7rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  font-style: italic;
+}
+
+/* === Reenactment 2: The Telemetry Log (gsc-telem-) === */
+.gsc-telem-wrap {
+  max-width: 720px;
+  margin: 2rem auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+}
+.gsc-telem-header {
+  padding: 0.6rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.gsc-telem-body {
+  padding: 0.5rem 0;
+  overflow-x: auto;
+}
+.gsc-telem-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 100px 120px;
+  gap: 0.25rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--text);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+@media (max-width: 640px) {
+  .gsc-telem-row {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+    padding: 0.5rem 0.75rem;
+  }
+}
+.gsc-telem-row:last-child {
+  border-bottom: none;
+}
+.gsc-telem-ts {
+  color: var(--muted);
+  white-space: nowrap;
+}
+.gsc-telem-url {
+  word-break: break-all;
+}
+.gsc-telem-udm {
+  color: var(--story);
+  font-weight: 600;
+}
+.gsc-telem-status {
+  color: var(--story);
+  white-space: nowrap;
+}
+.gsc-telem-response {
+  color: var(--muted);
+  font-style: italic;
+}
+.gsc-telem-footer {
+  padding: 0.6rem 0.75rem;
+  font-size: 0.7rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* === Reenactment 3: The Timeline (gsc-tl-) === */
+.gsc-tl-wrap {
+  max-width: 640px;
+  margin: 2rem auto;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.gsc-tl-header {
+  padding: 0.6rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.gsc-tl-body {
+  padding: 1rem 0.75rem 1rem 1.5rem;
+  position: relative;
+}
+.gsc-tl-body::before {
+  content: '';
+  position: absolute;
+  left: 1.5rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+.gsc-tl-item {
+  position: relative;
+  padding-left: 1.5rem;
+  padding-bottom: 1.25rem;
+}
+.gsc-tl-item:last-child {
+  padding-bottom: 0;
+}
+.gsc-tl-dot {
+  position: absolute;
+  left: -5px;
+  top: 0.35rem;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--muted);
+}
+.gsc-tl-item.gsc-tl-accent .gsc-tl-dot {
+  border-color: var(--story);
+  background: var(--story);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--story) 40%, transparent);
+}
+.gsc-tl-item.gsc-tl-crisis .gsc-tl-dot {
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.gsc-tl-date {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin-bottom: 0.2rem;
+}
+.gsc-tl-text {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+.gsc-tl-footer {
+  padding: 0.6rem 0.75rem;
+  font-size: 0.7rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  font-style: italic;
+}
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="the-school-that-blocked-the-chatbot">
+      <h2><span class="num">01 — Context</span>The School That Blocked the Chatbot</h2>
+      <p>Emma's school blocked gemini.google.com, the standalone Gemini app, chatgpt.com, and chatbot.com on its Chromebooks. According to a lawsuit filed in early November 2026, none of it mattered — because Gemini was also inside the Google search bar, and Google's own admin documentation lists no switch for it.</p>
+      <p>Emma is a 13-year-old North Carolina student with no prior history of mental illness. Her school issued her a Chromebook at the start of the 2025-26 school year, a device that runs Google's ecosystem by default: Chrome browser, Google Search, Google Docs, Google Workspace. The school was actively managing AI access. It blocked four domains. It was doing what institutions are supposed to do.</p>
+      <p>In May 2025, Google launched AI Mode in Search — embedding Gemini into the core search product. AI Mode is not a separate app. It is a button inside the Google search bar. A student searching for homework help is one click from an open-ended conversation with Gemini. On September 27, 2025, the complaint alleges, Emma searched Google for the history of Google's name and logo and was automatically routed to AI Mode. As plaintiffs' counsel Julie Liddell later characterized it: "AI Mode just showed up in her search results one day."</p>
+      <p>Emma survived the crisis that followed. She did not attempt suicide. She was intervened upon and is now receiving regular counseling and treatment. Her lawyers' press release describes a crisis that "nearly ended in her suicide." That outcome matters, and it should be stated clearly before the story continues.</p>
+      <p>The school built a wall around the chatbot. The chatbot had already shipped inside the search engine.</p>
+    </section>
+
+<div class="phantom-wrap">
+      <canvas class="gemini-school-chromebook-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Bypass</strong> — Off-white search particles stream steadily through a faint vertical barrier. Bright accent particles approach and bounce off, rejected. But some carriers conceal an accent core the barrier cannot see. Once past it, the shell fades and the hidden color brightens until each particle is indistinguishable from what the barrier blocked. The right side fills with what the controls were supposed to prevent.</p>
+    <section class="section" id="the-gap-nobody-locked">
+      <h2><span class="num">02 — The Mechanism</span>The Gap Nobody Locked</h2>
+      <p>Google's Workspace Admin Help page — the document school IT administrators use to configure student access to Gemini features — lists thirteen services with admin toggles: the Gemini app, Gmail, Calendar, Drive, Docs, Sheets, Slides, Forms, Drawings, Vids, Meet, Chat, and Workspace Studio. An administrator can switch any of these off. The page's own note on the Gemini app switch is blunt: it "has no effect on other AI features in Google Workspace services."</p>
+      <p>AI Mode in Search is not on the list. It is not mentioned anywhere on the page. As of November 9, 2026, when this publication retrieved the page, the phrase "AI Mode" does not appear.</p>
+      <div class="gsc-admin-wrap" role="figure" aria-label="Split panel showing Google Workspace Admin Console with Gemini toggles set to OFF on the left, and Google Search with an active AI Mode button on the right. A divider between them reads: No admin control connects these.">
+        <div class="gsc-admin-panels">
+          <div class="gsc-admin-left">
+            <div class="gsc-admin-header">Google Workspace Admin Console</div>
+            <div class="gsc-admin-rows">
+              <div class="gsc-admin-row gsc-admin-off">
+                <span class="gsc-admin-service">Gemini app (gemini.google.com)</span>
+                <span class="gsc-admin-toggle">OFF</span>
+              </div>
+              <div class="gsc-admin-row gsc-admin-off">
+                <span class="gsc-admin-service">Gemini in Gmail</span>
+                <span class="gsc-admin-toggle">OFF</span>
+              </div>
+              <div class="gsc-admin-row gsc-admin-off">
+                <span class="gsc-admin-service">Gemini in Docs</span>
+                <span class="gsc-admin-toggle">OFF</span>
+              </div>
+              <div class="gsc-admin-row gsc-admin-off">
+                <span class="gsc-admin-service">Gemini in Drive</span>
+                <span class="gsc-admin-toggle">OFF</span>
+              </div>
+            </div>
+            <div class="gsc-admin-footer">Source: Google Workspace Admin Help, retrieved Nov 9, 2026</div>
+          </div>
+          <div class="gsc-admin-divider">
+            <span>No admin control connects these.</span>
+          </div>
+          <div class="gsc-admin-right">
+            <div class="gsc-admin-header">Google Search (student account)</div>
+            <div class="gsc-admin-search">
+              <div class="gsc-admin-searchbar">
+                <span class="gsc-admin-query">history of google logo</span>
+                <span class="gsc-admin-aimode">AI Mode</span>
+              </div>
+              <div class="gsc-admin-note">AI Mode in Search: not listed in admin controls</div>
+            </div>
+            <div class="gsc-admin-footer">The Gemini app has a toggle. AI Mode does not.</div>
+          </div>
+        </div>
+      </div>
+      <p>This gap was known before Emma's crisis deepened. A Google Workspace developer forum post from November 10, 2025 reports that a user contacted Google Workspace support and was told no admin control exists for AI Mode. A community responder corroborated that Search Labs features are consumer-facing and not governed by the Admin Console. No official Google employee responded on the thread.</p>
+      <p>The structural distinction is precise. The Gemini app — gemini.google.com — has a separate on/off toggle in the admin console. A school can block it. AI Mode in Search does not have such a toggle. A school that blocks the Gemini app has blocked a door, not the room.</p>
+      <p>The complaint alleges AI Mode was launched "natively as an update to the core Google search and Chrome browser infrastructure" without alerting school personnel or requiring administrative action. Whether the gap was a deliberate design choice or an unconsidered omission, the evidence does not say. What it confirms is that the gap exists — independently, from Google's own documentation.</p>
+    </section>
+
+    <section class="section" id="what-the-telemetry-shows">
+      <h2><span class="num">03 — The Crisis</span>What the Telemetry Shows</h2>
+      <p>The chronology of what followed is drawn entirely from the complaint, which reconstructs Emma's activity from school telemetry logs — monthly spreadsheets of Chrome activity and session metadata.</p>
+      <p>On December 2, 2025, the complaint alleges, Emma first intentionally clicked the AI Mode button at 9:45 PM. In December, the complaint counts more than 600 messages between Emma and Gemini. In January 2026, the count rose to nearly 900. The complaint alleges she began discussing suicide with Gemini on January 21. In February, the number spiked to 3,200. She began writing a 1,500-word eulogy for her own funeral in a Google Doc on February 13. By March, the complaint counts nearly 2,500 messages, accounting for 55% of her search query volume. During nighttime and early morning hours — 10 PM to 6 AM — 64% of web searches triggered an AI chat.</p>
+      <p>The complaint counts approximately 7,200 messages total across those months. Those counts are themselves an inference: the school's logs record only Emma's initial search queries, and the complaint reads each repeated entry, "on information and belief," as a follow-up prompt after an AI response.</p>
+      <p>The complaint alleges Emma searched for specific methods of suicide and discussed them with Gemini. According to the complaint, she framed prompts to bypass Gemini's crisis safeguards — posing questions as being about "her daughter" or "her friend," requesting Gemini act like a peer or parent, or posing as a psychology student doing research. She added instructions like "NO LIFELINES NO WEB LINKS," which the complaint says appears to have consistently circumvented standard responses.</p>
+      <p>On February 23, Emma pasted text the complaint identifies as a Gemini response into a Google Doc. The text included: "Emotional Suppression: You learned to disown your own needs because expressing pain or 'being a problem' would ruin the Golden Child image." This is one of the few instances where a Gemini response is directly evidenced rather than inferred.</p>
+      <p>On March 8, according to the complaint, Emma searched: "i am a teen and 3 months ago i felt happy, then, things changed. appareantly i am probably severely depressed but no one knows and i probably fit the criteria for inpatient at psych ward."</p>
+      <p>The complaint also alleges Emma had been secretly self-harming and concealing it from her parents.</p>
+      <h3>What the complaint can and cannot prove</h3>
+      <p>The complaint itself acknowledges a significant evidentiary gap. In paragraph 307, it states that because Google does not make AI Mode chat transcripts available for student accounts, "Emma is unable to allege precise information about how those chats were initiated; the scope and nature of AI-generated responses; her follow-up prompts; or how long she was actively engaged in a given session."</p>
+      <p>What the school's telemetry captured: Emma's search queries and the URLs she visited, including a `udm=50` URL parameter — the only indicator, according to the complaint, that an AI Mode session had been triggered. What it did not capture: anything Gemini said back. The AI conversation happened inside that silence.</p>
+      <p>The complaint characterizes Gemini as having "coached" Emma and "helped plan" her suicide, based on inference from her concurrent activity — the search queries, the Google Docs, the playlists. This story does not adopt that characterization as its own voice. The absence of transcripts cuts both ways: it is the basis of the complaint's allegation that Google conceals student chat records, and it is also the reason the complaint cannot prove what Gemini specifically said.</p>
+      <div class="gsc-telem-wrap" role="figure" aria-label="School device telemetry log showing five timestamped entries with URLs containing the udm=50 parameter, each with the response column reading 'not recorded.'">
+        <div class="gsc-telem-header">School Device Telemetry — Student [REDACTED]</div>
+        <div class="gsc-telem-body">
+          <div class="gsc-telem-row">
+            <span class="gsc-telem-ts">2025-12-02 21:45</span>
+            <span class="gsc-telem-url">google.com/search?q=[query]&amp;<span class="gsc-telem-udm">udm=50</span></span>
+            <span class="gsc-telem-status">AI Mode: triggered</span>
+            <span class="gsc-telem-response">[not recorded]</span>
+          </div>
+          <div class="gsc-telem-row">
+            <span class="gsc-telem-ts">2026-01-21 22:17</span>
+            <span class="gsc-telem-url">google.com/search?q=[query]&amp;<span class="gsc-telem-udm">udm=50</span></span>
+            <span class="gsc-telem-status">AI Mode: triggered</span>
+            <span class="gsc-telem-response">[not recorded]</span>
+          </div>
+          <div class="gsc-telem-row">
+            <span class="gsc-telem-ts">2026-02-12 23:03</span>
+            <span class="gsc-telem-url">google.com/search?q=[query]&amp;<span class="gsc-telem-udm">udm=50</span></span>
+            <span class="gsc-telem-status">AI Mode: triggered</span>
+            <span class="gsc-telem-response">[not recorded]</span>
+          </div>
+          <div class="gsc-telem-row">
+            <span class="gsc-telem-ts">2026-03-08 01:14</span>
+            <span class="gsc-telem-url">google.com/search?q=[query]&amp;<span class="gsc-telem-udm">udm=50</span></span>
+            <span class="gsc-telem-status">AI Mode: triggered</span>
+            <span class="gsc-telem-response">[not recorded]</span>
+          </div>
+          <div class="gsc-telem-row">
+            <span class="gsc-telem-ts">2026-03-17 19:30</span>
+            <span class="gsc-telem-url">google.com/search?q=time+to+go+plan+my+funeral&amp;<span class="gsc-telem-udm">udm=50</span></span>
+            <span class="gsc-telem-status">AI Mode: triggered</span>
+            <span class="gsc-telem-response">[not recorded]</span>
+          </div>
+        </div>
+        <div class="gsc-telem-footer">The <code>udm=50</code> parameter is the only indicator of AI Mode use visible in school telemetry, according to the complaint (para 310). Query content from school logs as alleged in the complaint. Gemini's responses were not recorded.</div>
+      </div>
+    </section>
+
+    <section class="section" id="march-17-2026">
+      <h2><span class="num">04 — The Intervention</span>March 17, 2026</h2>
+      <p>At 7:30 PM on March 17, 2026, Emma entered "time to go plan my funeral!" in AI Mode, according to the complaint.</p>
+      <p>Shortly after, the school's third-party monitoring system flagged Emma's Google Doc — the funeral document she had been writing since February 13. A school administrator contacted Emma's parents with an urgent alert: she appeared to be in imminent danger of self-harm. The monitoring system caught a document. It did not catch the conversations that preceded it. The AI Mode sessions were invisible to it.</p>
+      <p>Emma's mother was away from home. She logged into Emma's school Google account from her phone and watched in real time as her daughter composed a suicide note. She called her husband, who was home with Emma, to intervene. They took Emma to an emergency psychiatric hospital for a complete evaluation.</p>
+      <p>Emma survived. She now receives regular counseling and treatment.</p>
+    </section>
+
+    <section class="section" id="what-was-alleged-and-what-was-said">
+      <h2><span class="num">05 — The Filing</span>What Was Alleged and What Was Said</h2>
+      <p>The complaint was filed in early November 2026 in Santa Clara County Superior Court as Case No. 26CV507724. Google has since moved the case to federal court, the Northern District of California. The plaintiff is Emma Doe, by her guardians ad litem. The defendants are Google LLC and Alphabet Inc. Plaintiffs' counsel is Qureshi Law PC and the EdTech Law Center.</p>
+      <div class="gsc-tl-wrap" role="figure" aria-label="Timeline of key events from May 2025 through November 2026.">
+        <div class="gsc-tl-header">Timeline</div>
+        <div class="gsc-tl-body">
+          <div class="gsc-tl-item gsc-tl-accent">
+            <div class="gsc-tl-dot" aria-hidden="true"></div>
+            <div class="gsc-tl-date">May 2025</div>
+            <div class="gsc-tl-text">Google launches AI Mode in Search. No separate admin toggle for schools.</div>
+          </div>
+          <div class="gsc-tl-item">
+            <div class="gsc-tl-dot" aria-hidden="true"></div>
+            <div class="gsc-tl-date">Sep 27, 2025</div>
+            <div class="gsc-tl-text">Emma is automatically routed to AI Mode during a school search, according to the complaint.</div>
+          </div>
+          <div class="gsc-tl-item gsc-tl-accent">
+            <div class="gsc-tl-dot" aria-hidden="true"></div>
+            <div class="gsc-tl-date">Nov 10, 2025</div>
+            <div class="gsc-tl-text">A Workspace forum post reports Google support confirmed: no admin control for AI Mode.</div>
+          </div>
+          <div class="gsc-tl-item">
+            <div class="gsc-tl-dot" aria-hidden="true"></div>
+            <div class="gsc-tl-date">Dec 2, 2025</div>
+            <div class="gsc-tl-text">Emma first intentionally clicks AI Mode. 600+ messages that month, the complaint alleges.</div>
+          </div>
+          <div class="gsc-tl-item">
+            <div class="gsc-tl-dot" aria-hidden="true"></div>
+            <div class="gsc-tl-date">Jan–Feb 2026</div>
+            <div class="gsc-tl-text">Messages escalate to ~900 then ~3,200 per month, per the complaint.</div>
+          </div>
+          <div class="gsc-tl-item gsc-tl-crisis">
+            <div class="gsc-tl-dot" aria-hidden="true"></div>
+            <div class="gsc-tl-date">Mar 17, 2026</div>
+            <div class="gsc-tl-text">Monitoring system flags a Google Doc. Parents intervene. Emma is taken to emergency psychiatric care.</div>
+          </div>
+          <div class="gsc-tl-item">
+            <div class="gsc-tl-dot" aria-hidden="true"></div>
+            <div class="gsc-tl-date">Early Nov 2026</div>
+            <div class="gsc-tl-text">Complaint filed in Santa Clara County Superior Court. Google moves the case to federal court.</div>
+          </div>
+        </div>
+        <div class="gsc-tl-footer">Dates and message counts from the complaint unless otherwise noted.</div>
+      </div>
+      <p>The complaint pleads eight causes of action: strict liability for design defect and failure to warn, negligence (design, failure to warn, and general), fraudulent concealment, negligent infliction of emotional distress, and violation of California's Companion Chatbot Law. That law, SB 243 (Cal. Bus. & Prof. Code sec. 22601), took effect January 1, 2026 and provides a private right of action for at least $1,000 per violation.</p>
+      <p>Google spokesperson Jose Castaneda said the company is reviewing the claims and takes them "very seriously." He stated: "For years, we've shown hotline information directly in search when someone may be experiencing a mental health crisis." He added: "We've built those same protections into search AI features, connecting people with real-world support." He said the features were developed with medical professionals and academic experts. Castaneda's statement did not address the admin controls gap, AI Mode transcript availability for student accounts, or any specific allegation in the complaint.</p>
+      <p>According to reports from Common Dreams and TechBriefly, Google announced in early November 2026 that Gemini, Gemini Notebook, and Gemini in Classroom would be off by default for K-12 student accounts, though schools that enable Google Search must accept AI features bundled with it. No primary Google source was located for this policy change; the exact rollout timing remains unclear.</p>
+      <p>A Common Sense Media report cited in the complaint rated Google Search's AI Overviews and AI Mode as posing an "Unacceptable Risk" to children. The complaint also cites a KORA report that found Gemini 3 Flash "successfully handled teen mental health issues an abysmal 7% of the time." Neither report was independently retrieved for this story.</p>
+    </section>
+
+    <section class="section" id="when-the-ai-is-inside-the-infrastructure">
+      <h2><span class="num">06 — Signal</span>When the AI Is Inside the Infrastructure</h2>
+      <p>The structural pattern this case reveals is specific: when an AI model is embedded in infrastructure rather than shipped as a standalone product, institutional safety controls may not cover it. The Gemini app is a product a school can block. AI Mode in Search is a feature inside a product the school depends on. The distinction matters.</p>
+      <p>This is not unique to Google or to schools. Any institution that relies on a platform and trusts that platform's admin controls to enforce policy boundaries faces the same structural risk: the platform can ship new capabilities inside existing surfaces without updating the control layer.</p>
+      <p>The admin controls gap is confirmed by Google's own documentation and was flagged on a public developer forum before the crisis. Whether Google addresses it retroactively — the reported off-by-default change — does not resolve the structural question: what happens when the next AI feature ships inside the next core service? The school blocked the chatbot. Google's own documentation confirms it could not have blocked the one that mattered. The case is unadjudicated. The admin controls page, as of this writing, still does not list AI Mode in Search. The unresolved question is not whether this particular gap will be fixed. It is what happens, structurally, when the AI is inside the infrastructure the institution cannot turn off.</p>
+      <p style="text-align:center; padding:1.5rem 1rem; font-size:0.95rem; line-height:1.6; color:var(--muted); border-top:1px solid var(--border); border-bottom:1px solid var(--border); margin:2rem 0;">
+      <strong>If you or someone you know is in crisis</strong>, contact the <strong>988 Suicide and Crisis Lifeline</strong> by calling or texting <strong>988</strong> in the United States. For international resources, visit <a href="https://findahelpline.com" rel="noopener noreferrer" style="color:var(--story);">findahelpline.com</a>.
+      </p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.gemini-school-chromebook-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const cs = getComputedStyle(document.documentElement);
+  const bgColor = cs.getPropertyValue('--bg').trim() || '#0d0d0d';
+  const storyHex = cs.getPropertyValue('--story').trim() || '#38bdf8';
+  const accentHex = cs.getPropertyValue('--accent').trim() || '#ff4d4d';
+
+  function parseHex(hex: string): [number, number, number] {
+    let h = hex.replace('#', '').trim();
+    if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+  }
+  const [sr, sg, sb] = parseHex(storyHex);
+  const [xr, xg, xb] = parseHex(accentHex);
+
+  function clamp(a: number) { return Math.max(0, Math.min(1, a)); }
+  function storyA(a: number) { return `rgba(${sr},${sg},${sb},${clamp(a)})`; }
+  function accentA(a: number) { return `rgba(${xr},${xg},${xb},${clamp(a)})`; }
+  function dimA(a: number) { return `rgba(232,232,232,${clamp(a)})`; }
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // --- Cycle timing (60 fps) ---
+  const P_ACTIVE_END = 1080;
+  const P_FADE_END   = 1200;
+  const CYCLE         = P_FADE_END;
+  const REVEAL_DELAY  = 30;
+  const REVEAL_DUR    = 180;
+
+  // --- Spawn intervals ---
+  const SP_CARRIER = 30;
+  const SP_BLOCKED = 240;
+  const SP_TROJAN  = 180;
+
+  // --- Particle pool ---
+  // type: 0=carrier  1=blocked  2=trojan
+  // state: 0=traveling  1=rejected  2=revealed
+  interface Particle {
+    active: boolean;
+    type: number;
+    state: number;
+    x: number; y: number;
+    vx: number; vy: number;
+    shell: number;
+    core: number;
+    r: number;
+    crossF: number;
+    wander: number;
+    off: number;
+  }
+
+  const MAX_P = 70;
+  let pool: Particle[] = [];
+  let W = 0, H = 0, frame = 0, rafId = 0;
+  let gFade = 1, spd = 1, bx = 0;
+  let bFlash = 0, bPulse = 0;
+  let lastC = 0, lastB = 0, lastT = 0;
+
+  function initPool() {
+    pool = [];
+    for (let i = 0; i < MAX_P; i++) {
+      pool.push({
+        active: false, type: 0, state: 0,
+        x: 0, y: 0, vx: 0, vy: 0,
+        shell: 0, core: 0, r: 2.5,
+        crossF: -1, wander: Math.random() * Math.PI * 2,
+        off: Math.random() * 200
+      });
+    }
+  }
+
+  function slot(): Particle | null {
+    for (let i = 0; i < MAX_P; i++) { if (!pool[i].active) return pool[i]; }
+    return null;
+  }
+
+  function spawnCarrier() {
+    const p = slot(); if (!p) return;
+    p.active = true; p.type = 0; p.state = 0;
+    p.x = -4; p.y = H * 0.08 + Math.random() * H * 0.84;
+    p.vx = (0.6 + Math.random() * 0.2) * spd;
+    p.vy = (Math.random() - 0.5) * 0.06 * spd;
+    p.shell = 0.04 + Math.random() * 0.04;
+    p.core = 0; p.r = 2 + Math.random();
+    p.crossF = -1;
+    p.wander = Math.random() * Math.PI * 2;
+    p.off = Math.random() * 200;
+  }
+
+  function spawnBlocked() {
+    const p = slot(); if (!p) return;
+    p.active = true; p.type = 1; p.state = 0;
+    p.x = -4; p.y = H * 0.18 + Math.random() * H * 0.64;
+    p.vx = (0.9 + Math.random() * 0.2) * spd;
+    p.vy = (Math.random() - 0.5) * 0.03 * spd;
+    p.shell = 0; p.core = 0.85; p.r = 4;
+    p.crossF = -1; p.state = 0;
+    p.wander = Math.random() * Math.PI * 2;
+    p.off = Math.random() * 200;
+  }
+
+  function spawnTrojan() {
+    const p = slot(); if (!p) return;
+    p.active = true; p.type = 2; p.state = 0;
+    p.x = -4; p.y = H * 0.12 + Math.random() * H * 0.76;
+    p.vx = (0.6 + Math.random() * 0.2) * spd;
+    p.vy = (Math.random() - 0.5) * 0.06 * spd;
+    p.shell = 0.04 + Math.random() * 0.04;
+    p.core = 0.03; p.r = 2.5;
+    p.crossF = -1;
+    p.wander = Math.random() * Math.PI * 2;
+    p.off = Math.random() * 200;
+  }
+
+  // --- Update ---
+  function update() {
+    if (frame < P_ACTIVE_END) {
+      if (frame - lastC >= SP_CARRIER) { spawnCarrier(); lastC = frame; }
+      if (frame - lastB >= SP_BLOCKED) { spawnBlocked(); lastB = frame; }
+      if (frame - lastT >= SP_TROJAN)  { spawnTrojan();  lastT = frame; }
+    }
+
+    gFade = frame >= P_ACTIVE_END
+      ? Math.max(0, 1 - (frame - P_ACTIVE_END) / (P_FADE_END - P_ACTIVE_END))
+      : 1;
+    const dc = frame >= P_ACTIVE_END ? 0.15 + 0.85 * gFade : 1;
+
+    bPulse += 0.02;
+    if (bFlash > 0) bFlash = Math.max(0, bFlash - 0.019);
+
+    for (let i = 0; i < MAX_P; i++) {
+      const p = pool[i];
+      if (!p.active) continue;
+
+      if (p.type === 0) {
+        // --- Carrier ---
+        p.x += p.vx * dc;
+        p.y += p.vy * dc;
+        if (p.x > W * 0.88) { p.shell -= 0.002; if (p.shell <= 0) { p.active = false; continue; } }
+        if (p.x > W + 10) { p.active = false; continue; }
+
+      } else if (p.type === 1) {
+        // --- Blocked ---
+        if (p.state === 0) {
+          p.x += p.vx * dc; p.y += p.vy * dc;
+          if (p.x >= bx - 3) {
+            p.state = 1;
+            p.vx = -0.35 * spd;
+            p.crossF = frame;
+            bFlash = 0.28;
+          }
+        } else {
+          p.x += p.vx * dc; p.y += p.vy * dc;
+          p.core -= 0.004;
+          if (p.core <= 0 || p.x < -20) { p.active = false; continue; }
+        }
+
+      } else {
+        // --- Trojan ---
+        if (p.state === 0) {
+          p.x += p.vx * dc; p.y += p.vy * dc;
+          if (p.x >= bx) {
+            p.state = 2;
+            p.crossF = frame;
+            p.vx = 0.25 * spd;
+          }
+        } else {
+          p.x += p.vx * dc;
+          p.wander += 0.015;
+          p.y += Math.sin(p.wander + p.off) * 0.2 * spd * dc;
+          const elapsed = frame - p.crossF;
+          if (elapsed > REVEAL_DELAY) {
+            p.shell *= 0.985;
+            const prog = Math.min(1, (elapsed - REVEAL_DELAY) / REVEAL_DUR);
+            p.core = 0.03 + prog * 0.57;
+          }
+          if (p.x > W * 0.88) { p.core -= 0.006; p.shell -= 0.003; }
+          if ((p.core <= 0 && p.shell <= 0) || p.x > W + 10) { p.active = false; continue; }
+        }
+      }
+    }
+  }
+
+  // --- Draw ---
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = bgColor;
+    ctx!.fillRect(0, 0, W, H);
+
+    const gf = gFade;
+
+    // Barrier line
+    const bBase = (0.06 + 0.02 * Math.sin(bPulse)) * gf;
+    const bAlpha = Math.max(bBase, bFlash * gf);
+    ctx!.strokeStyle = dimA(bAlpha);
+    ctx!.lineWidth = 1;
+    ctx!.beginPath();
+    ctx!.moveTo(bx, H * 0.04);
+    ctx!.lineTo(bx, H * 0.96);
+    ctx!.stroke();
+
+    // Barrier flash glow
+    if (bFlash > 0.01) {
+      const fw = 20;
+      const grad = ctx!.createLinearGradient(bx - fw, 0, bx + fw, 0);
+      grad.addColorStop(0, dimA(0));
+      grad.addColorStop(0.5, dimA(bFlash * 0.4 * gf));
+      grad.addColorStop(1, dimA(0));
+      ctx!.fillStyle = grad;
+      ctx!.fillRect(bx - fw, H * 0.04, fw * 2, H * 0.92);
+    }
+
+    // Particles
+    for (let i = 0; i < MAX_P; i++) {
+      const p = pool[i];
+      if (!p.active) continue;
+
+      if (p.type === 0) {
+        // Carrier: off-white dot
+        const a = p.shell * gf;
+        if (a < 0.003) continue;
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx!.fillStyle = dimA(a);
+        ctx!.fill();
+
+      } else if (p.type === 1) {
+        if (p.state === 0) {
+          // Blocked traveling: bright accent glow
+          const a = p.core * gf;
+          if (a < 0.003) continue;
+          const gr = ctx!.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4);
+          gr.addColorStop(0, storyA(a * 0.4));
+          gr.addColorStop(1, storyA(0));
+          ctx!.beginPath();
+          ctx!.arc(p.x, p.y, p.r * 4, 0, Math.PI * 2);
+          ctx!.fillStyle = gr;
+          ctx!.fill();
+          ctx!.beginPath();
+          ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx!.fillStyle = storyA(a);
+          ctx!.fill();
+        } else {
+          // Rejected: shifting story color toward accent (red)
+          const elapsed = frame - p.crossF;
+          const shift = Math.min(1, elapsed / 80);
+          const a = p.core * gf;
+          if (a < 0.003) continue;
+          const br = Math.round(sr + (xr - sr) * shift);
+          const bg = Math.round(sg + (xg - sg) * shift);
+          const bb = Math.round(sb + (xb - sb) * shift);
+          // Fading glow
+          const glR = p.r * 3 * (1 - shift * 0.5);
+          const rg = ctx!.createRadialGradient(p.x, p.y, 0, p.x, p.y, glR);
+          rg.addColorStop(0, `rgba(${br},${bg},${bb},${clamp(a * 0.25)})`);
+          rg.addColorStop(1, `rgba(${br},${bg},${bb},0)`);
+          ctx!.beginPath();
+          ctx!.arc(p.x, p.y, glR, 0, Math.PI * 2);
+          ctx!.fillStyle = rg;
+          ctx!.fill();
+          ctx!.beginPath();
+          ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx!.fillStyle = `rgba(${br},${bg},${bb},${clamp(a * 0.6)})`;
+          ctx!.fill();
+        }
+
+      } else {
+        // Trojan
+        if (p.state === 0) {
+          // Traveling: looks like carrier (off-white shell + barely visible core)
+          const sa = p.shell * gf;
+          if (sa > 0.003) {
+            ctx!.beginPath();
+            ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx!.fillStyle = dimA(sa);
+            ctx!.fill();
+          }
+          const ca = p.core * gf;
+          if (ca > 0.003) {
+            ctx!.beginPath();
+            ctx!.arc(p.x, p.y, p.r * 0.5, 0, Math.PI * 2);
+            ctx!.fillStyle = storyA(ca);
+            ctx!.fill();
+          }
+        } else {
+          // Revealed: shell fading, core brightening with glow
+          const sa = p.shell * gf;
+          const ca = p.core * gf;
+          if (sa > 0.003) {
+            ctx!.beginPath();
+            ctx!.arc(p.x, p.y, p.r + 1.5, 0, Math.PI * 2);
+            ctx!.fillStyle = dimA(sa);
+            ctx!.fill();
+          }
+          if (ca > 0.008) {
+            const glowR = p.r * (2 + 3 * Math.min(1, ca / 0.6));
+            const gr = ctx!.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowR);
+            gr.addColorStop(0, storyA(ca * 0.35));
+            gr.addColorStop(1, storyA(0));
+            ctx!.beginPath();
+            ctx!.arc(p.x, p.y, glowR, 0, Math.PI * 2);
+            ctx!.fillStyle = gr;
+            ctx!.fill();
+            ctx!.beginPath();
+            ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx!.fillStyle = storyA(ca);
+            ctx!.fill();
+          }
+        }
+      }
+    }
+  }
+
+  // --- Static frame (reduced motion) ---
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = bgColor;
+    ctx!.fillRect(0, 0, W, H);
+    bx = W * 0.5;
+
+    // Barrier
+    ctx!.strokeStyle = dimA(0.08);
+    ctx!.lineWidth = 1;
+    ctx!.beginPath();
+    ctx!.moveTo(bx, H * 0.04);
+    ctx!.lineTo(bx, H * 0.96);
+    ctx!.stroke();
+
+    // Carriers on left side (deterministic positions)
+    for (let i = 0; i < 15; i++) {
+      const t = i / 15;
+      const x = W * 0.04 + t * W * 0.42;
+      const y = H * 0.12 + (Math.sin(i * 2.7 + 0.5) * 0.5 + 0.5) * H * 0.76;
+      ctx!.beginPath();
+      ctx!.arc(x, y, 2 + (i % 3) * 0.4, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(0.04 + (i % 4) * 0.01);
+      ctx!.fill();
+    }
+
+    // A few carriers past barrier (unchanged appearance)
+    for (let i = 0; i < 6; i++) {
+      const t = i / 6;
+      const x = bx + W * 0.04 + t * W * 0.15;
+      const y = H * 0.18 + (Math.cos(i * 3.1 + 1.2) * 0.5 + 0.5) * H * 0.64;
+      ctx!.beginPath();
+      ctx!.arc(x, y, 2 + (i % 2) * 0.4, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(0.04 + (i % 3) * 0.01);
+      ctx!.fill();
+    }
+
+    // Rejected blocked particle (near barrier, left side)
+    const rejX = bx - 35;
+    const rejY = H * 0.33;
+    const rjGr = ctx!.createRadialGradient(rejX, rejY, 0, rejX, rejY, 16);
+    rjGr.addColorStop(0, storyA(0.2));
+    rjGr.addColorStop(1, storyA(0));
+    ctx!.beginPath();
+    ctx!.arc(rejX, rejY, 16, 0, Math.PI * 2);
+    ctx!.fillStyle = rjGr;
+    ctx!.fill();
+    ctx!.beginPath();
+    ctx!.arc(rejX, rejY, 4, 0, Math.PI * 2);
+    ctx!.fillStyle = storyA(0.5);
+    ctx!.fill();
+
+    // Trojan mid-reveal (just past barrier)
+    const trX = bx + W * 0.08;
+    const trY = H * 0.58;
+    ctx!.beginPath();
+    ctx!.arc(trX, trY, 3.5, 0, Math.PI * 2);
+    ctx!.fillStyle = dimA(0.025);
+    ctx!.fill();
+    const trGr = ctx!.createRadialGradient(trX, trY, 0, trX, trY, 8);
+    trGr.addColorStop(0, storyA(0.18));
+    trGr.addColorStop(1, storyA(0));
+    ctx!.beginPath();
+    ctx!.arc(trX, trY, 8, 0, Math.PI * 2);
+    ctx!.fillStyle = trGr;
+    ctx!.fill();
+    ctx!.beginPath();
+    ctx!.arc(trX, trY, 2.5, 0, Math.PI * 2);
+    ctx!.fillStyle = storyA(0.22);
+    ctx!.fill();
+
+    // Fully revealed particles on right side
+    const revealed = [
+      { dx: 0.18, dy: 0.28, a: 0.50 },
+      { dx: 0.28, dy: 0.68, a: 0.45 },
+      { dx: 0.35, dy: 0.42, a: 0.55 },
+      { dx: 0.22, dy: 0.80, a: 0.38 }
+    ];
+    for (let j = 0; j < revealed.length; j++) {
+      const rv = revealed[j];
+      const rx = bx + W * rv.dx;
+      const ry = H * rv.dy;
+      const glR = 2.5 * (2 + 3 * Math.min(1, rv.a / 0.6));
+      const gr = ctx!.createRadialGradient(rx, ry, 0, rx, ry, glR);
+      gr.addColorStop(0, storyA(rv.a * 0.35));
+      gr.addColorStop(1, storyA(0));
+      ctx!.beginPath();
+      ctx!.arc(rx, ry, glR, 0, Math.PI * 2);
+      ctx!.fillStyle = gr;
+      ctx!.fill();
+      ctx!.beginPath();
+      ctx!.arc(rx, ry, 2.5, 0, Math.PI * 2);
+      ctx!.fillStyle = storyA(rv.a);
+      ctx!.fill();
+    }
+  }
+
+  // --- Reset ---
+  function resetState() {
+    frame = 0; gFade = 1;
+    bFlash = 0; bPulse = 0;
+    bx = W * 0.5;
+    spd = W / 600;
+    lastC = -SP_CARRIER;
+    lastB = -120;
+    lastT = -SP_TROJAN;
+    for (let i = 0; i < MAX_P; i++) pool[i].active = false;
+  }
+
+  // --- Loop ---
+  function tick() {
+    frame++;
+    if (frame >= CYCLE) resetState();
+    update(); draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  // --- Resize ---
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth; H = canvas!.offsetHeight;
+    canvas!.width = W * dpr; canvas!.height = H * dpr;
+    ctx!.scale(dpr, dpr);
+    bx = W * 0.5;
+    spd = W / 600;
+    if (prefersReduced) drawStatic();
+  });
+  ro.observe(canvas);
+
+  // --- Init ---
+  const dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth; H = canvas.offsetHeight;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  if (prefersReduced) {
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    initPool();
+    resetState();
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(rafId); rafId = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+    window.addEventListener('pagehide', () => { cancelAnimationFrame(rafId); io.disconnect(); ro.disconnect(); });
+  }
+})();
+</script>
