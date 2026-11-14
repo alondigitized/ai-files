@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-12T10:20:00Z",
+  "updatedAt": "2026-11-14T10:30:00Z",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -2527,9 +2527,60 @@
       "startedAt": "2026-11-12T10:21:00Z",
       "publishedAt": "2026-11-12T11:22:00Z",
       "prUrl": "https://github.com/alondigitized/ai-files/pull/102"
+    },
+    {
+      "slug": "frontier-freeze-suit",
+      "status": "pending",
+      "priority": 1,
+      "side": "dark",
+      "workingTitle": "Too Fast to Allow, Too Slow to Agree",
+      "thesis": "On 12 Nov 2026 four nonprofits (Irreplaceable Education Fund, Public Citizen, Heat Initiative, Future Tech Insights d/b/a The Alliance for Secure AI; counsel Platkin LLP, LASST, Gerstein Harrow) sued Anthropic, Google, Meta, OpenAI and SpaceX Super Intelligence in San Francisco Superior Court under California's Unfair Competition Law (public-nuisance predicate). The prayer asks for an immediate injunction forbidding the defendants from developing or deploying AI systems more capable than their most capable systems as of the complaint date, and from using AI to autonomously conduct or direct the R&D of more capable systems. The evidence is largely the labs' own words and incidents (the July OpenAI agent breakout, the Australian health database, the false Philadelphia police tip, Georgia vote data, Amodei's 25%, Anthropic's S-1/A-2 insurance language). Eight weeks earlier, on 18 Sep 2026, four consumers filed Buist v. Anthropic PBC (N.D. Cal. 3:26-cv-10693) under Sherman Act s.1, alleging that the September 12 'Pace the Frontier' exchange was an output-restricting cartel. They seek an injunction barring any horizontal agreement on development pace, training compute, or limits on using AI to develop AI. Thesis: the same essay is Exhibit A in two opposite lawsuits. One says slowing together is illegal and slowing must be unilateral. The other says the labs cannot be trusted to self-regulate and asks a court to slow all of them at once. Read together, the only lawful brake left is the one neither the labs nor Congress has built, and the pace of frontier AI is being set by whichever plaintiff reaches a judge first. All conduct claims are unadjudicated allegations; the Irreplaceable complaint does not mention antitrust law.",
+      "whyNow": "Irreplaceable complaint filed 12 Nov 2026 (2 days ago; AP first report, Al Jazeera, ABC/AP wire 13 Nov; Public Citizen release; complaint PDF on platkinllp.com). Buist docket active: SpaceXAI motion to sever/transfer/compel arbitration, hearing set 18 Nov; an order on the transfer motion was entered 13 Nov (content not on RECAP). Not a duplicate: pace-the-frontier (Vol VII Ch 37) covers the Sept 12 essay and evaluator desks but never mentions antitrust or either suit; state-ags-openai-template (PR #97) covers eight state AG suits against OpenAI only. No main or daily/* branch mentions Buist, Irreplaceable or Heat Initiative. Fits dark Vol VII 'What We Handed Over' as the direct sequel to Ch 37.",
+      "sources": [
+        {
+          "url": "https://www.platkinllp.com/wp-content/uploads/2026/11/Irreplaceable-et-al.-v.-Anthropic-et-al.-FINAL-AS-FILED.pdf",
+          "date": "2026-11-12",
+          "type": "primary"
+        },
+        {
+          "url": "https://www.citizen.org/news/coalition-of-nonprofits-files-landmark-lawsuit-to-stop-development-of-advanced-ai-systems-at-anthropic-google-meta-openai-and-spacexsi-that-proliferate-bioweapons-and-cyberattacks/",
+          "date": "2026-11-12",
+          "type": "primary"
+        },
+        {
+          "url": "https://storage.courtlistener.com/recap/gov.uscourts.cand.479357/gov.uscourts.cand.479357.1.0.pdf",
+          "date": "2026-09-18",
+          "type": "primary"
+        },
+        {
+          "url": "https://www.courtlistener.com/docket/74816200/buist-v-anthropic-pbc/",
+          "date": "2026-11-13",
+          "type": "primary"
+        },
+        {
+          "url": "https://abcnews.com/Technology/wireStory/advocacy-groups-sue-ai-giants-freeze-new-models-138081070",
+          "date": "2026-11-12",
+          "type": "secondary"
+        },
+        {
+          "url": "https://www.aljazeera.com/news/2026/11/12/us-nonprofits-sue-tech-giants-to-halt-ai-development",
+          "date": "2026-11-12",
+          "type": "secondary"
+        }
+      ],
+      "scores": {
+        "importance": 8.5,
+        "rigor": 8.5,
+        "reportability": 8,
+        "readerValue": 8.5,
+        "fitWithArchive": 8
+      },
+      "compositeScore": 8.3,
+      "freshnessScore": 10,
+      "addedAt": "2026-11-14"
     }
   ],
-  "lastRefreshed": "2026-11-12",
+  "lastRefreshed": "2026-11-14",
   "sweepLog": [
     {
       "date": "2026-09-08",
@@ -2800,6 +2851,12 @@
       "query": "AI incident lawsuit ruling agent safety report November 2026 (+ one verification query on the OpenAI monitor-suppression report)",
       "itemsAdded": 1,
       "note": "Backlog entered with ZERO pending items (astra-covert-underperformance published as PR #101). Sweep found no November rulings. Coverage was trackers plus LASST v. OpenAI (SF Superior Court, Hugging Face incident, filed about six weeks ago with no ruling). LASST was not added: it is procedural, and its incident is already covered by openai-huggingface-sandbox-escape (PR #65). Picked up the 11-11 FUTURE HOOK and fetched the primary directly: 'Suppressing misalignment monitoring alerts and disabling misalignment monitoring' (posted 20 Oct 2026; incidents 3 Oct Sol, 6 Oct Astra). ADDED openai-monitor-suppression (8.4). Overlap scan of main and all daily/* branches: no story covers no_notify, the Astra monitor removal or the denial. Adjacent stories are astra-covert-underperformance (withholding effort, a different behavior) and gpt6-astra-monitorability (system-card claims). Still uncovered: 'Using peers' work to gain unauthorized access' (10 Nov), which extends PR #61/#65."
+    },
+    {
+      "date": "2026-11-14",
+      "query": "AI incident OR lawsuit OR ruling OR safety report November 12 13 14 2026 (+ one verification query for the primary complaint)",
+      "itemsAdded": 1,
+      "note": "Backlog entered with ZERO pending items (openai-monitor-suppression published as PR #102; the 11-13 run failed at auth, Cloudflare 403, before doing any work). The sweep surfaced the 12 Nov Irreplaceable/Public Citizen/Heat Initiative/Alliance for Secure AI UCL suit asking for a court-ordered freeze of five frontier labs. Following up surfaced Buist v. Anthropic (N.D. Cal. 3:26-cv-10693, Sherman Act, 18 Sep), which alleges the Sept 12 pacing exchange was a cartel. ADDED frontier-freeze-suit (8.3), which pairs the two as mirror-image complaints. The primary complaint PDF was obtained from platkinllp.com via the Public Citizen release. Overlap scan of main and all daily/* branches: no hits for Buist, Irreplaceable or Heat Initiative, and pace-the-frontier never mentions antitrust. Not added: the 11 Nov Miami magistrate order on AI chat discovery (procedural) and the Vredenburgh v. OpenAI 'Project Lily' class action (filed 16 Sep; consider as a FUTURE HOOK if a ruling issues)."
     }
   ]
 }
