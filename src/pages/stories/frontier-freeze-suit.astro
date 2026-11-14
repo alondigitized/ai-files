@@ -1,0 +1,600 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'frontier-freeze-suit')!;
+---
+
+<style is:global>
+  /* === CANVAS === */
+.phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+.frontier-freeze-suit-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+  /* === REENACTMENTS === */
+/* === Reenactment 1: THE CONVERGENCE (timeline) === */
+.ffs-timeline {
+  margin: 2.5rem 0;
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.ffs-timeline-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--story);
+  margin-bottom: 1.5rem;
+}
+.ffs-timeline-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+}
+.ffs-timeline-list::before {
+  content: "";
+  position: absolute;
+  left: 80px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+.ffs-timeline-item {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 24px;
+  padding: 0.75rem 0;
+  position: relative;
+}
+.ffs-timeline-item::before {
+  content: "";
+  position: absolute;
+  left: 76px;
+  top: 1.05rem;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--muted);
+  border: 2px solid var(--surface);
+  z-index: 1;
+}
+.ffs-timeline-item.ffs-timeline-burst::before {
+  background: var(--story);
+  box-shadow: 0 0 6px var(--story);
+}
+.ffs-timeline-item.ffs-timeline-suit::before {
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+}
+.ffs-timeline-date {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-align: right;
+  line-height: 1.5;
+  padding-top: 0.1rem;
+}
+.ffs-timeline-date em {
+  font-size: 0.7rem;
+  font-weight: 400;
+}
+.ffs-timeline-text {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: var(--text);
+}
+.ffs-timeline-footer {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* === Reenactment 2: THE SAME SENTENCE, TWO USES (exhibit) === */
+.ffs-exhibit {
+  margin: 2.5rem 0;
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.ffs-exhibit-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--story);
+  margin-bottom: 1.25rem;
+}
+.ffs-exhibit-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+@media (max-width: 680px) {
+  .ffs-exhibit-panels {
+    grid-template-columns: 1fr;
+  }
+}
+.ffs-exhibit-panel {
+  padding: 1.25rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+}
+.ffs-exhibit-left {
+  border-left: 3px solid var(--story);
+}
+.ffs-exhibit-right {
+  border-left: 3px solid var(--accent);
+}
+.ffs-exhibit-header {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.5;
+}
+.ffs-exhibit-header strong {
+  font-size: 0.88rem;
+  color: var(--text);
+}
+.ffs-exhibit-court {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.ffs-exhibit-theory {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--story);
+}
+.ffs-exhibit-right .ffs-exhibit-theory {
+  color: var(--accent);
+}
+.ffs-exhibit-body {
+  margin: 0;
+  padding: 0;
+}
+.ffs-exhibit-row {
+  margin-bottom: 0.75rem;
+}
+.ffs-exhibit-row:last-child {
+  margin-bottom: 0;
+}
+.ffs-exhibit-row dt {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+.ffs-exhibit-row dd {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+.ffs-exhibit-cite {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-style: italic;
+}
+.ffs-exhibit-footer {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* === Reenactment 3: CASE CAPTION COMPARISON === */
+.ffs-caption {
+  margin: 2.5rem 0;
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.ffs-caption-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--story);
+  margin-bottom: 1.25rem;
+}
+.ffs-caption-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+@media (max-width: 680px) {
+  .ffs-caption-panels {
+    grid-template-columns: 1fr;
+  }
+}
+.ffs-caption-doc {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  padding: 1.25rem;
+  border-top: 3px solid var(--story);
+}
+.ffs-caption-doc-alt {
+  border-top-color: var(--accent);
+}
+.ffs-caption-text {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--text);
+  white-space: pre-wrap;
+  margin: 0;
+  overflow-x: auto;
+}
+.ffs-caption-footer {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.5;
+  font-style: italic;
+}
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="the-remedy-they-chose">
+      <h2><span class="num">01 — CONTEXT</span>The Remedy They Chose</h2>
+      <p>On 18 September 2026, a class-action complaint filed in the Northern District of California quoted a sentence from a letter the frontier AI labs had published two months earlier: each company faces "intense competitive pressure not to unilaterally slow" development. The sentence was evidence of a cartel motive. Eight weeks later, a second complaint filed in San Francisco Superior Court quoted the same sentence from the same letter. This time, it was evidence that self-regulation fails.</p>
+      <p>The letter was called "Pacing the Frontier." It appeared in July 2026, signed by senior executives of Anthropic, OpenAI, and Google — including Anthropic CEO Dario Amodei, OpenAI Chief Scientist Jakub Pachocki, OpenAI Chief Research Officer Mark Chen, and Google DeepMind co-founder Shane Legg. According to the Buist complaint, a working group of below-CEO representatives from the three companies had been meeting regularly since that month to create a standards body for the industry.</p>
+      <p>On 12 September, Amodei published a personal essay titled "We Must Pace the Frontier." Its thesis was direct: "We must slow the pace at which we improve the capabilities of AI models." The essay proposed a three-step plan. The first step — embedding third-party evaluators inside each lab — Anthropic adopted unilaterally. The second step, which Amodei called "Democratic Coordination," required something different: "industry-wide coordination" to establish "common safety standards as well as limits on the rate of unchecked AI progress."</p>
+      <p>Amodei flagged the legal obstacle himself. "For antitrust reasons, it's helpful for the US government to mediate or at least enable these discussions," he wrote. "They don't need to participate, but do need to issue a narrow waiver for certain kinds of safety conversations." His first footnote restated it: "With government mediation or waivers of antitrust restrictions."</p>
+      <p>The convergence was immediate. According to the Buist complaint, Elon Musk quote-posted Amodei's announcement within approximately one hour and responded: "Dario is right." The complaint alleges Sam Altman wrote the same day: "I agree with Dario that we need to pace the frontier." Demis Hassabis, per the complaint, said the essay pointed toward "the right path forward." Two days later, the Buist complaint alleges, Altman stated that AI progress "should be slower than it otherwise could be" and that OpenAI would not wait for an antitrust exemption or legislation. The following day, according to the complaint, OpenAI Global Policy Chief Chris Lehane confirmed that OpenAI had been working with Anthropic and Google DeepMind on these issues for several weeks before Amodei's essay.</p>
+      <p>No waiver existed. As the Buist complaint states: "No such waiver exists. Congress has enacted no exemption."</p>
+<figure class="ffs-timeline" aria-label="Timeline of convergence and litigation, July through November 2026">
+<figcaption class="ffs-timeline-title">The Convergence</figcaption>
+<ol class="ffs-timeline-list" role="list">
+<li class="ffs-timeline-item">
+<span class="ffs-timeline-date">Jul 2026</span>
+<span class="ffs-timeline-text">"Pacing the Frontier" letter published. Signatories acknowledge "intense competitive pressure not to unilaterally slow." Below-CEO working group begins meeting.</span>
+</li>
+<li class="ffs-timeline-item">
+<span class="ffs-timeline-date">6 Sep</span>
+<span class="ffs-timeline-text">Pachocki (OpenAI): "coordinating to slow down future development" is an option.</span>
+</li>
+<li class="ffs-timeline-item">
+<span class="ffs-timeline-date">10 Sep</span>
+<span class="ffs-timeline-text">WIRED: OpenAI sought Congressional guidance on antitrust risk of coordinated slowdown.</span>
+</li>
+<li class="ffs-timeline-item">
+<span class="ffs-timeline-date">12 Sep</span>
+<span class="ffs-timeline-text">Amodei essay: "We must slow the pace at which we improve the capabilities of AI models." Footnote 1: "With government mediation or waivers of antitrust restrictions."</span>
+</li>
+<li class="ffs-timeline-item ffs-timeline-burst">
+<span class="ffs-timeline-date">12 Sep<br><em>(within hours)</em></span>
+<span class="ffs-timeline-text">Musk: "Dario is right." &middot; Altman: "I agree with Dario." &middot; Hassabis: "the right path forward."</span>
+</li>
+<li class="ffs-timeline-item">
+<span class="ffs-timeline-date">14 Sep</span>
+<span class="ffs-timeline-text">Altman: progress "should be slower than it otherwise could be." OpenAI will not wait for a waiver.</span>
+</li>
+<li class="ffs-timeline-item ffs-timeline-suit">
+<span class="ffs-timeline-date">18 Sep</span>
+<span class="ffs-timeline-text"><strong>Buist v. Anthropic</strong> filed. Sherman Act &sect; 1. N.D. Cal.</span>
+</li>
+<li class="ffs-timeline-item ffs-timeline-suit">
+<span class="ffs-timeline-date">12 Nov</span>
+<span class="ffs-timeline-text"><strong>Irreplaceable v. Anthropic</strong> filed. UCL / public nuisance. SF Superior Court.</span>
+</li>
+</ol>
+<p class="ffs-timeline-footer">Same-day endorsements. Six days to the first lawsuit. Eight weeks to the second. Sources: Buist complaint; Irreplaceable complaint; Amodei essay. Executive quotes attributed per the Buist complaint's allegations.</p>
+</figure>
+    </section>
+    <section class="section" id="slowing-together">
+      <h2><span class="num">02 — THE ANTITRUST SUIT</span>Slowing Together</h2>
+      <p>Six days after Amodei's essay and the rapid-fire endorsements, the Buist plaintiffs — four consumers who, among them, pay for subscriptions to ChatGPT, Claude, Grok, and Gemini — filed a class-action complaint in the Northern District of California. <em>Buist v. Anthropic PBC</em>, No. 5:26-cv-10693-NC. The claim: one count under Section 1 of the Sherman Act, one count for injunctive relief under Section 16 of the Clayton Act. The defendants: Anthropic, OpenAI OpCo, SpaceXAI, and Google.</p>
+      <p>The complaint frames the labs' coordinated pacing as a horizontal output-restricting cartel. Competitors agreed on how fast their products would improve — an agreement the complaint compares to any other arrangement among rivals to reduce product quality. The complaint alleges at paragraph 67 that coordinated pacing served the function of removing "the competitive penalty for restraint by ensuring that rivals restrain themselves too." The plaintiffs argue this agreement is unlawful per se, or alternatively under quick-look or rule-of-reason analysis. Their core contention: every safety objective the labs cite can be pursued unilaterally.</p>
+      <p>The complaint alleges motive in the labs' own words. Paragraph 87(a): "slowing the pace of innovation was seen to be commercially untenable for any firm acting alone but advantageous if all slowed together." It alleges consciousness of antitrust risk: OpenAI asked members of Congress whether coordinating a slowdown could violate antitrust laws; Amodei wrote that the government would need to issue a waiver; Altman, per the complaint, said OpenAI would proceed without one.</p>
+      <p>The requested injunction is specific. Paragraph 150 seeks to bar any agreement among horizontal competitors concerning the rate of development, limits on training compute, limits on AI-directed AI research imposed by agreement, coordinated delays, and capability checkpoints that function as horizontally agreed restraints — "as distinct from lawful governmental requirements or independent safety measures." Paragraph 151 states the carve-out plainly: the plaintiffs "do not seek to prohibit any Defendant from independently adopting safety measures or product guardrails, independently ... slowing or suspending its own development, ... complying with governmental requirements, [or] petitioning any governmental body."</p>
+      <p>The line separating what the suit challenges from what it does not is the line between collective coordination and individual choice. As paragraph 12 puts it: "Whether frontier AI should develop more slowly is a question for each company acting alone, or for Congress and the agencies. It is not a question that four competitors may answer together."</p>
+    </section>
+<div class="phantom-wrap">
+  <canvas class="frontier-freeze-suit-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>The Narrowing</strong> — Two walls advance from opposite sides of the canvas, slowly sealing a central passage; ambient particles compress and scatter at closure; two dim slits flicker at the far edges, barely passable, never enough.</p>
+    <section class="section" id="slowing-themselves">
+      <h2><span class="num">03 — THE FREEZE SUIT</span>Slowing Themselves</h2>
+      <p>Eight weeks after the antitrust suit was filed, a different set of plaintiffs, in a different court, under a different legal theory, attacked the same industry from the opposite direction.</p>
+      <p>On 12 November 2026, four nonprofit organizations — Irreplaceable Education Fund, Public Citizen, Heat Initiative, and Future Tech Insights (d/b/a The Alliance for Secure AI) — filed <em>Irreplaceable Education Fund et al. v. Anthropic PBC et al.</em> in San Francisco Superior Court. The single cause of action: a violation of California's Unfair Competition Law, Business and Professions Code section 17200, with a public-nuisance predicate. The defendant set is larger than in Buist and includes Meta, both OpenAI entities (OpenAI Group PBC and OpenAI Foundation), and both SpaceX entities (SpaceX Super Intelligence LLC and Corp). Meta was not named in the Buist suit.</p>
+      <p>The Irreplaceable complaint does not mention antitrust law. It does not reference the Sherman Act, the Buist lawsuit, or any theory of coordinated pacing. Its argument runs in the opposite direction: the labs are developing systems they know are unsafe, and self-regulation has failed. "Nor is any industry granted the right to self-regulate the development of such dangerous products," paragraph 14 states. The complaint cites Amodei as estimating a roughly 25% chance that the future of AI goes "really, really badly." It cites Anthropic's amended S-1 registration statement as disclosing that "the scale of harm that could result from a catastrophic AI-related incident" may exceed what "the entire insurance industry combined" can underwrite. It cites David Robinson, who oversaw OpenAI's safety reports before resigning in October 2026, as stating: "I don't think that we or our peers — really, anyone in the industry — are being safe enough."</p>
+      <p>And it quotes the same sentence from the same July letter. Paragraph 196 of the Irreplaceable complaint cites "Pacing the Frontier" for the admission that "each company — and country — is under intense competitive pressure not to unilaterally slow ... [AI] acceleration." In the Buist complaint, this language was evidence that competitors needed a cartel to escape the cost of restraint. In the Irreplaceable complaint, it is evidence that the labs will not restrain themselves.</p>
+      <p>The requested relief is a freeze. Prayer A seeks "an immediate injunction forbidding Defendants from developing or deploying AI systems more capable than their most capable systems as of the date of this Complaint." Prayer B seeks "an immediate injunction forbidding Defendants from using AI systems to autonomously conduct or direct the research and development of more capable AI systems." The complaint was filed with a blank case number. No temporary restraining order was filed alongside it.</p>
+      <p>Phil Aroneanu, founder of Irreplaceable Education Fund, said in a press release: "We must freeze frontier AI development until the technology is under control." In a separate interview with Al Jazeera, Aroneanu added: "A real freeze must specify what work has to halt, how compliance is verified, and the consequences of breaking the rules."</p>
+      <p>The companies named in the Irreplaceable suit did not immediately respond to requests for comment, the AP reported.</p>
+<figure class="ffs-exhibit" aria-label="The same sentence from the July 2026 Pacing the Frontier letter, cited in two lawsuits for opposite purposes">
+<figcaption class="ffs-exhibit-title">One Sentence, Two Weapons</figcaption>
+<div class="ffs-exhibit-panels">
+<div class="ffs-exhibit-panel ffs-exhibit-left">
+<div class="ffs-exhibit-header">
+<strong>BUIST v. ANTHROPIC</strong><br>
+<span class="ffs-exhibit-court">N.D. Cal. &middot; 18 Sep 2026</span><br>
+<span class="ffs-exhibit-theory">Sherman Act &sect; 1</span>
+</div>
+<dl class="ffs-exhibit-body">
+<div class="ffs-exhibit-row">
+<dt>The letter says</dt>
+<dd>Each company was under "intense competitive pressure not to unilaterally slow" capability development. <span class="ffs-exhibit-cite">&mdash; para 50</span></dd>
+</div>
+<div class="ffs-exhibit-row">
+<dt>Cited as</dt>
+<dd>Evidence of cartel motive. "Slowing the pace of innovation was seen to be commercially untenable for any firm acting alone but advantageous if all slowed together." <span class="ffs-exhibit-cite">&mdash; para 87(a)</span></dd>
+</div>
+<div class="ffs-exhibit-row">
+<dt>Asks for</dt>
+<dd>Injunction barring any horizontal agreement on development pace.</dd>
+</div>
+</dl>
+</div>
+<div class="ffs-exhibit-panel ffs-exhibit-right">
+<div class="ffs-exhibit-header">
+<strong>IRREPLACEABLE v. ANTHROPIC</strong><br>
+<span class="ffs-exhibit-court">SF Superior Court &middot; 12 Nov 2026</span><br>
+<span class="ffs-exhibit-theory">UCL / public nuisance</span>
+</div>
+<dl class="ffs-exhibit-body">
+<div class="ffs-exhibit-row">
+<dt>The letter says</dt>
+<dd>"Each company &mdash; and country &mdash; is under intense competitive pressure not to unilaterally slow ... [AI] acceleration." <span class="ffs-exhibit-cite">&mdash; para 196</span></dd>
+</div>
+<div class="ffs-exhibit-row">
+<dt>Cited as</dt>
+<dd>Evidence self-regulation fails. "Nor is any industry granted the right to self-regulate the development of such dangerous products." <span class="ffs-exhibit-cite">&mdash; para 14</span></dd>
+</div>
+<div class="ffs-exhibit-row">
+<dt>Asks for</dt>
+<dd>Injunction freezing all defendants at current frontier capabilities.</dd>
+</div>
+</dl>
+</div>
+</div>
+<p class="ffs-exhibit-footer">Both complaints quote the July 2026 "Pacing the Frontier" letter. One reads the admission as proof the labs colluded. The other reads it as proof they will not stop.</p>
+</figure>
+    </section>
+    <section class="section" id="the-door-that-closed">
+      <h2><span class="num">04 — THE MECHANISM</span>The Door That Closed</h2>
+      <p>Both suits target the remedy the labs chose in September 2026: voluntary, coordinated self-pacing among competitors. Buist says the labs may not do it — antitrust law forbids horizontal agreements on the rate of product improvement. Irreplaceable says they cannot be trusted to do it — self-regulation is insufficient and the labs' own admissions prove they know the danger.</p>
+      <p>The suits do not collide. They converge. Buist's requested injunction, at paragraphs 150(e) and 151, expressly exempts "lawful governmental requirements" and "independent safety measures" from its scope. The plaintiffs do not challenge a defendant for "complying with governmental requirements." A court-ordered freeze — which is what the Irreplaceable plaintiffs ask for — is a governmental requirement, not a horizontal agreement among competitors.</p>
+      <p>What survives both legal theories? Two brakes. The first is unilateral restraint: a single lab choosing, on its own, to slow its development. The labs' own letter identified the problem with that path. Each company faces "intense competitive pressure not to unilaterally slow." The Buist complaint alleges that a firm which decelerates alone "loses customers, revenue, talent, and technological leadership." The second brake is outside compulsion: legislation, regulation, or a court order. Congress has not acted. No agency has mandated a slowdown. That absence is what led the Irreplaceable plaintiffs to a San Francisco courtroom, asking a state trial judge to supply the constraint that no other branch of government has imposed.</p>
+      <p>Amodei anticipated this bind. His essay said the coordination step needed "government mediation or waivers of antitrust restrictions." According to the Buist complaint, Altman said OpenAI would not wait for one. No waiver materialized. The labs proceeded. The lawsuits followed.</p>
+    </section>
+    <section class="section" id="where-it-stands">
+      <h2><span class="num">05 — STATUS</span>Where It Stands</h2>
+<figure class="ffs-caption" aria-label="Side-by-side comparison of the two case captions showing different courts, theories, and requested relief">
+<figcaption class="ffs-caption-title">Two Cases, One Industry</figcaption>
+<div class="ffs-caption-panels">
+<div class="ffs-caption-doc">
+<pre class="ffs-caption-text">UNITED STATES DISTRICT COURT
+NORTHERN DISTRICT OF CALIFORNIA
+
+BUIST et al. v. ANTHROPIC PBC et al.
+Case No. 5:26-cv-10693-NC
+Filed: 18 September 2026
+
+CLASS ACTION COMPLAINT
+Sherman Act, 15 U.S.C. &sect; 1
+
+PRAYER D: ... injunctive relief ...
+preventing Defendants from continuing,
+renewing, enforcing, or implementing any
+horizontal agreement to restrain
+competitive innovation</pre>
+</div>
+<div class="ffs-caption-doc ffs-caption-doc-alt">
+<pre class="ffs-caption-text">SUPERIOR COURT OF CALIFORNIA
+COUNTY OF SAN FRANCISCO
+
+IRREPLACEABLE EDUCATION FUND et al.
+  v. ANTHROPIC PBC et al.
+Case No. ________
+Filed: 12 November 2026
+
+COMPLAINT FOR INJUNCTIVE RELIEF
+Bus. &amp; Prof. Code &sect; 17200
+
+PRAYER A: Immediate injunction forbidding
+Defendants from developing or deploying AI
+systems more capable than their most capable
+systems as of the date of this Complaint.</pre>
+</div>
+</div>
+<p class="ffs-caption-footer">One case number filled, one blank. One federal, one state. One says "stop agreeing." The other says "stop developing."</p>
+</figure>
+      <p>Neither case has a ruling on any substantive issue. No defendant has filed a public response to the merits of either complaint.</p>
+      <p>In <em>Buist</em>, the docket through 13 November shows procedural activity but no answer or motion to dismiss on the merits from any defendant. OpenAI obtained a stipulation on 12 October extending its time to respond. SpaceXAI filed a motion on 13 October to sever the claims against it and transfer them to the Northern District of Texas, or alternatively to compel arbitration under its terms of service. The Buist plaintiffs opposed on 27 October, arguing that SpaceXAI had not established valid forum agreements with the named plaintiffs and that severance would fragment litigation of a single antitrust conspiracy. The motion was fully briefed by 3 November; a hearing is set for 18 November. On 13 November, a docket entry titled "Order on Motion to Transfer Case" appeared. Its text was not publicly available as of this writing. The case is assigned to Magistrate Judge Nathanael M. Cousins, with an initial case management conference set for 23 December.</p>
+      <p>In <em>Irreplaceable</em>, the complaint was filed on 12 November with a blank case number. No temporary restraining order was filed concurrently. No defendant response has been located.</p>
+      <p>The labs' chosen remedy — slowing together, voluntarily, without the antitrust waiver Amodei said was needed and Congress never provided — is now the subject of litigation from both directions. The brakes that survive both suits are the brakes the labs already told the public would not hold.</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.frontier-freeze-suit-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d')!;
+  const cs = getComputedStyle(document.documentElement);
+  function rgb(h: string): [number, number, number] {
+    const v = parseInt(h.replace('#', ''), 16);
+    return [(v >> 16) & 255, (v >> 8) & 255, v & 255];
+  }
+  const [sr, sg, sb] = rgb(cs.getPropertyValue('--story').trim() || '#7aa2c9');
+  const [xr, xg, xb] = rgb(cs.getPropertyValue('--accent').trim() || '#ff4d4d');
+
+  let W = 0, H = 0, raf = 0, frame = 0, vis = true;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Phase boundaries (720-frame cycle, ~12 s at 60 fps) */
+  const CY = 720, A0 = 60, A1 = 460, FL = 15;
+  const H1 = A1 + FL + 80;   /* 555 - hold ends */
+  const R1 = H1 + 120;       /* 675 - retract ends */
+  const N = 30;
+
+  type P = { x: number; y: number; vx: number; vy: number; a: number };
+  const ps: P[] = [];
+
+  function resetP(p: P, randY: boolean): void {
+    p.x = W * (0.35 + Math.random() * 0.3);
+    p.y = randY ? Math.random() * H : -Math.random() * 20;
+    p.vx = (Math.random() - 0.5) * 0.25;
+    p.vy = 0.2 + Math.random() * 0.15;
+    p.a = 0.04 + Math.random() * 0.04;
+  }
+
+  function init(): void {
+    ps.length = 0;
+    for (let i = 0; i < N; i++) {
+      const p: P = { x: 0, y: 0, vx: 0, vy: 0, a: 0 };
+      resetP(p, true);
+      ps.push(p);
+    }
+  }
+
+  function wallProgress(f: number): number {
+    const c = f % CY;
+    if (c < A0) return 0;
+    if (c < A1) return (c - A0) / (A1 - A0);
+    if (c < H1) return 1;
+    if (c < R1) return 1 - (c - H1) / (R1 - H1);
+    return 0;
+  }
+
+  function edges(f: number): [number, number] {
+    const w = wallProgress(f);
+    const half = (W * 0.67 - W * 0.33) * 0.5;
+    return [W * 0.33 + w * half, W * 0.67 - w * half];
+  }
+
+  function step(): void {
+    const c = frame % CY;
+    const [lE, rE] = edges(frame);
+    const w = wallProgress(frame);
+    for (const p of ps) {
+      /* Push particles out of advancing walls */
+      if (w > 0.05) {
+        if (p.x < lE + 2) p.vx += 0.4;
+        if (p.x > rE - 2) p.vx -= 0.4;
+      }
+      /* Scatter impulse at the instant walls seal */
+      if (c === A1) {
+        const dir = p.x < W * 0.5 ? -1 : 1;
+        p.vx += dir * (1.5 + Math.random() * 2);
+        p.vy += (Math.random() - 0.5) * 1.5;
+      }
+      /* Gentle regroup during retract and calm */
+      if (c >= H1 || c < A0) {
+        p.vx += (W * 0.5 - p.x) * 0.002;
+      }
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vx *= 0.985;
+      p.vy += (0.25 - p.vy) * 0.01;
+      if (p.y > H + 10) resetP(p, false);
+      p.x = Math.max(1, Math.min(W - 1, p.x));
+    }
+  }
+
+  function draw(): void {
+    if (!W) return;
+    ctx.clearRect(0, 0, W, H);
+    const c = frame % CY;
+    const w = wallProgress(frame);
+    const [lE, rE] = edges(frame);
+
+    /* --- Walls --- */
+    if (w > 0.01) {
+      ctx.fillStyle = `rgba(${sr},${sg},${sb},0.18)`;
+      ctx.fillRect(0, 0, lE, H);
+      ctx.fillRect(rE, 0, W - rE, H);
+      ctx.fillStyle = `rgba(${sr},${sg},${sb},0.55)`;
+      ctx.fillRect(lE - 1.5, 0, 1.5, H);
+      ctx.fillRect(rE, 0, 1.5, H);
+    }
+
+    /* --- Red flash at closure --- */
+    if (c >= A1 && c < A1 + FL) {
+      const t = 1 - (c - A1) / FL;
+      ctx.fillStyle = `rgba(${xr},${xg},${xb},${(0.45 * t).toFixed(3)})`;
+      ctx.fillRect(W * 0.5 - 4, 0, 8, H);
+    }
+
+    /* --- Edge slits (dim, flickering) --- */
+    const sL = 0.10 + 0.04 * Math.sin(frame * 0.17 + 1.3);
+    const sR = 0.10 + 0.04 * Math.sin(frame * 0.23 + 0.7);
+    ctx.fillStyle = `rgba(${sr},${sg},${sb},${sL.toFixed(3)})`;
+    ctx.fillRect(0, 0, 10, H);
+    ctx.fillStyle = `rgba(${sr},${sg},${sb},${sR.toFixed(3)})`;
+    ctx.fillRect(W - 10, 0, 10, H);
+
+    /* --- Particles --- */
+    for (const p of ps) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(232,232,232,${p.a.toFixed(3)})`;
+      ctx.fill();
+    }
+  }
+
+  /* --- Resize --- */
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    if (!ps.length) init();
+  });
+  ro.observe(canvas);
+
+  /* --- Visibility --- */
+  const io = new IntersectionObserver(
+    ([e]) => { vis = e.isIntersecting; },
+    { threshold: 0 }
+  );
+  io.observe(canvas);
+
+  /* --- Loop --- */
+  function tick(): void {
+    if (vis) { step(); frame++; draw(); }
+    raf = requestAnimationFrame(tick);
+  }
+
+  if (reduced) {
+    requestAnimationFrame(() => {
+      frame = Math.round(A0 + (A1 - A0) * 0.6);
+      if (!ps.length) init();
+      draw();
+    });
+  } else {
+    raf = requestAnimationFrame(tick);
+  }
+
+  /* --- Cleanup --- */
+  addEventListener('pagehide', () => {
+    cancelAnimationFrame(raf);
+    ro.disconnect();
+    io.disconnect();
+  });
+})();
+</script>
