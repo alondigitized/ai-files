@@ -1,0 +1,534 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'alphaproof-code-signal')!;
+---
+
+<style is:global>
+.phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+.alphaproof-code-signal-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+/* === Reenactment 1: Division of Labor Ledger === */
+.apc-ledger {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 2rem 0;
+  background: var(--surface);
+  font-size: 0.95rem;
+}
+.apc-ledger-col { padding: 1.25rem 1.5rem; }
+.apc-ledger-col + .apc-ledger-col { border-left: 1px solid var(--border); }
+.apc-ledger-heading {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 1rem;
+  font-weight: 700;
+}
+.apc-ledger-list { list-style: none; margin: 0; padding: 0; }
+.apc-ledger-list li { color: var(--text); padding: 0.35rem 0; line-height: 1.5; font-size: 0.9rem; }
+.apc-ledger-list strong { color: var(--story); }
+.apc-ledger-footer {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--border);
+  padding: 1rem 1.5rem;
+  text-align: center;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.apc-ledger-footer span { color: var(--text); font-weight: 700; }
+@media (max-width: 600px) {
+  .apc-ledger { grid-template-columns: 1fr; }
+  .apc-ledger-col + .apc-ledger-col { border-left: none; border-top: 1px solid var(--border); }
+}
+
+/* === Reenactment 2: Two Binaries, One Specification === */
+.apc-proof {
+  margin: 2rem 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  background: var(--surface);
+}
+.apc-proof-panel { padding: 1.25rem 1.5rem; }
+.apc-proof-panel + .apc-proof-panel { border-top: 2px solid var(--border); }
+.apc-proof-header {
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+.apc-proof-line { padding: 0.2rem 0; color: var(--text); }
+.apc-proof-pass { color: var(--green); font-weight: 700; }
+.apc-proof-fail { color: #b91c1c; font-weight: 700; }
+.apc-proof-verdict { margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed var(--border); font-weight: 700; }
+.apc-proof-note {
+  border-top: 1px solid var(--border);
+  padding: 0.75rem 1.5rem;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-style: italic;
+  font-size: 0.8rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* === Reenactment 3: The Trust Stack === */
+.apc-stack { margin: 2rem 0; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.apc-stack-tier { padding: 1.1rem 1.5rem; text-align: center; border-radius: 6px; border: 1px solid var(--border); }
+.apc-stack-proven { width: 100%; background: color-mix(in srgb, var(--story) 8%, var(--surface)); }
+.apc-stack-trusted { width: 46%; background: color-mix(in srgb, var(--story) 15%, var(--surface)); }
+.apc-stack-base { width: 30%; background: var(--surface); }
+.apc-stack-num { font-size: 1.4rem; font-weight: 700; color: var(--story); font-family: 'Courier New', Courier, monospace; }
+.apc-stack-label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 0.2rem; font-weight: 600; }
+.apc-stack-desc { font-size: 0.8rem; color: var(--text); margin-top: 0.3rem; line-height: 1.45; }
+.apc-stack-scope {
+  margin-top: 1.25rem;
+  padding: 0.9rem 1.5rem;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  width: 100%;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.apc-stack-scope strong { color: var(--text); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.apc-stack-proven .apc-stack-label,
+.apc-stack-trusted .apc-stack-label { color: var(--text-body); }
+.apc-stack-note { margin-top: 0.75rem; font-size: 0.8rem; font-style: italic; color: var(--muted); text-align: center; }
+@media (max-width: 600px) {
+  .apc-stack-proven, .apc-stack-trusted, .apc-stack-base { width: 100%; }
+}
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+
+    <section class="section" id="context">
+      <h2><span class="num">01 — Context</span>The Cost of Certainty</h2>
+      <p>Fifteen gaps or bugs sat in a published computational analysis of Signal's Double Ratchet, the part of the protocol that keeps changing message keys as a conversation goes on. The analysis, by Joël Alwen, Sandro Coretti and Yevgeniy Dodis, appeared at EUROCRYPT 2019. In 2026 the gaps surfaced when a team of five Google researchers tried to restate it precisely enough for AI agents to prove.</p>
+      <p>Formal verification means mathematically proving that software does what its specification says. It has a reputation for being slow and expensive. The DeepMind paper notes that the seL4 microkernel, "perhaps the biggest success story in the field", took "twenty person-years to verify", and that the CompCert verified C compiler took six. In April 2026 the Beneficial AI Foundation, the Lean FRO and Signal launched Signal Shot, a public project to formally verify the Signal protocol and app in Lean. Lean is a programming language for writing proofs, which a small kernel checks mechanically, step by step.</p>
+      <p>DeepMind makes large claims for what came next. Its paper calls the results "the first proofs connecting protocol-level security guarantees to the unmodified code of a widely used cryptographic protocol implementation." Its blog goes further: "the first time the implementation of a widely deployed protocol like this has been formally verified by any method, with or without AI." Those are DeepMind's own characterizations. We found no independent analysis that confirms or disputes them.</p>
+    </section>
+
+    <section class="section" id="the-proof">
+      <h2><span class="num">02 — What Happened</span>The Proof</h2>
+      <p>On November 10, 2026, Google DeepMind published AlphaProof Code and its technical paper. According to the paper, AI agents generated about 6.5 million lines of machine-checked Lean proof. That proof rests on about 26,000 lines of trusted specifications and a Lean model of how an ARM processor runs code. "The proof work was done by a team of five over four weeks," the paper says. It also says "none of the authors wrote any proof code."</p>
+      <p>The target was not a whiteboard model of Signal. It was libsignal v0.105.4, Signal's reference implementation, compiled by stock rustc into AArch64 machine code. AArch64 is the 64-bit ARM instruction set used by most phones. What was proven is, roughly, the property DeepMind's blog describes as "keeping messages protected before and after a device is temporarily compromised." In the paper's terms that covers forward secrecy, post-compromise security, authentication and handshake secrecy, across PQXDH, Signal's post-quantum handshake, and the Triple Ratchet that follows it.</p>
+      <p>The paper proves this two ways. A symbolic model treats the cryptographic building blocks as perfect black boxes. A computational model bounds an attacker's odds by how hard the underlying math problems are.</p>
+      <p>The split between human and machine work is the center of the paper. Specifications came from what the paper calls "an intense back-and-forth between humans and agents powered by Gemini 4 Carbon and Claude Opus 5.5." Each draft was checked by "an agent from a different model family." The proofs themselves "were produced entirely by agent teams powered by Gemini 4 Carbon." A proof team "typically had 40 to 80 agents and ran on a single machine for 24 to 72 hours."</p>
+
+      <div class="apc-ledger" role="group" aria-label="Division of labor between the human researchers and the AI agents, as described in the paper">
+        <div class="apc-ledger-col">
+          <p class="apc-ledger-heading">Five researchers, four weeks</p>
+          <ul class="apc-ledger-list">
+            <li>Chose what to prove</li>
+            <li>Drafted specifications with <strong>Gemini 4 Carbon + Claude Opus 5.5</strong> agents</li>
+            <li>Approved every specification before proving began</li>
+            <li>Launched and directed proof campaigns</li>
+          </ul>
+        </div>
+        <div class="apc-ledger-col">
+          <p class="apc-ledger-heading">Agent teams</p>
+          <ul class="apc-ledger-list">
+            <li>Cross-model review of each draft specification</li>
+            <li>All proof code, on <strong>Gemini 4 Carbon</strong></li>
+            <li>About 6.5 million lines of Lean</li>
+            <li>40–80 agents per team, 24–72 hours per campaign</li>
+          </ul>
+        </div>
+        <p class="apc-ledger-footer">Lines of proof code written by the authors: <span>0</span></p>
+      </div>
+
+      <div class="pull-quote">
+        "Using AI agents to translate live code into valid Lean theorems is a major breakthrough."
+        <cite>— Ehren Kret, Chief Technology Officer of Signal, quoted on Google DeepMind's blog</cite>
+      </div>
+      <p>We found no post on Signal's own blog about the result. DeepMind has published the specifications and proofs, so anyone can run Lean's kernel over the proofs and re-check them.</p>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="alphaproof-code-signal-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Specification</strong> — Thin proof-lines rise steadily from below and must all pass through a narrow luminous band near the top of the canvas. Once per cycle the band shifts laterally and every line below ripples and reforms around the new anchor point.</p>
+
+    <section class="section" id="the-specification">
+      <h2><span class="num">03 — The Mechanism</span>The Specification</h2>
+      <p>The paper's main lesson is about its own process: "The most important lesson from our experience is that, once proofs become cheap, the hard question is what to prove. The majority of our effort went not into proofs but into specifications."</p>
+      <p>A specification is the formal statement of what "secure" means: what the attacker may do, what must never happen, and what is assumed. The team began from published specifications of Signal. Restating them in Lean, against code that really runs, turned out to be "a stress test for the literature." The paper keeps a catalog of every place its statements depart from the papers they came from: over 200 entries on the computational side and about 35 on the symbolic side. Most of these are routine. "Some, however, are errors in the published analyses that we had to repair before the proofs could go through."</p>
+      <p>Fifteen of those, the paper says, "are gaps or bugs in the computational analysis of the Double Ratchet," the Alwen–Coretti–Dodis paper, "such as missing hypotheses and security game conditions that allow trivial wins." On the symbolic side, the team checked the published queries from Vincent Cheval, Charlie Jacomme and Jessica Richards. Those queries were written for ProVerif, an automated protocol-analysis tool, and appeared in a paper at IEEE S&amp;P 2026. According to DeepMind, they look up skipped message keys "at the wrong ratchet index, which makes receiver-side forward secrecy false as printed."</p>
+      <p>These are errors in written analyses, not findings that Signal's protocol is broken. We found no public response from the authors of either paper. That silence should not be read as agreement.</p>
+      <p>The Cheval, Jacomme and Richards paper also has a second role. It reported two real libsignal bugs, which have since been fixed upstream. DeepMind used those bugs to test whether its own specifications were strong enough. The team undid each fix in the v0.105.4 source, recompiled, and asked whether the security theorem still held.</p>
+      <p>The first bug, a "weak state" problem fixed in commit cd36118, could leave a copy of a signed prekey secret stored in a session's state. The second, a "small subgroup" problem fixed in commit 5293caa, meant the handshake responder did not check that the initiator's key was "torsion-free and in range." As a result, "a replayed handshake with a mangled base key creates a second session with the same shared secret." In the paper's witness for that bug, the attacker sets bit 255 of the key.</p>
+
+      <div class="apc-proof" role="group" aria-label="Illustration: the same specification checked against the fixed and the bug-injected binary">
+        <div class="apc-proof-panel">
+          <p class="apc-proof-header">libsignal v0.105.4 binary · fix 5293caa in place</p>
+          <p class="apc-proof-line">Every run of the binary matches a run of the security model → <span class="apc-proof-pass">holds</span></p>
+          <p class="apc-proof-line apc-proof-verdict">Symbolic security theorem: <span class="apc-proof-pass">PROVED</span></p>
+        </div>
+        <div class="apc-proof-panel">
+          <p class="apc-proof-header">Same source, fix 5293caa reversed and recompiled</p>
+          <p class="apc-proof-line">Replayed handshake, base key with bit 255 set → <span class="apc-proof-fail">accepted; session stored</span></p>
+          <p class="apc-proof-line apc-proof-verdict">Symbolic security theorem: <span class="apc-proof-fail">DISPROVED</span></p>
+        </div>
+        <p class="apc-proof-note">Illustrative summary, not tool output. Per the paper, both disproofs were checked by the Lean kernel stepping the bug-injected AArch64 binary across concrete witness runs.</p>
+      </div>
+
+      <p>Both bug-injected binaries failed. For each one, the paper reports a complete Lean proof that the symbolic security theorem does not hold. Each disproof uses only "Lean's standard axioms." So the human paper had found the bugs that tested the machine's specifications, and the machine's specification work had found errors in the human paper's printed queries. Each side checked the other.</p>
+    </section>
+
+    <section class="section" id="the-boundary">
+      <h2><span class="num">04 — The Boundary</span>What It Did Not Prove</h2>
+      <p>The paper is explicit about where its guarantees stop. The computational bounds "give no guarantee against a quantum adversary." The results concern "our build of libsignal-cli, run as a fresh process," the paper says, "not Signal's own applications." Key generation is not verified. Group messaging is left out, and so is multi-device state. Side channels are out of scope. Identity keys are trusted on first use. The proofs are about AArch64 code only.</p>
+      <p>Everything rests on what must simply be trusted. That means about 26,000 lines of specifications and machine semantics, plus Lean's own kernel, the tool that extracts symbol names from the compiler's output, and the build scripts. The machine semantics were written during the project. The paper says they were tested against two independent references, an emulator and a formal model of the Arm architecture, and the Beneficial AI Foundation says they "would need to be independently validated." One thing is notably absent from that list: "the Rust compiler is not trusted." A compiler bug that broke the security properties would make the theorems false, and the proof would fail.</p>
+
+      <div class="apc-stack" role="group" aria-label="What the proof rests on: about 6.5 million machine-checked lines resting on about 26,000 trusted lines plus Lean's kernel and tooling">
+        <div class="apc-stack-tier apc-stack-proven">
+          <div class="apc-stack-num">~6,500,000</div>
+          <div class="apc-stack-label">Lines of Lean proof · checked by machine</div>
+        </div>
+        <div class="apc-stack-tier apc-stack-trusted">
+          <div class="apc-stack-num">~26,000</div>
+          <div class="apc-stack-label">Lines trusted</div>
+          <div class="apc-stack-desc">Specifications + AArch64 semantics</div>
+        </div>
+        <div class="apc-stack-tier apc-stack-base">
+          <div class="apc-stack-label">Also trusted</div>
+          <div class="apc-stack-desc">Lean kernel · symbol extraction · build scripts</div>
+        </div>
+        <div class="apc-stack-scope">
+          <strong>Not covered</strong><br />
+          Quantum attackers (computational bounds) · Side channels · Key generation · Signal's apps · Group messaging · Multi-device · Other processor architectures
+        </div>
+        <p class="apc-stack-note">The top rests on the bottom. Lean checks the top; people have to check the bottom.</p>
+      </div>
+
+      <p>The Beneficial AI Foundation co-leads Signal Shot, and DeepMind's work builds on some of its verification. It is a collaborator, not an independent auditor. On the day of the announcement it published a warning against "formal-washing," which it defined as "over-hyping what has been proven and downplaying assumptions." The foundation wrote that the DeepMind team "accurately stated that they 'prove key security properties of libsignal', but some takes have been less precise." It also listed the remaining work. Signal's anonymous credentials system "has not been formalized by GDM". Other processor architectures such as x86-64 still need to be covered. And there should be "continuous verification" so that Signal "remains verified after every one of its frequent updates."</p>
+      <p>We found no published technical assessment from any named independent cryptographer. Bruce Schneier linked the announcement on November 17 with a single line of comment: "This seems like a good thing." The paper has been public for eight days, and expert review takes longer than that.</p>
+      <p>What Lean settles is narrow and absolute: each of the 6.5 million lines follows from the specification. What it cannot settle is whether the specification asks the right question. Most of the gaps listed above are of that kind. They are choices about what to prove, and none of them is a failure of proof. After four weeks of work, the hard part of verifying Signal is still writing down, exactly, what "secure" should mean, and saying clearly where that definition stops.</p>
+    </section>
+
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.alphaproof-code-signal-canvas') as HTMLCanvasElement;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  /* ---- Theme colours ---- */
+  const cs = getComputedStyle(document.documentElement);
+  const storyHex = cs.getPropertyValue('--story').trim() || '#1e5bb8';
+  const SR = parseInt(storyHex.slice(1, 3), 16);
+  const SG = parseInt(storyHex.slice(3, 5), 16);
+  const SB = parseInt(storyHex.slice(5, 7), 16);
+  const SC = SR + ',' + SG + ',' + SB;
+
+  /* ---- State ---- */
+  let W = 0, H = 0, raf = 0, frame = 0, seeded = false;
+
+  /* ---- Constants ---- */
+  const N      = 60;      // proof-line count (≤80)
+  const DOTS   = 50;      // ambient texture dots
+  const CYCLE  = 1200;    // 20 s @ 60 fps
+  const SH_S   = 720;     // shift start  (12 s)
+  const SH_D   = 30;      // shift dur    (0.5 s)
+  const RP_D   = 120;     // ripple dur   (2 s)
+  const RT_S   = 1020;    // return start (17 s)
+  const RT_D   = 60;      // return dur   (1 s)
+  const SH_PX  = 18;      // lateral shift magnitude
+  const BAND_R = 0.30;    // band y = 30 % from top (70 % from bottom)
+
+  /* ---- Pre-allocated typed arrays (lines) ---- */
+  const lx  = new Float32Array(N);   // current x
+  const ly  = new Float32Array(N);   // current y (head / top of segment)
+  const lbx = new Float32Array(N);   // base x at spawn
+  const ll  = new Float32Array(N);   // segment length
+  const lsp = new Float32Array(N);   // rise speed
+  const ldr = new Float32Array(N);   // horizontal drift
+  const la  = new Float32Array(N);   // base alpha
+  const lw  = new Float32Array(N);   // base width
+
+  /* ---- Pre-allocated typed arrays (ambient dots) ---- */
+  const dox = new Float32Array(DOTS);
+  const doy = new Float32Array(DOTS);
+  const dor = new Float32Array(DOTS);
+  const doa = new Float32Array(DOTS);
+
+  /* ---- Helpers ---- */
+  function ss(t: number): number {
+    if (t < 0) t = 0; if (t > 1) t = 1;
+    return t * t * (3 - 2 * t);
+  }
+
+  function resetLine(i: number, scatter: boolean): void {
+    lbx[i] = W * 0.06 + Math.random() * W * 0.88;
+    lx[i]  = lbx[i];
+    ly[i]  = H + (scatter ? Math.random() * H * 1.6 : Math.random() * 40);
+    ll[i]  = 70 + Math.random() * 110;
+    lsp[i] = 0.25 + Math.random() * 0.1;
+    ldr[i] = (Math.random() - 0.5) * 0.03;
+    la[i]  = 0.04 + Math.random() * 0.04;
+    lw[i]  = 0.5 + Math.random() * 1.0;
+  }
+
+  function seed(): void {
+    let i: number;
+    for (i = 0; i < N; i++) resetLine(i, true);
+    for (i = 0; i < DOTS; i++) {
+      dox[i] = Math.random() * W;
+      doy[i] = Math.random() * H;
+      dor[i] = 0.4 + Math.random() * 0.8;
+      doa[i] = 0.02 + Math.random() * 0.02;
+    }
+    /* Static convergence for reduced-motion frame */
+    if (prefersReduced) {
+      const bY = H * BAND_R;
+      const cx = W * 0.5;
+      for (i = 0; i < N; i++) {
+        if (ly[i] > bY && ly[i] < H) {
+          const p = 1 - (ly[i] - bY) / (H - bY);
+          lx[i] += (cx - lx[i]) * p * p * 0.4;
+        }
+      }
+    }
+    seeded = true;
+  }
+
+  /* ---- Resize ---- */
+  const ro = new ResizeObserver(() => {
+    W = canvas.offsetWidth;
+    H = canvas.offsetHeight;
+    canvas.width  = W * devicePixelRatio;
+    canvas.height = H * devicePixelRatio;
+    ctx!.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    if (!seeded && W > 0 && H > 0) seed();
+  });
+  ro.observe(canvas);
+
+  /* ---- Reduced motion ---- */
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- Band offset ---- */
+  function bandOff(cf: number): number {
+    if (cf >= SH_S && cf < SH_S + SH_D) return ss((cf - SH_S) / SH_D) * SH_PX;
+    if (cf >= SH_S + SH_D && cf < RT_S) return SH_PX;
+    if (cf >= RT_S && cf < RT_S + RT_D) return SH_PX * (1 - ss((cf - RT_S) / RT_D));
+    return 0;
+  }
+
+  /* ---- Draw ---- */
+  function draw(): void {
+    if (!W || !H || !ctx) return;
+    ctx.clearRect(0, 0, W, H);
+
+    const bY  = H * BAND_R;
+    const cf  = frame % CYCLE;
+    const bO  = bandOff(cf);
+    const bcx = W * 0.5 + bO;
+
+    const inSR = cf >= SH_S && cf < SH_S + SH_D + RP_D;
+    const inRR = cf >= RT_S && cf < RT_S + RT_D + RP_D;
+
+    /* ---- Ambient texture dots ---- */
+    let d: number;
+    for (d = 0; d < DOTS; d++) {
+      ctx.beginPath();
+      ctx.arc(dox[d], doy[d], dor[d], 0, 6.2832);
+      ctx.fillStyle = 'rgba(26,26,23,' + doa[d] + ')';
+      ctx.fill();
+    }
+
+    /* ---- Proof lines ---- */
+    let i: number, hd: number, tl: number, prox: number, belowFrac: number;
+    let dT: number, dB: number, a: number, w: number, f: number;
+    let lc: number, dG: number, ga: number, gt: number, gb: number;
+
+    for (i = 0; i < N; i++) {
+      /* update position */
+      if (!prefersReduced) {
+        ly[i] -= lsp[i];
+        lx[i] += ldr[i];
+      }
+
+      hd = ly[i];              // head (top of segment)
+      tl = hd + ll[i];         // tail (bottom of segment)
+
+      /* recycle if fully off-screen top */
+      if (tl < -10) { resetLine(i, false); continue; }
+      /* skip if not yet on-screen */
+      if (hd > H + 10) continue;
+
+      /* ---- convergence (below-band only) ---- */
+      if (tl > bY) {
+        /* how much of the line is below the band */
+        belowFrac = Math.min((tl - bY) / ll[i], 1);
+        /* proximity to band: 0 at canvas bottom, 1 at band */
+        prox = 1 - Math.min(Math.max(hd, bY) - bY, H - bY) / (H - bY);
+        if (prox < 0) prox = 0;
+        /* gentle convergence, scaled by below fraction */
+        lx[i] += (bcx - lx[i]) * prox * prox * 0.004 * belowFrac;
+        /* extra convergence during ripple phases */
+        if (!prefersReduced && (inSR || inRR)) {
+          lx[i] += (bcx - lx[i]) * prox * 0.014 * belowFrac;
+        }
+      }
+
+      /* clamp to canvas */
+      dT = hd < 0 ? 0 : hd;
+      dB = tl > H ? H : tl;
+      if (dB <= dT) continue;
+
+      /* ---- draw line segments ---- */
+      if (hd < bY && tl > bY) {
+        /* line crosses band: two segments with different alphas */
+
+        /* above-band segment (faded) */
+        f = 1 - (bY - hd) / (bY * 0.75);
+        if (f < 0) f = 0;
+        a = la[i] * f;
+        w = lw[i] * (0.25 + f * 0.75);
+        if (dT < bY && a > 0.001) {
+          ctx.beginPath();
+          ctx.moveTo(lx[i], dT);
+          ctx.lineTo(lx[i], bY);
+          ctx.strokeStyle = 'rgba(26,26,23,' + a + ')';
+          ctx.lineWidth = w;
+          ctx.stroke();
+        }
+        /* below-band segment (full alpha) */
+        ctx.beginPath();
+        ctx.moveTo(lx[i], bY);
+        ctx.lineTo(lx[i], dB);
+        ctx.strokeStyle = 'rgba(26,26,23,' + la[i] + ')';
+        ctx.lineWidth = lw[i];
+        ctx.stroke();
+
+      } else {
+        /* line is entirely on one side */
+        a = la[i];
+        w = lw[i];
+        if (hd < bY) {
+          f = 1 - (bY - hd) / (bY * 0.75);
+          if (f < 0) f = 0;
+          a *= f;
+          w *= (0.25 + f * 0.75);
+        }
+        if (a > 0.001) {
+          ctx.beginPath();
+          ctx.moveTo(lx[i], dT);
+          ctx.lineTo(lx[i], dB);
+          ctx.strokeStyle = 'rgba(26,26,23,' + a + ')';
+          ctx.lineWidth = w;
+          ctx.stroke();
+        }
+      }
+
+      /* ---- accent glow near band ---- */
+      lc = hd + ll[i] * 0.5;
+      dG = lc - bY;
+      if (dG < 0) dG = -dG;
+      if (dG < 55) {
+        ga = (1 - dG / 55) * 0.2;
+        gt = bY - 24; if (gt < dT) gt = dT;
+        gb = bY + 24; if (gb > dB) gb = dB;
+        if (gb > gt) {
+          ctx.beginPath();
+          ctx.moveTo(lx[i], gt);
+          ctx.lineTo(lx[i], gb);
+          ctx.strokeStyle = 'rgba(' + SC + ',' + ga + ')';
+          ctx.lineWidth = (lw[i] < 1 ? lw[i] : 1) + 1.5;
+          ctx.stroke();
+        }
+      }
+    }
+
+    /* ---- Specification band ---- */
+    const pulse = 0.85 + Math.sin(frame * 0.025) * 0.15;
+    const bL = W * 0.03 + bO;
+    const bRR = W * 0.97 + bO;
+    const bW = bRR - bL;
+
+    /* layered glow (avoid gradient allocation) */
+    ctx.fillStyle = 'rgba(' + SC + ',' + (pulse * 0.04) + ')';
+    ctx.fillRect(bL, bY - 16, bW, 32);
+    ctx.fillStyle = 'rgba(' + SC + ',' + (pulse * 0.09) + ')';
+    ctx.fillRect(bL, bY - 10, bW, 20);
+    ctx.fillStyle = 'rgba(' + SC + ',' + (pulse * 0.18) + ')';
+    ctx.fillRect(bL, bY - 5, bW, 10);
+    ctx.fillStyle = 'rgba(' + SC + ',' + (pulse * 0.28) + ')';
+    ctx.fillRect(bL, bY - 2, bW, 4);
+
+    /* core line */
+    ctx.beginPath();
+    ctx.moveTo(bL, bY);
+    ctx.lineTo(bRR, bY);
+    ctx.strokeStyle = 'rgba(' + SC + ',' + pulse + ')';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    /* flanking highlights for density */
+    ctx.strokeStyle = 'rgba(' + SC + ',' + (pulse * 0.35) + ')';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(bL, bY - 2);
+    ctx.lineTo(bRR, bY - 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(bL, bY + 2);
+    ctx.lineTo(bRR, bY + 2);
+    ctx.stroke();
+  }
+
+  /* ---- Loop ---- */
+  function tick(): void {
+    frame++;
+    draw();
+    raf = requestAnimationFrame(tick);
+  }
+
+  requestAnimationFrame(() => {
+    if (!seeded && W > 0 && H > 0) seed();
+
+    if (prefersReduced) {
+      draw();
+    } else {
+      const io = new IntersectionObserver(([e]) => {
+        if (e.isIntersecting) {
+          if (!raf) raf = requestAnimationFrame(tick);
+        } else {
+          cancelAnimationFrame(raf);
+          raf = 0;
+        }
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+
+      window.addEventListener('pagehide', () => {
+        cancelAnimationFrame(raf);
+        io.disconnect();
+        ro.disconnect();
+      });
+      return;
+    }
+  });
+
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(raf);
+    ro.disconnect();
+  });
+})();
+</script>
