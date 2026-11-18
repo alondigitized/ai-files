@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-17T10:20:00Z",
+  "updatedAt": "2026-11-18T10:20:00Z",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -2734,9 +2734,88 @@
       "startedAt": "2026-11-17T10:25:00Z",
       "publishedAt": "2026-11-17T11:20:00Z",
       "prUrl": "https://github.com/alondigitized/ai-files/pull/106"
+    },
+    {
+      "slug": "alphaproof-code-signal",
+      "status": "pending",
+      "priority": 1,
+      "side": "light",
+      "workingTitle": "Proof All the Way Down",
+      "thesis": "On 10 Nov 2026 Google DeepMind (Pushmeet Kohli, Swarat Chaudhuri) announced AlphaProof Code, a multi-LLM agentic framework (agents on Gemini Carbon) that, with human experts reviewing every specification, proved key security properties of the actual code underlying the Signal protocol in Lean, 'down to the exact code running on devices', generating over six million lines of Lean in four weeks; agents flagged ~1% of the codebase for human review; two real, previously fixed bugs reintroduced into an isolated copy each produced a machine-checked proof of insecurity. Signal CTO Ehren Kret is quoted. Thesis candidate: the bottleneck in formal verification was never the math, it was the labor - and the labor is what moved. Weaknesses: self-reported by DeepMind; no independent expert comment located; 'first time ... by any method' is DeepMind's own claim and must be attributed; specification scope (what was assumed: compiler, side channels) is in the technical paper and must be read before drafting.",
+      "whyNow": "Primary DeepMind post 10 Nov 2026 (8 days) plus technical paper PDF and open-sourced artifacts. Light side has not had a story drafted in recent runs. Nearest archive items: nist-curve-seeds (crypto, different mechanism: archival forensics) and openai-unique-games-proof (math proof, not software).",
+      "sources": [
+        {
+          "url": "https://deepmind.google/blog/introducing-alphaproof-code/",
+          "date": "2026-11-10",
+          "type": "primary"
+        },
+        {
+          "url": "https://deepmind.google/documents/36/Formal_Verification_of_Signal_4.pdf",
+          "date": "2026-11-10",
+          "type": "primary"
+        },
+        {
+          "url": "https://google-deepmind.github.io/code-verification",
+          "date": "2026-11-10",
+          "type": "primary"
+        },
+        {
+          "url": "https://www.wired.com/story/a-new-ai-tool-from-google-deepmind-formally-verified-the-signal-protocol/",
+          "date": "2026-11-10",
+          "type": "secondary"
+        }
+      ],
+      "sourceDate": "2026-11-10",
+      "scores": {
+        "importance": 8,
+        "rigor": 7.5,
+        "reportability": 8,
+        "readerValue": 8,
+        "fitWithArchive": 8
+      },
+      "compositeScore": 7.9,
+      "freshnessScore": 10,
+      "addedAt": "2026-11-18"
+    },
+    {
+      "slug": "gtig-exploit-agent",
+      "status": "pending",
+      "priority": 2,
+      "side": "dark",
+      "workingTitle": "The Patch Is the Announcement",
+      "thesis": "On 16 Nov 2026 GTIG (Blum, Vanderlee, Xia, Mainor) published 'Agentic Threat Activity Crosses a Significant Threshold': an exposed staging server hosted exploit_agent, a multi-agent framework wired to multiple frontier and local LLMs that continuously diffs popular web software before and after patch announcements, drafts exploits and 'automatically executes them without human intervention'; Russian-language config comments; victim telemetry pointed at French media/entertainment and education sites; scripts removed rival attackers' webshells. GTIG says that in the past quarter it identified fully automated discovery+exploitation 'for the first time'. Zero-days: 2025 avg 8/month, 11/month in 2026, 22 in August. Thesis candidate: publishing a patch is now publishing an exploit spec to a machine that reads every diff. Weaknesses: overlaps gtig-ai-zero-day, taiwan-autonomous-agent-attack and anthropic-ai-cyber-espionage; no CVE tied to exploit_agent; success against victims not stated.",
+      "whyNow": "Primary GTIG post 16 Nov 2026 (2 days). FBI FLASH on Artex 13 Nov (ic3.gov/CSA/2026/261113.pdf, not yet fetched). Scored down on archive fit for overlap.",
+      "sources": [
+        {
+          "url": "https://cloud.google.com/blog/topics/threat-intelligence/agentic-threat-activity-crosses-a-significant-threshold",
+          "date": "2026-11-16",
+          "type": "primary"
+        },
+        {
+          "url": "https://www.ic3.gov/CSA/2026/261113.pdf",
+          "date": "2026-11-13",
+          "type": "primary"
+        },
+        {
+          "url": "https://techcrunch.com/2026/11/16/fbi-says-artex-ai-open-source-hacking-tool-used-to-breach-networks-in-under-three-hours/",
+          "date": "2026-11-16",
+          "type": "secondary"
+        }
+      ],
+      "sourceDate": "2026-11-16",
+      "scores": {
+        "importance": 8,
+        "rigor": 8,
+        "reportability": 7.5,
+        "readerValue": 7.5,
+        "fitWithArchive": 7
+      },
+      "compositeScore": 7.6,
+      "freshnessScore": 10,
+      "addedAt": "2026-11-18"
     }
   ],
-  "lastRefreshed": "2026-11-17",
+  "lastRefreshed": "2026-11-18",
   "sweepLog": [
     {
       "date": "2026-09-08",
@@ -3031,6 +3110,12 @@
       "query": "AI incident OR lawsuit OR ruling OR safety report November 15 16 17 2026 (+ one follow-up to locate the primary complaint)",
       "itemsAdded": 1,
       "note": "Backlog entered with one pending item (wikimedia-openai-rogue-agents, 7.2, below gate). The sweep surfaced California AG Bonta's 16 Nov UCL and public-nuisance suit against OpenAI. The primary complaint PDF and press release were fetched from oag.ca.gov. ADDED california-openai-cyber-suit (8.3). The complaint makes non-public allegations: over 80 loss-of-control incidents admitted to the AG, a five-day pause (25 Sep to 1 Oct), the 26 May to 9 Jul warning sequence, and the subpoena response. Overlap scan of main and all 93 daily/* branches: no hits for 'over 80', 'five days'/pause end, RubyGems or 'arguably unauthorized'. Nearest stories are florida-openai-injunction, state-ags-openai-template and openai-huggingface-sandbox-escape. Note: complaint para 59 cites the Wikimedia 5 Oct disclosure, which partly corroborates the pending wikimedia item."
+    },
+    {
+      "date": "2026-11-18",
+      "query": "AI incident OR lawsuit OR breakthrough November 17 2026",
+      "itemsAdded": 2,
+      "note": "Backlog entered with one pending item (wikimedia-openai-rogue-agents, 7.2, below gate; sources 43-44 days old, freshness held at 7). Sweep returned daily digests (aiweekly, The Neuron); primaries fetched directly. ADDED alphaproof-code-signal (7.9, light): DeepMind 10 Nov post + technical paper. ADDED gtig-exploit-agent (7.6, dark): GTIG 16 Nov post. Not added: OpenAI embedded assessments with Apollo/METR/Transluce/Goodfire (16 Nov, openai.com/index/our-first-phase-of-embedded-assessments) - near-duplicate of pace-the-frontier and openai-safety-liaison-fired, FUTURE HOOK when Apollo's first public report lands; California AG suit (already drafted, PR #106); Commerce remote-chip-access interim rule (policy, not an incident). Overlap scan of main and all 94 daily/* branches: no hits for AlphaProof, Signal protocol, libsignal, exploit_agent, patch-diff, n-day."
     }
   ]
 }
