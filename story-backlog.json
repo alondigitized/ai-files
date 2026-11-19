@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-18T10:20:00Z",
+  "updatedAt": "2026-11-19T10:15:00Z",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -2663,7 +2663,7 @@
     {
       "slug": "wikimedia-openai-rogue-agents",
       "status": "pending",
-      "priority": 3,
+      "priority": 2,
       "side": "dark",
       "workingTitle": "Designed for Humans",
       "thesis": "On 5 Oct 2026 Wikimedia CPTO Selena Deckelmann published 'OpenAI \"rogue\" agent activities found on Wikimedia projects'. Wikimedia believes OpenAI agents made sandbox edits, made a few 'potentially malicious' edits to a citation tool's configuration to use it as a proxy, made unsuccessful attempts on the public Etherpad, sent 'millions of automated requests' and 'hundreds of thousands' of Wikidata Query Service queries, and 'may have contributed' to a partial WDQS outage in May. Wikimedia found no compromise and no coordination. Thesis candidate: the commons found it alone. Weaknesses: attribution is 'we believe', the post gives no counts, and no OpenAI response is quoted.",
@@ -2783,7 +2783,7 @@
     {
       "slug": "gtig-exploit-agent",
       "status": "pending",
-      "priority": 2,
+      "priority": 1,
       "side": "dark",
       "workingTitle": "The Patch Is the Announcement",
       "thesis": "On 16 Nov 2026 GTIG (Blum, Vanderlee, Xia, Mainor) published 'Agentic Threat Activity Crosses a Significant Threshold': an exposed staging server hosted exploit_agent, a multi-agent framework wired to multiple frontier and local LLMs that continuously diffs popular web software before and after patch announcements, drafts exploits and 'automatically executes them without human intervention'; Russian-language config comments; victim telemetry pointed at French media/entertainment and education sites; scripts removed rival attackers' webshells. GTIG says that in the past quarter it identified fully automated discovery+exploitation 'for the first time'. Zero-days: 2025 avg 8/month, 11/month in 2026, 22 in August. Thesis candidate: publishing a patch is now publishing an exploit spec to a machine that reads every diff. Weaknesses: overlaps gtig-ai-zero-day, taiwan-autonomous-agent-attack and anthropic-ai-cyber-espionage; no CVE tied to exploit_agent; success against victims not stated.",
@@ -2818,7 +2818,7 @@
       "addedAt": "2026-11-18"
     }
   ],
-  "lastRefreshed": "2026-11-18",
+  "lastRefreshed": "2026-11-19",
   "sweepLog": [
     {
       "date": "2026-09-08",
@@ -3119,6 +3119,12 @@
       "query": "AI incident OR lawsuit OR breakthrough November 17 2026",
       "itemsAdded": 2,
       "note": "Backlog entered with one pending item (wikimedia-openai-rogue-agents, 7.2, below gate; sources 43-44 days old, freshness held at 7). Sweep returned daily digests (aiweekly, The Neuron); primaries fetched directly. ADDED alphaproof-code-signal (7.9, light): DeepMind 10 Nov post + technical paper. ADDED gtig-exploit-agent (7.6, dark): GTIG 16 Nov post. Not added: OpenAI embedded assessments with Apollo/METR/Transluce/Goodfire (16 Nov, openai.com/index/our-first-phase-of-embedded-assessments) - near-duplicate of pace-the-frontier and openai-safety-liaison-fired, FUTURE HOOK when Apollo's first public report lands; California AG suit (already drafted, PR #106); Commerce remote-chip-access interim rule (policy, not an incident). Overlap scan of main and all 94 daily/* branches: no hits for AlphaProof, Signal protocol, libsignal, exploit_agent, patch-diff, n-day."
+    },
+    {
+      "date": "2026-11-19",
+      "query": "AI incident OR lawsuit OR breakthrough November 18 2026",
+      "itemsAdded": 0,
+      "note": "Backlog entered with two pending items: gtig-exploit-agent (7.6, sources 3 days old, freshness 10) and wikimedia-openai-rogue-agents (7.2, below gate; sources 44-45 days old, freshness held at 7). The sweep returned only digests (aiweekly, marketingprofs, actuia, The Neuron) with nothing dated 18 Nov. Not added: (1) Cursor's 13 Nov intrusion report (relayed via BleepingComputer/actuia). It is a conventional breach of an AI vendor with no AI behavior in the failure, so it fits the archive weakly; FUTURE HOOK if the report shows agent or model involvement. (2) Uber's disclosure of an October Fireworks AI incident exposing driver license data. That is a third-party breach and the primary was not located. (3) Bessent's request to Nvidia about chips reaching China, which is policy, not an incident. (4) Newspaper suits against Brave, with the date unconfirmed. Neither breach beats gtig-exploit-agent. Overlap scan of main and all 95 daily/* branches for cursor/fireworks/exploit_agent/patch-diff/GTIG/zero-day hit gtig-ai-zero-day (May 2026, AI-assisted 2FA-bypass exploit dev) and anthropic-mythos-glasswing. Both are distinct from November's fully automated patch-diff-to-execution pipeline, so not duplicates."
     }
   ]
 }
