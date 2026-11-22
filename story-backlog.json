@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-21",
+  "updatedAt": "2026-11-22T02:20:00-08:00",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -2873,7 +2873,7 @@
     },
     {
       "slug": "wikimedia-openai-rogue-agents",
-      "status": "pending",
+      "status": "rejected",
       "priority": 2,
       "side": "dark",
       "workingTitle": "Designed for Humans",
@@ -2900,10 +2900,12 @@
       },
       "compositeScore": 7.2,
       "freshnessScore": 7,
-      "addedAt": "2026-11-16"
+      "addedAt": "2026-11-16",
+      "rejectionReason": "composite below threshold (7.2 < 7.5); no new evidence since 2026-10-06 (no OpenAI response or attribution, no WDQS incident report establishing causation). Re-pitch if either appears.",
+      "rejectedAt": "2026-11-22T02:20:00-08:00"
     }
   ],
-  "lastRefreshed": "2026-11-21",
+  "lastRefreshed": "2026-11-22",
   "sweepLog": [
     {
       "date": "2026-09-08",
@@ -3222,6 +3224,12 @@
       "query": "AI incident OR lawsuit OR breakthrough November 20 2026",
       "itemsAdded": 0,
       "note": "Backlog entered with two pending items, both below gate: doj-pangram-detector (7.3 provisional, pending RECAP) and wikimedia-openai-rogue-agents (7.2; sources 47 days old, freshness held at 7). Sweep returned only already-covered items (Irreplaceable/Public Citizen freeze suit = frontier-freeze-suit PR #103; OpenAI Hugging Face suit = openai-huggingface-sandbox-escape) plus a Benesch Nov newsletter; nothing new dated 19-20 Nov. No items added. Fetched US v. Bhengura, 4:26-cr-00314-P (N.D. Tex.) via CourtListener HTML search (dockets 74780337/74780341, RECAP prefix gov.uscourts.txnd.426626): ECF 81, 83 and 77 retrieved; doj-pangram-detector rescored 7.3->7.7 on that evidence (see item rescoreNote). Overlap scan of main + 97 daily/* branches for pangram/detector/bhengura/slop/sanction/lawyer/court: related nebraska-ai-attorney-suspension, sullivan-cromwell-ai-hallucinations, ai-lawyer (all fabricated-citation stories); none involve a detector filed as evidence - not duplicates."
+    },
+    {
+      "date": "2026-11-22",
+      "query": "AI incident OR lawsuit OR breakthrough November 21 2026",
+      "itemsAdded": 0,
+      "note": "Backlog entered with one pending item, wikimedia-openai-rogue-agents (7.2, below gate). Its sources are 48-49 days old, so freshness stays at 7 (medium band). The sweep returned only digests (marketingprofs 6/13 Nov, The Neuron 12/18 Nov, aiweekly/aitoolly 18 Nov, actuia 19 Nov). Nothing was dated 20-21 Nov and nothing new beat the gate. Not added: GPT-6.2 Astra/Sol release (Astra is saturated in the archive; see 2026-11-20 note); Nvidia China chip sales/Huang 'ouster' headline (aggregator only, unverified, business/policy rather than incident); an unnamed '87% harmful-output reduction' safety result (no primary source); Anthropic IPO roadshow (business, no incident). wikimedia-openai-rogue-agents was rejected as below threshold under Step 3b, with no rescore because there is no new evidence. No pitch cleared the gates, so the day is skipped and the backlog is empty."
     }
   ]
 }
