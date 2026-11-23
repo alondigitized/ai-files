@@ -1,0 +1,795 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'doj-pangram-detector')!;
+---
+
+<style is:global>
+.phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+.doj-pangram-detector-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+/* --- Reenactment CSS: doj-pangram-detector (pg- prefix) --- */
+
+/* Shared footer */
+.pg-footer {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 0.75rem;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* Reenactment 1: ECF 77 Document Mockup */
+.pg-doc-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2rem 1.75rem;
+  margin: 2rem 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  max-width: 640px;
+}
+.pg-doc-court {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 1.25rem;
+  line-height: 1.6;
+}
+.pg-doc-caption {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+  line-height: 1.5;
+}
+.pg-doc-v {
+  display: block;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin: 0.25rem 0;
+}
+.pg-doc-case-no {
+  display: block;
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+.pg-doc-brief-title {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+.pg-doc-disclosure {
+  border: 2px solid var(--story);
+  border-radius: 4px;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0 1rem;
+}
+.pg-doc-disclosure-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--story);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.5rem;
+}
+.pg-doc-disclosure-text {
+  font-size: 0.82rem;
+  color: var(--text);
+  line-height: 1.6;
+  font-style: italic;
+}
+.pg-doc-sig {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 1rem;
+  line-height: 1.8;
+}
+
+/* Reenactment 2: Percentage Table */
+.pg-table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  max-width: 600px;
+}
+.pg-table-header {
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 1.25rem;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  line-height: 1.4;
+}
+.pg-table-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.4rem;
+  margin-top: 0;
+}
+.pg-table-label-defense {
+  color: var(--story);
+}
+.pg-table-label-govt {
+  color: var(--muted);
+}
+.pg-table-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.82rem;
+}
+.pg-table-row:last-child {
+  border-bottom: none;
+}
+.pg-table-dkt {
+  color: var(--text);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+}
+.pg-table-pct {
+  font-weight: 700;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+}
+.pg-table-pct-high {
+  color: var(--story);
+}
+.pg-table-pct-zero {
+  color: var(--muted);
+}
+.pg-table-sub {
+  font-size: 0.68rem;
+  color: var(--muted);
+  font-style: italic;
+  margin-left: 0.5rem;
+}
+.pg-table-divider {
+  border: none;
+  border-top: 1px dashed var(--border);
+  margin: 0.75rem 0;
+}
+.pg-table-exhibits {
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+.pg-table-quote {
+  font-size: 0.78rem;
+  color: var(--text);
+  font-style: italic;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  line-height: 1.5;
+}
+
+/* Reenactment 3: Rule vs Detector Comparison */
+.pg-compare-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+.pg-compare-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.25rem;
+}
+.pg-compare-panel-rule {
+  border-top: 3px solid var(--story);
+}
+.pg-compare-panel-detector {
+  border-top: 3px solid var(--accent);
+}
+.pg-compare-head {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.75rem;
+}
+.pg-compare-panel-rule .pg-compare-head {
+  color: var(--story);
+}
+.pg-compare-panel-detector .pg-compare-head {
+  color: var(--accent);
+}
+.pg-compare-text {
+  font-size: 0.78rem;
+  color: var(--text);
+  font-style: italic;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+}
+.pg-compare-anno {
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.6;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--border);
+  margin-bottom: 0.5rem;
+}
+.pg-compare-footer-wrap {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-style: italic;
+  padding: 1rem;
+  border: 1px dashed var(--border);
+  border-radius: 4px;
+  line-height: 1.5;
+}
+@media (max-width: 640px) {
+  .pg-compare-wrap {
+    grid-template-columns: 1fr;
+  }
+  .pg-compare-footer-wrap {
+    grid-column: 1;
+  }
+}
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+<section class="section" id="intro">
+<h2><span class="num">01 — Context</span>The Rule and the Disclosure</h2>
+
+<p>On the first page of a defense brief filed October 29, 2026, in the Northern District of Texas, a disclosure appeared under the heading "Use of Generative Artificial Intelligence": "Portions of this brief were prepared with the assistance of a generative artificial intelligence tool. Local Criminal Rule 47.2(e)." Four days later, federal prosecutors answered with a footnote full of percentages.</p>
+
+<p>The rule that produced the disclosure is not new: the court's online criminal rules, headed "Local Rules Effective September 3, 2024," already contain it. N.D. Tex. Local Criminal Rule 47.2(e) requires any brief prepared using generative AI to state this on its first page under a standard heading. Omission of the disclosure certifies that no AI was used. The rule does not prohibit AI assistance. It permits it, on the condition of disclosure.</p>
+
+<p>The rule also provides a mechanism for going further. Subsection (e)(1) states: "If the presiding judge so directs, the party filing the brief must disclose the specific parts prepared using generative artificial intelligence." The architecture is two-tiered. A mandatory first-page flag as the default. A judicial directive available if the court wants more. The rule's own route to learning which parts were AI-prepared runs through the presiding judge.</p>
+
+<p>The brief was filed in United States v. Bhengura. Khalwinder Singh Bhengura, a 70-year-old lawful permanent resident, had been convicted on October 27, 2026, of making a false statement of citizenship — a felony — and of voting by an alien — a misdemeanor. The jury acquitted him on a second false-statement count. He was represented by three retained counsel: Mario Herrera, Nicole E. Knox, and Vincent Rene Carrizales II.</p>
+
+<p>The relationship between defense counsel and the court had strained before any AI issue arose. On September 24, Judge Mark T. Pittman ordered Knox to show cause why she should not be sanctioned, citing "caustic filings towards the Court." On October 19, Knox was hospitalized. Herrera moved for a continuance; the government agreed; the court denied the motion. According to the defense's own chronology, trial began October 23 without her. An order entered October 27, the day of the verdict, records that after "numerous and continuous duplicative, frivolous, and obstructive objections," Herrera was warned that further disruptive interjections would result in sanction.</p>
+
+<p>Two days after the verdict, defense counsel filed ECF 77: a brief in support of an emergency motion for Bhengura's immediate release pending sentencing. The first page carried the AI disclosure required by LCrR 47.2(e). The rule had been followed.</p>
+
+<div class="pg-doc-wrap">
+  <div class="pg-doc-court">United States District Court<br>Northern District of Texas</div>
+  <div class="pg-doc-caption">
+    <strong>UNITED STATES OF AMERICA</strong>
+  </div>
+  <div class="pg-doc-v">v.</div>
+  <div class="pg-doc-caption">
+    <strong>KHALWINDER SINGH BHENGURA</strong>
+  </div>
+  <div class="pg-doc-case-no">No. 4:26-cr-00314-P</div>
+  <div class="pg-doc-brief-title">Brief in Support of Defendant's Emergency Motion<br>for Immediate Release Pending Sentencing</div>
+  <div class="pg-doc-disclosure">
+    <div class="pg-doc-disclosure-label">Use of Generative Artificial Intelligence</div>
+    <div class="pg-doc-disclosure-text">Portions of this brief were prepared with the assistance of a generative artificial intelligence tool. Local Criminal Rule 47.2(e).</div>
+  </div>
+  <div class="pg-doc-sig">
+    Mario Herrera<br>
+    Nicole E. Knox<br>
+    Vincent Rene Carrizales II<br>
+    <em>Counsel for Defendant</em>
+  </div>
+</div>
+<p class="pg-footer">ECF 77, filed October 29, 2026. The disclosure complied with LCrR 47.2(e). The rule permits AI use on this condition.</p>
+
+</section>
+
+<div class="phantom-wrap">
+  <canvas class="doj-pangram-detector-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>The Extraction</strong> — A scanning line sweeps across a cluster of text particles and pulls one glowing particle free; it drifts alone across the canvas into a waiting formation while a gateway below sits open and unused.</p>
+
+<section class="section" id="footnote">
+<h2><span class="num">02 — What Happened</span>The Footnote</h2>
+
+<p>On November 2, 2026, Assistant United States Attorney Matthew Capoccia filed the government's opposition to Bhengura's emergency motion (ECF 81). Footnote 1, spanning pages 4 and 5 of the twenty-page filing, disclosed that the government had run four defense filings through "the AI-spotting tool from Pangram" and reported the results.</p>
+
+<p>The percentages: Docket No. 57 scored 76% AI-generated. Docket No. 75 scored 63%. Docket No. 77 — the brief that carried the first-page AI disclosure — scored 63% excluding its factual chronology, and 46% including it. Docket No. 80 scored 63%. The footnote points to Exhibits A through D for the results. Of the four defense filings scanned, only ECF 77 is available on the public record. Whether Docket Nos. 57, 75, and 80 also carried the LCrR 47.2(e) AI disclosure is unknown.</p>
+
+<p>The government also ran four of its own briefs through the same tool. Docket Nos. 25, 28, 56, and 60 all scored 0% AI-generated. The government stated this was done "to see if the tool was overly aggressive in spotting AI-generated text." These results were attached as Exhibits E through H.</p>
+
+<p>The government's characterization of the defense filings was direct. "Defendant appears to be almost entirely using AI to generate them," the footnote stated. "Virtually nothing of substance in these filings seems to have been drafted by a human on the Defense team." The government also alleged that discovery emails sent by the defense in the week before trial were "100% AI drafted."</p>
+
+<p>The government acknowledged that "the local rules do permit the use of generative AI under some conditions." Its argument was that "what has occurred in this case is beyond what the United States believes the rules contemplate." The filing characterized the case as "defense by ChatGPT" and the briefs as "AI slop," writing that "motions practice in this case is the equivalent of writing responses to documents generated by a robot that is attempting to practice law."</p>
+
+<div class="pg-table-wrap">
+  <div class="pg-table-header">ECF 81, Footnote 1 (pp. 4-5 of 20) — Filed November 2, 2026</div>
+  <div class="pg-table-label pg-table-label-defense">Defense Filings</div>
+  <div class="pg-table-row">
+    <span class="pg-table-dkt">Dkt. No. 57</span>
+    <span class="pg-table-pct pg-table-pct-high">76% AI generated</span>
+  </div>
+  <div class="pg-table-row">
+    <span class="pg-table-dkt">Dkt. No. 75</span>
+    <span class="pg-table-pct pg-table-pct-high">63% AI generated</span>
+  </div>
+  <div class="pg-table-row">
+    <span class="pg-table-dkt">Dkt. No. 77</span>
+    <span class="pg-table-pct pg-table-pct-high">63% AI generated</span>
+  </div>
+  <div class="pg-table-exhibits"><span class="pg-table-sub">46% including chronology</span></div>
+  <div class="pg-table-row">
+    <span class="pg-table-dkt">Dkt. No. 80</span>
+    <span class="pg-table-pct pg-table-pct-high">63% AI generated</span>
+  </div>
+  <div class="pg-table-exhibits">Exhibits A-D attached</div>
+  <hr class="pg-table-divider">
+  <div class="pg-table-label pg-table-label-govt">Government Filings (run as a check)</div>
+  <div class="pg-table-row">
+    <span class="pg-table-dkt">Dkt. No. 25</span>
+    <span class="pg-table-pct pg-table-pct-zero">0% AI generated</span>
+  </div>
+  <div class="pg-table-row">
+    <span class="pg-table-dkt">Dkt. No. 28</span>
+    <span class="pg-table-pct pg-table-pct-zero">0% AI generated</span>
+  </div>
+  <div class="pg-table-row">
+    <span class="pg-table-dkt">Dkt. No. 56</span>
+    <span class="pg-table-pct pg-table-pct-zero">0% AI generated</span>
+  </div>
+  <div class="pg-table-row">
+    <span class="pg-table-dkt">Dkt. No. 60</span>
+    <span class="pg-table-pct pg-table-pct-zero">0% AI generated</span>
+  </div>
+  <div class="pg-table-exhibits">Exhibits E-H attached</div>
+  <div class="pg-table-quote">"Defendant appears to be almost entirely using AI to generate them."</div>
+</div>
+<p class="pg-footer">The percentages are Pangram's character-share classifications, not confidence levels. The footnote reports only aggregate percentages. The attached Pangram results (Exhibits A-H) are not on the public RECAP archive and have not been publicly reviewed.</p>
+
+</section>
+
+<section class="section" id="mechanism">
+<h2><span class="num">03 — The Mechanism</span>The Detector and the Rule</h2>
+
+<p>Pangram's own guidance page, last reviewed October 9, 2026, explains what its percentages represent. "The percentage is a share of the text, not a confidence level," the vendor states. "A 99% AI result means Pangram labeled 99% of the text, by character, as AI-generated. It does not mean Pangram is 99% sure."</p>
+
+<p>The same guidance warns against acting on a detection result alone. Pangram states that "any positive detection could be real, or it could be the statistically anomalous one-in-ten-thousand situation where Pangram gets it wrong." The vendor recommends checking per-segment confidence levels before drawing conclusions: "A high percentage made up of low-confidence segments is weaker evidence than the same percentage with high-confidence segments, so check both before you act." In Pangram's own words, detection warrants investigation "before any punitive measures."</p>
+
+<p>Pangram's documentation describes the boundary between human and AI writing as inherently uncertain. "Co-authorship is a spectrum," the vendor states, "and defining the exact line between these categories is more of an art than a science."</p>
+
+<p>According to Pangram's self-published technical report (first posted February 2024), the tool was benchmarked on ten text domains: blog posts, scientific writing, news, books, student writing, email, creative writing, reviews, Q&amp;A, and Wikipedia. Legal briefs were not among them. The benchmark tested eight large language models; Claude was excluded. The report states this was due to "several observed issues getting Claude to respond correctly to our prompts." Pangram claims 99% accuracy on 1,976 benchmark documents — a vendor-reported figure from a self-published paper that has not been independently peer-reviewed. The 2024 report may not reflect the version of Pangram the government used in late 2026.</p>
+
+<p>LCrR 47.2(e)(1) provides a pathway for the same question the detector purports to answer: how much of this brief is AI-generated? The rule's pathway runs through the presiding judge, who can direct the filing party to identify the specific parts prepared with AI. The public docket in United States v. Bhengura does not show Judge Pittman invoking this provision. Instead, a party deployed a commercial tool and filed the resulting number. The percentage looks far more specific than a first-page disclosure — but it arrived through a pathway with no judicial directive, no adversarial testing of the tool's methodology, and no domain validation for legal briefs.</p>
+
+<p>The government's approach has its own logic. The percentages convey something that bare disclosure — "Portions of this brief" — does not: an estimate of extent. The government ran its own filings as a control and all scored 0%. It acknowledged the rule permits AI "under some conditions." Its argument was not that AI use was categorically prohibited but that the defense had exceeded what the rules contemplate. These are legitimate advocacy choices by a party in an adversarial proceeding.</p>
+
+<p>Separately, a broader class of reliability questions attends AI text detection. A 2023 study by Liang et al. found that commercial GPT detectors consistently misclassified non-native English writing as AI-generated — a finding that Pangram's own technical report cites and addresses with a TOEFL benchmark showing 0% false positives on 91 non-native essays, according to the vendor. This finding does not apply to the specific facts of this case. The defense briefs were authored by counsel — Herrera, Knox, and Carrizales — not by the non-native-speaking defendant. But the study illustrates the class of validation questions that remain open for AI text detectors as a category.</p>
+
+<div class="pg-compare-wrap">
+  <div class="pg-compare-panel pg-compare-panel-rule">
+    <div class="pg-compare-head">LCrR 47.2(e)(1)</div>
+    <div class="pg-compare-text">"If the presiding judge so directs, the party filing the brief must disclose the specific parts prepared using generative artificial intelligence."</div>
+    <div class="pg-compare-anno">Triggered by: the presiding judge</div>
+    <div class="pg-compare-anno">Answer comes from: the brief's own authors, identifying the specific parts</div>
+  </div>
+  <div class="pg-compare-panel pg-compare-panel-detector">
+    <div class="pg-compare-head">Pangram AI Detector</div>
+    <div class="pg-compare-text">"The percentage is a share of the text, not a confidence level."</div>
+    <div class="pg-compare-anno">Triggered by: the opposing party</div>
+    <div class="pg-compare-anno">Answer comes from: a commercial classifier, as a share of text</div>
+    <div class="pg-compare-anno">Validation on legal briefs: none in the record</div>
+  </div>
+  <div class="pg-compare-footer-wrap">Pangram's own guidance: "Any positive detection could be real, or it could be the statistically anomalous one-in-ten-thousand situation where Pangram gets it wrong."</div>
+</div>
+<p class="pg-footer">Two instruments that could address the same question. One is procedurally controlled. One produces a number.</p>
+
+</section>
+
+<section class="section" id="ruling">
+<h2><span class="num">04 — Consequence</span>The Ruling</h2>
+
+<p>On November 4, two days after the government's opposition, Judge Pittman issued his Memorandum Opinion and Order (ECF 83). The analysis opened with a characterization of the defense filings: "Defendant's arguments for immediate release are mostly generated by artificial intelligence and fail several times over. Unfortunately, this has become a habit for defense counsel."</p>
+
+<p>The AI criticism ran through the opinion. Judge Pittman called the defense's statutory argument "a tortured statutory analysis so tone-deaf that only artificial intelligence could advance it." He called the defense's citation of United States v. Mincey "at best misleading, but more likely dishonest," explaining that Mincey involved supervised-release violations and "had nothing to do with a conviction for which the Guidelines recommend zero to six months." Mincey is a real case. The judge's criticism was misapplication — using a case about one legal context to argue about a materially different one. He called the citation "a prime example of the inherent dangers of lawyers relying on artificial intelligence to draft their briefs."</p>
+
+<p>In the opinion's conclusion, Judge Pittman wrote in a single sentence: "This Court is disturbed by counsel's repeated filings which subtly bend the law by proffering superficially persuasive but fundamentally meritless arguments so clearly generated by artificial intelligence."</p>
+
+<p>Footnote 2, on page 6, contained the reference to the government's detector filing. The judge cited "ECF No. 81 at 4" — the page of ECF 81 that carries the Pangram footnote with its percentages. He wrote that the court "is sympathetic to the pleas of the United States," which, in the footnote's words, "has had to contend with 'defense by ChatGPT.'" He added that the court "would sanction counsel but, due to its demanding docket, has no time to schedule a hearing between now and Thanksgiving." He wrote that the Local Rules "do not permit such blatant 'AI slop'" and warned that "further waste of the Court and Government's limited resources will result in the imposition of sanctions, up to and including banning counsel's ability to practice law in this district." The judge did not mention Pangram by name. He did not cite any specific percentage.</p>
+
+<p>The operative denial rested on three substantive grounds, none involving AI detection. First, Judge Pittman rejected the defense's reading of the section 3143(a)(1) exception as "an abysmal reading of the statute." Second, he held that the defendant had not shown his guideline range would start at zero months: although the range "has yet to be finally calculated," the court said it was within its discretion to set it at 15 to 21 months once relevant conduct, including perjury, was counted. Third, he called Bhengura "a paradigmatic flight-risk" — "a convicted felon and foreign national with substantial financial assets and ample foreign contacts" — noting that the Department of Homeland Security had recently issued an immigration detainer (ECF 82).</p>
+
+<p>On November 10, Bhengura filed a notice of interlocutory appeal of ECF 83 to the Fifth Circuit (ECF 84) and, separately, a motion asking the court to reconsider its October 27 order warning Herrera (ECF 85). The appeal's disposition is not yet known.</p>
+
+</section>
+
+<section class="section" id="signal">
+<h2><span class="num">05 — Signal</span>The Number in the Record</h2>
+
+<p>The percentage entered the record of a federal criminal liberty dispute through a party brief. It was not produced under a judicial directive. No defense response to the footnote appears on the docket before the ruling two days later. No validation of the tool on legal briefs appears in the record. The tool's own maker says its number is "a share of the text, not a confidence level," that "co-authorship is a spectrum," and that any detection result warrants investigation before punitive action. The footnote text gives only aggregate percentages, not the per-segment confidence ratings Pangram's own guidance says to check before acting. The scan reports themselves (Exhibits A-H) are not publicly available.</p>
+
+<p>The court cited "ECF No. 81 at 4," the page containing the Pangram footnote, in a sanctions warning. But the judge's criticisms of the defense briefs are substantive and independent of any detector output. He identified a misapplied case. He rejected a statutory reading on its merits. He calculated a guideline range. He assessed flight risk. Nothing in the opinion's reasoning about the briefs depends on a percentage.</p>
+
+<p>The government would characterize the percentages differently — not as rhetorical strategy but as factual disclosure of the extent of AI use. This characterization has force. "Portions of this brief" does not tell a court how much of a filing was machine-generated, and a prosecutor has an interest in making that quantity visible. But the structural observation remains — and it is interpretation, labeled as such. When a court rule provides both permission and a judicial mechanism for further specificity, and a party deploys a commercial tool outside that mechanism, the resulting number enters the record through a pathway that is less procedurally controlled but looks more precise.</p>
+
+<p>The rule said disclose. Counsel disclosed. A percentage followed anyway — through a pathway the rule had not directed and the court had not invoked. The number was not the basis for the ruling. The number is in the record. Wherever permissive AI rules meet inexpensive detection tools, the same dynamic can recur: disclosure invites detection, detection produces a figure, and the figure enters the proceeding through a channel the rule's own specificity mechanism was designed to control. If the rational incentive for an attorney considering AI disclosure is shaped by the knowledge that candor triggers quantification, the architects of these rules face a design question they did not anticipate.</p>
+
+</section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.doj-pangram-detector-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const cs = getComputedStyle(document.documentElement);
+  const bgColor = cs.getPropertyValue('--bg').trim() || '#0d0d0d';
+  const rawStory = cs.getPropertyValue('--story').trim() || '#8899b0';
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Parse hex to RGB
+  function hexRgb(hex: string): [number, number, number] {
+    let h = hex.replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+  const [sR, sG, sB] = hexRgb(rawStory);
+  const aR = 255, aG = 77, aB = 77; // --accent (#ff4d4d) components
+
+  // Color utilities
+  function storyA(a: number) { return `rgba(${sR},${sG},${sB},${Math.max(0, Math.min(1, a))})`; }
+  function dimA(a: number) { return `rgba(232,232,232,${Math.max(0, Math.min(1, a))})`; }
+  function blendA(t: number, a: number) {
+    const r = Math.round(sR + (aR - sR) * t);
+    const g = Math.round(sG + (aG - sG) * t);
+    const b = Math.round(sB + (aB - sB) * t);
+    return `rgba(${r},${g},${b},${Math.max(0, Math.min(1, a))})`;
+  }
+
+  // Phase thresholds (600 frames = 10s at 60fps)
+  const P_HIT = 180;      // scan line reaches accent particle, extraction begins
+  const P_ARRIVE = 380;   // extracted particle reaches formation
+  const P_PULSE = 420;    // formation pulse ends
+  const P_HOLD = 540;     // hold ends
+  const P_END = 600;      // fade ends, cycle resets
+  const CYCLE = P_END;
+
+  // Layout (fractions of W; H used only for vertical centers)
+  const CL_CX = 0.28, CL_CY = 0.42, CL_R = 0.07;
+  const RX_CX = 0.78, RX_CY = 0.42, RX_SP = 0.025;
+  const GW_CX = 0.50, GW_CY = 0.82, GW_W = 0.11, GW_H = 0.09;
+
+  // Particle types
+  interface CNode { x: number; y: number; bx: number; by: number; vx: number; vy: number; a: number; }
+  interface ANode { x: number; y: number; vx: number; vy: number; a: number; }
+  interface RNode { x: number; y: number; bx: number; by: number; a: number; pa: number; }
+
+  const N_CLUSTER = 20, N_AMBIENT = 15, N_RECEIVERS = 5;
+  const ACCENT_I = 10;
+
+  // State
+  let W = 0, H = 0, frame = 0, rafId = 0;
+  let cluster: CNode[] = [];
+  let ambientP: ANode[] = [];
+  let receivers: RNode[] = [];
+  let exX = 0, exY = 0, exOriginX = 0, exOriginY = 0;
+  let exSep = false, exAlpha = 0, exBlend = 0;
+  let scanLineX = 0;
+  let gFade = 1;
+
+  // Deterministic layout seeds
+  const CL_SEEDS: { ang: number; dist: number }[] = [];
+  for (let i = 0; i < N_CLUSTER; i++) {
+    CL_SEEDS.push({
+      ang: (i / N_CLUSTER) * Math.PI * 2 + Math.sin(i * 3.7) * 0.4,
+      dist: 0.3 + (i % 7) / 7 * 0.7
+    });
+  }
+  const RX_OFFSETS = [[0, 0], [-1, -0.8], [1, -0.8], [-0.9, 0.9], [0.9, 0.9]];
+
+  function clusterBase(i: number): [number, number] {
+    const { ang, dist } = CL_SEEDS[i];
+    return [CL_CX * W + Math.cos(ang) * CL_R * W * dist,
+            CL_CY * H + Math.sin(ang) * CL_R * W * dist];
+  }
+
+  function receiverBase(i: number): [number, number] {
+    const [ox, oy] = RX_OFFSETS[i];
+    return [RX_CX * W + ox * RX_SP * W,
+            RX_CY * H + oy * RX_SP * W];
+  }
+
+  function buildAll() {
+    cluster = [];
+    for (let i = 0; i < N_CLUSTER; i++) {
+      const [bx, by] = clusterBase(i);
+      cluster.push({ x: bx, y: by, bx, by, vx: 0, vy: 0, a: 0.05 + (i % 5) * 0.008 });
+    }
+    ambientP = [];
+    for (let i = 0; i < N_AMBIENT; i++) {
+      ambientP.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15,
+        a: 0.02 + Math.random() * 0.02
+      });
+    }
+    receivers = [];
+    for (let i = 0; i < N_RECEIVERS; i++) {
+      const [bx, by] = receiverBase(i);
+      receivers.push({ x: bx, y: by, bx, by, a: 0.07, pa: 0 });
+    }
+  }
+
+  function resetState() {
+    frame = 0; gFade = 1; scanLineX = 0;
+    exSep = false; exAlpha = 0; exBlend = 0;
+    buildAll();
+    exX = cluster[ACCENT_I].x;
+    exY = cluster[ACCENT_I].y;
+    exOriginX = exX; exOriginY = exY;
+  }
+
+  function reposition() {
+    for (let i = 0; i < cluster.length; i++) {
+      const [bx, by] = clusterBase(i);
+      cluster[i].bx = bx; cluster[i].by = by;
+      cluster[i].x = bx; cluster[i].y = by;
+    }
+    for (let i = 0; i < receivers.length; i++) {
+      const [bx, by] = receiverBase(i);
+      receivers[i].bx = bx; receivers[i].by = by;
+      receivers[i].x = bx; receivers[i].y = by;
+    }
+  }
+
+  function update() {
+    // Ambient drift (wrap at edges)
+    for (const p of ambientP) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < -10) p.x = W + 10;
+      if (p.x > W + 10) p.x = -10;
+      if (p.y < -10) p.y = H + 10;
+      if (p.y > H + 10) p.y = -10;
+    }
+
+    // Cluster Brownian drift with return spring
+    for (const c of cluster) {
+      const dx = c.bx - c.x, dy = c.by - c.y;
+      c.vx += dx * 0.001 + (Math.random() - 0.5) * 0.025;
+      c.vy += dy * 0.001 + (Math.random() - 0.5) * 0.025;
+      c.vx = Math.max(-0.2, Math.min(0.2, c.vx * 0.97));
+      c.vy = Math.max(-0.2, Math.min(0.2, c.vy * 0.97));
+      c.x += c.vx; c.y += c.vy;
+    }
+
+    // Scan line sweeps from left; reaches cluster right edge at P_HIT
+    const scanSpeed = (CL_CX * W + CL_R * W) / P_HIT;
+    if (frame <= P_HIT + 80) {
+      scanLineX = frame * scanSpeed;
+    }
+
+    // Accent / extracted particle phases
+    if (frame < P_HIT) {
+      // Pulsing in cluster
+      exX = cluster[ACCENT_I].x;
+      exY = cluster[ACCENT_I].y;
+      exAlpha = 0.6 + 0.15 * Math.sin(frame * 0.06);
+      exBlend = 0;
+    } else if (frame < P_ARRIVE) {
+      // Separating and drifting rightward
+      if (!exSep) {
+        exSep = true;
+        exOriginX = cluster[ACCENT_I].x;
+        exOriginY = cluster[ACCENT_I].y;
+      }
+      const t = (frame - P_HIT) / (P_ARRIVE - P_HIT);
+      const ease = 1 - (1 - t) * (1 - t); // ease-out
+      exX = exOriginX + (RX_CX * W - exOriginX) * ease;
+      exY = exOriginY + (RX_CY * H - exOriginY) * ease;
+      exAlpha = 0.85;
+      exBlend = t * 0.3; // max 30% shift toward red
+    } else if (frame < P_PULSE) {
+      // Locked in formation; receivers pulse
+      exX = RX_CX * W; exY = RX_CY * H;
+      exAlpha = 0.85; exBlend = 0.3;
+      const pt = (frame - P_ARRIVE) / (P_PULSE - P_ARRIVE);
+      const pulse = Math.sin(pt * Math.PI);
+      for (const r of receivers) r.pa = pulse * 0.35;
+    } else if (frame < P_HOLD) {
+      // Hold steady
+      exX = RX_CX * W; exY = RX_CY * H;
+      exAlpha = 0.85; exBlend = 0.3;
+      for (const r of receivers) r.pa = Math.max(0, r.pa - 0.006);
+    } else {
+      // Fade all to black
+      gFade = Math.max(0, 1 - (frame - P_HOLD) / (P_END - P_HOLD));
+    }
+  }
+
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = bgColor; ctx!.fillRect(0, 0, W, H);
+    const f = gFade;
+
+    // Ambient particles
+    for (const p of ambientP) {
+      const a = p.a * f;
+      if (a < 0.003) continue;
+      ctx!.beginPath(); ctx!.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(a); ctx!.fill();
+    }
+
+    // Cluster particles (accent drawn separately)
+    for (let i = 0; i < cluster.length; i++) {
+      if (i === ACCENT_I) continue;
+      const c = cluster[i];
+      const a = c.a * f;
+      if (a < 0.003) continue;
+      ctx!.beginPath(); ctx!.arc(c.x, c.y, 2.5, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(a); ctx!.fill();
+    }
+
+    // Accent / extracted particle with glow
+    if (exAlpha * f > 0.005) {
+      const a = exAlpha * f;
+      const gr = ctx!.createRadialGradient(exX, exY, 0, exX, exY, 18);
+      gr.addColorStop(0, blendA(exBlend, a * 0.4));
+      gr.addColorStop(0.6, blendA(exBlend, a * 0.08));
+      gr.addColorStop(1, blendA(exBlend, 0));
+      ctx!.beginPath(); ctx!.arc(exX, exY, 18, 0, Math.PI * 2);
+      ctx!.fillStyle = gr; ctx!.fill();
+      ctx!.beginPath(); ctx!.arc(exX, exY, 3.5, 0, Math.PI * 2);
+      ctx!.fillStyle = blendA(exBlend, a); ctx!.fill();
+    }
+
+    // Scan line (vertical bar sweeping right, fades after extraction)
+    if (scanLineX > 0 && frame <= P_HIT + 80) {
+      let la = 0.18 * f;
+      if (frame > P_HIT) la *= Math.max(0, 1 - (frame - P_HIT) / 80);
+      if (la > 0.003 && scanLineX < W * 1.2) {
+        ctx!.strokeStyle = storyA(la); ctx!.lineWidth = 1;
+        ctx!.beginPath();
+        ctx!.moveTo(scanLineX, H * 0.08);
+        ctx!.lineTo(scanLineX, H * 0.92);
+        ctx!.stroke();
+        // Faint trail behind line
+        const tg = ctx!.createLinearGradient(Math.max(0, scanLineX - 25), 0, scanLineX, 0);
+        tg.addColorStop(0, storyA(0));
+        tg.addColorStop(1, storyA(la * 0.2));
+        ctx!.fillStyle = tg;
+        ctx!.fillRect(Math.max(0, scanLineX - 25), H * 0.08, 25, H * 0.84);
+      }
+    }
+
+    // Receiver formation
+    for (const r of receivers) {
+      const baseA = (r.a + r.pa) * f;
+      if (baseA < 0.003) continue;
+      if (r.pa > 0.01) {
+        const pg = ctx!.createRadialGradient(r.x, r.y, 0, r.x, r.y, 12);
+        pg.addColorStop(0, storyA(r.pa * f * 0.6));
+        pg.addColorStop(1, storyA(0));
+        ctx!.beginPath(); ctx!.arc(r.x, r.y, 12, 0, Math.PI * 2);
+        ctx!.fillStyle = pg; ctx!.fill();
+      }
+      ctx!.beginPath(); ctx!.arc(r.x, r.y, 2.5, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(baseA); ctx!.fill();
+    }
+
+    // Gateway outline (unused mechanism, pulses gently)
+    const gwX = GW_CX * W, gwY = GW_CY * H;
+    const gwW = GW_W * W, gwH = GW_H * H;
+    const gwA = (0.12 + 0.06 * Math.sin(frame * Math.PI * 2 / 90)) * f;
+    if (gwA > 0.003) {
+      ctx!.strokeStyle = storyA(gwA); ctx!.lineWidth = 1;
+      ctx!.strokeRect(gwX - gwW / 2, gwY - gwH / 2, gwW, gwH);
+    }
+  }
+
+  // Reduced-motion static frame: moment of detachment, frozen
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = bgColor; ctx!.fillRect(0, 0, W, H);
+
+    // Ambient texture
+    for (let i = 0; i < N_AMBIENT; i++) {
+      const x = (0.05 + ((i * 7 + 3) % N_AMBIENT) / N_AMBIENT * 0.9) * W;
+      const y = (0.1 + ((i * 11 + 5) % N_AMBIENT) / N_AMBIENT * 0.75) * H;
+      ctx!.beginPath(); ctx!.arc(x, y, 1.5, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(0.025); ctx!.fill();
+    }
+
+    // Cluster minus accent particle
+    for (let i = 0; i < N_CLUSTER; i++) {
+      if (i === ACCENT_I) continue;
+      const { ang, dist } = CL_SEEDS[i];
+      const px = CL_CX * W + Math.cos(ang) * CL_R * W * dist;
+      const py = CL_CY * H + Math.sin(ang) * CL_R * W * dist;
+      ctx!.beginPath(); ctx!.arc(px, py, 2.5, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(0.06); ctx!.fill();
+    }
+
+    // Scan line frozen at cluster edge
+    const slX = CL_CX * W + CL_R * W * 0.9;
+    ctx!.strokeStyle = storyA(0.12); ctx!.lineWidth = 1;
+    ctx!.beginPath(); ctx!.moveTo(slX, H * 0.08); ctx!.lineTo(slX, H * 0.92); ctx!.stroke();
+
+    // Extracted particle mid-journey (halfway, slight red tint)
+    const mx = ((CL_CX + RX_CX) / 2) * W;
+    const my = CL_CY * H;
+    const mt = 0.15;
+    const gr = ctx!.createRadialGradient(mx, my, 0, mx, my, 18);
+    gr.addColorStop(0, blendA(mt, 0.4));
+    gr.addColorStop(0.6, blendA(mt, 0.08));
+    gr.addColorStop(1, blendA(mt, 0));
+    ctx!.beginPath(); ctx!.arc(mx, my, 18, 0, Math.PI * 2);
+    ctx!.fillStyle = gr; ctx!.fill();
+    ctx!.beginPath(); ctx!.arc(mx, my, 3.5, 0, Math.PI * 2);
+    ctx!.fillStyle = blendA(mt, 0.85); ctx!.fill();
+
+    // Receiver formation (dim)
+    for (let i = 0; i < N_RECEIVERS; i++) {
+      const [ox, oy] = RX_OFFSETS[i];
+      const rx = RX_CX * W + ox * RX_SP * W;
+      const ry = RX_CY * H + oy * RX_SP * W;
+      ctx!.beginPath(); ctx!.arc(rx, ry, 2.5, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(0.07); ctx!.fill();
+    }
+
+    // Gateway outline (unused)
+    const gwX = GW_CX * W, gwY = GW_CY * H;
+    const gwW = GW_W * W, gwH = GW_H * H;
+    ctx!.strokeStyle = storyA(0.14); ctx!.lineWidth = 1;
+    ctx!.strokeRect(gwX - gwW / 2, gwY - gwH / 2, gwW, gwH);
+  }
+
+  function tick() {
+    frame++;
+    if (frame >= CYCLE) resetState();
+    update(); draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  // Resize handling
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth; H = canvas!.offsetHeight;
+    canvas!.width = W * dpr; canvas!.height = H * dpr;
+    ctx!.scale(dpr, dpr);
+    if (prefersReduced) { drawStatic(); }
+    else { reposition(); }
+  });
+  ro.observe(canvas);
+
+  // Initial sizing
+  const dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth; H = canvas.offsetHeight;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  if (prefersReduced) {
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    resetState();
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(rafId); rafId = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+    window.addEventListener('pagehide', () => { cancelAnimationFrame(rafId); io.disconnect(); ro.disconnect(); });
+  }
+})();
+</script>
