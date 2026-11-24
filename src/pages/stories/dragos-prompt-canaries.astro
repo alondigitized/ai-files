@@ -1,0 +1,811 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'dragos-prompt-canaries')!;
+---
+
+<style is:global>
+.phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+.dragos-prompt-canaries-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+/* --- Reenactment CSS: dragos-prompt-canaries (fh- prefix) --- */
+
+/* Shared caption */
+.fh-caption {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 0.75rem;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* (b) Route Trace */
+.fh-route {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  max-width: 640px;
+}
+.fh-route-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 1.25rem;
+}
+.fh-route-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+.fh-route-row:last-of-type { margin-bottom: 0; }
+.fh-route-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  width: 86px;
+  flex-shrink: 0;
+}
+.fh-route-node {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.78rem;
+  color: var(--text);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  white-space: nowrap;
+}
+.fh-route-undisclosed {
+  border-color: var(--story);
+  color: var(--story);
+}
+.fh-route-arrow { color: var(--muted); font-size: 1rem; }
+.fh-route-tag {
+  font-size: 0.6rem;
+  color: var(--story);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-left: 0.35rem;
+}
+
+/* (a) CloudTrail Log */
+.fh-cloudtrail {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin: 2rem 0;
+  overflow-x: auto;
+  max-width: 700px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+.fh-cloudtrail-panel { padding: 1rem 1.25rem; }
+.fh-cloudtrail-panel + .fh-cloudtrail-panel {
+  border-top: 1px solid var(--border);
+}
+.fh-cloudtrail-header {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.75rem;
+}
+.fh-cloudtrail-meta {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+.fh-cloudtrail-key {
+  font-size: 0.82rem;
+  color: var(--story);
+  letter-spacing: 0.03em;
+}
+.fh-cloudtrail-row {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  gap: 0.6rem;
+  padding: 0.3rem 0;
+  font-size: 0.72rem;
+  border-bottom: 1px solid rgba(42,42,42,0.3);
+  align-items: baseline;
+  min-width: 480px;
+}
+.fh-cloudtrail-row:last-child { border-bottom: none; }
+.fh-cloudtrail-time { color: var(--muted); font-size: 0.65rem; }
+.fh-cloudtrail-action { color: var(--text); }
+.fh-cloudtrail-ua {
+  color: var(--muted);
+  font-size: 0.6rem;
+  text-align: right;
+  white-space: nowrap;
+}
+.fh-cloudtrail-row.fh-artex .fh-cloudtrail-action { color: var(--accent); }
+.fh-cloudtrail-row.fh-artex .fh-cloudtrail-ua { color: var(--accent); }
+
+/* (c) Disclosure Board */
+.fh-disclosure {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin: 2rem 0;
+  overflow-x: auto;
+  max-width: 700px;
+}
+.fh-disclosure-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 1.25rem 1.5rem 0.5rem;
+}
+.fh-disclosure-row {
+  display: grid;
+  grid-template-columns: 68px 100px 1fr;
+  gap: 0.6rem;
+  padding: 0.6rem 1.5rem;
+  font-size: 0.75rem;
+  border-bottom: 1px solid rgba(42,42,42,0.3);
+  align-items: baseline;
+  min-width: 480px;
+}
+.fh-disclosure-row:last-of-type { border-bottom: none; }
+.fh-disclosure-date {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+}
+.fh-disclosure-provider {
+  color: var(--story);
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+.fh-disclosure-detail { color: var(--text); line-height: 1.5; }
+.fh-disclosure-gap {
+  padding: 1rem 1.5rem;
+  border-top: 1px dashed var(--border);
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.6;
+  font-style: italic;
+}
+
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+    <section class="section" id="the-mine">
+      <h2><span class="num">01 — Context</span>The Mine</h2>
+      <p>On October 21, 2026, HD Moore seeded a single AWS key into an AI prompt and sent it to an inference provider. The key was used the next day. Three weeks later, it was still in use.</p>
+      <p>That key was one of approximately two million. Over five months from July through November 2026, Moore's team at Dragos, an industrial cybersecurity firm, submitted prompts to widely used AI services. Each contained a unique URL, DNS name, and AWS credential that had never appeared anywhere else. Any access to any of those secrets would mean someone, somewhere in the AI supply chain, had read the original prompt.</p>
+      <p>Moore is best known for creating Metasploit, the penetration testing framework. As Dragos's Chief Research Officer, he turned his attention to the systems that handle AI inference data — the layer where your prompt travels from your application to a model and back.</p>
+      <p>The path is rarely direct. AI routers offer a single API endpoint that forwards requests to pools of available models, sometimes at different hosting providers. The route to the inference server frequently passes through more than one router before reaching another provider, and from there the specific server hosting the target model. "Every hop can see the entire prompt and response," Moore wrote.</p>
+      <p>Some routers are open marketplaces where the seller with the lowest price gets the request. Customers can set privacy flags on their accounts, API keys, or individual requests. "The strictest setting is known as Zero Data Retention (ZDR), which specifies that the prompt and response are not stored," the Dragos report explains. "The routers should only forward these requests to providers that offer the same controls."</p>
+      <p>To test whether that happened, Moore's team started with Thinkst Canarytokens, then built a dedicated per-prompt canary service. Each prompt carried real AWS keys tied to empty accounts with full CloudTrail logging, plus unique hostnames and URLs backed by live DNS, web, git, SSH, database, and mail services. Every connection that touched a token traced back to the exact prompt, model, router, and privacy setting that carried it.</p>
+      <p>Mapping where prompts actually traveled required a second tool — what Moore called "something like traceroute for AI inference." The team embedded image URLs in requests and logged every system that fetched them. They also sent deliberately broken requests whose nested error envelopes revealed each hop's software and operator. Of about two thousand routes traced, "several hundred of those included a system that we couldn't identify, and a handful sent our image to a company that wasn't on the advertised path at all."</p>
+      <figure class="fh-route">
+        <div class="fh-route-title">LLM Route Trace</div>
+        <div class="fh-route-row">
+          <span class="fh-route-label">Advertised</span>
+          <span class="fh-route-node">SurplusIntelligence</span>
+          <span class="fh-route-arrow">&rarr;</span>
+          <span class="fh-route-node">Anthropic</span>
+        </div>
+        <div class="fh-route-row">
+          <span class="fh-route-label">Actual</span>
+          <span class="fh-route-node">SurplusIntelligence</span>
+          <span class="fh-route-arrow">&rarr;</span>
+          <span class="fh-route-node fh-route-undisclosed">OpenRouter <span class="fh-route-tag">undisclosed</span></span>
+          <span class="fh-route-arrow">&rarr;</span>
+          <span class="fh-route-node">Anthropic</span>
+        </div>
+        <figcaption class="fh-caption">Illustrative, based on Dragos Figure 7 description. "The OpenRouter hop was discovered by tracing and was not disclosed in the marketplace."</figcaption>
+      </figure>
+    </section>
+
+    <div class="phantom-wrap">
+      <canvas class="dragos-prompt-canaries-canvas" aria-hidden="true"></canvas>
+    </div>
+    <p class="canvas-note"><strong>The Trace</strong> — Prompt particles drift through a chain of relay nodes, each carrying a canary-yellow spark at its center. Relays pulse as particles pass. At staggered intervals a spark detaches, sinks, and shifts from canary-yellow to red — a stolen secret confirmed. Sparks accumulate below while the chain continues undisturbed.</p>
+
+    <section class="section" id="front-door">
+      <h2><span class="num">02 — Breach</span>Inside the Front Door</h2>
+      <p>The most serious finding was the most direct. Dragos found "attackers actively stealing data from three different hosting providers." The earliest incident dated to mid-July. None of the three providers knew about their breach until Dragos notified them.</p>
+      <p>The largest breach involved a couple hundred of Dragos's AWS keys, all sent within a few short windows in late October. Each key had been sent in exactly one request to one provider. Every request Dragos sent during those windows was copied — including requests the provider rejected before a model ever ran. This meant "the attacker was copying requests at the provider's front door, and not somewhere deeper in the inference stack." In the other two breaches, some of the stolen requests were marked as ZDR. "A privacy flag doesn't help when the attacker is already inside," Moore wrote.</p>
+      <p>Once the attacker had the credentials, the escalation was methodical. First, test each key to confirm it was live — in some cases within hours of the original request. Then search for data: list S3 buckets, query Secrets Manager and Parameter Store. Then attempt to establish persistence: enable hosted models in AWS Bedrock, create Bedrock API keys, add IAM users to maintain access. "In total, our bait keys were used for tens of thousands of AWS API calls," Moore wrote.</p>
+      <figure class="fh-cloudtrail" tabindex="0" role="region" aria-label="Reenactment: what the attacker did with one stolen canary key">
+        <div class="fh-cloudtrail-panel">
+          <div class="fh-cloudtrail-header">Seeded Prompt</div>
+          <div class="fh-cloudtrail-meta">Seeded: Oct 21 &middot; One request &middot; One provider [unnamed]</div>
+          <div class="fh-cloudtrail-key">AKIA&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;</div>
+        </div>
+        <div class="fh-cloudtrail-panel">
+          <div class="fh-cloudtrail-header">Canary Account &mdash; What the Attacker Did</div>
+          <div class="fh-cloudtrail-row">
+            <span class="fh-cloudtrail-time">Step 1</span>
+            <span class="fh-cloudtrail-action">Test the key: is it live?</span>
+            <span class="fh-cloudtrail-ua">within hours, in some cases</span>
+          </div>
+          <div class="fh-cloudtrail-row">
+            <span class="fh-cloudtrail-time">Step 2</span>
+            <span class="fh-cloudtrail-action">List S3 buckets</span>
+            <span class="fh-cloudtrail-ua">look for data</span>
+          </div>
+          <div class="fh-cloudtrail-row">
+            <span class="fh-cloudtrail-time">Step 2</span>
+            <span class="fh-cloudtrail-action">Search Secrets Manager and Parameter Store</span>
+            <span class="fh-cloudtrail-ua">look for data</span>
+          </div>
+          <div class="fh-cloudtrail-row">
+            <span class="fh-cloudtrail-time">Step 3</span>
+            <span class="fh-cloudtrail-action">Enable hosted models in Bedrock; create Bedrock API keys</span>
+            <span class="fh-cloudtrail-ua">keep access</span>
+          </div>
+          <div class="fh-cloudtrail-row">
+            <span class="fh-cloudtrail-time">Step 3</span>
+            <span class="fh-cloudtrail-action">Add their own IAM users</span>
+            <span class="fh-cloudtrail-ua">keep access</span>
+          </div>
+          <div class="fh-cloudtrail-row fh-artex">
+            <span class="fh-cloudtrail-time">Nov 1</span>
+            <span class="fh-cloudtrail-action">Confirm keys still live</span>
+            <span class="fh-cloudtrail-ua">artex-agent &middot; artex-judge-r121</span>
+          </div>
+        </div>
+        <div class="fh-cloudtrail-panel">
+          <div class="fh-cloudtrail-meta">Tooling over three weeks: script posing as Chrome on Windows &rarr; Boto3 in OrbStack &rarr; AWS CLI on Kali Linux &rarr; ARTEX (added Nov 1)</div>
+          <div class="fh-cloudtrail-meta">Still in use: three weeks after seeding</div>
+        </div>
+        <figcaption class="fh-caption">Illustrative summary of the sequence Dragos describes, not a log export. Steps are Dragos's categories, not literal AWS API calls; the key is masked. ARTEX rows (red) are the LLM-driven pentest framework.</figcaption>
+      </figure>
+      <p>One adversary appears to have compromised two of these providers simultaneously. Secrets sent to those two providers were used together, almost immediately, from a single rented server. The attacker's tooling evolved over the three weeks Dragos observed it: "it started with a script pretending to be Chrome on Windows, moved to Boto3 running inside OrbStack, and later switched to the AWS CLI on Kali Linux."</p>
+      <p>On November 1, the attacker added ARTEX, an LLM-driven penetration testing framework. In Dragos's case, ARTEX did very little — "it made a handful of calls to confirm that keys the attacker already held were still live," Moore wrote. Two user agents it sent, <code>artex-agent</code> and <code>artex-judge-r121</code>, do not appear in any public indicator list Dragos could find. The mid-July provider, meanwhile, "has still not publicly disclosed the incident." Stolen data from that breach continued to lead to attempted logins as of late October.</p>
+    </section>
+
+    <section class="section" id="lowest-price">
+      <h2><span class="num">03 — Theft</span>The Lowest Price</h2>
+      <p>The second finding required no exploit at all. Marketplace resellers only had to "list a model at the lowest price, enable request logging, and wait." What stood out was how personal it was — "these were individuals, working from what looked like home internet connections and personal computers, trying to break into our canary servers one login at a time."</p>
+      <p>In one case, "an attacker working from a Mac on a home broadband line in France took the passwords from two of our prompts and tried to log in as root over SSH, typing each attempt by hand." The same Mac later tested several of Dragos's AWS keys in a single session.</p>
+      <p>A figure caption in the report records the result: "The password from our prompt was used four times in two minutes, and the route trace shows the two routers that the prompt passed through." The leak followed the seller, not the marketplace: prompts for the same model that went through a different seller were never touched. One router, it turned out, was quietly forwarding some of its traffic to the marketplace — another undisclosed hop in a chain the customer never agreed to.</p>
+    </section>
+
+    <section class="section" id="privacy">
+      <h2><span class="num">04 — Violation</span>The Privacy That Wasn't</h2>
+      <p>The third finding involved no stolen credentials. Instead, providers' own systems scraped the secret URLs from prompts — repeatedly, and often in direct conflict with the privacy settings on the request.</p>
+      <p>The clearest example involved an unnamed Chinese AI lab. This lab's systems "fetched the secret URLs from more than half of the prompts that we sent to its models between July and October, including roughly two-thirds of the requests marked as 'no data collection' or Zero Data Retention." The scraper typically appeared two to three days after the request.</p>
+      <p>The exposure was not limited to direct requests. Several US hosting providers resold the lab's models, and prompts sent to those providers triggered the same scraper — the prompts were flowing back to the lab across borders. "A customer who picked a U.S. provider specifically to keep their data in the U.S. didn't get what they paid for," Moore wrote.</p>
+      <p>The strangest incident involved a company chat. "Twenty-four days after we sent a prompt to one Chinese provider, the secret link from that prompt was posted into a Feishu chat channel (Feishu is known as Lark outside of China)." Within two minutes, the link was opened from six devices — three desktops and three phones — in Beijing and Shanghai. Dragos's disclosure to this provider included only the first eight characters of the link, meaning "whoever shared it was reading from a stored copy of the full prompt, more than three weeks after the request was sent to a U.S.-based provider with the ZDR flag." The provider in the Feishu incident is unnamed by Dragos.</p>
+      <p>MiniMax, a Chinese AI company, published a statement on November 24 about requests that reached its API "either directly from OpenRouter or through other inference providers including Novita, Streamlake, and Atlas Cloud." The company acknowledged that its "internal security programs and agents actively probed and accessed some of the logged URLs" from forwarded requests. "The activity included requests identified in OpenRouter's report as Zero Data Retention (ZDR) or no data collection," MiniMax stated. The company characterized the system as automated security monitoring — extracting URLs from HTTP traffic to check against threat intelligence — enabled by default on the endpoints that received forwarded requests. MiniMax says it found no evidence of third-party disclosure of prompt content. This claim has not been independently verified.</p>
+      <p>MiniMax's description of its systems' behavior is consistent with what Dragos attributed to the unnamed Chinese AI lab, though Dragos has not named the lab. Separately, Novita said some MiniMax requests had been forwarded to MiniMax's official API rather than processed on Novita-hosted infrastructure, because "a routing configuration issue caused an API forwarding path intended for specific customers to apply more broadly." Customers who used MiniMax models through Novita between May 28 and November 11, it said, may have had request contents "accessed or retained by a third party."</p>
+      <p>"In practice, these prompts were retained, shared with other companies, and read by people," Moore concluded.</p>
+    </section>
+
+    <section class="section" id="disclosure">
+      <h2><span class="num">05 — Consequence</span>The Disclosure</h2>
+      <p>Between November 10 and November 24, six companies published notices. The cascade was fast — and conspicuously incomplete.</p>
+      <figure class="fh-disclosure" tabindex="0" role="region" aria-label="Reenactment: disclosure timeline, November 10 to 24, 2026">
+        <div class="fh-disclosure-title">Disclosure Timeline</div>
+        <div class="fh-disclosure-row">
+          <span class="fh-disclosure-date">Nov 10</span>
+          <span class="fh-disclosure-provider">Phala</span>
+          <span class="fh-disclosure-detail">Preliminary incident report. Exposure: Oct 21&ndash;Nov 8. Attacker reached internal management interfaces.</span>
+        </div>
+        <div class="fh-disclosure-row">
+          <span class="fh-disclosure-date">Nov 21</span>
+          <span class="fh-disclosure-provider">Together AI</span>
+          <span class="fh-disclosure-detail">AI coding agent leaked credential to public GitHub. Five Dragos canaries among stolen samples. ZDR now default.</span>
+        </div>
+        <div class="fh-disclosure-row">
+          <span class="fh-disclosure-date">Nov 22</span>
+          <span class="fh-disclosure-provider">OpenRouter</span>
+          <span class="fh-disclosure-detail">Off-boarded three providers. Removed 125 endpoints from ZDR eligibility. Says it was not breached.</span>
+        </div>
+        <div class="fh-disclosure-row">
+          <span class="fh-disclosure-date">Nov 22</span>
+          <span class="fh-disclosure-provider">Novita</span>
+          <span class="fh-disclosure-detail">Routing configuration issue sent some MiniMax requests to MiniMax&rsquo;s official API. Window: May 28&ndash;Nov 11.</span>
+        </div>
+        <div class="fh-disclosure-row">
+          <span class="fh-disclosure-date">Nov 23</span>
+          <span class="fh-disclosure-provider">Atlas Cloud</span>
+          <span class="fh-disclosure-detail">Stopped sending requests to MiniMax&rsquo;s official API. Took its models off OpenRouter pending its own tests.</span>
+        </div>
+        <div class="fh-disclosure-row">
+          <span class="fh-disclosure-date">Nov 24</span>
+          <span class="fh-disclosure-provider">MiniMax</span>
+          <span class="fh-disclosure-detail">Says its security programs and agents accessed logged URLs, including from ZDR requests. Disabled the mechanism; says it deleted the logged URLs.</span>
+        </div>
+        <div class="fh-disclosure-gap">Dragos has not named the three breached providers. OpenRouter has not named the three it removed. Neither has said whether they are the same three.</div>
+        <figcaption class="fh-caption">As of Dragos&rsquo;s November 19 report, the provider breached in mid-July had not publicly disclosed the incident.</figcaption>
+      </figure>
+      <p>Phala's preliminary incident report, published November 10, described an exposure window from October 21 to November 8 affecting requests to its DeepSeek V4 Flash 0731 endpoint. The attacker reached internal management interfaces. Of the canary prompts Phala received, only those sent on October 21 and 22 had their credentials misused. Phala's report referenced "a third-party security researcher." Dragos's description of one of its late-October breaches is consistent with Phala's timeline, but neither party has confirmed the connection.</p>
+      <p>Together AI disclosed on November 21 that during development of its public GitHub repository, xorl, an AI coding agent had committed a credential that provided access to a private Hugging Face repository. That repository contained stored prompt samples from MiniMax M3, GLM-5.2, and Kimi K2.6 models. An unauthorized party downloaded the samples and searched them for credentials; five were Dragos canary credentials. Together AI says it has found no evidence of additional prompt leakage — an assessment the company describes as ongoing. ZDR is now the default setting for new Together AI accounts.</p>
+      <p>OpenRouter announced on November 22 that it had off-boarded three providers and removed 125 endpoints from Zero Data Retention eligibility, including endpoints removed "as a precautionary measure." The company stated that OpenRouter itself had not been breached. Atlas Cloud, on November 23, stated it had stopped forwarding requests to MiniMax's API and voluntarily pulled all its models from OpenRouter — a move the company described as its own decision, not OpenRouter's. Atlas Cloud says it asked Moore to keep testing the models it serves, and that he now tests them four times a day. MiniMax said it had disabled the security mechanism and deleted the logged URLs.</p>
+      <p>Dragos has not named the three breached providers. OpenRouter has not named the three it off-boarded. Neither has said whether they are the same three. As of Dragos's report, one provider, breached in mid-July, had still not publicly disclosed the incident. It remains unclear whether the remaining unnamed providers in the chain have conducted their own investigations.</p>
+    </section>
+
+    <section class="section" id="first-hop">
+      <h2><span class="num">06 — Signal</span>The First Hop</h2>
+      <p>Moore's core conclusion was blunt: "a privacy flag only binds the first hop, and that AI agents will happily send whatever they can read, including credentials."</p>
+      <p>AI was on every side of this incident. ARTEX, an LLM-driven pentest framework, was deployed by the attacker to confirm stolen keys — though it did little beyond that. Together AI's AI coding agent committed the credential that exposed stored prompt samples to theft. MiniMax says its own security "programs and agents actively probed and accessed" URLs logged from forwarded requests, including requests marked Zero Data Retention — a system it says was enabled by default. The common thread is not AI gone rogue. It is automated systems acting on whatever they were given to read.</p>
+      <p>It took approximately two million prompts, five months, and purpose-built canary infrastructure to find three breached providers, resellers logging customer prompts, and privacy settings that did not survive the trip downstream. None of the three breached providers knew until Dragos told them. Moore is now working with about a dozen providers, and OpenRouter says it is adapting the testing approach to run on an ongoing basis. But the canaries see only the prompts that carry them. The real prompts in the same pipelines — Dragos notes they "frequently contain confidential source code, internal communications, strategic plans, customer information, credentials" — carry no tripwire. "Where your prompts go is a decision," Moore wrote, "and if you don't make it, the lowest price will make it for you." If the only way to discover that your prompt was stolen is to seed it with a trap, and no one is seeding traps, how would you know?</p>
+    </section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.dragos-prompt-canaries-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  const styles = getComputedStyle(document.documentElement);
+  const bgColor = styles.getPropertyValue('--bg').trim() || '#0d0d0d';
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── Palette helpers ── */
+  function canaryA(a: number) { return `rgba(228,201,78,${Math.max(0, Math.min(1, a))})`; }
+  function dimA(a: number) { return `rgba(232,232,232,${Math.max(0, Math.min(1, a))})`; }
+  function lerpRGB(t: number) {
+    t = Math.max(0, Math.min(1, t));
+    return {
+      r: Math.round(228 + (255 - 228) * t),
+      g: Math.round(201 + (77 - 201) * t),
+      b: Math.round(78 + (77 - 78) * t)
+    };
+  }
+  function lerpA(t: number, a: number) {
+    const c = lerpRGB(t);
+    return `rgba(${c.r},${c.g},${c.b},${Math.max(0, Math.min(1, a))})`;
+  }
+
+  /* ── Phase timing (20 s cycle at 60 fps) ── */
+  const FLOW_END = 1100;
+  const HOLD_END = 1160;
+  const FADE_END = 1200;
+  const CYCLE    = FADE_END;
+
+  const RELAY_COUNT    = 4;
+  const SPAWN_INTERVAL = 38;
+  const STEAL_INTERVAL = 90;
+
+  /* ── Types ── */
+  interface Relay {
+    rx: number;
+    pulseAlpha: number;
+    pulseTimer: number;
+  }
+
+  interface Prompt {
+    x: number; y: number;
+    vx: number;
+    sineOff: number; sineAmp: number; sineFreq: number;
+    alpha: number;
+    coreAlpha: number;
+    active: boolean;
+    passed: boolean[];
+  }
+
+  interface Spark {
+    x: number; y: number;
+    vy: number;
+    birth: number;
+    alpha: number;
+    colorT: number;
+    settled: boolean;
+    flareA: number;
+    flareR: number;
+    active: boolean;
+  }
+
+  /* ── State ── */
+  let W = 0, H = 0, frame = 0, rafId = 0;
+  let globalFade = 1;
+  let relays: Relay[] = [];
+  let prompts: Prompt[] = [];
+  let sparks: Spark[] = [];
+  let nextSpawn = 0;
+  let nextSteal = 0;
+  let stealIdx = 0;
+
+  function relayX(i: number) { return W * (0.2 + i * 0.2); }
+  function chainY() { return H * 0.38; }
+
+  /* ── Init / Reset ── */
+  function initRelays() {
+    relays = [];
+    for (let i = 0; i < RELAY_COUNT; i++) {
+      relays.push({ rx: 0.2 + i * 0.2, pulseAlpha: 0, pulseTimer: 999 });
+    }
+  }
+
+  function spawnPrompt() {
+    let p = prompts.find(q => !q.active);
+    if (!p) {
+      if (prompts.length >= 25) return;
+      p = { x: 0, y: 0, vx: 0, sineOff: 0, sineAmp: 0, sineFreq: 0,
+            alpha: 0, coreAlpha: 0, active: false, passed: [false, false, false, false] };
+      prompts.push(p);
+    }
+    p.x = -10;
+    p.y = chainY();
+    p.vx = 0.26 + Math.random() * 0.08;
+    p.sineOff = Math.random() * Math.PI * 2;
+    p.sineAmp = 6 + Math.random() * 14;
+    p.sineFreq = 0.007 + Math.random() * 0.005;
+    p.alpha = 0;
+    p.coreAlpha = 0.8;
+    p.active = true;
+    p.passed = [false, false, false, false];
+  }
+
+  function spawnSpark(x: number, y: number) {
+    let s = sparks.find(q => !q.active);
+    if (!s) {
+      if (sparks.length >= 20) return;
+      s = { x: 0, y: 0, vy: 0, birth: 0, alpha: 0, colorT: 0,
+            settled: false, flareA: 0, flareR: 0, active: false };
+      sparks.push(s);
+    }
+    s.x = x + (Math.random() - 0.5) * 6;
+    s.y = y;
+    s.vy = 0.18 + Math.random() * 0.04;
+    s.birth = frame;
+    s.alpha = 0.85;
+    s.colorT = 0;
+    s.settled = false;
+    s.flareA = 0;
+    s.flareR = 2;
+    s.active = true;
+  }
+
+  function resetState() {
+    frame = 0;
+    globalFade = 1;
+    nextSpawn = 15;
+    nextSteal = STEAL_INTERVAL;
+    stealIdx = Math.floor(Math.random() * RELAY_COUNT);
+    initRelays();
+    prompts.forEach(p => { p.active = false; });
+    sparks.forEach(s => { s.active = false; });
+  }
+
+  /* ── Phase logic ── */
+  function getPhase(f: number): string {
+    if (f < FLOW_END) return 'flow';
+    if (f < HOLD_END) return 'hold';
+    return 'fade';
+  }
+
+  /* ── Update ── */
+  function update() {
+    const phase = getPhase(frame);
+    const cy = chainY();
+
+    if (phase === 'flow') {
+      /* Spawn new prompts */
+      if (frame >= nextSpawn) {
+        spawnPrompt();
+        nextSpawn = frame + SPAWN_INTERVAL + Math.floor(Math.random() * 12);
+      }
+
+      /* Move prompts */
+      prompts.forEach(p => {
+        if (!p.active) return;
+        p.x += p.vx;
+        p.y = cy + Math.sin(frame * p.sineFreq + p.sineOff) * p.sineAmp;
+        if (p.alpha < 0.06) p.alpha = Math.min(0.06, p.alpha + 0.004);
+
+        /* Relay proximity pulse */
+        for (let i = 0; i < RELAY_COUNT; i++) {
+          if (!p.passed[i] && Math.abs(p.x - relayX(i)) < 10) {
+            p.passed[i] = true;
+            relays[i].pulseAlpha = 0.3;
+            relays[i].pulseTimer = 0;
+          }
+        }
+
+        if (p.x > W + 20) p.active = false;
+      });
+
+      /* Steal: one relay keeps the spark */
+      if (frame >= nextSteal) {
+        const rx = relayX(stealIdx);
+        let best: Prompt | null = null;
+        let bestD = Infinity;
+        prompts.forEach(p => {
+          if (!p.active || p.coreAlpha < 0.5) return;
+          const d = Math.abs(p.x - rx);
+          if (d < 35 && d < bestD) { bestD = d; best = p; }
+        });
+        if (best) {
+          (best as Prompt).coreAlpha = 0.08;
+          spawnSpark(rx, cy);
+          relays[stealIdx].pulseAlpha = 0.5;
+          relays[stealIdx].pulseTimer = 0;
+        }
+        nextSteal = frame + STEAL_INTERVAL + Math.floor(Math.random() * 25);
+        stealIdx = (stealIdx + 1 + Math.floor(Math.random() * 2)) % RELAY_COUNT;
+      }
+
+      /* Relay pulse decay */
+      relays.forEach(r => {
+        r.pulseTimer++;
+        if (r.pulseTimer > 30) r.pulseAlpha = Math.max(0, r.pulseAlpha - 0.01);
+      });
+
+      /* Falling sparks */
+      sparks.forEach(s => {
+        if (!s.active) return;
+        const age = frame - s.birth;
+        if (!s.settled) {
+          s.y += s.vy;
+          s.colorT = Math.min(1, age / 200);
+          if (s.y > H * 0.72) {
+            s.settled = true;
+            s.flareA = 0.6;
+            s.flareR = 6;
+          }
+        } else {
+          s.flareA = Math.max(0, s.flareA - 0.015);
+          s.flareR += 0.3;
+          if (s.alpha > 0.12) s.alpha -= 0.006;
+        }
+      });
+
+    } else if (phase === 'hold') {
+      prompts.forEach(p => {
+        if (!p.active) return;
+        p.x += p.vx * 0.3;
+        p.y = cy + Math.sin(frame * p.sineFreq + p.sineOff) * p.sineAmp;
+        if (p.x > W + 20) p.active = false;
+      });
+      relays.forEach(r => { r.pulseAlpha = Math.max(0, r.pulseAlpha - 0.006); });
+      sparks.forEach(s => {
+        if (!s.active) return;
+        if (!s.settled) s.y += s.vy * 0.3;
+        s.flareA = Math.max(0, s.flareA - 0.02);
+      });
+
+    } else {
+      globalFade = Math.max(0, 1 - (frame - HOLD_END) / (FADE_END - HOLD_END));
+    }
+  }
+
+  /* ── Draw ── */
+  function draw() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = bgColor;
+    ctx!.fillRect(0, 0, W, H);
+
+    const cy = chainY();
+
+    /* Chain line */
+    ctx!.beginPath();
+    ctx!.moveTo(0, cy);
+    ctx!.lineTo(W, cy);
+    ctx!.strokeStyle = dimA(0.03 * globalFade);
+    ctx!.lineWidth = 1;
+    ctx!.stroke();
+
+    /* Relay nodes */
+    relays.forEach((r, i) => {
+      const rx = relayX(i);
+      const a = globalFade;
+
+      ctx!.beginPath();
+      ctx!.arc(rx, cy, 10, 0, Math.PI * 2);
+      ctx!.strokeStyle = dimA(0.08 * a);
+      ctx!.lineWidth = 1;
+      ctx!.stroke();
+
+      ctx!.beginPath();
+      ctx!.arc(rx, cy, 2.5, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(0.1 * a);
+      ctx!.fill();
+
+      if (r.pulseAlpha > 0.005) {
+        const pa = r.pulseAlpha * a;
+        const gr = ctx!.createRadialGradient(rx, cy, 0, rx, cy, 20);
+        gr.addColorStop(0, canaryA(pa * 0.6));
+        gr.addColorStop(0.5, canaryA(pa * 0.2));
+        gr.addColorStop(1, canaryA(0));
+        ctx!.beginPath();
+        ctx!.arc(rx, cy, 20, 0, Math.PI * 2);
+        ctx!.fillStyle = gr;
+        ctx!.fill();
+      }
+    });
+
+    /* Prompt particles */
+    prompts.forEach(p => {
+      if (!p.active) return;
+      const a = p.alpha * globalFade;
+      if (a < 0.003) return;
+
+      ctx!.beginPath();
+      ctx!.arc(p.x, p.y, 4, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(a);
+      ctx!.fill();
+
+      const ca = p.coreAlpha * globalFade;
+      if (ca > 0.03) {
+        const cg = ctx!.createRadialGradient(p.x, p.y, 0, p.x, p.y, 2.5);
+        cg.addColorStop(0, canaryA(ca));
+        cg.addColorStop(1, canaryA(0));
+        ctx!.beginPath();
+        ctx!.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+        ctx!.fillStyle = cg;
+        ctx!.fill();
+      }
+    });
+
+    /* Falling & settled sparks */
+    sparks.forEach(s => {
+      if (!s.active) return;
+      const a = s.alpha * globalFade;
+      if (a < 0.005) return;
+
+      const c = lerpRGB(s.colorT);
+
+      ctx!.beginPath();
+      ctx!.arc(s.x, s.y, 2, 0, Math.PI * 2);
+      ctx!.fillStyle = `rgba(${c.r},${c.g},${c.b},${a})`;
+      ctx!.fill();
+
+      const sg = ctx!.createRadialGradient(s.x, s.y, 0, s.x, s.y, 7);
+      sg.addColorStop(0, `rgba(${c.r},${c.g},${c.b},${a * 0.4})`);
+      sg.addColorStop(1, `rgba(${c.r},${c.g},${c.b},0)`);
+      ctx!.beginPath();
+      ctx!.arc(s.x, s.y, 7, 0, Math.PI * 2);
+      ctx!.fillStyle = sg;
+      ctx!.fill();
+
+      if (s.flareA > 0.01) {
+        const fa = s.flareA * globalFade;
+        const fg = ctx!.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.flareR);
+        fg.addColorStop(0, `rgba(${c.r},${c.g},${c.b},${fa * 0.3})`);
+        fg.addColorStop(0.5, `rgba(${c.r},${c.g},${c.b},${fa * 0.1})`);
+        fg.addColorStop(1, `rgba(${c.r},${c.g},${c.b},0)`);
+        ctx!.beginPath();
+        ctx!.arc(s.x, s.y, s.flareR, 0, Math.PI * 2);
+        ctx!.fillStyle = fg;
+        ctx!.fill();
+      }
+    });
+  }
+
+  /* ── Static frame (reduced motion) ── */
+  function drawStatic() {
+    ctx!.clearRect(0, 0, W, H);
+    ctx!.fillStyle = bgColor;
+    ctx!.fillRect(0, 0, W, H);
+
+    const cy = chainY();
+
+    ctx!.beginPath();
+    ctx!.moveTo(0, cy);
+    ctx!.lineTo(W, cy);
+    ctx!.strokeStyle = dimA(0.03);
+    ctx!.lineWidth = 1;
+    ctx!.stroke();
+
+    for (let i = 0; i < RELAY_COUNT; i++) {
+      const rx = relayX(i);
+      ctx!.beginPath();
+      ctx!.arc(rx, cy, 10, 0, Math.PI * 2);
+      ctx!.strokeStyle = dimA(0.08);
+      ctx!.lineWidth = 1;
+      ctx!.stroke();
+      ctx!.beginPath();
+      ctx!.arc(rx, cy, 2.5, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(0.1);
+      ctx!.fill();
+      const hg = ctx!.createRadialGradient(rx, cy, 0, rx, cy, 18);
+      hg.addColorStop(0, canaryA(0.1));
+      hg.addColorStop(1, canaryA(0));
+      ctx!.beginPath();
+      ctx!.arc(rx, cy, 18, 0, Math.PI * 2);
+      ctx!.fillStyle = hg;
+      ctx!.fill();
+    }
+
+    const pts = [
+      { xr: 0.12, yo: -6 }, { xr: 0.3, yo: 10 }, { xr: 0.48, yo: -4 },
+      { xr: 0.65, yo: 8 }, { xr: 0.78, yo: -9 }
+    ];
+    pts.forEach((pt, i) => {
+      const px = W * pt.xr, py = cy + pt.yo;
+      ctx!.beginPath();
+      ctx!.arc(px, py, 4, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(0.06);
+      ctx!.fill();
+      if (i < 4) {
+        const cg = ctx!.createRadialGradient(px, py, 0, px, py, 2.5);
+        cg.addColorStop(0, canaryA(0.6));
+        cg.addColorStop(1, canaryA(0));
+        ctx!.beginPath();
+        ctx!.arc(px, py, 2.5, 0, Math.PI * 2);
+        ctx!.fillStyle = cg;
+        ctx!.fill();
+      }
+    });
+
+    const s1x = relayX(1) + 2, s1y = cy + 35;
+    ctx!.beginPath();
+    ctx!.arc(s1x, s1y, 2, 0, Math.PI * 2);
+    ctx!.fillStyle = canaryA(0.65);
+    ctx!.fill();
+    const sg1 = ctx!.createRadialGradient(s1x, s1y, 0, s1x, s1y, 7);
+    sg1.addColorStop(0, canaryA(0.25));
+    sg1.addColorStop(1, canaryA(0));
+    ctx!.beginPath();
+    ctx!.arc(s1x, s1y, 7, 0, Math.PI * 2);
+    ctx!.fillStyle = sg1;
+    ctx!.fill();
+
+    const s2x = relayX(2) - 3, s2y = cy + 90;
+    const mc = lerpRGB(0.5);
+    ctx!.beginPath();
+    ctx!.arc(s2x, s2y, 2, 0, Math.PI * 2);
+    ctx!.fillStyle = `rgba(${mc.r},${mc.g},${mc.b},0.55)`;
+    ctx!.fill();
+    const sg2 = ctx!.createRadialGradient(s2x, s2y, 0, s2x, s2y, 7);
+    sg2.addColorStop(0, `rgba(${mc.r},${mc.g},${mc.b},0.2)`);
+    sg2.addColorStop(1, `rgba(${mc.r},${mc.g},${mc.b},0)`);
+    ctx!.beginPath();
+    ctx!.arc(s2x, s2y, 7, 0, Math.PI * 2);
+    ctx!.fillStyle = sg2;
+    ctx!.fill();
+  }
+
+  /* ── Loop ── */
+  function tick() {
+    frame++;
+    if (frame >= CYCLE) resetState();
+    update();
+    draw();
+    rafId = requestAnimationFrame(tick);
+  }
+
+  /* ── Resize ── */
+  const ro = new ResizeObserver(() => {
+    const dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth; H = canvas!.offsetHeight;
+    canvas!.width = W * dpr; canvas!.height = H * dpr;
+    ctx!.scale(dpr, dpr);
+    if (prefersReduced) { drawStatic(); }
+  });
+  ro.observe(canvas);
+
+  const dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth; H = canvas.offsetHeight;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  if (prefersReduced) {
+    drawStatic();
+    window.addEventListener('pagehide', () => { ro.disconnect(); });
+  } else {
+    resetState();
+    const io = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { if (!rafId) rafId = requestAnimationFrame(tick); }
+      else { cancelAnimationFrame(rafId); rafId = 0; }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+    window.addEventListener('pagehide', () => { cancelAnimationFrame(rafId); io.disconnect(); ro.disconnect(); });
+  }
+})();
+</script>
