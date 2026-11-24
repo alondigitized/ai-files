@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-23T02:30:00-08:00",
+  "updatedAt": "2026-11-24T02:40:00-08:00",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -2903,9 +2903,111 @@
       "addedAt": "2026-11-16",
       "rejectionReason": "composite below threshold (7.2 < 7.5); no new evidence since 2026-10-06 (no OpenAI response or attribution, no WDQS incident report establishing causation). Re-pitch if either appears.",
       "rejectedAt": "2026-11-22T02:20:00-08:00"
+    },
+    {
+      "slug": "dragos-prompt-canaries",
+      "status": "pending",
+      "priority": 1,
+      "side": "dark",
+      "workingTitle": "Read by Human Beings",
+      "thesis": "Between July and November 2026 Dragos (chief research officer HD Moore) seeded about two million prompts with unique canary links and credentials, sent them through inference routers and providers, and watched who used them. Planted secrets were used: attackers stole request data from inside three inference providers for months (earliest mid-July), including requests flagged Zero Data Retention; one thief tested a couple hundred planted AWS keys within hours and made tens of thousands of AWS API calls, later confirming keys with an AI-driven pentest framework (ARTEX); marketplace sellers enabled logging; a Chinese lab's scraper fetched secret links from more than half of seeded prompts including ~two-thirds of no-collection/ZDR requests. On 22 Nov OpenRouter removed three providers and stripped 125 endpoints of ZDR eligibility. Phala, Together AI (an AI coding agent committed a credential to public GitHub) and Novita published incident notices. Thesis candidate: 'zero data retention' was a promise nobody could check until someone planted secrets and watched; the prompt is the new attack surface because agents send whatever they can read.",
+      "whyNow": "Dragos report and OpenRouter announcement 22 Nov 2026 (2 days). Primaries: Dragos blog, OpenRouter blog, Phala/Together/Novita notices. Fits Vol VII 'What We Handed Over' (we handed over our prompts). Distinct from llms-txt-agent-supply-chain (package-name squatting) and gtig-exploit-agent. Ars Technica blocked automated fetch; THN read in full. Caveats: breached providers unnamed; Together notice date inferred.",
+      "sources": [
+        {
+          "url": "https://www.dragos.com/blog/ai-supply-chain-security-canary-tokens",
+          "date": "2026-11-22",
+          "type": "primary"
+        },
+        {
+          "url": "https://openrouter.ai/blog/announcements/data-processing-incidents-on-inference-providers/",
+          "date": "2026-11-22",
+          "type": "primary"
+        },
+        {
+          "url": "https://phala.com/posts/phala-november-preliminary-incident-report",
+          "date": "2026-11",
+          "type": "primary"
+        },
+        {
+          "url": "https://www.together.ai/blog/security-event-prompt-leakage-for-requests-in-june-and-july-of-2026",
+          "date": "2026-11",
+          "type": "primary"
+        },
+        {
+          "url": "https://thehackernews.com/2026/11/openrouter-drops-3-providers-after.html",
+          "date": "2026-11-22",
+          "type": "secondary"
+        },
+        {
+          "url": "https://arstechnica.com/security/2026/11/a-leaky-ai-supply-chain-is-exposing-secret-user-data-at-an-alarming-rate/",
+          "date": "2026-11",
+          "type": "secondary"
+        }
+      ],
+      "scores": {
+        "importance": 8.5,
+        "rigor": 8.5,
+        "reportability": 8.5,
+        "readerValue": 9,
+        "fitWithArchive": 8.5
+      },
+      "compositeScore": 8.6,
+      "freshnessScore": 10,
+      "addedAt": "2026-11-24"
+    },
+    {
+      "slug": "alpoge-riemann-claude",
+      "status": "pending",
+      "priority": 2,
+      "side": "light",
+      "workingTitle": "It Compiles",
+      "thesis": "On 20 Nov 2026 Anthropic number theorist Levent Alpöge posted a four-page note (alpo.ge/remark.pdf) and Lean formalization (~17M lines per Science) claiming a proof of the Riemann Hypothesis found 'working with Claude' ('Claude far outpaced me near the finish line'). Independent mathematicians incl. MIT's Andrew Sutherland report the Lean compiles; Kevin Buzzard and others caution that a compiling proof must also state the right theorem and that no human yet understands the argument. The same day Ravi Vakil posted a separate all-human proposed proof of GRH by Stanford postdoc Alessandro Masullo. Anthropic declined comment. Thesis candidate: machine verification arrived before human understanding; the proof may be checked before anyone can explain it.",
+      "whyNow": "Claim 20 Nov 2026 (4 days); covered by Science, Scientific American, Bloomberg, New Scientist, Al Jazeera, TechCrunch. Status unresolved: statement fidelity and acceptance pending, so scored conservatively on rigor. Overlap: openai-unique-games-proof, alphaproof-code-signal (AI math, light) - distinct result. Light Vol III fit.",
+      "sources": [
+        {
+          "url": "https://alpo.ge/remark.pdf",
+          "date": "2026-11-20",
+          "type": "primary"
+        },
+        {
+          "url": "https://math216.wordpress.com/2026/11/20/hurried-announcement-alessandro-masullo-grh/",
+          "date": "2026-11-20",
+          "type": "primary"
+        },
+        {
+          "url": "https://techcrunch.com/2026/11/20/ai-claimed-a-solution-to-the-167-year-old-riemann-hypothesis-and-a-human-did-too/",
+          "date": "2026-11-20",
+          "type": "secondary"
+        },
+        {
+          "url": "https://www.scientificamerican.com/article/the-ai-riemann-hypothesis-proof-is-almost-certainly-true-independent-mathematicians-attest/",
+          "date": "2026-11",
+          "type": "secondary"
+        },
+        {
+          "url": "https://www.bloomberg.com/news/articles/2026-11-21/anthropic-researcher-claims-to-solve-riemann-problem-with-claude",
+          "date": "2026-11-21",
+          "type": "secondary"
+        },
+        {
+          "url": "https://thenextweb.com/news/anthropic-researcher-claims-claude-helped-him-prove-the-riemann-hypothesis",
+          "date": "2026-11-22",
+          "type": "secondary"
+        }
+      ],
+      "scores": {
+        "importance": 9.5,
+        "rigor": 7.5,
+        "reportability": 8.5,
+        "readerValue": 9,
+        "fitWithArchive": 8
+      },
+      "compositeScore": 8.5,
+      "freshnessScore": 10,
+      "addedAt": "2026-11-24"
     }
   ],
-  "lastRefreshed": "2026-11-23",
+  "lastRefreshed": "2026-11-24",
   "sweepLog": [
     {
       "date": "2026-09-08",
@@ -3236,6 +3338,12 @@
       "query": "AI incident OR lawsuit OR breakthrough November 22 2026 (+ one re-query on the agent-incident/safety/court axis, and checks on three open FUTURE HOOKs)",
       "itemsAdded": 0,
       "note": "Backlog entered with ZERO pending items (11-22 skipped). No freshness decay needed. First query returned only digests (marketingprofs 6/13 Nov, aiweekly 14 Nov, The Neuron 12/18 Nov, actuia 16 Nov); nothing dated 21-22 Nov. Re-query surfaced only California AG v. OpenAI (already drafted as california-openai-cyber-suit, PR #106) and OpenAI's embedded-assessments announcement (already declined 11-18). FUTURE HOOK checks: (1) Andersen v. Stability AI - still no verdict found; hook stays open. (2) Apollo embedded assessment - no findings published yet (Transluce pilot reportedly starts early Dec); hook stays open. (3) Cursor 13 Nov incident update (cursor.com/blog/security-incident-update; BleepingComputer, Dark Reading): attacker used a Cursor-issued key exposed via Fireworks AI (Fireworks bulletin: third-party host incident 23 Oct), planted a trojanized Claude Code extension in Cursor's extension-marketplace cache (29 Oct), copied historical coding-agent traces for <0.05% of non-Privacy-Mode users, at most 5,000 users affected, last activity 1 Nov. Agent DATA was exposed but no AI behavior is in the failure chain, so the 11-19 hook condition is not met; not added. EVALUATED AND DECLINED: Aur0ra ransomware affiliate driving Cursor Agent (claude-4.5-sonnet-thinking per Gambit) against 10 orgs, 8 Apr-21 May 2026 (Gambit Security, Eyal Sela, 27 Aug; Sophos CTU; CloudSEK 'Caught in 4K: The Aurora Files'; CSA note 1 Sep; Reuters exclusive 27 Aug). Not previously in archive, backlog or any of 98 daily/* branches. Primaries fetched: none quotes a refusal-then-reframe exchange - the 'authorized red team / diagnostics testing' bypass appears only as one Sophos paraphrase and in Reuters; victim counts conflict (Gambit 10, CloudSEK >20 in 9 countries); no Cursor/SpaceX/Anthropic statement. Without the transcripts it would be the fifth AI-assisted-intrusion story (anthropic-ai-cyber-espionage used the same pentest pretext; taiwan-autonomous-agent-attack; gtig-ai-zero-day; gtig-exploit-agent PR a week ago), and sources are 88 days old. Conservative composite ~7.0, below gate; not added. FUTURE HOOK: revisit if verbatim Aur0ra-Cursor refusal/reframe logs are published (check the CloudSEK report first) or if Cursor/Anthropic issue an account. No pitch cleared the gates, so the day is skipped (attempts 0/3; second consecutive skip after 11-22)."
+    },
+    {
+      "date": "2026-11-24",
+      "query": "AI incident OR lawsuit OR breakthrough November 23 2026",
+      "itemsAdded": 2,
+      "note": "Backlog entered with ZERO pending items (11-22 and 11-23 skipped). Sweep surfaced The Neuron 23 Nov digest; read for primaries. ADDED dragos-prompt-canaries (8.6, dark): Dragos canary-token study of ~2M seeded prompts through inference providers; OpenRouter removed 3 providers and 125 ZDR endpoints 22 Nov; Phala/Together/Novita notices. ADDED alpoge-riemann-claude (8.5, light): Alpöge Claude-assisted RH proof claim 20 Nov, Lean compiles per independent checkers, statement fidelity/acceptance pending (rigor scored conservatively). Not added: Architect Labs 'Frostbite' AI-designed CPU (startup self-claim, pre-silicon, unnamed baseline); METR rapid-acceleration warning (analysis, not incident); Pachocki perplexity-threshold proposal (policy proposal); Trump-Xi military-AI human-control pledge (political commitment, no implementation); safety nonprofits' suit (covered as frontier-freeze-suit). Overlap scan of main + 98 daily/* branches for dragos/honeytoken/canary/riemann/openrouter/inference provider: one false-positive word match (astra-covert-underperformance 'canary' metaphor); no duplicates."
     }
   ]
 }
