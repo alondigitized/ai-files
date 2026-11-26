@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-25",
+  "updatedAt": "2026-11-26",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -3011,9 +3011,61 @@
       "startedAt": "2026-11-25T02:15:37-08:00",
       "publishedAt": "2026-11-25T03:34:51-08:00",
       "prUrl": "https://github.com/alondigitized/ai-files/pull/112"
+    },
+    {
+      "slug": "chatbot-toy-moratorium",
+      "status": "pending",
+      "priority": 1,
+      "side": "dark",
+      "workingTitle": "Ages 3 to 12",
+      "thesis": "On 24 Nov 2026 Gov. Hochul signed S.9408A/A.11144B, a five-year moratorium on manufacturing, distributing and selling AI chatbot toys in New York (effective 90 days after signing; AG-enforced civil penalties up to $15,000/day per violation). It follows California SB 867 (signed Sept 2026; four-year pause on companion-chatbot toys for under-16s from 1 Jan 2027). The evidentiary spine is U.S. PIRG Education Fund's 'Trouble in Toyland' testing: in Nov 2025 FoloToy's Kumma bear discussed sexual topics and where to find matches/knives, with guardrails weakening as conversations lengthened (OpenAI suspended the developer; sales paused then resumed). PIRG's 17 Nov 2026 re-test found Kumma and Miko largely fixed, but new toys (GoLabs AI Panda, Alilo Smart AI Bunny) showed the same long-conversation decay. Thesis candidate: the failure was never one bear - it is a general-purpose model in a plush shell whose safety erodes with session length, and fixing each toy after a watchdog finds it is whack-a-mole; legislatures chose to pause the category. Must carry the counter-case (TechPolicy Press 'won't make kids safer'; Brookings).",
+      "whyNow": "NY signing 24 Nov 2026 (2 days) at start of holiday shopping; PIRG 2026 report 17 Nov (9 days). Not in archive, backlog, or any of 100 daily/* branches (scan: FoloToy/Kumma/PIRG/Toyland/Miko/teddy/toys: zero hits). Distinct from Character.AI threads (companion apps, not physical toys). Dark Vol VII fit (what we handed over: children's companionship).",
+      "sources": [
+        {
+          "url": "https://www.governor.ny.gov/news/consumers-begin-their-holiday-shopping-season-governor-hochul-signs-five-year-ban-ai-chatbot",
+          "date": "2026-11-24",
+          "type": "primary"
+        },
+        {
+          "url": "https://publicinterestnetwork.org/wp-content/uploads/2025/11/TOYLAND-2025-11-14-7a.pdf",
+          "date": "2025-11-14",
+          "type": "primary"
+        },
+        {
+          "url": "https://www.theregister.com/offbeat/2026/11/17/ai-toys-are-on-the-naughty-list-again-this-year/5310261",
+          "date": "2026-11-17",
+          "type": "secondary"
+        },
+        {
+          "url": "https://www.fox5ny.com/news/new-york-bans-ai-chatbot-toys-kathy-hochul-holiday-shopping",
+          "date": "2026-11-24",
+          "type": "secondary"
+        },
+        {
+          "url": "https://www.techpolicy.press/banning-ai-toys-for-four-years-wont-make-kids-safer/",
+          "date": "2026",
+          "type": "secondary"
+        },
+        {
+          "url": "https://www.brookings.edu/articles/why-ai-toys-shouldnt-make-the-list-this-holiday-season/",
+          "date": "2026",
+          "type": "secondary"
+        }
+      ],
+      "scores": {
+        "importance": 7.5,
+        "rigor": 8.5,
+        "reportability": 8.5,
+        "readerValue": 8.5,
+        "fitWithArchive": 8
+      },
+      "compositeScore": 8.2,
+      "freshnessScore": 10,
+      "addedAt": "2026-11-26",
+      "notes": "research-scout MUST: (a) locate the 2026 PIRG Trouble in Toyland report PDF/page itself (not The Register) and the NY bill text (nysenate.gov S9408A) and California SB 867 chaptered text (leginfo); (b) pin California signing date - secondary sources disagree; (c) verify retailer delistings (Amazon/Walmart/Macy's) against primary statements or drop; (d) verify OpenAI's suspension of FoloToy from a primary or named-reporter source; (e) quote PIRG transcripts verbatim for reenactments - no paraphrase dressed as quotes; (f) the $15,000/day figure is in the governor's release (confirmed)."
     }
   ],
-  "lastRefreshed": "2026-11-25",
+  "lastRefreshed": "2026-11-26",
   "sweepLog": [
     {
       "date": "2026-09-08",
@@ -3356,6 +3408,12 @@
       "query": "AI incident OR lawsuit OR breakthrough November 24 2026",
       "itemsAdded": 0,
       "note": "Backlog entered with one pending item, alpoge-riemann-claude (8.5, light); sources 4-5 days old, freshness stays 10. Sweep returned nothing dated 23-24 Nov: frontier-freeze suit (12 Nov, covered as frontier-freeze-suit), OpenAI/Hugging Face sandbox-escape suit (covered), California AG subpoena (covered as california-openai-cyber-suit). Not added: 'Epic halts product development after AI model finds MyChart security flaws' (headline only in Benesch AI Reporter Nov 2026 PDF; no primary source seen; FUTURE HOOK: revisit if Epic or the model vendor publishes an account). Overlap scan of main + 99 daily/* branches for riemann/alpoge: no duplicates. OUTCOME: alpoge-riemann-claude drafted as 'It Compiles' (light Vol III Ch 15), PR #112. Statement fidelity was resolved before drafting: on 21 Nov the Lean FRO and Mathlib Initiative certified both the statement and the proof. Sutherland's MIT log (math.mit.edu/~drew/grh/) is the primary record of the checks. The final lake comparator v4.36.0 run was still running as of 24 Nov 05:25 UTC. FUTURE HOOK: Masullo GRH draft (Baez 22 Nov), if the reported problems are confirmed or patched."
+    },
+    {
+      "date": "2026-11-26",
+      "query": "AI incident OR lawsuit OR breakthrough November 25 2026 (+ one re-query on chatbot lawsuit/safety axis, + two primary-source checks on the toy pitch)",
+      "itemsAdded": 1,
+      "note": "Backlog entered with ZERO pending items (alpoge-riemann-claude published as PR #112). First query returned only digests (marketingprofs 6/13 Nov, The Neuron 18 Nov, actuia 16/19 Nov, aiweekly/aitoolly 18 Nov). FBI ARTEX FLASH (13 Nov) already folded into gtig-exploit-agent (PR, 11-19); not added. Re-query surfaced: 42-state AG intervention against Character.AI chat-data sale (follow-up of character-ai-bankruptcy, PR #95; not added as duplicate thread); Urban VPN AI-prompt harvesting (attorney investigation stage only; not added); NY AI chatbot toy moratorium signed 24 Nov. ADDED chatbot-toy-moratorium (8.2, dark) after reading governor.ny.gov release (S.9408A/A.11144B, 5-year ban, 90-day effective, AG $15k/day). Overlap scan main + 100 daily/* branches for FoloToy/Kumma/PIRG/Toyland/Miko/teddy/toys: zero hits."
     }
   ]
 }
