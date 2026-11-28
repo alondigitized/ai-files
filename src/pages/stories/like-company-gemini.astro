@@ -1,0 +1,714 @@
+---
+import StoryLayout from '../../layouts/StoryLayout.astro';
+import stories from '../../data/stories.json';
+
+const story = stories.find(s => s.slug === 'like-company-gemini')!;
+---
+
+<style is:global>
+.phantom-wrap { width: 100%; margin: 0; line-height: 0; }
+.like-company-gemini-canvas { display: block; width: 100%; height: 380px; background: var(--bg); }
+
+/* --- Reenactment CSS: like-company-gemini (lcg- prefix) --- */
+/* Reenactment 1: Side-by-side article vs Gemini answer */
+.lcg-compare {
+  margin: 2rem 0;
+  background: var(--surface, #161616);
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.lcg-compare-header {
+  padding: 0.75rem 1.25rem;
+  background: var(--bg, #0d0d0d);
+  border-bottom: 1px solid var(--border, #2a2a2a);
+  font-size: 0.75rem;
+  color: var(--muted, #888);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.lcg-compare-panels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+@media (max-width: 700px) {
+  .lcg-compare-panels {
+    grid-template-columns: 1fr;
+  }
+}
+.lcg-compare-panel {
+  padding: 1.25rem;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--text, #e8e8e8);
+}
+.lcg-compare-panel + .lcg-compare-panel {
+  border-left: 1px solid var(--border, #2a2a2a);
+}
+@media (max-width: 700px) {
+  .lcg-compare-panel + .lcg-compare-panel {
+    border-left: none;
+    border-top: 1px solid var(--border, #2a2a2a);
+  }
+}
+.lcg-compare-panel-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted, #888);
+  margin-bottom: 0.75rem;
+}
+.lcg-compare-panel-title.lcg-source {
+  color: var(--story);
+}
+.lcg-compare-panel-title.lcg-gemini {
+  color: var(--accent, #ff4d4d);
+}
+.lcg-unsupported {
+  background: color-mix(in srgb, var(--accent, #ff4d4d) 8%, transparent);
+  border-left: 2px solid var(--accent, #ff4d4d);
+  padding: 0.15rem 0.5rem;
+  margin: 0.4rem 0;
+  display: block;
+}
+.lcg-unsupported-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent, #ff4d4d);
+  display: block;
+  margin-top: 0.3rem;
+}
+.lcg-compare-footer {
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--border, #2a2a2a);
+  font-size: 0.78rem;
+  color: var(--muted, #888);
+  line-height: 1.5;
+}
+
+/* Reenactment 2: RAG Pipeline */
+.lcg-pipeline {
+  margin: 2rem 0;
+  background: var(--surface, #161616);
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.lcg-pipeline-header {
+  padding: 0.75rem 1.25rem;
+  background: var(--bg, #0d0d0d);
+  border-bottom: 1px solid var(--border, #2a2a2a);
+  font-size: 0.75rem;
+  color: var(--muted, #888);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.lcg-pipeline-body {
+  padding: 1.25rem;
+  overflow-x: auto;
+}
+.lcg-pipeline-chain {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-width: 650px;
+  flex-wrap: nowrap;
+}
+.lcg-pipeline-node {
+  background: var(--bg, #0d0d0d);
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--text, #e8e8e8);
+  text-align: center;
+  flex: 1;
+  min-width: 100px;
+}
+.lcg-pipeline-node strong {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted, #888);
+  margin-bottom: 0.25rem;
+}
+.lcg-pipeline-arrow {
+  font-size: 1.1rem;
+  color: var(--muted, #888);
+  padding: 0 0.25rem;
+  flex-shrink: 0;
+}
+.lcg-pipeline-node.lcg-pipeline-legal {
+  border-color: var(--story);
+}
+.lcg-pipeline-annotation {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-left: 2px solid var(--story);
+  font-size: 0.8rem;
+  color: var(--muted, #888);
+  line-height: 1.5;
+}
+.lcg-pipeline-footer {
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--border, #2a2a2a);
+  font-size: 0.78rem;
+  color: var(--muted, #888);
+  line-height: 1.5;
+}
+
+/* Reenactment 3: AG's Proposed Test */
+.lcg-test {
+  margin: 2rem 0;
+  background: var(--surface, #161616);
+  border: 1px solid var(--border, #2a2a2a);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.lcg-test-header {
+  padding: 0.75rem 1.25rem;
+  background: var(--bg, #0d0d0d);
+  border-bottom: 1px solid var(--border, #2a2a2a);
+  font-size: 0.75rem;
+  color: var(--muted, #888);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.lcg-test-body {
+  padding: 1.25rem;
+}
+.lcg-test-section {
+  margin-bottom: 1.25rem;
+}
+.lcg-test-section:last-child {
+  margin-bottom: 0;
+}
+.lcg-test-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--story);
+  margin-bottom: 0.5rem;
+}
+.lcg-test-conditions {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.lcg-test-conditions li {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--text, #e8e8e8);
+  border-left: 2px solid var(--border, #2a2a2a);
+  margin-bottom: 0.5rem;
+}
+.lcg-test-conditions li .lcg-test-or {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted, #888);
+  margin-top: 0.4rem;
+}
+.lcg-test-footer {
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--border, #2a2a2a);
+  font-size: 0.78rem;
+  color: var(--muted, #888);
+  line-height: 1.5;
+}
+</style>
+
+<StoryLayout story={story}>
+  <div class="container">
+<section class="section" id="context">
+  <h2><span class="num">01 — Context</span>The Dolphins and the Chatbot</h2>
+  <p>On 21 July 2023, a Hungarian web portal called balatonkornyeke.hu published a story about the singer Kozsó and his twenty-year dream of introducing freshwater dolphins into an aquarium at Lake Balaton. It was a celebrity puff piece: a quote to the daily newspaper Blikk, a trip to Monaco to see dolphins with his fiancée, a headline about not giving up. The portal is operated by Like Company Kft., a company incorporated in Hungary that publishes freely accessible articles about the lake region and draws its revenue from advertisements.</p>
+  <p>Some time later, Gemini answered a query asking for a summary of that article. The chatbot obliged. Its answer reported, in confident prose, that the dolphins would be kept in a special pool to be built on the Tihany peninsula — 25 metres long, 15 metres wide, 5 metres deep, holding 1,000 cubic metres of water. It claimed dolphins would purify the water and regulate the fish population. It described a mixed public reception: some argued the dolphins would not adapt, others worried the pool would harm the environment.</p>
+  <p>The article, as the opinion reproduces it, says nothing about a pool, its size or how the public received the plan. As the Advocate General later noted in a footnote, the Gemini summary "also contained a series of statements finding no basis in that publication (the fact that a pool is going to be used to introduce the dolphins, the size of that pool, the reception by the public of that project, and so on)." Google, he recorded, calls these "hallucinations."</p>
+  <div class="lcg-compare">
+  <div class="lcg-compare-header">Side-by-side: the article vs. the Gemini answer</div>
+  <div class="lcg-compare-panels">
+    <div class="lcg-compare-panel">
+      <div class="lcg-compare-panel-title lcg-source">balatonkornyeke.hu — 21 July 2023</div>
+      <p>"Kozsó isn't giving up: the popular singer is pursuing his dream of introducing dolphins into Lake Balaton"</p>
+      <p>Kozsó hasn't given up on his long-held dream and continues to work towards introducing freshwater dolphins into an aquarium at Lake Balaton. ...</p>
+      <p>"I'm currently working on numerous projects, including the introduction of freshwater dolphins into an aquarium at Lake Balaton, a dream I've cherished for over 20 years. ..." Kozsó told the daily newspaper "Blikk", having also gone to stroke the dolphins with his fiancée during his trip to Monaco.</p>
+    </div>
+    <div class="lcg-compare-panel">
+      <div class="lcg-compare-panel-title lcg-gemini">Gemini response</div>
+      <p>The popular singer Kozsó has announced his intention to bring dolphins to Lake Balaton.</p>
+      <span class="lcg-unsupported">According to the plans, the dolphins would be kept in a special pool to be built on the Tihany peninsula. This pool would be 25 metres long, 15 metres wide and 5 metres deep, and could hold 1,000 cubic metres of water.<span class="lcg-unsupported-label">No basis in that publication (fn 208)</span></span>
+      <span class="lcg-unsupported">Kozsó claims that the dolphins will be beneficial for Lake Balaton. Indeed, dolphins play a role in purifying the water and regulating the fish population.<span class="lcg-unsupported-label">Not in the reproduced article text</span></span>
+      <span class="lcg-unsupported">However, these plans have not been welcomed by everyone. Some argue that the dolphins will not be able to adapt to Lake Balaton and that the construction of the pool will be harmful to the environment.<span class="lcg-unsupported-label">No basis in that publication (fn 208)</span></span>
+    </div>
+  </div>
+  <div class="lcg-compare-footer">English translations as given in the AG opinion, Case C-250/25. The opinion reproduces "the relevant part" of the article (pt 17), not the full article. Items labelled "No basis in that publication" are those the AG identifies in footnote 208. Items labelled "Not in the reproduced article text" do not appear in the reproduced excerpt but are not specifically listed in fn 208.</div>
+</div>
+  <p>This was the publisher's showcase example. Like Company alleged continuous infringement of its press publishers' right under Article 15 of the CDSM Directive, covering Google's use of its articles through Bard and then Gemini from 13 June 2023 to 31 May 2024. It claimed only the press publishers' right, not copyright. The dolphin summary was the evidence it put before the court to show what Gemini does with its articles.</p>
+  <p>The Advocate General noted that Like Company and its web portals "seem far removed from the publishers of 'traditional' newspapers that the legislature had in mind when creating the press publishers' right." Whether Like Company qualifies as a press publisher is left to the Budapest Regional Court.</p>
+</section>
+
+<section class="section" id="procedure">
+  <h2><span class="num">02 — Procedure</span>First Time Before the Court</h2>
+  <p>The Budapest Regional Court referred four questions to the Court of Justice of the European Union in April 2025. Two asked whether using press publications to train an LLM constitutes reproduction, and whether the text-and-data-mining exception covers it. Two asked whether a chatbot's answer can constitute reproduction and making available to the public of the article it summarised.</p>
+  <p>It was the first generative-AI case to reach the CJEU. The Advocate General said so at point 2 of his opinion: the case "brings that 'revolution' before the Court of Justice for the first time." The CJEU's own press release confirmed it. The EU IP Helpdesk independently described the 10 March 2026 hearing as "first CJEU hearing generative AI and copyright."</p>
+  <p>Written observations came from Like Company, Google, nine governments — the Hungarian, Danish, German, Estonian, Hellenic, Spanish, French, Italian and Polish — and the European Commission. The Commission tried to have the entire referral declared inadmissible. The AG called the referring court's description of the technology "somewhat laconic" but let the case proceed.</p>
+  <p>First Advocate General Maciej Szpunar delivered his opinion on 3 November 2026. It is non-binding. As the CJEU press release states: "The Advocate General's Opinion is not binding on the Court of Justice." The Court often but not always follows its Advocates General. "Judgment will be given at a later date."</p>
+  <p>The AG proposed declaring the two training questions inadmissible. Nothing in the case file supported the claim that Like Company's articles were used to train the Gemini LLMs. The temporal proximity was telling: the article was published on 21 July 2023; Gemini 1.0 was released in December 2023. The AG concluded this was a retrieval-augmented generation case, not a training case — the chatbot most likely scraped the article in real time, not learned it months earlier.</p>
+  <p>For completeness, the AG gave a provisional view on training anyway. He suggested the text-and-data-mining exception "in principle" covers reproductions made for LLM training, while reserving "the right to refine the latter in future cases." He advised "the utmost caution" on whether a trained model contains reproductions of its training data. Memorisation, he wrote, is "incidental to the machine learning process, and not entirely avoidable." Model parameters are "merely preparatory material for the potential generation of such reproductions."</p>
+</section>
+
+<div class="phantom-wrap">
+  <canvas class="like-company-gemini-canvas" aria-hidden="true"></canvas>
+</div>
+<p class="canvas-note"><strong>The Resemblance</strong> — two mirrored constellations of connected particles face each other; the right slowly rearranges as new particles materialise from nothing and threads between them snap one by one until the original form is unrecognisable and the source fades away.</p>
+
+<section class="section" id="the-mechanism">
+  <h2><span class="num">03 — The Mechanism</span>The Form-of-Expression Test</h2>
+  <p>When a user asks Gemini for information, the chatbot can use a Google Search API to find relevant webpages, deploy internet bots to scrape their content, feed that content into the prompt alongside the user's query, and generate an answer with links back to the sources. This is RAG — retrieval-augmented generation — as described by the AG at point 13 of his opinion. The legal question is what happens to the article's protected expression between the scrape and the answer.</p>
+  <div class="lcg-pipeline">
+  <div class="lcg-pipeline-header">The RAG pipeline (based on AG opinion, point 13)</div>
+  <div class="lcg-pipeline-body" tabindex="0" role="region" aria-label="RAG pipeline diagram">
+    <div class="lcg-pipeline-chain">
+      <div class="lcg-pipeline-node"><strong>Step 1</strong>User query</div>
+      <div class="lcg-pipeline-arrow" aria-hidden="true">&rarr;</div>
+      <div class="lcg-pipeline-node"><strong>Step 2</strong>Google Search API finds webpages</div>
+      <div class="lcg-pipeline-arrow" aria-hidden="true">&rarr;</div>
+      <div class="lcg-pipeline-node lcg-pipeline-legal"><strong>Step 3</strong>Bots scrape article content</div>
+      <div class="lcg-pipeline-arrow" aria-hidden="true">&rarr;</div>
+      <div class="lcg-pipeline-node lcg-pipeline-legal"><strong>Step 4</strong>LLM generates answer</div>
+      <div class="lcg-pipeline-arrow" aria-hidden="true">&rarr;</div>
+      <div class="lcg-pipeline-node lcg-pipeline-legal"><strong>Step 5</strong>User receives answer + source links</div>
+    </div>
+    <div class="lcg-pipeline-annotation">The press publishers' right, as the AG proposes it, governs what happens between Steps 3 and 5 — whether the article's form of expression survives into the answer.</div>
+  </div>
+  <div class="lcg-pipeline-footer">Based on the AG's description at point 13 of the opinion. Steps 3-5 highlighted: this is where the proposed test applies.</div>
+</div>
+  <p>The AG proposed a two-part test for the remaining questions on chatbot output. Reproduction of a press publication occurs if either (a) the chatbot accessed the publication unlawfully, circumventing effective technical measures, or (b) "the form of expression in all or part of the press publication at issue is recognisable in the answer provided to the user by the chatbot, to such an extent that the user, by reading that answer, can dispense with accessing the original publication entirely." Making available to the public requires the expression to be "systematically recognisable" across answers to related queries. And the chatbot provider is liable where such acts are "inherent to that provider's business model" or the provider "has failed to put in place the appropriate measures that can be expected from a reasonably diligent operator in its situation in order credibly and effectively to counter the carrying out of such acts by way of the chatbot."</p>
+  <div class="lcg-test">
+  <div class="lcg-test-header">Proposed answer — AG Opinion, Case C-250/25 (pt 240)</div>
+  <div class="lcg-test-body">
+    <div class="lcg-test-section">
+      <div class="lcg-test-label">Reproduction occurs if:</div>
+      <ol class="lcg-test-conditions" role="list">
+        <li>(a) The chatbot accessed the publication unlawfully, in particular by circumventing effective technical measures designed to restrict access to, or the scraping of, that publication; <span class="lcg-test-or">— or —</span></li>
+        <li>(b) "The form of expression in all or part of the press publication at issue is recognisable in the answer provided to the user by the chatbot, to such an extent that the user, by reading that answer, can dispense with accessing the original publication entirely."</li>
+      </ol>
+    </div>
+    <div class="lcg-test-section">
+      <div class="lcg-test-label">Making available to the public occurs if:</div>
+      <ol class="lcg-test-conditions" role="list">
+        <li>The form of expression is "systematically recognisable" in the answers provided by the chatbot to related user queries.</li>
+      </ol>
+    </div>
+    <div class="lcg-test-section">
+      <div class="lcg-test-label">Acts attributable to the provider if:</div>
+      <ol class="lcg-test-conditions" role="list">
+        <li>(a) Such acts are inherent to that provider's business model; <span class="lcg-test-or">— or —</span></li>
+        <li>(b) That provider has failed to put in place the appropriate measures that can be expected from a reasonably diligent operator in its situation in order credibly and effectively to counter such acts.</li>
+      </ol>
+    </div>
+  </div>
+  <div class="lcg-test-footer">Distilled from point 240 of the AG opinion. English translation as given in the opinion. This opinion is not binding on the Court of Justice.</div>
+</div>
+  <p>The test draws a line between facts and expression. "The press publishers' right does not subsist in mere facts," the AG wrote at point 206. Articles with long, in-depth analysis are "by their nature, more recognisable" than purely informative reports of events. Extending protection to fact-only answers would be "tantamount to granting press publishers a monopoly over the facts." He noted that the dolphin article "appears to consist in a purely informative report of events ... using commonplace arrangement, structure and sentences, much of which appears, in addition, to be borrowed from other publications." Purely informative reports "the content of which is essentially determined by the information which such reports contain," he added, "are devoid of 'originality'"; such reports "can even easily be generated by press publishers using AI."</p>
+  <p>Google argued — as recorded by the AG at point 203 — that it "applies output filters to ensure that the answer generated by Gemini does not match a text retrieved through RAG." The AG's own comparison of the article and the Gemini answer at point 204: "while the two contained — essentially — the same facts, that answer used different terms." He noted that "a single sentence from the press publication (namely, the first sentence) appears in that answer."</p>
+  <p>The AG then offered brief guidance on the case itself. At point 239, he indicated that the conditions for infringement "would appear" not to be met, citing four reasons: Like Company did not put in place effective technical measures; the article's form of expression is not apparent as recognisable in the chatbot's answer; the acts do not appear inherent in Google's business model; and Google seems to have put in place appropriate mitigation measures.</p>
+  <p>On the test he proposes, the question for the referring court is whether the article's expression is recognisable in the answer. An answer the AG himself describes as using "different terms," and that partly consists of statements finding no basis in the article, does not carry that expression. The pool, its dimensions, the public reception: none of it is the article's wording, so none of it brings the article's wording closer to the surface. Read against the proposed test, the summary's errors do nothing for the publisher.</p>
+</section>
+
+<section class="section" id="the-gap">
+  <h2><span class="num">04 — The Gap</span>What Copyright Cannot See</h2>
+  <p>The AG was explicit about what his framework does not cover. At point 238: "Issues pertaining to the selection and diversity of the sources used by the chatbot to provide a summary, the risks of misrepresentation of facts and, with it, disinformation, and so on, will call for separate instruments." In a footnote, he pointed to the Digital Services Act, noting that designation of chatbots as "search engines" under that act "may provide some solutions." He leaves the disinformation problem outside copyright and points elsewhere.</p>
+  <p>He also rejected Google's argument that publishers who leave articles freely accessible on the web implicitly consent to chatbot reuse. Publishers were not "actually and individually" informed of the use. And blocking AI scraping bots is not a free choice. As the AG noted, "using a protocol such as 'Robots.txt' or other measures designed to block those bots may affect the display of the website concerned in search engines." A publisher that blocks scraping may lose search visibility. That is not consent.</p>
+  <p>The framework is designed, in part, to protect the publisher's bargaining position. At point 236, the AG stated that his interpretation "leaves those publishers in a strong bargaining position vis-a-vis chatbot providers." Chatbots "need access to press publications to be able to generate accurate answers relating to the news." Licensing "could offer a positive outcome for all the stakeholders." The right protects the publisher's investment and negotiating leverage. It does not protect the reader's picture of events.</p>
+  <p>Angela Mills Wade, executive director of the European Publishers Council, framed the structural problem in an interview with Silicon UK: "Publishers depend on Google to reach readers, while Google increasingly delivers AI-generated answers directly to users." The distinction she drew — between indexing, which sends readers to the source, and AI answers, which may replace it — sits at the centre of the case.</p>
+  <p>The AG also called for transparency: in footnote 242, he stated that "obligations of transparency as to the content scraped by chatbots to ground their answers should be imposed on chatbot providers, similar to the obligations of transparency imposed on LLM developers under the AI Act." Thibault Schrepel, an associate professor of law at VU Amsterdam and a faculty affiliate at Stanford, observed in the Oxford Business Law Blog that 34 of the opinion's 239 points make claims about the market, of which 18 cite no source. The opinion does not cite any competition authority, Article 102 TFEU, or the Digital Markets Act. The framework assumes a bargaining position without examining the market in which that bargaining occurs.</p>
+</section>
+
+<section class="section" id="signal">
+  <h2><span class="num">05 — Signal</span>The Reader Left Holding the Summary</h2>
+  <p>The test asks whether a reader, by reading the chatbot's answer, "can dispense with accessing the original publication entirely." Apply that to the summary of the dolphin article. A reader handed a confident summary may well skip the original, and comes away with a pool on the Tihany peninsula, 25 metres long, 15 metres wide and 5 metres deep, that the article never describes. The test does not ask what the reader walks away believing.</p>
+  <p>What happens next is uncertain. The CJEU judges have begun deliberating. Judgment will come at a later date; no schedule is public. The opinion is non-binding. The Budapest Regional Court decides the case. Like Company has not made a public statement in response to the opinion. No reaction was found from the European Magazine Media Association, the European Newspaper Publishers' Association, or News Media Europe.</p>
+  <p>If the Court follows this framework, it will establish across the EU that a chatbot's reuse of news is measured by how much of the article's wording survives — not by what the reader ends up knowing. For the accuracy problem, the AG points away from copyright, toward "separate instruments" and, possibly, the Digital Services Act. A chatbot was asked to summarise an article, and it returned a pool the article never mentions, dimensions the article never gives, and a public reception that appears nowhere in the article. The framework proposed for governing that exchange asks whether the article's wording survived. It did not.</p>
+</section>
+  </div>
+</StoryLayout>
+
+<script>
+(function () {
+  const canvas = document.querySelector('.like-company-gemini-canvas') as HTMLCanvasElement | null;
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  /* ---- colours from CSS custom properties ---- */
+  const styles = getComputedStyle(document.documentElement);
+  const storyHex = styles.getPropertyValue('--story').trim() || '#4da8b8';
+
+  function hexRgb(h: string): [number, number, number] {
+    const v = h.replace('#', '');
+    return [
+      parseInt(v.slice(0, 2), 16),
+      parseInt(v.slice(2, 4), 16),
+      parseInt(v.slice(4, 6), 16),
+    ];
+  }
+  const [sR, sG, sB] = hexRgb(storyHex);
+
+  function storyA(a: number): string {
+    return 'rgba(' + sR + ',' + sG + ',' + sB + ',' + Math.max(0, Math.min(1, a)) + ')';
+  }
+  function dimA(a: number): string {
+    return 'rgba(232,232,232,' + Math.max(0, Math.min(1, a)) + ')';
+  }
+  function blendA(blend: number, a: number): string {
+    const r = Math.round(sR * blend + 232 * (1 - blend));
+    const g = Math.round(sG * blend + 232 * (1 - blend));
+    const b = Math.round(sB * blend + 232 * (1 - blend));
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + Math.max(0, Math.min(1, a)) + ')';
+  }
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- phase constants (frames @ 60 fps, ~17 s cycle) ---- */
+  const P_CALM        = 120;   // 0-120     both idle, threads taut
+  const P_DRIFT_END   = 480;   // 120-480   right particles drift
+  const P_HALLUC_START= 240;   // 240-480   hallucinations fade in
+  const P_SNAP_START  = 360;   // 360-720   threads snap outermost-first
+  const P_SNAP_END    = 720;
+  const P_FADE_END    = 840;   // 720-840   left dims to near-invisible
+  const P_HOLD_END    = 1020;  // 840-1020  right alone, then hold
+  const CYCLE         = P_HOLD_END;
+
+  /* ---- constellation base layout (18 particles, CSS px at scale 1) ---- */
+  const N = 18;
+  const HALLUC_N = 5;
+  //                  0    1     2    3    4     5     6    7    8    9   10   11   12   13   14   15   16   17
+  const BX: number[]=[0,   0,   22,  22, -22,  -22,   0,  38,  48,  28, -28, -48, -38,  15,  58,  62, -62, -58];
+  const BY: number[]=[0, -26,  -10,  16,  16,  -10, -52, -32,   8,  42,  42,   8, -32, -74, -50,  30,  30, -50];
+
+  /* ---- mutable state ---- */
+  let W = 0, H = 0, rafId = 0, frame = 0;
+  let scale = 1, lcx = 0, lcy = 0, rcx = 0, rcy = 0;
+
+  interface NState { breathPhase: number; driftAngle: number; driftMag: number; }
+  let ns: NState[] = [];
+
+  interface Edge { a: number; b: number; }
+  let edges: Edge[] = [];
+
+  interface XThread { idx: number; snapFrame: number; baseDist: number; }
+  let xThreads: XThread[] = [];
+
+  interface HState { bx: number; by: number; fadeStart: number; }
+  let hs: HState[] = [];
+
+  /* pre-allocated position caches (no alloc in draw loop) */
+  const lpx = new Float64Array(N);
+  const lpy = new Float64Array(N);
+  const rpx = new Float64Array(N);
+  const rpy = new Float64Array(N);
+
+  /* ---- initialise / reset ---- */
+  function init() {
+    frame = 0;
+
+    /* node random state */
+    ns = [];
+    for (let i = 0; i < N; i++) {
+      const d = Math.sqrt(BX[i] * BX[i] + BY[i] * BY[i]);
+      ns.push({
+        breathPhase: Math.random() * Math.PI * 2,
+        driftAngle:  Math.random() * Math.PI * 2,
+        driftMag:    30 + d * 0.5 + Math.random() * 35,
+      });
+    }
+
+    /* internal edges (connect pairs within 44 CSS px in base layout) */
+    edges = [];
+    for (let i = 0; i < N; i++) {
+      for (let j = i + 1; j < N; j++) {
+        const dx = BX[i] - BX[j], dy = BY[i] - BY[j];
+        if (Math.sqrt(dx * dx + dy * dy) < 44) edges.push({ a: i, b: j });
+      }
+    }
+
+    /* cross-threads, sorted outermost-first for snap order */
+    const order = Array.from({ length: N }, function (_, i) { return i; });
+    order.sort(function (a, b) {
+      return (BX[b] * BX[b] + BY[b] * BY[b]) - (BX[a] * BX[a] + BY[a] * BY[a]);
+    });
+    const snapWindow = P_SNAP_END - P_SNAP_START;
+    xThreads = [];
+    for (let i = 0; i < N; i++) {
+      xThreads.push({
+        idx: order[i],
+        snapFrame: P_SNAP_START + Math.round((snapWindow * i) / (N - 1)),
+        baseDist: 0,
+      });
+    }
+
+    /* hallucination particles */
+    var HBX = [35, -15, 45, -40, 10];
+    var HBY = [-20, -55, 50, 25, 65];
+    hs = [];
+    for (let i = 0; i < HALLUC_N; i++) {
+      hs.push({
+        bx: HBX[i],
+        by: HBY[i],
+        fadeStart: P_HALLUC_START + Math.floor((i / HALLUC_N) * (P_DRIFT_END - P_HALLUC_START)),
+      });
+    }
+  }
+
+  /* ---- responsive layout ---- */
+  function computeLayout() {
+    lcx = W * 0.3;
+    lcy = H * 0.5;
+    rcx = W * 0.7;
+    rcy = H * 0.5;
+    scale = Math.min(W * 0.18, H * 0.42) / 82;
+
+    /* recompute base thread distances */
+    for (var i = 0; i < xThreads.length; i++) {
+      var t = xThreads[i];
+      var lx = lcx + BX[t.idx] * scale;
+      var rx = rcx - BX[t.idx] * scale;
+      t.baseDist = Math.abs(rx - lx);
+    }
+  }
+
+  /* ---- helpers (pure, no allocation) ---- */
+  function getDriftT(f: number): number {
+    if (f <= P_CALM) return 0;
+    var t = Math.min(1, (f - P_CALM) / (P_DRIFT_END - P_CALM));
+    return t * t * (3 - 2 * t);          // smoothstep ease
+  }
+
+  function getLeftAlpha(f: number): number {
+    if (f <= P_SNAP_END) return 1;
+    if (f >= P_FADE_END) return 0.03;
+    return 1 - ((f - P_SNAP_END) / (P_FADE_END - P_SNAP_END)) * 0.97;
+  }
+
+  /* ---- compute all positions into flat caches ---- */
+  function computePositions(f: number) {
+    var dT = getDriftT(f);
+    for (var i = 0; i < N; i++) {
+      var s = ns[i];
+      var bx = Math.sin(f * 0.015 + s.breathPhase) * 0.3;
+      var by = Math.cos(f * 0.012 + s.breathPhase + 1) * 0.3;
+
+      lpx[i] = lcx + BX[i] * scale + bx;
+      lpy[i] = lcy + BY[i] * scale + by;
+
+      rpx[i] = rcx - BX[i] * scale
+        + Math.cos(s.driftAngle) * s.driftMag * scale * dT + bx;
+      rpy[i] = rcy + BY[i] * scale
+        + Math.sin(s.driftAngle) * s.driftMag * scale * dT + by;
+    }
+  }
+
+  /* ---- draw ---- */
+  function draw(f: number) {
+    ctx!.clearRect(0, 0, W, H);
+    computePositions(f);
+
+    var la = getLeftAlpha(f);
+    var coreR = Math.max(1.5, 2.5 * scale);
+    var glowR = Math.max(4, 10 * scale);
+
+    /* -- internal edges (left, batched) -- */
+    if (la > 0.02) {
+      ctx!.beginPath();
+      for (var i = 0; i < edges.length; i++) {
+        ctx!.moveTo(lpx[edges[i].a], lpy[edges[i].a]);
+        ctx!.lineTo(lpx[edges[i].b], lpy[edges[i].b]);
+      }
+      ctx!.strokeStyle = dimA(0.06 * la);
+      ctx!.lineWidth = 0.5;
+      ctx!.stroke();
+    }
+
+    /* -- internal edges (right, batched) -- */
+    ctx!.beginPath();
+    for (var i = 0; i < edges.length; i++) {
+      ctx!.moveTo(rpx[edges[i].a], rpy[edges[i].a]);
+      ctx!.lineTo(rpx[edges[i].b], rpy[edges[i].b]);
+    }
+    ctx!.strokeStyle = dimA(0.06);
+    ctx!.lineWidth = 0.5;
+    ctx!.stroke();
+
+    /* -- cross-threads -- */
+    for (var i = 0; i < xThreads.length; i++) {
+      var t = xThreads[i];
+      var lx = lpx[t.idx], ly = lpy[t.idx];
+      var rx = rpx[t.idx], ry = rpy[t.idx];
+      var snapped = f >= t.snapFrame;
+
+      if (snapped) {
+        var elapsed = f - t.snapFrame;
+        if (elapsed > 8) continue;
+        var sp = 1 - elapsed / 8;
+
+        /* spark line */
+        ctx!.beginPath();
+        ctx!.moveTo(lx, ly);
+        ctx!.lineTo(rx, ry);
+        ctx!.strokeStyle = storyA(sp * 0.5);
+        ctx!.lineWidth = 1.5;
+        ctx!.stroke();
+
+        /* spark point at midpoint */
+        var mx = (lx + rx) * 0.5, my = (ly + ry) * 0.5;
+        ctx!.beginPath();
+        ctx!.arc(mx, my, 2 + sp * 5, 0, Math.PI * 2);
+        ctx!.fillStyle = storyA(sp * 0.7);
+        ctx!.fill();
+      } else {
+        var dx = rx - lx, dy = ry - ly;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        var stretch = Math.max(1, dist / Math.max(1, t.baseDist));
+        var alpha = Math.max(0.015, 0.12 / stretch) * la;
+
+        ctx!.beginPath();
+        ctx!.moveTo(lx, ly);
+        ctx!.lineTo(rx, ry);
+        ctx!.strokeStyle = dimA(alpha);
+        ctx!.lineWidth = Math.max(0.3, 0.8 / stretch);
+        ctx!.stroke();
+      }
+    }
+
+    /* -- left constellation particles -- */
+    if (la > 0.02) {
+      for (var i = 0; i < N; i++) {
+        var x = lpx[i], y = lpy[i];
+        var gr = ctx!.createRadialGradient(x, y, 0, x, y, glowR);
+        gr.addColorStop(0, dimA(0.08 * la));
+        gr.addColorStop(1, dimA(0));
+        ctx!.beginPath();
+        ctx!.arc(x, y, glowR, 0, Math.PI * 2);
+        ctx!.fillStyle = gr;
+        ctx!.fill();
+
+        ctx!.beginPath();
+        ctx!.arc(x, y, coreR, 0, Math.PI * 2);
+        ctx!.fillStyle = dimA(0.45 * la);
+        ctx!.fill();
+      }
+    }
+
+    /* -- right constellation particles -- */
+    for (var i = 0; i < N; i++) {
+      var x = rpx[i], y = rpy[i];
+      var gr = ctx!.createRadialGradient(x, y, 0, x, y, glowR);
+      gr.addColorStop(0, dimA(0.08));
+      gr.addColorStop(1, dimA(0));
+      ctx!.beginPath();
+      ctx!.arc(x, y, glowR, 0, Math.PI * 2);
+      ctx!.fillStyle = gr;
+      ctx!.fill();
+
+      ctx!.beginPath();
+      ctx!.arc(x, y, coreR, 0, Math.PI * 2);
+      ctx!.fillStyle = dimA(0.45);
+      ctx!.fill();
+    }
+
+    /* -- hallucination particles -- */
+    for (var i = 0; i < hs.length; i++) {
+      var h = hs[i];
+      if (f < h.fadeStart) continue;
+      var presence = Math.min(1, (f - h.fadeStart) / 60);
+      if (presence < 0.01) continue;
+      var accentT = f < h.fadeStart + 20
+        ? 1
+        : Math.max(0, 1 - (f - h.fadeStart - 20) / 90);
+      var hx = rcx + h.bx * scale;
+      var hy = rcy + h.by * scale;
+
+      var hgr = ctx!.createRadialGradient(hx, hy, 0, hx, hy, glowR);
+      hgr.addColorStop(0, blendA(accentT, 0.08 * presence));
+      hgr.addColorStop(1, blendA(accentT, 0));
+      ctx!.beginPath();
+      ctx!.arc(hx, hy, glowR, 0, Math.PI * 2);
+      ctx!.fillStyle = hgr;
+      ctx!.fill();
+
+      ctx!.beginPath();
+      ctx!.arc(hx, hy, coreR, 0, Math.PI * 2);
+      ctx!.fillStyle = blendA(accentT, 0.45 * presence);
+      ctx!.fill();
+    }
+  }
+
+  /* ---- animation loop ---- */
+  function tick() {
+    frame++;
+    if (frame >= CYCLE) {
+      init();
+      computeLayout();
+    }
+    draw(frame);
+    rafId = requestAnimationFrame(tick);
+  }
+
+  /* ---- resize ---- */
+  const ro = new ResizeObserver(function () {
+    var dpr = window.devicePixelRatio || 1;
+    W = canvas!.offsetWidth;
+    H = canvas!.offsetHeight;
+    canvas!.width = W * dpr;
+    canvas!.height = H * dpr;
+    ctx!.scale(dpr, dpr);
+    computeLayout();
+    if (prefersReduced) draw(300);
+  });
+  ro.observe(canvas);
+
+  /* initial sizing */
+  var dpr = window.devicePixelRatio || 1;
+  W = canvas.offsetWidth;
+  H = canvas.offsetHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  init();
+  computeLayout();
+
+  if (prefersReduced) {
+    draw(300);
+    window.addEventListener('pagehide', function () { ro.disconnect(); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      if (entries[0].isIntersecting) {
+        if (!rafId) rafId = requestAnimationFrame(tick);
+      } else {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    }, { threshold: 0.01 });
+    io.observe(canvas);
+
+    window.addEventListener('pagehide', function () {
+      cancelAnimationFrame(rafId);
+      io.disconnect();
+      ro.disconnect();
+    });
+  }
+})();
+</script>
