@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-27",
+  "updatedAt": "2026-11-28",
   "description": "Ranked backlog for the daily story runner. 'pending' = eligible for next run. 'in_progress' = currently being drafted. 'published' = committed to main. 'rejected' = failed source-critic or gates (will not be retried without manual intervention). Scores: 0-10 on importance/rigor/reportability/readerValue/fitWithArchive; composite is the weighted average (all equal weight). freshnessScore decays over time and is recomputed each run.",
   "gates": {
     "minCompositeScore": 7.5,
@@ -3111,9 +3111,56 @@
       "startedAt": "2026-11-27T02:16:34-08:00",
       "publishedAt": "2026-11-27T03:15:50-08:00",
       "prUrl": "https://github.com/alondigitized/ai-files/pull/114"
+    },
+    {
+      "slug": "like-company-gemini",
+      "status": "pending",
+      "priority": 1,
+      "side": "dark",
+      "workingTitle": "No Basis in That Publication",
+      "thesis": "On 3 Nov 2026 First Advocate General Maciej Szpunar delivered his opinion in Case C-250/25 Like Company v Google Ireland, which he says brings the generative-AI 'revolution' before the Court of Justice 'for the first time'. Like Company (Hungarian publisher of balatonkornyeke.hu, ad-funded) claims Bard/Gemini infringed its Article 15 CDSM press publishers' right 13 Jun 2023-31 May 2024. Its showcase example: a Gemini 'summary' of a 21 Jul 2023 article about singer Kozso's plan to bring dolphins to Lake Balaton. The AG notes (fn 208) the summary contained 'a series of statements finding no basis in that publication' (a pool, its size, public reception) that Google calls 'hallucinations'. Proposed answer: training questions (2,3) inadmissible (no evidence the articles trained Gemini; training is not an online use), though he gives a provisional view that the TDM exception covers training reproductions; RAG reuse reproduces a press publication only if access was unlawful (circumventing technical measures) or the form of expression is recognisable to the point that the user 'can dispense with accessing the original publication entirely'; mere facts are free. Guidance (pt 239): on the example, it 'would appear' the conditions are not met. Pt 238: misrepresentation and disinformation 'will call for separate instruments'. Thesis candidate: the law we have protects how journalism is worded, not whether the machine retelling it is true - so the first AI test case at the EU's top court turned on a summary that was wrong, and the errors counted in the chatbot's favour. Must carry: AG opinion is non-binding; CJEU judgment pending; Hungarian court applies it.",
+      "whyNow": "AG opinion delivered 3 Nov 2026 (25 days). First generative-AI case before the CJEU per the AG himself. Distinct from archive's google-ai-overviews-bargain (US publishers' suits vs AI Overviews, dismissed) and gema-suno-training-ruling (Munich, training/music): EU press publishers' right, RAG/retrieval rather than training, and the hallucinated summary as the evidence. Overlap scan main + 102 daily/* branches for like company/szpunar/C-250/25: zero hits. Dark Vol VII fit: reading the news handed to a chatbot; the law protects the wording, not the truth.",
+      "sources": [
+        {
+          "url": "https://curia.europa.eu/site/jcms/p1_1000088866/en/",
+          "date": "2026-11-03",
+          "type": "primary"
+        },
+        {
+          "url": "https://courthousenews.com/wp-content/uploads/2026/11/like-company-v-google-ireland-limited-cjeu-ag-opinion.pdf",
+          "date": "2026-11-03",
+          "type": "primary"
+        },
+        {
+          "url": "https://courthousenews.com/eu-legal-adviser-finds-limited-uses-of-google-ai-could-run-afoul-of-publishers-rights/",
+          "date": "2026-11-03",
+          "type": "secondary"
+        },
+        {
+          "url": "https://ppc.land/googles-gemini-can-infringe-press-rights-in-2-ways-eu-court-adviser-says/",
+          "date": "2026-11",
+          "type": "secondary"
+        },
+        {
+          "url": "https://www.lovguiden.dk/en/det-offentlige/eu-domstolen/2026-11-03-advocate-general-ai-chatbots-like-gemini-may-infringe-press-publishers-rights",
+          "date": "2026-11-03",
+          "type": "secondary"
+        }
+      ],
+      "scores": {
+        "importance": 8,
+        "rigor": 9,
+        "reportability": 8,
+        "readerValue": 8,
+        "fitWithArchive": 7.5
+      },
+      "compositeScore": 8.1,
+      "freshnessScore": 9,
+      "addedAt": "2026-11-28",
+      "notes": "Full 85-page English opinion (original language English) read by runner from the Courthouse News-hosted PDF; text saved /tmp/dsr1128/src/ag-opinion.txt. Courthouse News article 403s to automated fetch. Key points: pt 2 ('first time'), pts 14-19 (facts, dolphin article and Gemini answer), fn 208 (hallucinations), fn 210 (article is 'purely informative', much 'borrowed from other publications'), pts 206-209 (recognisable form / direct substitute), pt 237-238, pt 239 (guidance), V Conclusion pt 240. Hearing 10 Mar 2026. Do not state the CJEU has ruled; do not state Google 'won'."
     }
   ],
-  "lastRefreshed": "2026-11-27",
+  "lastRefreshed": "2026-11-28",
   "sweepLog": [
     {
       "date": "2026-09-08",
@@ -3468,6 +3515,12 @@
       "query": "AI incident OR lawsuit OR breakthrough November 26 2026 (+ aiweekly.co daily editions 24-26 Nov read for primaries; Neuron 24-26 Nov URLs 404)",
       "itemsAdded": 1,
       "note": "Backlog entered with ZERO pending items (chatbot-toy-moratorium published PR #113). First query returned only digests (marketingprofs 6/13 Nov, The Neuron 18 Nov, aiweekly/aitoolly 18 Nov, actuia). aiweekly 24-26 Nov editions read. ADDED anthropic-siren-sandbox (8.0, dark) after reading safeguards.anthropic.com/2026/siren/ in full. Overlap scan main + 101 daily/* branches for siren/honeypot/sandbox/eval-awareness: related anthropic-eval-escape-irregular, openai-huggingface-sandbox-escape, anthropic-mythos-glasswing (incident/case stories, not propensity measurement); no duplicate. Not added (FUTURE HOOKS): OpenAI 'matrix multiplication exponent is 9/4' preprint in openai/math repo (24 Nov; unreviewed, Lean formalization narrower than theorem) - revisit on expert review; Anthropic Claude-authored VP!=VNP proof (unverified) - revisit on verification; Drupal Fail2Install CVE-2026-132165 found by Anthropic OSS Scanner, exploited in the wild, CISA KEV deadline 27 Nov (overlaps gtig-exploit-agent thread; revisit if Anthropic publishes scanner disclosure-timeline account); ABC/TBIJ MiniMax Talkie companion-app investigation; Tidal deleting 29M fully AI-generated tracks from 9 Dec; NCSC AI-driven hacks rise. OUTCOME: anthropic-siren-sandbox drafted as 'Treat Them as Rules' (dark Vol VII Ch 38), PR #114. First fact-check FAILED on 3 correctable items; runner read caught more (invented 'June 2026'/'tens of thousands' framing, 'least likely to try' contradicted by Mythos 5.2's 32% reach rate, scout's 'police itself' paraphrase of IDC's Brown). Targeted re-check PASS."
+    },
+    {
+      "date": "2026-11-28",
+      "query": "AI incident OR lawsuit OR breakthrough November 27 2026 (+ one targeted query on the CJEU AG opinion surfaced by the first; + one status check on the 9/4 matrix-multiplication FUTURE HOOK)",
+      "itemsAdded": 1,
+      "note": "Backlog entered with ZERO pending items (anthropic-siren-sandbox published PR #114). First query returned only digests (marketingprofs 6/13 Nov, thisweekinnlp, actuia 4/16/19 Nov, aiweekly/Neuron 18 Nov); AiNews.com on break 26-28 Nov. A digest line on publishers vs Google and a non-binding 'adviser's opinion' led to CJEU C-250/25 Like Company v Google (AG Szpunar, 3 Nov 2026). ADDED like-company-gemini (8.1, dark) after reading the full 85-page opinion. Overlap scan main + 102 daily/* branches: related google-ai-overviews-bargain (US, AI Overviews, dismissal) and gema-suno-training-ruling (Munich, training); no duplicate. Not added: TRAI draft AI rules (comment deadline 27 Nov; consultation stage); Resemble AI 481-incident political deepfake count (vendor study)."
     }
   ]
 }
